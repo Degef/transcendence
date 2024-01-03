@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'pong',
     'users',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [

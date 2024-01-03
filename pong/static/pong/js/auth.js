@@ -39,6 +39,7 @@ function registerUser() {
                 // showAlert(data.message, 'valid', '#inputUsername', '#usernameFeedback');
 				topAlert(data.message, 'success');
 				clearFields();
+				login_Form();
             } else {
 				if (data.errors.username)
 					showAlert(data.errors.username, 'invalid', '#inputUsername', '#usernameFeedback');
@@ -62,7 +63,6 @@ function registerUser() {
 			console.error('Error:', error);
 		});
 }
-
 
 function checkEmptyForm() {
 	if (document.querySelector('#inputUsername').value === '') {

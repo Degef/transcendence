@@ -1,50 +1,55 @@
-// function showProfile() {
-// 	fetch('/profile')
-// 		.then(response => response.json())
-// 		.then(data => {
-// 			console.log(data);
-// 				var display = `
-//                 <div class="card mb-3 mt-3">
-//                     <div class="card-body">
-//                         <h5 class="card-title"> ${data.users[0].fields.username}, ${data.users[0].fields.first_name} ${data.users[0].fields.last_name}</h5>
-//                         <p class="card-text">Email: ${data.users[0].fields.email}</p>
-//                         <!-- Add more user information as needed -->
-//                     </div>
-//                 </div>
-//             `;
-// 			document.querySelector('#content').innerHTML =  display;
-// 		})
-// 		.catch(error => console.error('Error fetching profile data:', error));
-// }
 
-// Fetch user data
-function showProfile() {
+
+function showProfile(i) {
 	fetch('/profile')
 		.then(response => response.json())
 		.then(data => {
-			if (data.users && data.users.length > 0) {
-				console.log(data);
-				const user = data.users[0];
-				const profilePictureUrl = user.image;
-
-				const display = `
-					<div class="card mb-3 mt-3">
-						<div class="media">
-							<img class="rounded-circle account-img" src="${profilePictureUrl}" alt="Profile Picture">
-							<div class="media-body mt-4">
-								<h2 class="account-heading">${user.username}, ${user.first_name} ${user.last_name}</h2>
-								<p class="text-secondary"> ${user.email}</p>
-						  	</div>
-						</div>
-					</div>
-				`;
-
-				document.querySelector('#content').innerHTML = display;
-			} else {
-				console.error('User data not found');
+			console.log(data);
+			profilePage(data);
+			if (i === 1) {
+				topAlert("update successful!", 'success');
 			}
+
 		})
 		.catch(error => console.error('Error fetching profile data:', error));
+}
+
+function updateProfile() {
+	const formData = new FormData();
+	formData.append('username', document.querySelector('#updateUsername').value);
+	formData.append('email', document.querySelector('#updateEmail').value);
+	formData.append('image', document.querySelector('#updateImage').files[0]);
+
+	fetch('/update_profile/', {
+		method: 'POST',
+		body: formData,
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log(data);
+		if (data.success) {
+			showProfile(1);
+		} else if (data.message == 'No changes detected'){
+			topAlert(data.message, 'info');
+		} 
+		else {
+			if (data.errors.username)
+				showAlert(data.errors.username, 'invalid', '#updateUsername', '#updateFeedback1');
+			else
+				showAlert("looks good", 'valid', '#updateUsername', '#updateFeedback1');
+			if (data.errors.email)
+				showAlert(data.errors.email, 'invalid', '#updateEmail', '#updateFeedback2');
+			else
+				showAlert("looks good", 'valid', '#updateEmail', '#updateFeedback2');
+			if (data.errors.image)
+				showAlert(data.errors.image, 'invalid', '#updateImage', '#updateFeedback3');
+			else
+				showAlert("looks good", 'valid', '#updateImage', '#updateFeedback3');
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
 }
 
 function handleButtonClick(event) {
@@ -55,7 +60,7 @@ function handleButtonClick(event) {
 	else if (event.target.id === 'register')
 		registerUser();
 	else if (event.target.id === 'login_request')
-		create_login_Form();
+		login_Form();
 	else if (event.target.id === 'login')
 		loginUser();
 	else if (event.target.id === 'about')
@@ -64,6 +69,8 @@ function handleButtonClick(event) {
 		home_page();
 	else if (event.target.id === 'logout')
 		logoutUser();
+	else if (event.target.id === 'update')
+		updateProfile();
 }
 
 document.addEventListener("DOMContentLoaded", function() {
