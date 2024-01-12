@@ -1,44 +1,4 @@
 
-function profilePage(user) {
-	const display = `
-	<!-- top alert -->
-	<div class="alert " role="alert" id="topAlert"> </div>
-		<div class="content-section">
-			<div class="media">
-				<img class="rounded-circle account-img" src="${user.image_url}" alt="Profile Picture">
-				<div class="media-body mt-4">
-					<h2 class="account-heading">${user.username}, ${user.first_name} ${user.last_name}</h2>
-					<p class="text-secondary"> ${user.email}</p>
-				</div>
-			</div>
-				<form class="form-signin">
-				<h1 class="h3 mb-3 pb-2 font-weight-normal border-bottom">Profile Info</h1>
-				
-				<!-- Username input -->
-				<label for="updateUsername" class="">Username</label>
-				<input type="text" id="updateUsername" name="username" class="form-control" value="${user.username}">
-				<div id="updateFeedback1" class=""></div>
-				
-				<!-- Password input -->
-				<label for="updateEmail" class="">Email</label>
-				<input type="text" id="updateEmail" name="email" class="form-control" value="${user.email}">
-				<div id="updateFeedback2" class=""></div>
-				
-				<!-- Current Image -->
-				<p class = "mt-3"> Current Image: <a href="${user.image_url}">${user.image_url}</a></p>
-				<!-- Image file input -->
-				<p class="">New Image</p>
-				<input type="file" id="updateImage" name="image" class="form-control-file">
-				<div id="updateFeedback3" class=""></div>
-				
-				<button id="update" class="btn btn-outline-info mt-3" type="button">Update</button>
-				</form>
-		</div>
-	`;
-	
-	document.querySelector('#content').innerHTML = display;
-}
-
 function create_registration_Form() {
 	document.querySelector('#content').innerHTML = `
 	<form class="form-signin">
@@ -100,16 +60,16 @@ function home_page() {
 	if (localStorage.getItem('authToken') === null) {
 		document.querySelector('#content').innerHTML = `
 		<div class="jumbotron">
-			<h1 class="display-4">Welcome to Ping Pong Tournament App!</h1>
-			<p class="lead">This is a simple web application that allows you to create and participate in Ping Pong tournaments online.</p>
-			<hr class="my-4">
-			<p>You need to <a href="#" id = "login_request"> login </a> to get started!</p>
-			
+		
+			<h1 class="">Welcome to <strong>Pong</strong></h1>
+			<p class="lead">The mighty Pong contest is here for you!</p>
+			<p>Get ready to embark on an exhilarating journey into the world of online ping pong with <strong>Pong</strong>! Whether you're a seasoned player or a newbie eager to experience the thrill of the game, we've crafted an immersive platform just for you.</p>
+			<p>Challenge opponents from around the globe, showcase your paddle prowess, and climb the ranks to become the ultimate <strong>Pong</strong> champion. With state-of-the-art features and a seamless user interface, <strong>PongPal</strong> guarantees a smashing good time for players of all levels.</p>
+			<p>Join the fun, feel the spin, and let the matches begin! Are you ready to elevate your ping pong experience? Let's rally!</p>
 			<!-- Registration link -->
 			<div class="border-top pt-3">
-				<small class="text-muted">
-					Don't have an account? <a id="request_registration" href="#">Sign Up</a>
-				</small>
+				<button onclick="authorize42Intra()" id="login42" class="btn btn-primary mt-3" type="button">Sign in with 42</button>
+				<button id="request_registration" class="btn btn-primary mt-3" type="button">Sign up with email</button>
 			</div>
 		</div>
 		`;
@@ -164,11 +124,11 @@ function update_nav(i) {
 		document.querySelector('#logout').innerText = 'Logout';
 		document.querySelector('#profile').innerText = 'Profile';
 		document.querySelector('#login_request').innerText = '';
-		document.querySelector('#request_registration').innerText = '';
+		// document.querySelector('#request_registration').innerText = '';
 	} else {
 		document.querySelector('#logout').innerText = '';
 		document.querySelector('#profile').innerText = '';
 		document.querySelector('#login_request').innerText = 'Login';
-		document.querySelector('#request_registration').innerText = 'Register';
+		// document.querySelector('#request_registration').innerText = 'Register';
 	}
 }

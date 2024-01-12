@@ -1,55 +1,40 @@
+ipAddress = '10.12.2.11';
 
+function authorize42Intra() {
+    const clientId = 'u-s4t2ud-3f913f901b795282d0320691ff15f78cc9e125e56f6d77a9c26fc17a15237ac1';
+    const redirectUri = `http://${ipAddress}:8000`
+    const authorizationEndpoint = 'https://api.intra.42.fr/oauth/authorize';
 
-function showProfile(i) {
-	fetch('/profile')
-		.then(response => response.json())
-		.then(data => {
-			console.log(data);
-			profilePage(data);
-			if (i === 1) {
-				topAlert("update successful!", 'success');
-			}
+    // Generate a random state to include in the authorization request
+    const state = Math.random().toString(36).substring(7);
 
-		})
-		.catch(error => console.error('Error fetching profile data:', error));
+    // Construct the authorization URL
+    const authUrl = `${authorizationEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&response_type=code`;
+
+    // Redirect the user to the 42 authorization page
+    window.location.href = authUrl;
 }
 
-function updateProfile() {
-	const formData = new FormData();
-	formData.append('username', document.querySelector('#updateUsername').value);
-	formData.append('email', document.querySelector('#updateEmail').value);
-	formData.append('image', document.querySelector('#updateImage').files[0]);
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
 
-	fetch('/update_profile/', {
-		method: 'POST',
-		body: formData,
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-		if (data.success) {
-			showProfile(1);
-		} else if (data.message == 'No changes detected'){
-			topAlert(data.message, 'info');
-		} 
-		else {
-			if (data.errors.username)
-				showAlert(data.errors.username, 'invalid', '#updateUsername', '#updateFeedback1');
-			else
-				showAlert("looks good", 'valid', '#updateUsername', '#updateFeedback1');
-			if (data.errors.email)
-				showAlert(data.errors.email, 'invalid', '#updateEmail', '#updateFeedback2');
-			else
-				showAlert("looks good", 'valid', '#updateEmail', '#updateFeedback2');
-			if (data.errors.image)
-				showAlert(data.errors.image, 'invalid', '#updateImage', '#updateFeedback3');
-			else
-				showAlert("looks good", 'valid', '#updateImage', '#updateFeedback3');
-		}
-	})
-	.catch(error => {
-		console.error('Error:', error);
-	});
+if (code) {
+    // Exchange code for access token using the Django backend
+    fetch(`http://${ipAddress}:8000/exchange-code?code=${code}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Handle the response from your Django server
+            if (data.success) {
+                localStorage.setItem('authToken', data.token);
+                // topAlert(data.message, 'success');
+                loginPage();
+                update_nav(1);
+            }
+        })
+        .catch(error => {
+            console.error('Error exchanging code for access token:', error);
+        });
 }
 
 function handleButtonClick(event) {
@@ -81,3 +66,5 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     document.body.addEventListener('click', handleButtonClick);
 });
+
+home_page();

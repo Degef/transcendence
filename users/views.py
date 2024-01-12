@@ -5,29 +5,77 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.authtoken.models import Token
 from .models import Profile
+import requests
+from urllib.parse import unquote
+
+def fix_profile_image_link(link):
+    decoded_link = unquote(link) # Decode the URL to replace %3A with :    
+    fixed_link = decoded_link.replace('/media/', '')  # Remove the unwanted part '/media/'
+    return fixed_link
+
+def exchange_code(request):
+    code = request.GET.get('code')
+
+    token_url = 'https://api.intra.42.fr/oauth/token'
+    client_id = 'u-s4t2ud-3f913f901b795282d0320691ff15f78cc9e125e56f6d77a9c26fc17a15237ac1'
+    client_secret = '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'
+    redirect_uri = 'http://10.12.2.11:8000'
+    grant_type = 'authorization_code'
+
+    # Request parameters
+    params = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'grant_type': grant_type,
+    }
+
+    # # Exchange code for access token using POST request
+    token_response = requests.post(token_url, data=params).json()
+    if 'access_token' in token_response:
+        access_token = token_response['access_token']
+        user_url = 'https://api.intra.42.fr/v2/me'
+        user_response = requests.get(user_url, headers={'Authorization': f'Bearer {access_token}'}).json()
+
+        # Now you have user data, you can use it as needed
+        user_name = user_response['login']
+        user_email = user_response['email']
+
+        # Check if a user with the same username already exists
+        existing_user = User.objects.filter(username=user_name).first()
+
+        if existing_user:
+            login(request, existing_user)
+            return JsonResponse({'success': True, 'message': 'User already exists'})
+
+        img_url = user_response['image']['versions']['small']
+        # Create a new user
+        user = User.objects.create(username=user_name, email=user_email)
+        profile = user.profile
+        profile.image = img_url
+
+        profile.save()
+        login(request, user)
+        return JsonResponse({'success': True, 'message': 'User created successfully.'})
+
+    return JsonResponse({'success': False, 'error': 'Failed to obtain access token'})
+
 
 def profile(request):
-    # Assuming the user is authenticated
     if request.user.is_authenticated:
         try:
-            # Fetch the user profile including the profile picture
             user_data = User.objects.filter(pk=request.user.pk).values(
                 'id', 'username', 'first_name', 'last_name', 'email', 'profile')[0]
-
-            # Fetch the related Profile
             user_profile = Profile.objects.get(pk=user_data['profile'])
-            user_data['image_url'] = user_profile.image.url
-
-            # Convert the serialized JSON to a Python list/dictionary
-            # data = {'users': [user_data]}
-
-            # Return JSON response with user data
+            if ("42.fr" in user_profile.image.url):
+                user_data['image_url'] = fix_profile_image_link(user_profile.image.url)
+            else:
+                user_data['image_url'] = user_profile.image.url
             return JsonResponse(user_data, safe=False)
         except Profile.DoesNotExist:
-            # Handle the case where the related UserProfile does not exist
             return JsonResponse({'error': 'UserProfile does not exist for the user'}, status=404)
     else:
-        # Handle the case where the user is not authenticated
         return JsonResponse({'error': 'User not authenticated'}, status=401)
 
 @csrf_exempt
