@@ -19,7 +19,7 @@ def exchange_code(request):
     token_url = 'https://api.intra.42.fr/oauth/token'
     client_id = 'u-s4t2ud-3f913f901b795282d0320691ff15f78cc9e125e56f6d77a9c26fc17a15237ac1'
     client_secret = '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'
-    redirect_uri = 'http://10.12.2.11:8000'
+    redirect_uri = 'http://10.11.1.13:8000'
     grant_type = 'authorization_code'
 
     # Request parameters

@@ -100,3 +100,16 @@ footer {
 	color:  #f44336;
 	/* margin-bottom: 15px; */
 }
+
+#canvas {
+    background-color: black;
+    border: 2px solid white;
+    margin: auto;
+    display: block;
+}
+
+#score_board {
+    text-align: center;
+    font-size: 30px;
+    font-family: monospace;
+}

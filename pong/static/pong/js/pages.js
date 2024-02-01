@@ -86,6 +86,8 @@ function loginPage() {
 		<p class="lead">This is a simple web application that allows you to create and participate in Ping Pong tournaments online.</p>
 		<hr class="my-4">
 		<p>You are logged in!</p>
+		<button id="withFriendBtn" class="btn btn-primary btn-lg btn-block">Play with a friend</button>
+		<button id="withMachineBtn" class="btn btn-secondary btn-lg btn-block">Play with machine</button>
 	</div>
 	`;
 }

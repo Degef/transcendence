@@ -26,11 +26,12 @@ SECRET_KEY = 'django-insecure-f&izm3ng$m#gzfo94*&^u82397#i&ilmrt!devk$30op(s25+&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.12.2.11', 'localhost', ]
+ALLOWED_HOSTS = ['localhost', '10.11.1.13', '10.11.2.14' ]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
     'users',
     'rest_framework.authtoken',
 ]
+
+ASGI_APPLICATION = 'transcendence.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,7 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'transcendence.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

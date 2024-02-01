@@ -1,4 +1,4 @@
-ipAddress = '10.12.2.11';
+ipAddress = '10.11.1.13';
 
 function authorize42Intra() {
     const clientId = 'u-s4t2ud-3f913f901b795282d0320691ff15f78cc9e125e56f6d77a9c26fc17a15237ac1';
@@ -37,6 +37,26 @@ if (code) {
         });
 }
 
+function withFriendPage() {
+    document.querySelector('#content').innerHTML = `
+	<div class="jumbotron">
+        <p id="score_board">
+            <span>Score</span>
+            <br>
+            <span> <span id="score1">0</span> : <span id="score2">0</span></span>
+        </p>
+        <canvas id="canvas" width="600" height="400"></canvas>
+        <div class="d-flex justify-content-center">
+            <button id="start" class="btn btn-primary m-3">start</button>
+            <button id="pause" class="btn btn-primary m-3">pause</button>
+            <button id="reset" class="btn btn-primary m-3">reset</button>
+        </div>
+	</div>
+	`;
+    startGame();
+}
+
+
 function handleButtonClick(event) {
 	if (event.target.id === 'profile')
 		showProfile();
@@ -56,6 +76,17 @@ function handleButtonClick(event) {
 		logoutUser();
 	else if (event.target.id === 'update')
 		updateProfile();
+    else if (event.target.id === 'withFriendBtn')
+        withFriendPage();
+    else if (event.target.id === 'withMachineBtn') {
+        withMachinePage();
+    }
+    // else if (event.target.id === 'start')
+    //     startGame();
+    // else if (event.target.id === 'pause')
+    //     pauseGame();
+    // else if (event.target.id === 'reset')
+    //     resetGame();
 }
 
 document.addEventListener("DOMContentLoaded", function() {
