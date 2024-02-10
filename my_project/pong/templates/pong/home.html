@@ -1,0 +1,17 @@
+
+{% extends 'pong/base.html' %}
+
+{% block content %}
+	{% for game in games %}
+		<article class="media content-section">
+			<div class="media-body">
+					<div class="article-metadata">
+						<small class="text-muted">played on {{game.date|date:"F d, Y"}}</small>
+					</div>
+				<h3><a class="article-title" href="#">{{ game.player1 }}</a> Vs <a class="article-title" href="#">{{ game.player2 }}</a></h3>
+				<p class="article-content">{{ game.winner }} won the game</p>
+				<p>{{ game.player1 }}: {{ game.player1_score }}, {{ game.player2 }}: {{ game.player2_score }}</p>
+			</div>
+		</article>
+	{% endfor %}
+{% endblock %}
