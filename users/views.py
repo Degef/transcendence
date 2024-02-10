@@ -5,6 +5,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 
+def pre_register(request):
+    return render(request, 'users/pre_register.html')
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
