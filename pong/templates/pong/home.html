@@ -8,9 +8,17 @@
 					<div class="article-metadata">
 						<small class="text-muted">played on {{game.date|date:"F d, Y"}}</small>
 					</div>
-				<h3><a class="article-title" href="#">{{ game.player1 }}</a> Vs <a class="article-title" href="#">{{ game.player2 }}</a></h3>
-				<p class="article-content">{{ game.winner }} won the game</p>
-				<p>{{ game.player1 }}: {{ game.player1_score }}, {{ game.player2 }}: {{ game.player2_score }}</p>
+				<h3>
+					<img class="rounded-circle article-img" src="{{game.player1.profile.image.url}}">
+					<a class="article-title" href="#">{{ game.player1 }}</a> 
+					Vs 
+					<img src="{{game.player2.profile.image.url}}" class="rounded-circle article-img">
+					<a class="article-title" href="#">{{ game.player2 }}</a></h3>
+					<p>{{ game.player1 }}: {{ game.player1_score }}, {{ game.player2 }}: {{ game.player2_score }}</p>
+				<h3 style="font-size: 1.5rem; color: green; font-weight: bold; text-decoration: underline;">
+					{{ game.winner }} won the game!
+				  </h3>
+				  
 			</div>
 		</article>
 	{% endfor %}

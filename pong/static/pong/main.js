@@ -152,6 +152,26 @@ function profile() {
     });
 }
 
+function update() {
+    const form = document.getElementById('profile-form');
+    const formData = new FormData(form);
+
+    fetch('/profile/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        const newContent = doc.getElementById('content');
+        document.getElementById('content').innerHTML = newContent.innerHTML;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 function handleButtonClick(event) {
 	if (event.target.id === 'about')
 		aboutPage();
@@ -174,6 +194,10 @@ function handleButtonClick(event) {
     }
     else if (event.target.id === 'profile') {
         profile();
+    }
+    else if (event.target.id === 'update') {
+        event.preventDefault();
+        update();
     }
 }
  
