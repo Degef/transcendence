@@ -19,3 +19,9 @@ class Profile(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+class user_things(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, default='offline')
+    def __str__(self):
+        return f'{self.user.username} things'
