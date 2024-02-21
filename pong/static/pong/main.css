@@ -67,6 +67,12 @@ footer {
     margin-right: 16px;
 }
 
+.article-img3 {
+    height: 100px;
+    width: 100px;
+    margin-right: 5px;
+}
+
 .article-metadata {
     padding-bottom: 1px;
     margin-bottom: 4px;
@@ -86,4 +92,9 @@ footer {
     border: 1px solid #dddddd;
     border-radius: 3px;
     margin-bottom: 20px;
+}
+
+.custom-btn {
+    background-color: #3e378d;
+    color: #fff;
 }

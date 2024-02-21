@@ -5,14 +5,32 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 import requests
-from urllib.parse import unquote
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 from .models import Profile
 from pong.models import Game
+from django.contrib.auth.views import LoginView
 
+
+
+class CustomLoginView(LoginView):
+    template_name = 'users/login.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'users/login.html', {'form': self.get_form()})
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            context = {
+                'games': Game.objects.all()
+            }
+            login(request, form.get_user())
+            return render(request, 'users/home.html', context)
+        else:
+            return render(request, 'users/login.html', {'form': form})
 
 def pre_register(request):
     return render(request, 'users/pre_register.html')
@@ -38,10 +56,12 @@ def profile(request):
 
         new_image = request.FILES.get('image')
         old_image_path = request.user.profile.image.path if request.user.profile.image else None
+        print('new_image:', new_image)
 
         if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
+            print('forms are valid')
             p_form.save()
+            u_form.save()
 
             if new_image and old_image_path:
                 if 'default.png' not in old_image_path:
@@ -60,14 +80,10 @@ def profile(request):
 
     context = {
         'u_form': u_form,
-        'p_form': p_form
+        'p_form': p_form,
+        'status': request.user.user_things.status
     }
     return render(request, 'users/profile.html', context)
-
-# def fix_profile_image_link(link):
-#     decoded_link = unquote(link) # Decode the URL to replace %3A with :    
-#     fixed_link = decoded_link.replace('/media/', '')  # Remove the unwanted part '/media/'
-#     return fixed_link
 
 def exchange_code(request):
     code = request.GET.get('code')
@@ -105,7 +121,7 @@ def exchange_code(request):
 
         if existing_user:
             login(request, existing_user)
-            return render(request, 'pong/home.html', context)
+            return render(request, 'users/home.html', context)
 
         img_url = user_response['image']['versions']['small']
         # Create a new user
@@ -114,8 +130,48 @@ def exchange_code(request):
         img_temp.write(requests.get(img_url).content)
         img_temp.flush()
         login(request, user)
-        text = render(request, 'pong/home.html', context)
+        text = render(request, 'users/home.html', context)
         existing_profile = Profile.objects.filter(user=user).first()
         existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
         return text
     return render(request, 'pong/home.html', context)
+
+def get_users(request):
+    users = User.objects.exclude(username=request.user.username)
+    friends = request.user.user_things.friends.values_list('username', flat=True)
+    friends2 = request.user.user_things.friends.all()
+
+    context = {
+        'users': users,
+        'friends': friends,
+        'friends2': friends2
+    }
+    return render(request, 'users/users.html', context)
+
+def add_friend(request, username):
+    user = User.objects.get(username=username)
+    request.user.user_things.add_friend(user)
+    users = User.objects.exclude(username=request.user.username)
+    friends = request.user.user_things.friends.values_list('username', flat=True)
+    friends2 = request.user.user_things.friends.all()
+
+    context = {
+        'users': users,
+        'friends': friends,
+        'friends2': friends2
+    }
+    return render(request, 'users/users.html', context)
+
+def remove_friend(request, username):
+    user = User.objects.get(username=username)
+    request.user.user_things.remove_friend(user)
+    users = User.objects.exclude(username=request.user.username)
+    friends = request.user.user_things.friends.values_list('username', flat=True)
+    friends2 = request.user.user_things.friends.all()
+
+    context = {
+        'users': users,
+        'friends': friends,
+        'friends2': friends2
+    }
+    return render(request, 'users/users.html', context)

@@ -11,8 +11,8 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
-        img = Image.open(self.image.path)
         super().save(*args, **kwargs)
+        img = Image.open(self.image.path)
 
         img = Image.open(self.image.path)
         if (img.height > 300 or img.width > 300):
@@ -23,5 +23,13 @@ class Profile(models.Model):
 class user_things(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, default='offline')
+    friends = models.ManyToManyField(User, blank=True, default=None, related_name='friends')
+
+    def add_friend(self, friend):
+        self.friends.add(friend)
+    
+    def remove_friend(self, friend):
+        self.friends.remove(friend)
+        
     def __str__(self):
         return f'{self.user.username} things'

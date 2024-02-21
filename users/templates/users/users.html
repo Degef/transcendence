@@ -1,0 +1,42 @@
+
+{% extends 'pong/base2.html' %}
+
+{% block content %}
+
+	<h2>Friends</h2>
+	{% for friend in friends2 %}
+		<article class="media content-section">
+			<div class="media-body row"> 
+				<div class="col-md-3 align-bottom" >
+					<img class=" article-img3" src="{{friend.profile.image.url}}">
+				</div>
+				<div class="col-md-6">
+					<p> Name: {{friend.username}}</p>
+					<p> Status: {{friend.user_things.status}} </p>
+				</div>
+				<div class="col-md-3">
+					<button class="btn btn-outline-danger align-center" onclick="removeFriend('{{friend.username}}')" >Remove Friend</button>					
+				</div>
+			</div>
+		</article>
+	{% endfor %}
+	<h2>Users</h2>
+	{% for user in users %}			
+		{% if user.username not in friends %}
+			<article class="media content-section">
+					<div class="media-body row"> 
+						<div class="col-md-3 align-bottom" >
+							<img class=" article-img3" src="{{user.profile.image.url}}">
+						</div>
+						<div class="col-md-5">
+							<p>Name: {{user.username}}</p>
+							<p> Status: {{user.user_things.status}} </p>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<button class="btn btn-outline-success" onclick="addFriend('{{user.username}}')" >Add Friend</button>
+					</div>
+			</article>
+		{% endif %}								  
+	{% endfor %}
+{% endblock %}
