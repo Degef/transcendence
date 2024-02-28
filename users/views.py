@@ -28,7 +28,7 @@ class CustomLoginView(LoginView):
                 'games': Game.objects.all()
             }
             login(request, form.get_user())
-            return render(request, 'users/home.html', context)
+            return render(request, 'pong/home.html', context)
         else:
             return render(request, 'users/login.html', {'form': form})
 
@@ -121,7 +121,7 @@ def exchange_code(request):
 
         if existing_user:
             login(request, existing_user)
-            return render(request, 'users/home.html', context)
+            return render(request, 'pong/home.html', context)
 
         img_url = user_response['image']['versions']['small']
         # Create a new user
@@ -130,7 +130,7 @@ def exchange_code(request):
         img_temp.write(requests.get(img_url).content)
         img_temp.flush()
         login(request, user)
-        text = render(request, 'users/home.html', context)
+        text = render(request, 'pong/home.html', context)
         existing_profile = Profile.objects.filter(user=user).first()
         existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
         return text

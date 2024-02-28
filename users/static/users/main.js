@@ -38,18 +38,18 @@ window.onpopstate = function (event) {
         aboutPage(0);
     else if (event.state['path'] == '/profile/')
         profile(0);
-    else if (event.state['path'] == '/register/')
-        register(0); 
-    else if (event.state['path'] == '/login/')
-        login(0); 
+    // else if (event.state['path'] == '/register/')
+    //     register(0); 
+    // else if (event.state['path'] == '/login/')
+    //     login(0); 
     else if (event.state['path'] == '/update/') 
         update(0);
     else if (event.state['path'] == '/pre_register/')
         pre_register(0);
     else if (event.state['path'] == '/loginWith42/')
         authorize42Intra(0);
-    else if (event.state['path'] == '/logout/')
-        logout(0);
+    // else if (event.state['path'] == '/logout/')
+    //     logout(0);
     else if (event.state['path'] == '/get_users/')
         getUsers(0);
     else

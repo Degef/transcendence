@@ -7,7 +7,7 @@ def home(request):
         'games': Game.objects.all()
     }
     if request.user.is_authenticated:
-        return render(request, 'users/home.html', context)
+        return render(request, 'pong/home.html', context)
     else:
         return render(request, 'pong/home.html', context)
 

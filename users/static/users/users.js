@@ -140,7 +140,7 @@ function register(back_or_forward = 1) {
         updateContent(htmlContent);
         if (back_or_forward == 0)
             return    
-        updateURL('/register/');
+        // updateURL('/register/');
     })
     .catch(error => {
         console.error('Error:', error);
@@ -160,7 +160,7 @@ function login(back_or_forward = 1) {
         updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
-        updateURL('/login/');
+        // updateURL('/login/');
     })
     .catch(error => {
         console.error('Error:', error);
@@ -237,7 +237,7 @@ function update(back_or_forward = 1) {
         updateContent(htmlContent);
         if (back_or_forward == 0)
             return    
-        updateURL('/profile/');
+        // updateURL('/profile/');
     })
     .catch(error => {
         console.error('Error:', error);
@@ -275,7 +275,7 @@ function addFriend(name, back_or_forward) {
         updateContent(htmlContent);
         if (back_or_forward == 0)
             return  
-        updateURL(`/add_friend/${name}`);
+        // updateURL(`/add_friend/${name}`);
     })
     .catch(error => {
         console.error('Error:', error);
@@ -294,7 +294,7 @@ function removeFriend(name, back_or_forward) {
         updateContent(htmlContent);
         if (back_or_forward == 0)
             return
-        updateURL(`/remove_friend/${name}`);
+        // updateURL(`/remove_friend/${name}`);
     })
     .catch(error => {
         console.error('Error:', error);
