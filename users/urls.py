@@ -6,6 +6,7 @@ from users.views import CustomLoginView
 urlpatterns = [
     path('pre_register/', views.pre_register, name='pre_register'),
     path('register/', views.register, name='register'),
+    path('get_ipaddress/', views.get_ipaddress, name='get_ipaddress'),
     path('profile/', views.profile, name='profile'),
     path('get_users/', views.get_users, name='get_users'),
     path('login/', CustomLoginView.as_view(), name='login'),

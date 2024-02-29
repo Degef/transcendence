@@ -11,8 +11,9 @@
 					<img class=" article-img3" src="{{friend.profile.image.url}}">
 				</div>
 				<div class="col-md-6">
-					<p> Name: {{friend.username}}</p>
-					<p> Status: {{friend.user_things.status}} </p>
+					<p class="text-muted"> Name: {{friend.username}}</p>
+					<p class="text-muted"> Status: {{friend.user_things.status}} </p>
+					<p class="text-muted"> Date Joined: {{user.date_joined|date:"d M, Y"}}</p>
 				</div>
 				<div class="col-md-3">
 					<button class="btn btn-outline-danger align-center" onclick="removeFriend('{{friend.username}}')" >Remove Friend</button>					
@@ -28,13 +29,14 @@
 						<div class="col-md-3 align-bottom" >
 							<img class=" article-img3" src="{{user.profile.image.url}}">
 						</div>
-						<div class="col-md-5">
-							<p>Name: {{user.username}}</p>
-							<p> Status: {{user.user_things.status}} </p>
+						<div class="col-md-6">
+							<p class="text-muted"> Name: {{user.username}}</p>
+							<p class="text-muted"> Status: {{user.user_things.status}} </p>
+							<p class="text-muted"> Date Joined: {{user.date_joined|date:"d M, Y"}}</p>
 						</div>
-					</div>
-					<div class="col-md-3">
-						<button class="btn btn-outline-success" onclick="addFriend('{{user.username}}')" >Add Friend</button>
+						<div class="col-md-3">
+							<button class="btn btn-outline-success" onclick="addFriend('{{user.username}}')" >Add Friend</button>
+						</div>
 					</div>
 			</article>
 		{% endif %}								  

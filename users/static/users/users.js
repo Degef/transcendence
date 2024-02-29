@@ -1,10 +1,34 @@
 
 const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
-const ip  = '10.13.7.13'
 
-if (code) {
-    fetch(`http://${ip}:8000/exchange_code?code=${code}`, 
+config = {
+    'ipaddress': '',
+    'client_id': '',
+    'redirectUri': '',
+    'secret': '',
+};
+
+if (config.ipaddress == '') {
+    get_ipaddress();
+}
+
+function get_ipaddress() {
+    fetch('/get_ipaddress/')
+        .then(response => response.json())
+        .then(data => {
+            config.ipaddress = data.ip;
+            config.client_id = data.client_id;
+            config.secret = data.secret;
+            config.redirect_uri = data.redirect_uri;
+            if (code != null) {
+                loginWith42();
+            }
+        });
+}
+
+function loginWith42() {
+    fetch(`http://${config.ipaddress}:8000/exchange_code?code=${code}`, 
         {
             method: 'GET',
             headers: {
@@ -16,7 +40,7 @@ if (code) {
             updateBody(htmlContent);
             if (back_or_forward == 0)
                 return  
-            updateURL(`http://${ip}:8000/exchange_code?code=${code}`);
+            updateURL(`http://${config.ipaddress}:8000/exchange_code?code=${code}`);
         })
         .catch(error => {
             console.error('Error exchanging code for access token:', error);
@@ -24,8 +48,8 @@ if (code) {
 }
 
 function authorize42Intra() {
-    const clientId = 'u-s4t2ud-3f913f901b795282d0320691ff15f78cc9e125e56f6d77a9c26fc17a15237ac1';
-    const redirectUri = `http://10.13.7.13:8000`
+    const clientId = config.client_id;
+    const redirectUri = config.redirect_uri;
     const authorizationEndpoint = 'https://api.intra.42.fr/oauth/authorize';
 
     const state = Math.random().toString(36).substring(7); // Generate a random state to include in the authorization request

@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from .models import Game
-from django.contrib.auth.models import User
 
 def home(request):
     context = {

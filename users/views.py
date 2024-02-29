@@ -12,7 +12,22 @@ from django.core.files import File
 from .models import Profile
 from pong.models import Game
 from django.contrib.auth.views import LoginView
+from dotenv import load_dotenv
+import os
+from django.http import JsonResponse
 
+load_dotenv()
+
+def get_ipaddress(request):
+    ip  = os.environ.get('IP_ADDRESS')
+    data = {
+        'ip': ip,
+        'client_id': os.environ.get('UID_42'),
+        'redirect_uri': 'http://' + ip + ':8000',
+        'secret': os.environ.get('SECRET_42'),
+    }
+    return JsonResponse(data)
+    
 
 
 class CustomLoginView(LoginView):
@@ -87,11 +102,12 @@ def profile(request):
 
 def exchange_code(request):
     code = request.GET.get('code')
+    ip  = os.environ.get('IP_ADDRESS')
 
     token_url = 'https://api.intra.42.fr/oauth/token'
-    client_id = 'u-s4t2ud-3f913f901b795282d0320691ff15f78cc9e125e56f6d77a9c26fc17a15237ac1'
-    client_secret = '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'
-    redirect_uri = 'http://10.13.7.13:8000'
+    client_id = os.environ.get('UID_42')
+    client_secret = os.environ.get('SECRET_42')
+    redirect_uri = 'http://' + ip + ':8000'
     grant_type = 'authorization_code'
 
     # Request parameters
