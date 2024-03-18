@@ -1,5 +1,6 @@
 
 function handleButtonClick(event) {
+    console.log('handleButtonClick')
     const buttonFunctions = {
         'about': aboutPage,
         'home': homePage,

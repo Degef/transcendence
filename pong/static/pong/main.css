@@ -1,12 +1,12 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #130028;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #333;
+    background-color: #0D011A;
     color: #fff;
     padding: 1em;
 }
@@ -17,15 +17,6 @@ h1 {
 
 main {
     padding: 2em;
-}
-
-footer {
-    background-color: #333;
-    color: #fff;
-    padding: 1em;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
 }
 
 .button-container {
@@ -87,14 +78,61 @@ footer {
 }
 
 .content-section {
-    background: #ffffff;
+    background: #070014;
     padding: 10px 20px;
     border: 1px solid #dddddd;
     border-radius: 3px;
     margin-bottom: 20px;
 }
 
-.custom-btn {
-    background-color: #3e378d;
+#login-section {
+    background-color: #ebf7fb;
+    padding-left: 80px;
+    padding-right: 80px;
+    padding-top: 60px;
+}
+
+#login-section-inside {
+    padding: 20px;
+}
+
+.login-section {
+    padding: 60px;
+}
+
+#sidebar {
+    color: #e3e3e3;
+    background-color: #130028;
+    text-align: center;
+}
+
+.light-weight {
+    color: #5488b3;
+}
+/* text-shadow: 1px 1px 8px rgb(81, 81, 81); */
+
+.left {
+    width: 60%;
+    height: 100vh;
+    float: left;
+    background-color: #ebf7fb;
+    margin: 0;
+}
+
+.right {
+    width: 40%;
+    height: 100vh;
+    float: left;
+    background-color: #070014; 
     color: #fff;
+    margin: 0;
+}
+
+.custom-btn {
+    background-color: #2d376e;
+    color: #fff;
+}
+
+.stylish {
+    font-family:'Courier New', Courier, monospace;
 }

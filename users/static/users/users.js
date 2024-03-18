@@ -84,7 +84,7 @@ function getUsers(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         updateURL('/get_users/');
@@ -103,7 +103,7 @@ function aboutPage(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         updateURL('/about/');
@@ -141,7 +141,7 @@ function req_registration_page(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         updateURL('/register/');
@@ -161,7 +161,7 @@ function register(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         // updateURL('/register/');
@@ -200,7 +200,7 @@ function req_login_page(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         updateURL('/login/');
@@ -238,7 +238,7 @@ function profile(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         updateURL('/profile/');
@@ -258,7 +258,7 @@ function update(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         // updateURL('/profile/');
@@ -277,7 +277,7 @@ function pre_register(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return    
         updateURL('/pre_register/');
@@ -296,7 +296,7 @@ function addFriend(name, back_or_forward) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return  
         // updateURL(`/add_friend/${name}`);
@@ -315,7 +315,7 @@ function removeFriend(name, back_or_forward) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateContent(htmlContent);
+        updateBody(htmlContent);
         if (back_or_forward == 0)
             return
         // updateURL(`/remove_friend/${name}`);

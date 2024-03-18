@@ -13,4 +13,22 @@
             <p>Our mission is to create a vibrant and competitive platform for Ping Pong enthusiasts worldwide. Dive into the app, compete in tournaments, and enjoy the thrill of the game!</p>
     </div>
 {% endblock %}
-					
+
+{% block content1 %}
+    <h3>Our Sidebar</h3>
+    <p class='text-muted'>You can put any information here you'd like.
+        <ul class="list-group">
+            {% if user.is_authenticated %}
+            <button id="get_users" class="m-1  btn btn-primary custom-btn">Get Users</button>
+            <button id="latest_games" class="m-1  btn btn-primary custom-btn">Latest Games</button>
+            <button id="Calendars" class="m-1  btn btn-primary custom-btn">Calendars</button>
+            <button id="etc" class="m-1  btn btn-primary custom-btn">etc</button>
+            {% else %}
+            <li class="list-group-item list-group-item-light">Latest Games</li>
+            <li class="list-group-item list-group-item-light">Announcements</li>
+            <li class="list-group-item list-group-item-light">Calendars</li>
+            <li class="list-group-item list-group-item-light">etc</li>
+            {% endif %}
+        </ul>
+    </p>
+{% endblock %}
