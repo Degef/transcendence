@@ -12,4 +12,4 @@ down:
 
 clean:
 	docker compose down
-	docker rm $(docker ps -a -q) -f
+	docker rm -f $(docker ps -a -q)
