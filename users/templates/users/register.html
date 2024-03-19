@@ -5,27 +5,39 @@
 {%block login%}
     <div class="left">
         <div  id="login-section">
-            <form id="login-form" method="POST">
-                {% csrf_token %}
-                <fieldset class="form-group">
-                    <legend class="border-bottom mb-4">Join Today</legend>
-                    {% load crispy_forms_tags %}
-                    {{ form|crispy }}
-                </fieldset>
-                <div class="form-group text-center">
-                    <button id="login" class="btn custom-btn">Sign Up</button>
+            <div id="login-section-inside">
+                <form id="registration-form" method="POST">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Join Today</legend>
+                        {% load crispy_forms_tags %}
+                        {{ form|crispy }}
+                    </fieldset>
+                    <div class="form-group text-center">
+                        <button id="register" class="btn custom-btn">Sign Up</button>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col"> <hr> </div>
+                    <div class="col-auto light-weight">or</div>
+                    <div class="col"><hr> </div>
                 </div>
-            </form>
-            <div class="border-top pt-3">
-                <small class="text-muted">
-                    Already Have An Account? <a id="req_login" class="ml-2" href="#">Login</a>
-                </small>
+                <div class="text-center">
+                    <button class="btn custom-btn btn-block mb-4"> <img class="article-img2" src="/media/42_logo.svg"> Continue with 42 </button>
+                </div>
+                <div class="border-top pt-3">
+                    <small class="text-muted">
+                        Already Have An Account? <a id="req_login" class="ml-2" href="#">Login</a>
+                    </small>
+                </div>
             </div>
         </div>
     </div>
     <div class="right">
         <div class="login-section">
-            <legend class="mb-1 font-weight-bold text-center">Hey There </legend>
+            <div class="text-center">
+                <img src="/media/logo.png" alt="" class="text-center">
+            </div>
             <p class="light-weight">To keep connected with us please sign up with your personal info</p>
 
             <legend class="stylish">&ltServe It&gt <br>&ltSmash It&gt<br>&ltand Win It!&gt</legend>

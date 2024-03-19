@@ -1,6 +1,7 @@
 
 function handleButtonClick(event) {
     console.log('handleButtonClick')
+    console.log(event.target)
     const buttonFunctions = {
         'about': aboutPage,
         'home': homePage,
@@ -39,10 +40,10 @@ window.onpopstate = function (event) {
         aboutPage(0);
     else if (event.state['path'] == '/profile/')
         profile(0);
-    // else if (event.state['path'] == '/register/')
-    //     register(0); 
-    // else if (event.state['path'] == '/login/')
-    //     login(0); 
+    else if (event.state['path'] == '/register/')
+        register(0); 
+    else if (event.state['path'] == '/login/')
+        login(0); 
     else if (event.state['path'] == '/update/') 
         update(0);
     else if (event.state['path'] == '/pre_register/')

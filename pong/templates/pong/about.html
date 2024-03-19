@@ -1,34 +1,27 @@
 
 {% extends 'pong/base.html' %}
-{% block content %}
-	<div class="jumbotron">
-        <p> <strong> Welcome to the Ping Pong Tournament App!</strong> This app is crafted for Ping Pong enthusiasts to experience the excitement of tournaments online.</p>
-            <h2>Features:</h2>
-            <ul class="list-container">
-                <li>Participate in online multiplayer Ping Pong tournaments</li>
-                <li>Intuitive and user-friendly interface</li>
-                <li>Real-time scoring and detailed game statistics</li>
-            </ul>
-            
-            <p>Our mission is to create a vibrant and competitive platform for Ping Pong enthusiasts worldwide. Dive into the app, compete in tournaments, and enjoy the thrill of the game!</p>
-    </div>
-{% endblock %}
 
-{% block content1 %}
-    <h3>Our Sidebar</h3>
-    <p class='text-muted'>You can put any information here you'd like.
-        <ul class="list-group">
-            {% if user.is_authenticated %}
-            <button id="get_users" class="m-1  btn btn-primary custom-btn">Get Users</button>
-            <button id="latest_games" class="m-1  btn btn-primary custom-btn">Latest Games</button>
-            <button id="Calendars" class="m-1  btn btn-primary custom-btn">Calendars</button>
-            <button id="etc" class="m-1  btn btn-primary custom-btn">etc</button>
-            {% else %}
-            <li class="list-group-item list-group-item-light">Latest Games</li>
-            <li class="list-group-item list-group-item-light">Announcements</li>
-            <li class="list-group-item list-group-item-light">Calendars</li>
-            <li class="list-group-item list-group-item-light">etc</li>
-            {% endif %}
-        </ul>
-    </p>
-{% endblock %}
+{%block content%}
+    <div class="left">
+        <div  id="login-section">
+            <div class="jumbotron">
+                <p> <strong> Welcome to the Ping Pong Tournament App!</strong> This app is crafted for Ping Pong enthusiasts to experience the excitement of tournaments online.</p>
+                    <h2>Features:</h2>
+                    <ul class="list-container">
+                        <li>Participate in online multiplayer Ping Pong tournaments</li>
+                        <li>Intuitive and user-friendly interface</li>
+                        <li>Real-time scoring and detailed game statistics</li>
+                    </ul>
+                    
+                    <p>Our mission is to create a vibrant and competitive platform for Ping Pong enthusiasts worldwide. Dive into the app, compete in tournaments, and enjoy the thrill of the game!</p>
+            </div>            
+        </div>
+    </div>
+    <div class="right">
+        <div class="login-section">
+            <legend class="mb-1 font-weight-bold text-center">Welcome Back!</legend>
+            <p class="light-weight">To keep connected with us please login with your personal info</p>
+            <legend class="stylish">&ltServe It&gt <br>&ltSmash It&gt<br>&ltand Win It!&gt</legend>
+        </div>
+    </div>
+{%endblock%}

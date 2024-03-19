@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #130028;
+    background-color: #0D011A;
     margin: 0;
     padding: 0;
 }
@@ -75,25 +75,32 @@ main {
     width: 125px;
     margin-right: 20px;
     margin-bottom: 16px;
+    border: 4px solid #370863;
 }
 
 .content-section {
-    background: #070014;
-    padding: 10px 20px;
-    border: 1px solid #dddddd;
-    border-radius: 3px;
+    background: #0F3066;
+    color: #fff;
+    padding: 20px 10px;
+    border-radius: 10px;
     margin-bottom: 20px;
 }
 
 #login-section {
     background-color: #ebf7fb;
-    padding-left: 80px;
-    padding-right: 80px;
+    padding-left: 60px;
+    padding-right: 60px;
     padding-top: 60px;
+    display: flex;
+    justify-content: center;
 }
 
 #login-section-inside {
     padding: 20px;
+    max-width: 500px;
+    width: 450px;
+    border: 1px solid #c0c0c0;
+    border-radius: 10px;
 }
 
 .login-section {
@@ -123,16 +130,108 @@ main {
     width: 40%;
     height: 100vh;
     float: left;
-    background-color: #070014; 
+    background-image: linear-gradient(#0D011A, #2c0654); 
+    /* background-color: #0D011A;  */
     color: #fff;
     margin: 0;
+}
+
+.p-left {
+    width: 50%;
+    height: 100vh;
+    float: left;
+    background-color: #0D011A;
+    margin: 0;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.p-right {
+    width: 50%;
+    height: 100vh;
+    float: left;
+    background-color: #0D011A; 
+    color: #fff;
+    margin: 0;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.p-content-section {
+    background: #0F3066;
+    color: #fff;
+    padding: 20px 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .custom-btn {
     background-color: #2d376e;
     color: #fff;
+    border-radius: 20px;
 }
+
+.p-custom-btn {
+    background-color: #0D011A;
+    color: #fff;
+    border-radius: 20px;
+}
+
+.p-custom-btn:hover {
+    background-color: #240348;
+}
+
 
 .stylish {
     font-family:'Courier New', Courier, monospace;
+}
+
+table {
+    width: 100%;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+td {
+    height: 50px;
+    vertical-align: bottom;
+}
+
+/* tpeter's css */
+.container-fluid {
+	/* border: thick double #32a1ce; */
+	margin: 30px;
+	margin-left: 5%;
+}
+
+.navbar-brand{
+	margin-left: 30px;
+}
+
+.container {
+	height: 110px;
+	border-radius: 35px;
+	max-width: 80%;
+	/* border: thick double #32a1ce; */
+	background-color: #0F3066;
+}
+
+.collapse{
+	max-width: 100%;
+	margin-left: 10%;
+	display: flex;
+  	justify-content: space-between;
+}
+
+.nav-link{
+	margin-top: 25px;
+	color: black;
+	font-size: 1.5em;
+	color: #DDEEF1;
 }

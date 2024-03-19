@@ -1,27 +1,142 @@
 {% extends "pong/base.html" %}
 {% load crispy_forms_tags %}
-{% block content %}
-	<div class="content-section">
-		<div class="media">
-			<img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-			<div class="media-body text-left px-4">
-				<h2 class="account-heading">{{ user.username }}</h2>
-				<p class="text-secondary">{{ user.email }}</p>
-				<div>
-					<p class="text-secondary"> status : {{user.user_things.status}}</p>
+
+{% block header %}
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-light rounded-">
+			<div class="container-fluid">
+				<a id="home" class="navbar-brand" href="#" id="home" >
+					<img id="home" src="/media/logo.png" alt='Logo' width="90" height="90">
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+	
+				<div class="container">
+					<div class="col-auto">
+						<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+							<a id="home" class="nav-link active" aria-current="page" href="#"><i id="home" class="fa fa-home" aria-hidden="true" ></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-users" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-trophy" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-comment" aria-hidden="true"></i></a>
+							{% if user.is_authenticated %}
+								<a id="profile"  class="nav-link" href="#"><i id="profile"  class="fa fa-user" aria-hidden="true"></i></a>
+							{% endif %}
+						</div>
+					</div>
 				</div>
 			</div>
+		</nav>		
+	</header>
+{% endblock %}
+
+{% block content %}
+<div class="p-left">
+	<div class= "p-content-section">
+		<div class="text-center">
+			<img class="rounded-circle account-img ml-4" src="{{ user.profile.image.url }}">
+			<h2 class="account-heading">{{ user.username }}</h2>
+			<!-- <div class="media-body text-left px-4">
+				<p class="light-weight">{{ user.email }}</p>
+				<p class="light-weight"> status : {{user.user_things.status}}</p>
+			</div> -->
+			<button class="btn p-custom-btn mt-4" type="submit">Enable 2FA</button> <br>
+			<button id="logout" class="btn p-custom-btn mt-4" type="submit">Log out</button>
 		</div>
-        <form id="profile-form" method="POST" class="form-signin" enctype="multipart/form-data">
+		<form id="profile-form" method="POST" class="form-signin" enctype="multipart/form-data">
 			{% csrf_token %}
 			<fieldset class="form-group text-left px-4">
 				<legend class="border-bottom mb-4">Profile Info</legend>
 				{{ u_form|crispy }}
 				{{ p_form|crispy }}
 			</fieldset>
-			<div class="form-group">
-				<button id="update" class="btn btn-outline-info" type="submit">Update</button>
+			<div class="form-group text-center">
+				<button id="update" class="btn p-custom-btn" type="submit">Update</button>
 			</div>
 		</form>
 	</div>
+</div>
+<div class="p-right">
+	<div class="content-section">
+		<table>
+			<tr>
+				<th>TOTAL MATCH</th>
+				<th>WON</th>
+				<th>LOST</th>
+				<th>WINNING RATE</th>
+				<th>TOTAL POINTS</th>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+		</table>
+		
+	</div>
+	<div class="content-section">
+		<table>
+			<tr>
+				<th>TOTAL MATCH</th>
+				<th>WON</th>
+				<th>LOST</th>
+				<th>WINNING RATE</th>
+				<th>TOTAL POINTS</th>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+			<tr>
+				<td>243</td>
+				<td>123</td>
+				<td>120</td>
+				<td>50%</td>
+				<td>1234</td>
+			</tr>
+		</table>
+		
+	</div>
+</div>
 {% endblock %}

@@ -1,11 +1,30 @@
 
+
+
+
 {% extends 'pong/base.html' %}
 
-{% block content %}
-    <h2>You have been logged out </h2>
-    <div class="border-top pt-3">
-        <small class="text-muted">
-            Log in again <a id="req_login" class="" href="#">Login</a>
-        </small>
+
+{%block login%}
+    <div class="left">
+        <div  id="login-section">
+            <div id="login-section-inside">
+                <h2>You have been logged out </h2>
+                <div class="border-top pt-3">
+                    <small class="text-muted">
+                        Log in again <a id="req_login" class="" href="#">Login</a>
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
-{% endblock %}
+    <div class="right">
+        <div class="login-section">
+            <div class="text-center">
+                <img src="/media/logo.png" alt="" class="text-center">
+            </div>
+            <p class="light-weight">To keep connected with us please login with your personal info</p>
+            <legend class="stylish">&ltServe It&gt <br>&ltSmash It&gt<br>&ltand Win It!&gt</legend>
+        </div>
+    </div>
+{%endblock%}

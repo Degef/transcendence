@@ -114,6 +114,7 @@ function aboutPage(back_or_forward = 1) {
 }
 
 function homePage(back_or_forward = 1) {
+    console.log('homePage');
     fetch('/', {
         method: 'GET',
         headers: {
