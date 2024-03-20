@@ -10,6 +10,8 @@ def home(request):
     else:
         return render(request, 'pong/home.html', context)
 
+def start_game(request):
+    return render(request, 'pong/start_game.html')
 
 def about(request):
     return render(request, 'pong/about.html')

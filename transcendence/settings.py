@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ['localhost', os.environ.get('IP_ADDRESS')]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'pong.apps.PongConfig',
     'users.apps.UsersConfig',
     'django.contrib.admin',
@@ -78,6 +79,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'transcendence.wsgi.application'
+ASGI_APPLICATION = 'transcendence.asgi.application'
 
 
 # Database
@@ -146,3 +148,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL  = 'login'
+
+CHANNEL_LAYERS = { 
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }   
+}

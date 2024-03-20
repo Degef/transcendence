@@ -191,7 +191,6 @@ main {
     background-color: #240348;
 }
 
-
 .stylish {
     font-family:'Courier New', Courier, monospace;
 }
@@ -209,6 +208,14 @@ th, td {
 td {
     height: 50px;
     vertical-align: bottom;
+}
+
+canvas {
+    border: 8px solid #7b85dd;
+    border-radius: 5px;
+    background-color: #0D011A;
+    display: block;
+    margin: 20px auto;
 }
 
 /* tpeter's css */

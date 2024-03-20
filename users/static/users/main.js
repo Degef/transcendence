@@ -1,7 +1,5 @@
 
 function handleButtonClick(event) {
-    console.log('handleButtonClick')
-    console.log(event.target)
     const buttonFunctions = {
         'about': aboutPage,
         'home': homePage,
@@ -15,6 +13,7 @@ function handleButtonClick(event) {
         'pre_register': pre_register,
         'loginWith42': authorize42Intra,
         'get_users': getUsers,
+        'connect': connect,
     };
     
     const buttonId = event.target.id;
