@@ -78,6 +78,14 @@ main {
     border: 4px solid #370863;
 }
 
+.nav-img {
+    height: 45px;
+    width: 45px;
+    margin-right: 20px;
+    margin-bottom: 16px;
+    border: 2px solid #dbdfee;
+}
+
 .content-section {
     background: #0F3066;
     color: #fff;
