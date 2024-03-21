@@ -1,0 +1,63 @@
+#tournament {
+    overflow:hidden;
+	background-color: #0F3066;
+    padding-top: 30px;
+    font-size: 12px;
+    margin-left: 5%;
+    border-radius: 35px;
+	width: 90%;
+    height: calc(100vh - 220px);
+    padding-right: 0%;
+}
+
+#ScoreDiv{
+    display: flex;
+    height:50px;
+    width:200px;
+    left:calc(50% - 100px);
+    z-index: 2;
+    color:white;
+    font-size: 3rem;
+}
+
+#mygame {
+    position: relative;
+    color: #0F3066;
+}
+
+#mygame canvas, #ScoreDiv {
+    /* position: absolute; */
+	position: inherit;
+    margin-left: 10px;
+    margin-top: 80px;
+}
+
+canvas {
+	border-radius: 15px;
+    border-width: medium ;
+    z-index: 1;
+}
+
+canvas {
+	position: absolute;
+	width: 60%; /* 60% of the container's width */
+	height: 50%; /* 60% of the container's height */
+	left: 20%; /* Center the canvas horizontally */
+	top: 20%; /* Center the canvas vertically */
+}
+
+.player {
+    position: absolute;
+    width: 10%; /* 10% of the container's width */
+    height: auto; /* Maintain aspect ratio */
+    top: 50%; /* Center the player vertically */
+    transform: translateY(-50%); /* Adjust vertical position */
+}
+
+#imgplayer1 {
+    left: 5%; /* Adjust the left position */
+}
+
+#imgplayer2 {
+    right: 5%; /* Adjust the right position */
+}
