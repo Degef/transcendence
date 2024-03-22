@@ -38,12 +38,13 @@
     <div id="tournament">
         <div id = "mygame">
             <div id="ScoreDiv">
-                <p id="Player1">0</p>
+                <p id="Player1">0  |  </p>
                 <p id="Player2">0</p>
             </div>
             <img class="player" id="imgplayer1" src="/media/p2.png" alt="Player 1">
             <img class="player" id="imgplayer2" src="/media/p1.png" alt="Player 2">
-            <canvas></canvas>
+            <canvas id="gameCanvas" ></canvas>
+			<button id="connect" class="btn p-custom-btn text-center" type="submit">Start</button> <br>
             <div id="WinMsg">
                 <p>Player<span id="WinPlayerId"></span> Wins The Game.</p>
                 <!-- <button onclick=location.reload()>Rematch</button> -->

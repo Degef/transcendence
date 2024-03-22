@@ -13,6 +13,7 @@ function handleButtonClick(event) {
         'pre_register': pre_register,
         'loginWith42': authorize42Intra,
         'get_users': getUsers,
+        'connect1': connect1,
         'connect': connect,
     };
     
