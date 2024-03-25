@@ -38,12 +38,13 @@
     <div id="tournament">
         <div id = "mygame">
             <div id="ScoreDiv">
-                <p id="Player1">0  |  </p>
-                <p id="Player2">0</p>
+				<span id="score1" class="mr-4">00</span>
+                <p id="player1"> player1</p>
+                <p class="ml-4 mr-4">|</p>
+                <p id="player2" class="mr-4">player2 </p>
+				<span id="score2">00</span>
             </div>
-            <img class="player" id="imgplayer1" src="/media/p2.png" alt="Player 1">
-            <img class="player" id="imgplayer2" src="/media/p1.png" alt="Player 2">
-            <canvas id="gameCanvas" ></canvas>
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
 			<button id="connect" class="btn p-custom-btn text-center" type="submit">Start</button> <br>
             <div id="WinMsg">
                 <p>Player<span id="WinPlayerId"></span> Wins The Game.</p>
