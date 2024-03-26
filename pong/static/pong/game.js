@@ -16,6 +16,8 @@ function setPlayer(rec) {
         const canvas = document.getElementById('gameCanvas');
         data['canvas'] = canvas;
         data['ctx'] = data['canvas'].getContext('2d');
+        // data['canvas'].width = window.innerWidth;
+        // data['canvas'].height = window.innerHeight;
 
         if (data['player'] == 1) {
             data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
@@ -97,3 +99,23 @@ function start_game(back_or_forward = 1) {
         console.error('Error:', error);
     });
 }
+
+
+// Function to resize the canvas
+function resizeCanvas() {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas dimensions to match window size
+    canvas.width = window.innerWidth * 0.6;
+    canvas.height = window.innerHeight * 0.4;
+
+    // Redraw content on the canvas (if needed)
+    // Your draw function goes here
+}
+
+// Call resizeCanvas function when the window is resized
+window.addEventListener('resize', resizeCanvas);
+
+// Initial call to resizeCanvas function
+resizeCanvas();

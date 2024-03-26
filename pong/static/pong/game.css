@@ -40,12 +40,13 @@ canvas {
 
 canvas {
 	position: absolute;
+    display: block;
 	/*width: 60%;  60% of the container's width */
 	/*height: 50%;  60% of the container's height */
 	left: 20%; /* Center the canvas horizontally */
 	top: 20%; /* Center the canvas vertically */
-    width: 800px;
-    height: 400px;
+    /* width: 800px;
+    height: 400px; */
 }
 
 .player {
