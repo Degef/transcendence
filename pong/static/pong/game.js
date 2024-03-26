@@ -159,10 +159,10 @@ function resizeCanvas() {
 }
 
 // Call resizeCanvas function when the window is resized
-window.addEventListener('resize', resizeCanvas);
+// window.addEventListener('resize', resizeCanvas);
 
 // Initial call to resizeCanvas function
-resizeCanvas();
+// resizeCanvas();
 
 window.addEventListener('keydown', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp' ) {
