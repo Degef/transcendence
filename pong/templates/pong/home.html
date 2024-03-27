@@ -35,8 +35,8 @@
 	</header>
 {% endblock %}
 
-{% block content %}
-	<div class="p-left">
+{% comment %} {% block content %}
+	{% comment %} <div class="p-left">
 		<div class= "p-content-section"></div>
 		<div class= "p-content-section"></div>
 		<div class= "p-content-section"></div>
@@ -49,5 +49,85 @@
 				<button id="connect1" class="btn p-custom-btn" type="submit">Quick Match Online</button> <br>
 			{% endif %}
 		</div>
+	</div> {% endcomment %}
+
+
+
+
+{% block content%}
+
+<div class="container big-container">
+    <div class="row">
+		<div class="col-12">
+			
+			<div class="inner-row">
+				<div class="row align-items-center justify-content-between">
+					<div class="col-2 bg-light p-2  ">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+					
+					<div class="col-7 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+			
+			
+
+
+
+			<div class="inner-row">
+				<div class="row align-items-center justify-content-between">
+					<div class="col-2 bg-light p-2">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+					<div class="col-2 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</div>
 	</div>
+</div>
+
 {% endblock %}

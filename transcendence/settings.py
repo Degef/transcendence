@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['localhost', os.environ.get('IP_ADDRESS')]
 # Application definition
 
 INSTALLED_APPS = [
+	'chat',
     "daphne",
     'pong.apps.PongConfig',
     'users.apps.UsersConfig',
@@ -47,6 +48,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap4',
+	'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
+    'two_factor',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -57,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -148,7 +154,8 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
-LOGIN_URL  = 'login'
+# LOGIN_URL  = 'login'
+LOGIN_URL = 'two_factor:login'
 
 CHANNEL_LAYERS = { 
     "default": {
