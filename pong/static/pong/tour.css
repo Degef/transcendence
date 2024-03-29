@@ -1,0 +1,358 @@
+body{
+	background-color: #0D011A;
+    width: auto;
+    height: auto;
+}
+
+.container-fluid {
+	/* border: thick double #32a1ce; */
+	margin-bottom: 30px;
+	margin-top: 30px;
+	/* margin-left: 5%; */
+    margin-left: 125px;
+    margin-right: 25px;
+}
+
+.navbar-brand{
+	margin-left: 0px;
+}
+
+.container {
+	height: 110px;
+	border-radius: 35px;
+	max-width: 88.5%;
+	/* border: thick double #32a1ce; */
+	background-color: #0F3066;
+}
+
+.collapse{
+	max-width: 100%;
+	margin-left: 10%;
+	display: flex;
+  	justify-content: space-between;
+}
+
+.nav-link{
+	margin-top: 25px;
+	color: black;
+	font-size: 1.5em;
+	color: #DDEEF1;
+}
+
+
+#tournament {
+    overflow:hidden;
+	background-color: #0F3066;
+    padding-top: 30px;
+    font-size: 12px;
+    margin-left: 5%;
+    border-radius: 35px;
+	width: 90%;
+    height: calc(100vh - 220px);
+    padding-right: 0%;
+}
+
+.container2 {
+    margin-top: 60px;
+    display:block;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction:row;
+    flex-direction: row;
+}
+
+.round-details {
+    margin-bottom: 100px;
+}
+
+.champion .fa {
+    margin-top: 0px;
+}
+
+.split {
+    display:block;
+    float:left;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display:flex;
+    width: 42%;
+    -webkit-flex-direction:row;
+    -moz-flex-direction:row;
+    flex-direction:row;
+}
+    
+.champion {
+    float:left;
+    display:block;
+    width: 16%;
+    -webkit-flex-direction:row;
+    flex-direction:row;
+    -webkit-align-self:center;
+    align-self:center;
+    /* margin-top: -15px; */
+    margin-top: -121px;
+    text-align: center;
+    padding: 230px 0\9;
+} 
+
+.champion i {
+    color: #a0a6a8;
+    font-size: 45px;
+    padding: 10px 0; 
+}
+
+.round {
+    display:block;
+    float:left;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display:flex;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+    width:95%;
+    width:30.8333%\9;
+}
+
+
+.split-one .round {
+    margin: 0 2.5% 0 0;
+}
+
+.split-two .round {
+    margin: 0 0 0 2.5%;
+}
+
+.matchup {
+    margin:0;
+    width: 100%;
+    padding: 10px 0;
+    /* height:60px; */
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
+}
+
+
+.matches {
+    margin-bottom: 100px;
+    width: 100%;
+    padding: 10px 0;
+    /* height:60px; */
+    height: 100%;
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
+}
+
+
+.score {
+    font-size: 11px;
+    text-transform: uppercase;
+    float: right;
+    color: #2C7399;
+    font-weight: bold;
+    font-family: 'Roboto Condensed', sans-serif;
+    position: absolute;
+    right: 5px;
+}
+
+.score-input {
+    width: 46px;
+    /* margin-top: 2px; */
+    align-self: center;
+    align-items: center;
+    height: 50%;
+  }
+
+
+.team {
+    padding: 5px 5px;
+    margin: 0px 30px;
+    height: 50px;
+    width: 250px;
+    line-height: 25px;
+    white-space: nowrap; 
+    overflow: hidden;
+    position: relative;
+    border-radius: 10px;
+}
+
+.round-two .matchup {
+    margin-top: 119px;
+    height: 60px;
+    padding: 50px 0;
+}
+
+.round-two .matchup .team {
+    margin-bottom: 37px;
+}
+
+.round.round-one.current { 
+    align-items: center;
+}
+
+.round-three .matchup {
+    margin:0; 
+    height: 60px; 
+    padding: 130px 0;
+}
+
+.round-details {
+    font-family: 'Amaranth','Roboto Condensed', sans-serif; 
+    font-size: 22px; 
+    color: #FFFFFF;
+    text-transform: capitalize;
+    text-align: center;
+    font-weight: bold;
+    height: 40px;
+}
+
+.champion li, .round li {
+    background-color: #0D011A;
+    box-shadow: none;
+    /* opacity: 0.45; */
+}
+
+.current li {
+    opacity: 1;
+}
+
+.current li.team {
+    background-color: #0D011A;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    opacity: 1;
+    /* margin-bottom: 100px; */
+    margin-bottom: 37px;
+}
+
+.current li.team:hover {
+    /* background-color: #fff; */
+    background: rgb(39, 222, 29);
+}
+
+.current li, .round li:hover {
+    background: rgb(39, 222, 29);
+}
+
+.vote-options {
+    display: block;
+    height: 52px;
+}
+
+.share .container2 {
+    margin: 0 auto; 
+    text-align: center;
+}
+
+.matchup .team {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Amaranth';
+    font-weight: bold;
+    font-size: 16px;
+    align-items: center;
+    color: #FFFFFF;
+}
+
+
+.final {
+    margin: 0.5em 0;
+}
+
+/* CSS to style the profile picture */
+.team img {
+    width: 15%; /* Adjust the size as needed */
+    height: 100%; /* Adjust the size as needed */
+    /* border-radius: 50%; Makes the image circular */
+    border-radius: 10px;
+    object-fit: cover; /* Ensure the image fills the circular shape */
+    border: 2px solid #00000;
+}
+
+.matchup.championship {
+    display: flex; /* Change display to flex */
+    justify-content: center;
+}
+
+.matchup.championship li {
+    margin: 0 10px;
+}
+
+
+.split {
+    display:block;
+    float:left;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display:flex;
+    flex-direction:row;
+    margin: 0 5%; /* Reduce the horizontal margin */
+}
+    
+.champion {
+    float:left;
+    display:block;
+    width: 40%; /* Reduce the width to make space for other sections */
+    flex-direction:row;
+    align-self:center;
+    margin-top: -121px;
+    text-align: center;
+    padding: 230px 0\9;
+} 
+
+.round {
+    display:block;
+    float:left;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display:flex;
+    flex-direction:column;
+    width: 40%; /* Reduce the width to make space for other sections */
+    width:30.8333%\9;
+    margin: 0 5% 0 0; /* Reduce the horizontal margin */
+}
+
+/* Media queries for responsiveness */
+
+@media only screen and (max-width: 768px) {
+    /* Adjustments for smaller screens */
+  
+    .split,
+    .champion,
+    .round {
+      width: 100%; /* Set width to 100% for smaller screens */
+      margin: 0; /* Remove margin for smaller screens */
+    }
+    
+    .champion .fa {
+      margin-top: 50px; /* Adjust trophy icon margin for smaller screens */
+    }
+  }
+  
+  @media only screen and (min-width: 769px) and (max-width: 1024px) {
+    /* Adjustments for medium-sized screens */
+  
+    .split {
+      width: 45%; /* Set width to 45% for medium-sized screens */
+    }
+  
+    .champion {
+      width: 30%; /* Set width to 30% for medium-sized screens */
+    }
+  
+    .round {
+      width: 25%; /* Set width to 25% for medium-sized screens */
+    }
+  }
+  
