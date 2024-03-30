@@ -9,7 +9,8 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-        user_things.objects.create(user=instance)
+        temp  = user_things.objects.create(user=instance)
+        temp.nick = instance.username
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):

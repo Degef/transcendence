@@ -27,7 +27,7 @@ function get_ipaddress() {
         });
 }
 
-function loginWith42() {
+function loginWith42(back_or_forward = 1) {
     fetch(`http://${config.ipaddress}:8000/exchange_code?code=${code}`, 
         {
             method: 'GET',
@@ -250,6 +250,7 @@ function profile(back_or_forward = 1) {
 }
 
 function update(back_or_forward = 1) {
+    console.log('update');
     const form = document.getElementById('profile-form');
     const formData = new FormData(form);
 

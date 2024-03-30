@@ -250,3 +250,11 @@ canvas {
 	font-size: 1.5em;
 	color: #DDEEF1;
 }
+
+.disabled-field {
+    color: #878787;  /* Set text color to a darker shade */
+    background-color: #dbdbdb !important;  /* Set background color to a lighter shade */
+    border-color: #dee2e6;  /* Set border color */
+    pointer-events: none;  /* Disable pointer events */
+}
+
