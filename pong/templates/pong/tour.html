@@ -1,0 +1,165 @@
+{% extends 'pong/base.html' %}
+
+{% block header %}
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-light rounded-">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#"  >
+					<img id="home" src="/media/logo.png" alt='Logo' width="90" height="90">
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+	
+				<div class="container">
+					<div class="col-auto">
+						<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+							<a class="nav-link active" aria-current="page" href="#"><i id="home" class="fa fa-home" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-users" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-trophy" aria-hidden="true"></i></a>
+							<a class="nav-link" href="#"><i class="fa fa-comment" aria-hidden="true"></i></a>
+							{% if user.is_authenticated %}
+								<a id="profile" class="nav-link" href="#">
+									<img id="profile"  class="rounded-circle nav-img ml-4" src="{{ user.profile.image.url }}">
+								</a>
+							{% else %}
+								<a id="req_login" class="nav-link" href="#"><i id="req_login" class="fa fa-user" aria-hidden="true"></i></a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</nav>		
+	</header>
+{% endblock %}
+
+{% block content %}
+		<div id="tournament">
+                <div class="container2">
+                  <div class="split split-one">
+                    <div class="round round-one current">
+                      <div class="round-details">
+                        Round 1<br />
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup">
+                          <li class="team team-top">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player1<input class="score-input" type="number" value=""></li>
+                          <li class="team team-bottom">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player2 <input class="score-input" type="number" value=""></li>
+                        </ul>
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup">
+                          <li class="team team-top">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player3<input class="score-input" type="number" value=""></li>
+                          <li class="team team-bottom">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player4 <input class="score-input" type="number" value=""></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <!-- END ROUND ONE -->
+            
+                    <div class="round round-two">
+                      <div class="round-details">
+                        Round 2<br />
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup">
+                          <li class="team team-top">
+                            <img src="/media/pro3.jpeg" alt="Player2's profile picture">
+                            &nbsp;<span class="score">&nbsp;</span></li>
+                          <li class="team team-bottom">
+                            <img src="/media/pro3.jpeg" alt="Player2's profile picture">
+                            &nbsp;<span class="score">&nbsp;</span></li>
+                        </ul>
+                    </div>
+                    </div>
+                    <!-- END ROUND TWO -->
+    
+                  </div>
+            
+                  <div class="champion">
+                    <div class="final">
+                      <i class="fa fa-trophy"></i>
+                      <div class="round-details">
+                        Final <br />
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup championship">
+                          <li class="team team-top"> 
+                            <img src="/media/pro3.jpeg" alt="Player2's profile picture">
+                            &nbsp;<span class="vote-count">&nbsp;</span></li>
+                          <li class="team team-bottom">
+                            <img src="/media/pro3.jpeg" alt="Player2's profile picture">
+                            &nbsp;<span class="vote-count">&nbsp;</span></li>
+                        </ul>
+                    </div>
+                    </div>
+                  </div>
+            
+                  <div class="split split-two">
+                    <!-- END ROUND THREE -->
+                    <div class="round round-two">
+                      <div class="round-details">
+                        Round 2<br />
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup">
+                          <li class="team team-top">
+                            <img src="/media/pro3.jpeg" alt="Player2's profile picture">
+                            &nbsp;<span class="score">&nbsp;</span></li>
+                          <li class="team team-bottom">
+                            <img src="/media/pro3.jpeg" alt="Player2's profile picture">
+                            &nbsp;<span class="score">&nbsp;</span></li>
+                        </ul>
+                    </div>
+                    </div>
+                    <!-- END ROUND TWO -->
+                    <div class="round round-one current">
+                      <div class="round-details">
+                        Round 1<br />
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup">
+                          <li class="team team-top">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player5<input class="score-input" type="number" value=""></li>
+                          <li class="team team-bottom">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player6 <input class="score-input" type="number" value=""></li>
+                        </ul>
+                      </div>
+                      <div class="matches">
+                        <ul class="matchup">
+                          <li class="team team-top">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player7<input class="score-input" type="number" value=""></li>
+                          <li class="team team-bottom">
+                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
+                            Player8 <input class="score-input" type="number" value=""></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <!-- END ROUND ONE -->
+                  </div>
+                </div>
+              <!-- </section> -->
+        </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    -->    
+{% endblock %}

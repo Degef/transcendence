@@ -15,3 +15,7 @@ def start_game(request):
 
 def about(request):
     return render(request, 'pong/about.html')
+
+def tournament(request):
+    return render(request, 'pong/tour.html')
+
