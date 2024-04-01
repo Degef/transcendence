@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, UserUpdateForm2
 from django.contrib.auth.forms import AuthenticationForm
@@ -61,6 +61,36 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
+def get_context(request, u_form, p_form, u_form2): 
+    all_games = Game.objects.all()
+    total_match, total_win, total_lose, total_draw = 0, 0, 0, 0
+    for game in all_games:
+        if game.player1 == request.user or game.player2 == request.user:
+            total_match += 1
+            if game.winner == request.user:
+                total_win += 1
+            elif game.winner == None:
+                total_draw += 1
+            else:
+                total_lose += 1
+    users = User.objects.exclude(username=request.user.username)
+    friends = request.user.user_things.friends.values_list('username', flat=True)
+    friends2 = request.user.user_things.friends.all()
+    context = {
+        'u_form': u_form,
+        'u_form2': u_form2,
+        'p_form': p_form,
+        'status': request.user.user_things.status,
+        'total_match': total_match,
+        'total_win': total_win,
+        'total_lose': total_lose,
+        'total_draw': total_draw,
+        'users': users,
+        'friends': friends,
+        'friends2': friends2
+    }
+    return context
+
 @login_required
 def profile(request):
     if request.method == 'POST':
@@ -70,7 +100,6 @@ def profile(request):
 
         new_image = request.FILES.get('image')
         old_image_path = request.user.profile.image.path if request.user.profile.image else None
-        print('new_image:', new_image)
 
         if u_form.is_valid() and p_form.is_valid():
             print('forms are valid')
@@ -82,24 +111,13 @@ def profile(request):
                     default_storage.delete(old_image_path)
 
             messages.success(request, f'Your account has been updated!')
-            context = {
-                'u_form': u_form,
-                'p_form': p_form,
-                'u_form2': u_form2,
-                'messages': messages.get_messages(request)
-            }
+            context = get_context(request, u_form, p_form, u_form2)
             return render(request, 'users/profile.html', context)
     else:
         u_form = UserUpdateForm(instance=request.user.user_things)
         p_form = ProfileUpdateForm(instance=request.user.profile)
         u_form2 = UserUpdateForm2(instance=request.user)
-
-    context = {
-        'u_form': u_form,
-        'u_form2': u_form2,
-        'p_form': p_form,
-        'status': request.user.user_things.status
-    }
+    context = get_context(request, u_form, p_form, u_form2)
     return render(request, 'users/profile.html', context)
 
 def exchange_code(request):
@@ -169,27 +187,27 @@ def get_users(request):
 def add_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.add_friend(user)
-    users = User.objects.exclude(username=request.user.username)
-    friends = request.user.user_things.friends.values_list('username', flat=True)
-    friends2 = request.user.user_things.friends.all()
+    # users = User.objects.exclude(username=request.user.username)
+    # friends = request.user.user_things.friends.values_list('username', flat=True)
+    # friends2 = request.user.user_things.friends.all()
 
-    context = {
-        'users': users,
-        'friends': friends,
-        'friends2': friends2
-    }
-    return render(request, 'users/users.html', context)
+    # context = {
+    #     'users': users,
+    #     'friends': friends,
+    #     'friends2': friends2
+    # }
+    return redirect('profile')
 
 def remove_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.remove_friend(user)
-    users = User.objects.exclude(username=request.user.username)
-    friends = request.user.user_things.friends.values_list('username', flat=True)
-    friends2 = request.user.user_things.friends.all()
+    # users = User.objects.exclude(username=request.user.username)
+    # friends = request.user.user_things.friends.values_list('username', flat=True)
+    # friends2 = request.user.user_things.friends.all()
 
-    context = {
-        'users': users,
-        'friends': friends,
-        'friends2': friends2
-    }
-    return render(request, 'users/users.html', context)
+    # context = {
+    #     'users': users,
+    #     'friends': friends,
+    #     'friends2': friends2
+    # }
+    return redirect('profile')

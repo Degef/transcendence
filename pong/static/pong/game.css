@@ -52,7 +52,7 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
-#connect {
+#start_quick_match {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -95,9 +95,35 @@ canvas {
     left: 50%;
     top: 25%;
     background-color: #0F3066;
-    color: blanchedalmond;
-    font-size: 40px;
+    color: rgb(156, 156, 156);
+    font-size: 30px;
     padding: 2px;
     text-align: center;
     z-index: 9999;
 }
+
+#wait_load {
+    position: absolute;
+    top: 8%;
+    transform: translate(-50%, -50%);
+    left: 45%;
+    top: 20%;
+    border: 16px solid rgb(164, 164, 164);
+    width: 140px;
+    height: 140px;
+    z-index: 9999;
+    
+    border-top: 16px solid rgb(27, 116, 20);
+    border-radius: 50%;
+    
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+      transform: rotate(0deg)
+    }
+    100% {
+      transform: rotate(360deg)
+    }
+  }

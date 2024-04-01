@@ -23,6 +23,5 @@ class Game(models.Model):
             self.winner = None
 
     def save(self, *args, **kwargs):
-        # Calculate the winner before saving the object
         self.determine_winner()
         super().save(*args, **kwargs)

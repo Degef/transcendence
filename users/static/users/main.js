@@ -13,8 +13,8 @@ function handleButtonClick(event) {
         'pre_register': pre_register,
         'loginWith42': authorize42Intra,
         'get_users': getUsers,
-        'connect1': connect1,
-        'connect': connect,
+        'quick_match': quick_match,
+        'start_quick_match': start_quick_match,
     };
     
     const buttonId = event.target.id;

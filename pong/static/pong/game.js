@@ -77,6 +77,17 @@ function setPlayer(rec) {
         data['username2'] = rec['gameState']['p2_name']
         document.getElementById('player1').innerHTML = data['username1'];
         document.getElementById('player2').innerHTML = data['username2'];
+        
+        const canvasContainer = document.querySelector('.canvas_container');
+
+        // Find the wait_load div
+        const waitLoadDiv = canvasContainer.querySelector('#wait_load');
+
+        // Check if wait_load div exists before removing it
+        if (waitLoadDiv) {
+            // Remove the wait_load div
+            canvasContainer.removeChild(waitLoadDiv);
+}
 
         data['canvas'] = document.getElementById('gameCanvas');
         data['ctx'] = data['canvas'].getContext('2d');
@@ -97,7 +108,7 @@ function setPlayer(rec) {
     }
 }
 
-function connect() {
+function start_quick_match() {
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
@@ -111,6 +122,8 @@ function connect() {
         // console.log(rec);
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
+            document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
+            document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
             console.log(data['playerId']);
         } else if (rec['type'] == 'gameState') {
             // console.log("Received game state")
@@ -136,7 +149,7 @@ function connect() {
     }
 }
 
-function connect1(back_or_forward = 0) {
+function quick_match(back_or_forward = 0) {
     fetch('/start_game/', {
         method: 'GET',
         headers: {

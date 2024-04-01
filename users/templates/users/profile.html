@@ -27,84 +27,120 @@
 			</div>
 		</form>
 	</div>
+	{% if friends2|length > 0 %}
+		<h2>Friends</h2>
+	{% endif %}
+	{% for friend in friends2 %}
+	<div class= "p-content-section">
+			<div class="media-body row">
+				<div class="col-md-3 align-bottom">
+					<img class=" article-img" src="{{friend.profile.image.url}}">
+				</div>
+				<div class="col-md-6 align-bottom">
+					<table id="u_table">
+						<tr  id="u_tr">
+							<th  id="u_th">Username</th>
+							<th  id="u_th">Nickname</th>
+							<th  id="u_th">Date Joined</th>
+						</tr>
+						<tr  id="u_tr">
+							<td id="u_td">{{friend.username}}</td>
+							<td id="u_td">{{friend.user_things.nick}}</td>
+							<td id="u_td">{{user.date_joined|date:"d M, Y"}}</td>
+						</tr>
+					</table>
+				</div>
+				<div class="col-md-3">
+					<button class="btn btn-outline-danger align-center" onclick="removeFriend('{{friend.username}}')" >Remove Friend</button>					
+				</div>
+			</div>
+	</div>
+	{% endfor %}
+	{% if users|length > 0 %}
+		<h2>Users</h2>
+	{% endif %}
+	{% for user in users %}			
+		{% if user.username not in friends %}
+		<div class= "p-content-section">
+			<div class="media-body row">
+				<div class="col-md-3 align-bottom">
+					<img class=" article-img" src="{{user.profile.image.url}}">
+				</div>
+				<div class="col-md-6 align-bottom">
+					<table id="u_table">
+						<tr  id="u_tr">
+							<th  id="u_th">Username</th>
+							<th  id="u_th">Nickname</th>
+							<th  id="u_th">Date Joined</th>
+						</tr>
+						<tr  id="u_tr">
+							<td id="u_td">{{user.username}}</td>
+							<td id="u_td">{{user.user_things.nick}}</td>
+							<td id="u_td">{{user.date_joined|date:"d M, Y"}}</td>
+						</tr>
+					</table>
+				</div>
+				<div class="col-md-3">
+					<button class="btn btn-outline-success" onclick="addFriend('{{user.username}}')" >Add Friend</button>				
+				</div>
+			</div>
+		</div>
+		{% endif %}								  
+	{% endfor %}
 </div>
 <div class="p-right">
 	<div class="content-section">
-		<table>
-			<tr>
-				<th>TOTAL MATCH</th>
-				<th>WON</th>
-				<th>LOST</th>
-				<th>WINNING RATE</th>
-				<th>TOTAL POINTS</th>
+		<table id="p_table">
+			<tr id="p_tr">
+				<th id="p_th">TOTAL MATCH</th>
+				<th id="p_th">WON</th>
+				<th id="p_th">LOST</th>
+				<th id="p_th">Draw</th>
 			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
-			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
-			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
-			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
+			<tr id="p_tr">
+				<td id="p_td">{{total_match}}</td>
+				<td id="p_td">{{total_win}}</td>
+				<td id="p_td">{{total_lose}}</td>
+				<td id="p_td">{{total_draw}}</td>
 			</tr>
 		</table>
-		
 	</div>
 	<div class="content-section">
 		<table>
-			<tr>
-				<th>TOTAL MATCH</th>
-				<th>WON</th>
-				<th>LOST</th>
-				<th>WINNING RATE</th>
-				<th>TOTAL POINTS</th>
+			<tr id="p_tr">
+				<th id="p_th">TOTAL MATCH</th>
+				<th id="p_th">WON</th>
+				<th id="p_th">LOST</th>
+				<th id="p_th">WINNING RATE</th>
+				<th id="p_th">TOTAL POINTS</th>
 			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
+			<tr id="p_tr">
+				<td id="p_td">243</td>
+				<td id="p_td">123</td>
+				<td id="p_td">120</td>
+				<td id="p_td">50%</td>
+				<td id="p_td">1234</td>
 			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
+			<tr id="p_tr">
+				<td id="p_td">243</td>
+				<td id="p_td">123</td>
+				<td id="p_td">120</td>
+				<td id="p_td">50%</td>
+				<td id="p_td">1234</td>
 			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
+			<tr id="p_tr">
+				<td id="p_td">243</td>
+				<td id="p_td">123</td>
+				<td id="p_td">120</td>
+				<td id="p_td">50%</td>
+				<td id="p_td">1234</td>
 			</tr>
-			<tr>
-				<td>243</td>
-				<td>123</td>
-				<td>120</td>
-				<td>50%</td>
-				<td>1234</td>
+			<tr id="p_tr">
+				<td id="p_td">243</td>
+				<td id="p_td">123</td>
+				<td id="p_td">120</td>
+				<td id="p_td">50%</td>
+				<td id="p_td">1234</td>
 			</tr>
 		</table>
 		
