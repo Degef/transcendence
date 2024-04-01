@@ -6,11 +6,13 @@ body{
 
 .container-fluid {
 	/* border: thick double #32a1ce; */
-	margin-bottom: 30px;
-	margin-top: 30px;
+	margin-bottom: 3em;
+	margin-top: 3em;
 	/* margin-left: 5%; */
-    margin-left: 125px;
-    margin-right: 25px;
+    /* margin-left: 125px;
+    margin-right: 25px; */
+    margin-left: 7em;
+    margin-right: 1em;
 }
 
 .navbar-brand{
@@ -43,8 +45,8 @@ body{
 #tournament {
     overflow:hidden;
 	background-color: #0F3066;
-    padding-top: 30px;
-    font-size: 12px;
+    padding-top: 3em;
+    font-size: 1em;
     margin-left: 5%;
     border-radius: 35px;
 	width: 90%;
@@ -53,7 +55,7 @@ body{
 }
 
 .container2 {
-    margin-top: 60px;
+    margin-top: 1.6em;
     display:block;
     display: -webkit-box;
     display: -moz-box;
@@ -66,25 +68,27 @@ body{
 }
 
 .round-details {
-    margin-bottom: 100px;
+    /* margin-bottom: 100px; */
+    margin-bottom: 46%;
 }
 
 .champion .fa {
-    margin-top: 0px;
+    /* margin-top: 0px; */
+    /* margin-top: 32%; */
+    margin-top: 18%;
+}
+.champion .matches {
+    /* margin-top: 0px; */
+    /* margin-top: 32%; */
+    padding-left: 0%;
 }
 
 .split {
-    display:block;
-    float:left;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display:flex;
     width: 42%;
-    -webkit-flex-direction:row;
-    -moz-flex-direction:row;
+    float:left;
+    display:flex;
     flex-direction:row;
+    margin: 0 5%; /* Reduce the horizontal margin */
 }
     
 .champion {
@@ -109,16 +113,10 @@ body{
 
 .round {
     display:block;
-    float:left;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
+    float:left;;
     display:flex;
-    -webkit-flex-direction:column;
     flex-direction:column;
     width:95%;
-    width:30.8333%\9;
 }
 
 
@@ -131,23 +129,18 @@ body{
 }
 
 .matchup {
-    margin:0;
     width: 100%;
-    padding: 10px 0;
-    /* height:60px; */
-    -webkit-transition: all 0.2s;
-    transition: all 0.2s;
 }
 
 
 .matches {
-    margin-bottom: 100px;
+    /* margin-bottom: 100px; */
+    margin-bottom: 50%;
     width: 100%;
     padding: 10px 0;
     /* height:60px; */
     height: 100%;
     -webkit-transition: all 0.2s;
-    transition: all 0.2s;
 }
 
 
@@ -163,7 +156,7 @@ body{
 }
 
 .score-input {
-    width: 46px;
+    width: 28%;
     /* margin-top: 2px; */
     align-self: center;
     align-items: center;
@@ -172,30 +165,48 @@ body{
 
 
 .team {
-    padding: 5px 5px;
-    margin: 0px 30px;
-    height: 50px;
-    width: 250px;
+    /* padding: 5px 5px;
+    margin: 0px 30px; */
+    padding: 0.3em 0.3em;
+    margin: 0px 1em;
+    /* height: 50px; */
+    height: 3em;
+    /* width: 250px; */
+    /* width: 15em; */
+    width: 82%;
     line-height: 25px;
     white-space: nowrap; 
     overflow: hidden;
     position: relative;
     border-radius: 10px;
+    font-size: 0.7vw;
 }
 
 .round-two .matchup {
-    margin-top: 119px;
+    /* margin-top: 119px; */
+    margin-top: 30%;
     height: 60px;
-    padding: 50px 0;
+    /* padding: 50px 0; */
+    padding: 20% 0;
+}
+
+.round-one .matches .matchup {
+    /* margin-bottom: 37px; */
+    margin-bottom: -6%;
 }
 
 .round-two .matchup .team {
-    margin-bottom: 37px;
+    /* margin-bottom: 37px; */
+    margin-bottom: 5%;
 }
 
 .round.round-one.current { 
     align-items: center;
 }
+
+/* .round.round-one { 
+    align-items: center;
+} */
 
 .round-three .matchup {
     margin:0; 
@@ -213,6 +224,10 @@ body{
     height: 40px;
 }
 
+.finround {
+    margin-bottom: 15%;
+}
+
 .champion li, .round li {
     background-color: #0D011A;
     box-shadow: none;
@@ -228,7 +243,8 @@ body{
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     opacity: 1;
     /* margin-bottom: 100px; */
-    margin-bottom: 37px;
+    /* margin-bottom: 37px; */
+    margin-bottom: 0.5em;
 }
 
 .current li.team:hover {
@@ -256,7 +272,7 @@ body{
     justify-content: space-between;
     font-family: 'Amaranth';
     font-weight: bold;
-    font-size: 16px;
+    /* font-size: 1em; */
     align-items: center;
     color: #FFFFFF;
 }
@@ -268,12 +284,13 @@ body{
 
 /* CSS to style the profile picture */
 .team img {
-    width: 15%; /* Adjust the size as needed */
+    width: 22%; /* Adjust the size as needed */
     height: 100%; /* Adjust the size as needed */
     /* border-radius: 50%; Makes the image circular */
     border-radius: 10px;
     object-fit: cover; /* Ensure the image fills the circular shape */
     border: 2px solid #00000;
+    position: relative;
 }
 
 .matchup.championship {
@@ -284,19 +301,6 @@ body{
 .matchup.championship li {
     margin: 0 10px;
 }
-
-
-.split {
-    display:block;
-    float:left;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display:flex;
-    flex-direction:row;
-    margin: 0 5%; /* Reduce the horizontal margin */
-}
     
 .champion {
     float:left;
@@ -304,22 +308,17 @@ body{
     width: 40%; /* Reduce the width to make space for other sections */
     flex-direction:row;
     align-self:center;
-    margin-top: -121px;
+    /* margin-top: -121px; */
+    margin-top: -3.7%;
     text-align: center;
-    padding: 230px 0\9;
 } 
 
 .round {
     display:block;
     float:left;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
     display:flex;
     flex-direction:column;
     width: 40%; /* Reduce the width to make space for other sections */
-    width:30.8333%\9;
     margin: 0 5% 0 0; /* Reduce the horizontal margin */
 }
 
