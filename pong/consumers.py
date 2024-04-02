@@ -9,6 +9,34 @@ from pong.models import Game
 from asgiref.sync import sync_to_async
 
 
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+from users.models import user_things
+
+class MyConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self):
+        # Called when a new websocket connection is established
+        await self.accept()
+        user = self.scope['user']
+        if user.is_authenticated:
+            await self.update_user_status(user, 'online')
+        else:
+            await self.close()
+
+    async def disconnect(self, code):
+        # Called when a websocket is disconnected
+        user = self.scope['user']
+        if user.is_authenticated:
+            await self.update_user_status(user, 'offline')
+
+    @database_sync_to_async
+    def update_user_status(self, user, status):
+        user_things.objects.filter(pk=user.pk).update(status=status)
+
+
 logger = logging.getLogger(__name__)
 
 class PongConsumer(AsyncWebsocketConsumer):

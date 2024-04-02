@@ -1,14 +1,41 @@
-
 {% extends 'pong/base.html' %}
 
 {% block content %}
 	<div class="p-left">
-		<div class= "p-content-section"></div>
+		{% if users|length > 0 %}
+			<h2 class="text-light">Players</h2>
+		{% endif %}
+		{% for user in users %}			
+			<div class= "p-content-section">
+				<div class="media-body row">
+					<div class="col-md-2 align-bottom">
+						<img class=" article-img" src="{{user.profile.image.url}}">
+					</div>
+					<div class="col-md-6 align-bottom">
+						<table id="u_table">
+							<tr  id="u_tr">
+								<th  id="u_th">Username</th>
+								<th  id="u_th">Nickname</th>
+								<th  id="u_th">Date Joined</th>
+							</tr>
+							<tr  id="u_tr">
+								<td id="u_td">{{user.username}}</td>
+								<td id="u_td">{{user.user_things.nick}}</td>
+								<td id="u_td">{{user.date_joined|date:"d M, Y"}}</td>
+							</tr>
+						</table>
+					</div>
+					<div class="col-md-3">
+						<button class="btn btn-outline-light" onclick="challenge('{{user.username}}')" >Challenge</button>				
+					</div>
+				</div>
+			</div>							  
+		{% endfor %}
 	</div>
 	<div class="p-right">
 		<div class="content-section">
 			{% if user.is_authenticated %}
-				<button id="quick_match" class="btn p-custom-btn" type="submit">Quick Match Online</button> <br>
+				<button id="quick_match" class="btn btn-outline-light" type="submit">Quick Match Online</button> <br>
 			{% endif %}
 		</div>
 	</div>

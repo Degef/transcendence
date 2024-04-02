@@ -28,39 +28,6 @@ def get_ipaddress(request):
     }
     return JsonResponse(data)
 
-class CustomLoginView(LoginView):
-    template_name = 'users/login.html'
-
-    def get(self, request, *args, **kwargs):
-        return render(request, 'users/login.html', {'form': self.get_form()})
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            context = {
-                'games': Game.objects.all()
-            }
-            login(request, form.get_user())
-            return render(request, 'pong/home.html', context)
-        else:
-            return render(request, 'users/login.html', {'form': form})
-
-def pre_register(request):
-    return render(request, 'users/pre_register.html')
-
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f'Your account has been created! You are now able to log in.')
-            form = AuthenticationForm()
-            context = {'messages': messages.get_messages(request), 'form': form}
-            return render(request, 'users/login.html', context)
-    else:
-        form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
-
 def get_context(request, u_form, p_form, u_form2): 
     all_games = Game.objects.all()
     total_match, total_win, total_lose, total_draw = 0, 0, 0, 0
@@ -90,6 +57,36 @@ def get_context(request, u_form, p_form, u_form2):
         'friends2': friends2
     }
     return context
+
+class CustomLoginView(LoginView):
+    template_name = 'users/login.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'users/login.html', {'form': self.get_form()})
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('home')
+        else:
+            return render(request, 'users/login.html', {'form': form})
+
+def pre_register(request):
+    return render(request, 'users/pre_register.html')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Your account has been created! You are now able to log in.')
+            form = AuthenticationForm()
+            context = {'messages': messages.get_messages(request), 'form': form}
+            return render(request, 'users/login.html', context)
+    else:
+        form = UserRegisterForm()
+    return render(request, 'users/register.html', {'form': form})
 
 @login_required
 def profile(request):
@@ -172,42 +169,24 @@ def exchange_code(request):
         return text
     return render(request, 'pong/home.html', context)
 
-def get_users(request):
-    users = User.objects.exclude(username=request.user.username)
-    friends = request.user.user_things.friends.values_list('username', flat=True)
-    friends2 = request.user.user_things.friends.all()
+# def get_users(request):
+#     users = User.objects.exclude(username=request.user.username)
+#     friends = request.user.user_things.friends.values_list('username', flat=True)
+#     friends2 = request.user.user_things.friends.all()
 
-    context = {
-        'users': users,
-        'friends': friends,
-        'friends2': friends2
-    }
-    return render(request, 'users/users.html', context)
+#     context = {
+#         'users': users,
+#         'friends': friends,
+#         'friends2': friends2
+#     }
+#     return render(request, 'users/users.html', context)
 
 def add_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.add_friend(user)
-    # users = User.objects.exclude(username=request.user.username)
-    # friends = request.user.user_things.friends.values_list('username', flat=True)
-    # friends2 = request.user.user_things.friends.all()
-
-    # context = {
-    #     'users': users,
-    #     'friends': friends,
-    #     'friends2': friends2
-    # }
     return redirect('profile')
 
 def remove_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.remove_friend(user)
-    # users = User.objects.exclude(username=request.user.username)
-    # friends = request.user.user_things.friends.values_list('username', flat=True)
-    # friends2 = request.user.user_things.friends.all()
-
-    # context = {
-    #     'users': users,
-    #     'friends': friends,
-    #     'friends2': friends2
-    # }
     return redirect('profile')

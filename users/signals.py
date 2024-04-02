@@ -17,12 +17,12 @@ def save_profile(sender, instance, **kwargs):
     instance.profile.save()
     instance.user_things.save()
 
-@receiver(user_logged_in)
-def user_logged_in_handler(sender, request, user, **kwargs):
-    user.user_things.status = 'online'
-    user.save()
+# @receiver(user_logged_in)
+# def user_logged_in_handler(sender, request, user, **kwargs):
+#     user.user_things.status = 'online'
+#     user.save()
 
-@receiver(user_logged_out)
-def user_logged_out_handler(sender, request, user, **kwargs):
-    user.user_things.status = 'offline'
-    user.save()
+# @receiver(user_logged_out)
+# def user_logged_out_handler(sender, request, user, **kwargs):
+#     user.user_things.status = 'offline'
+#     user.save()

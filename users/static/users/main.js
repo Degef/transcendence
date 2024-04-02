@@ -12,7 +12,7 @@ function handleButtonClick(event) {
         'update': update,
         'pre_register': pre_register,
         'loginWith42': authorize42Intra,
-        'get_users': getUsers,
+        // 'get_users': getUsers,
         'quick_match': quick_match,
         'start_quick_match': start_quick_match,
     };

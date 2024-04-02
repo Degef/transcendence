@@ -75,24 +75,24 @@ function updateBody(htmlContent) {
     document.body.innerHTML = newBodyContent;
 }
 
-function getUsers(back_or_forward = 1) {
-    fetch('/get_users/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-        if (back_or_forward == 0)
-            return    
-        updateURL('/get_users/');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+// function getUsers(back_or_forward = 1) {
+//     fetch('/get_users/', {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'text/html',
+//         },
+//     })
+//     .then(response => response.text())
+//     .then(htmlContent => {
+//         updateBody(htmlContent);
+//         if (back_or_forward == 0)
+//             return    
+//         updateURL('/get_users/');
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//     });
+// }
 
 function aboutPage(back_or_forward = 1) {
     fetch('/about/', {
@@ -183,6 +183,13 @@ function login(back_or_forward = 1) {
     .then(response => response.text())
     .then(htmlContent => {
         updateBody(htmlContent);
+        const socket = new WebSocket(`ws://${window.location.host}/ws/my_consumer/`);
+        socket.onopen = function () {
+            console.log('WebSocket connection established');
+        }
+        socket.onclose = function () {
+            console.log('WebSocket connection closed');
+        }
         if (back_or_forward == 0)
             return    
         // updateURL('/login/');

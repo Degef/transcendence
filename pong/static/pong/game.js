@@ -149,7 +149,7 @@ function start_quick_match() {
     }
 }
 
-function quick_match(back_or_forward = 0) {
+function quick_match() {
     fetch('/start_game/', {
         method: 'GET',
         headers: {
@@ -159,9 +159,6 @@ function quick_match(back_or_forward = 0) {
     .then(response => response.text())
     .then(htmlContent => {
         updateBody(htmlContent);
-        if (back_or_forward == 0)
-            return    
-        updateURL('/start_game/');
     })
     .catch(error => {
         console.error('Error:', error);

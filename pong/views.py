@@ -13,10 +13,10 @@ def home(request):
             'games': Game.objects.all(),
             'users':users,
         }
-        return render(request, 'users/users.html', context)
+        return render(request, 'pong/home.html', context)
     else:
         context = { 'games': Game.objects.all()}
-        return render(request, 'pong/home.html', context)
+        return render(request, 'pong/index.html', context)
 
 def start_game(request):
     return render(request, 'pong/start_game.html')
