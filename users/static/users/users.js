@@ -7,11 +7,19 @@ config = {
     'client_id': '',
     'redirectUri': '',
     'secret': '',
+    // 'status':false,
+    // 'socket': null,
 };
 
 if (config.ipaddress == '') {
     get_ipaddress();
 }
+
+window.addEventListener('unload', function(event) {
+    // Perform some actions before the page is unloaded
+    console.log('Page is being unloaded...');
+});
+
 
 function get_ipaddress() {
     fetch('/get_ipaddress/')
@@ -69,6 +77,22 @@ function updateContent(htmlContent) {
 }
 
 function updateBody(htmlContent) {
+    // if (config.status == false) {
+    //     const soc = new WebSocket(`ws://${window.location.host}/ws/my_consumer/`);
+    //     soc.onopen = function (event) {
+    //         console.log('Connection opened online status');
+    //     };
+    //     soc.onclose = function (event) {
+    //         console.log('Connection closed online status');
+    //     }
+    //     config.status = true;
+    //     config.socket = soc;
+    // } else {
+    //     const message = {
+    //         'type': 'update_status',
+    //     };
+    //     config.socket.send(JSON.stringify(message));
+    // }
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     const newBodyContent = doc.body.innerHTML;
@@ -182,14 +206,7 @@ function login(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateBody(htmlContent);
-        const socket = new WebSocket(`ws://${window.location.host}/ws/my_consumer/`);
-        socket.onopen = function () {
-            console.log('WebSocket connection established');
-        }
-        socket.onclose = function () {
-            console.log('WebSocket connection closed');
-        }
+        updateBody(htmlContent);        
         if (back_or_forward == 0)
             return    
         // updateURL('/login/');
@@ -219,23 +236,68 @@ function req_login_page(back_or_forward = 1) {
 }
 
 function logout(back_or_forward = 1) {
-    fetch('/logout/', {
-        method: 'GET',
-        headers: {
+    // navigator.sendBeacon('/unload/');
+    fetch('/unload/')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('response was not ok');
+        }
+        return response.json(); // Assuming the response is in JSON format
+      })
+      .then(data => {
+        console.log(data);
+        // Now, execute the second fetch request
+        return fetch('/logout/', {
+          method: 'GET',
+          headers: {
             'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
+          },
+        });
+      })
+      .then(response => response.text())
+      .then(htmlContent => {
         updateBody(htmlContent);
-        if (back_or_forward == 0)
-            return    
-        updateURL('/logout/');
-    })
-    .catch(error => {
+        if (back_or_forward == 0) return updateURL('/logout/');
+      })
+      .catch(error => {
         console.error('Error:', error);
-    });
-}
+      });
+  }
+
+// function logout(back_or_forward = 1) {
+//     // navigator.sendBeacon('/unload/');
+//     fetch('/unload/')
+//     .then(response => {
+//         if (!response.ok) {
+//         throw new Error('response was not ok');
+//         }
+//         return response.json(); // Assuming the response is in JSON format
+//     })
+//     .then(data => {
+//         console.log(data);
+//     })
+//     .catch(error => {
+//         // Handle any errors that occurred during the fetch
+//         console.error('Fetch error:', error);
+//     });
+
+//     fetch('/logout/', {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'text/html',
+//         },
+//     })
+//     .then(response => response.text())
+//     .then(htmlContent => {
+//         updateBody(htmlContent);
+//         if (back_or_forward == 0)
+//             return    
+//         updateURL('/logout/');
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//     });
+// }
 
 function profile(back_or_forward = 1) {
     fetch('/profile/', {
@@ -333,3 +395,8 @@ function removeFriend(name, back_or_forward) {
         console.error('Error:', error);
     });
 }
+
+window.addEventListener('unload', function() {
+    // navigator.sendBeacon('/user_offline/');
+    navigator.sendBeacon('/unload/');
+});

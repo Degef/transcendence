@@ -7,14 +7,9 @@ from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from pong.models import Game
 from asgiref.sync import sync_to_async
-
-
-from channels.db import database_sync_to_async
-from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
 from users.models import user_things
 
+logger = logging.getLogger(__name__)
 class MyConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
@@ -24,7 +19,7 @@ class MyConsumer(AsyncWebsocketConsumer):
         if user.is_authenticated:
             await self.update_user_status(user, 'online')
         else:
-            await self.close()
+            await self.update_user_status(user, 'offline')
 
     async def disconnect(self, code):
         # Called when a websocket is disconnected
@@ -32,12 +27,22 @@ class MyConsumer(AsyncWebsocketConsumer):
         if user.is_authenticated:
             await self.update_user_status(user, 'offline')
 
+    async def receive(self, text_data):
+        # Called when a message is received from the websocket
+        data = json.loads(text_data)
+        if data['type'] == 'update_status':
+            user = self.scope['user']
+            if user.is_authenticated:
+                logger.debug(f"\n\nUpdating status of {user.username} to online {data}")
+                await self.update_user_status(user, "online")
+            else:
+                logger.debug(f"\n\nUser {user.username} is not authenticated \n\n {data}")
+                await self.update_user_status(user, "offline")
     @database_sync_to_async
     def update_user_status(self, user, status):
         user_things.objects.filter(pk=user.pk).update(status=status)
 
 
-logger = logging.getLogger(__name__)
 
 class PongConsumer(AsyncWebsocketConsumer):
     waiting_queue = []
