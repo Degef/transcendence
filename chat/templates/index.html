@@ -1,0 +1,63 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title%}
+ChatPage
+{% endblock %}
+
+{% block content%}
+
+
+<div id="frame">
+	<div id="sidepanel">
+		<div id="profile">
+			<div class="wrap">
+				<img id="profile-img" src="{{ profile_image }}" alt="{{ username }}" />
+				<p>{{ username }}</p>
+			</div>
+		</div>
+		<div id="search">
+			<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+			<input type="text" placeholder="Search contacts..." />
+		</div>
+		<div id="contacts">
+			<div class="col-md-4">
+				<div id="user-list" class="list-group">
+					<a href="" class="list-group-item disabled">
+						<h4 class="list-group-item-heading">Users</h4>
+						
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="contact-profile">
+			<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+			<p>Harvey Specter</p>
+		</div>
+		<div class="messages">
+			<ul id="messages">
+				
+			</ul>
+		</div>
+		<div class="message-input">
+			<div class="wrap">
+				<input id="chat-input" type="text" class="form-control input" placeholder="Write your message..." />
+				<button class="submit" id="btn-send">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	let sessionKey = '{{ request.session.session_key }}';
+	let currentUser = '{{ request.user.username }}';
+</script>
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}
+
+
