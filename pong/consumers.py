@@ -167,6 +167,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     game_state['score2'] += 1
                 else:
                     game_state['score1'] += 1
+                    
                 if game_state['score1'] == 5 or game_state['score2'] == 5:
                     await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
                     await self.send_game_state()

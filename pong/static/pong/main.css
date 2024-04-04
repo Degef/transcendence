@@ -211,7 +211,7 @@ main {
 }
 
 #u_th, #u_td {
-    padding-right: 30px;
+    padding-right: 35px;
 }
 
 #u_th {
@@ -221,7 +221,7 @@ main {
 }
 
 #u_td {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: normal;
     color: #ffffff;
 }
