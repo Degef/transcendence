@@ -59,6 +59,7 @@ function main_loop () {
         'player': data['player'],
     };
     if (data['endGame']) {
+        data['endGame'] = false;
         return
     }
     data['socket'].send(JSON.stringify(message));
@@ -133,13 +134,15 @@ function start_quick_match() {
         } else if (rec['type'] == 'gameEnd') {
             console.log(rec)
             data['endGame'] = true;
+            data['playerId'] = null;
+            data['player'] = null;
             document.getElementById('end_game').innerHTML = rec['message'];
-            const message = {
-                'type': 'endGame',
-                'playerId': data['playerId'],
-            };
-            data['socket'].send(JSON.stringify(message));
-
+            // const message = {
+            //     'type': 'endGame',
+            //     'playerId': data['playerId'],
+            // };
+            // data['socket'].send(JSON.stringify(message));
+            data.socket.close();
         }
     }
 
