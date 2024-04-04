@@ -75,7 +75,7 @@ main {
     width: 125px;
     margin-right: 20px;
     margin-bottom: 16px;
-    border: 4px solid #370863;
+    border: 4px solid #e2e2e2;
 }
 
 .nav-img {
@@ -145,7 +145,7 @@ main {
 }
 
 .p-left {
-    width: 50%;
+    width: 60%;
     height: 100vh;
     float: left;
     background-color: #0D011A;
@@ -155,7 +155,7 @@ main {
 }
 
 .p-right {
-    width: 50%;
+    width: 40%;
     height: 100vh;
     float: left;
     background-color: #0D011A; 
@@ -195,19 +195,35 @@ main {
     font-family:'Courier New', Courier, monospace;
 }
 
-table {
+#p_table {
     width: 100%;
 }
 
-th, td {
+#p_th, #p_td {
     border-bottom: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 10px;
 }
 
-td {
+#p_td {
     height: 50px;
     vertical-align: bottom;
+}
+
+#u_th, #u_td {
+    padding-right: 30px;
+}
+
+#u_th {
+    font-size: 10px;
+    font-weight: normal;
+    color: #8f8f8f;
+}
+
+#u_td {
+    font-size: 17px;
+    font-weight: normal;
+    color: #ffffff;
 }
 
 canvas {
@@ -221,8 +237,8 @@ canvas {
 /* tpeter's css */
 .container-fluid {
 	/* border: thick double #32a1ce; */
-	margin: 30px;
-	margin-left: 5%;
+	/* margin: 30px; */
+	margin-left: 0%;
 }
 
 .navbar-brand{
@@ -235,6 +251,7 @@ canvas {
 	max-width: 80%;
 	/* border: thick double #32a1ce; */
 	background-color: #0F3066;
+    /* padding-right: 0%; */
 }
 
 .collapse{
@@ -249,4 +266,11 @@ canvas {
 	color: black;
 	font-size: 1.5em;
 	color: #DDEEF1;
+}
+
+.disabled-field {
+    color: #878787;  /* Set text color to a darker shade */
+    background-color: #dbdbdb !important;  /* Set background color to a lighter shade */
+    border-color: #dee2e6;  /* Set border color */
+    pointer-events: none;  /* Disable pointer events */
 }

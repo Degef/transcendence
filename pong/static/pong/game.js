@@ -1,7 +1,7 @@
 var data = {
     'playerId': null,
     'player': null,
-    "paddleWidth": 5, 
+    "paddleWidth": 10, 
     "paddleHeight": 60,
     'paddle_speed': 5,
     'paddle': {'speedY': 0},
@@ -20,10 +20,9 @@ function draw() {
         const paddle2 = data['gameState']['paddle2'];
         const ball = data['gameState']['ball'];
 
-        // console.log(paddle1, paddle2, ball);
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Draw the paddles
         ctx.fillStyle = 'white';
         ctx.fillRect(paddle1['x'], paddle1['y'], paddleWidth, paddleHeight);
         ctx.fillRect(paddle2['x'], paddle2['y'], paddleWidth, paddleHeight);
@@ -33,18 +32,21 @@ function draw() {
         ctx.arc(ball['x'], ball['y'], ball.radius, 0, Math.PI * 2);
         ctx.fill();
 
+        //draw net
+        ctx.beginPath();
+        ctx.setLineDash([5, 15]);
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+
         //update score
         document.getElementById('score1').innerHTML = data['gameState']['score1'];
         document.getElementById('score2').innerHTML = data['gameState']['score2'];
     }
 }
 
-// So we are sending paddle updates to server then drawing it after we receive the update from the server
 function main_loop () {
-    if (data['endGame']) {
-        return
-    }
-
     data.paddle.y += data.paddle.speedY;
     // Keep paddles within the canvas
     data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
@@ -56,6 +58,9 @@ function main_loop () {
         'paddle': data['paddle'],
         'player': data['player'],
     };
+    if (data['endGame']) {
+        return
+    }
     data['socket'].send(JSON.stringify(message));
     requestAnimationFrame(main_loop);
 }
@@ -72,6 +77,17 @@ function setPlayer(rec) {
         data['username2'] = rec['gameState']['p2_name']
         document.getElementById('player1').innerHTML = data['username1'];
         document.getElementById('player2').innerHTML = data['username2'];
+        
+        const canvasContainer = document.querySelector('.canvas_container');
+
+        // Find the wait_load div
+        const waitLoadDiv = canvasContainer.querySelector('#wait_load');
+
+        // Check if wait_load div exists before removing it
+        if (waitLoadDiv) {
+            // Remove the wait_load div
+            canvasContainer.removeChild(waitLoadDiv);
+}
 
         data['canvas'] = document.getElementById('gameCanvas');
         data['ctx'] = data['canvas'].getContext('2d');
@@ -79,9 +95,9 @@ function setPlayer(rec) {
         // data['canvas'].height = window.innerHeight;
 
         if (data['player'] == 1) {
-            data['paddle'] = { x: 5, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
+            data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
         } else if (data['player'] == 2) {
-            data['paddle'] = { x: data['canvas'].width - data['paddleWidth'] * 2, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
+            data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
         }
         const message = {
             'type': 'startGame',
@@ -94,7 +110,7 @@ function setPlayer(rec) {
     }
 }
 
-function connect() {
+function start_quick_match() {
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
@@ -108,6 +124,8 @@ function connect() {
         // console.log(rec);
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
+            document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
+            document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
             console.log(data['playerId']);
         } else if (rec['type'] == 'gameState') {
             // console.log("Received game state")
@@ -115,7 +133,15 @@ function connect() {
             setPlayer(rec);
             // draw(rec['gameState']);
         } else if (rec['type'] == 'gameEnd') {
+            console.log(rec)
             data['endGame'] = true;
+            document.getElementById('end_game').innerHTML = rec['message'];
+            const message = {
+                'type': 'endGame',
+                'playerId': data['playerId'],
+            };
+            data['socket'].send(JSON.stringify(message));
+
         }
     }
 
@@ -125,7 +151,7 @@ function connect() {
     }
 }
 
-function connect1(back_or_forward = 0) {
+function quick_match() {
     fetch('/start_game/', {
         method: 'GET',
         headers: {
@@ -135,9 +161,6 @@ function connect1(back_or_forward = 0) {
     .then(response => response.text())
     .then(htmlContent => {
         updateBody(htmlContent);
-        if (back_or_forward == 0)
-            return    
-        updateURL('/start_game/');
     })
     .catch(error => {
         console.error('Error:', error);
