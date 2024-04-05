@@ -15,6 +15,7 @@ function handleButtonClick(event) {
         'get_users': getUsers,
         'connect1': connect1,
         'connect': connect,
+		'chatLink' : chatPage,
     };
     
     const buttonId = event.target.id;
@@ -36,6 +37,8 @@ window.onpopstate = function (event) {
         homePage(0);
     else if (event.state['path'] == '/')
         homePage(0);
+	else if (event.state['path'] == '/chat/')
+		chatPage(0);
     else if (event.state['path'] == '/about/')
         aboutPage(0);
     else if (event.state['path'] == '/profile/')

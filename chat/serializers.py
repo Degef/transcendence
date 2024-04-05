@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404
 from .models import MessageModel
 from rest_framework.serializers import ModelSerializer, CharField
 
+from users.models import Profile
+
 
 class MessageModelSerializer(ModelSerializer):
     user = CharField(source='user.username', read_only=True)
@@ -23,7 +25,15 @@ class MessageModelSerializer(ModelSerializer):
         fields = ('id', 'user', 'recipient', 'timestamp', 'body')
 
 
+class ProfileSerializer(ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('image',)
+
+
 class UserModelSerializer(ModelSerializer):
+    profile = ProfileSerializer(read_only=True)
+
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ('username', 'profile')

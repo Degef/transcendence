@@ -1,5 +1,5 @@
 #frame {
-	width: 90%;
+	width: 70%;
 	min-width: 360px;
 	height: 92vh;
 	min-height: 300px;
@@ -17,6 +17,7 @@
 }
 
 #frame #sidepanel {
+	left: -1%;
 	float: left;
 	min-width: 280px;
 	max-width: 340px;
@@ -25,7 +26,7 @@
 	background: #2c3e50;
 	color: #DDEEF1;
 	overflow: hidden;
-	position: relative;
+	position: static;
 	border-radius: 25px 0 0 25px;
 }
 
@@ -39,8 +40,9 @@
 #frame #sidepanel #profile {
 	width: 80%;
 	margin: 25px auto;
-	}
-	@media screen and (max-width: 735px) {
+}
+	
+@media screen and (max-width: 735px) {
 	#frame #sidepanel #profile {
 		width: 100%;
 		margin: 0 auto;
@@ -69,7 +71,7 @@
 	width: 50px;
 	border-radius: 50%;
 	padding: 3px;
-	height: auto;
+	height: 50px;
 	float: left;
 	cursor: pointer;
 	-moz-transition: 0.3s border ease;
@@ -116,7 +118,7 @@
 #frame #sidepanel #search input {
 	font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
 	padding: 10px 0 10px 46px;
-	width: calc(100% - 25px);
+	width: calc(100%);
 	border: none;
 	background: #32465a;
 	color: #DDEEF1;
@@ -355,6 +357,8 @@
 }
 
 #frame .content .messages ul li.sent img {
+	width: 20px;
+	height: 20px;
 	margin: 6px 8px 0 0;
 }
 
@@ -364,6 +368,8 @@
 }
 
 #frame .content .messages ul li.replies img {
+	width: 20px;
+	height: 20px;
 	float: right;
 	margin: 6px 0 0 8px;
 }
@@ -437,8 +443,7 @@
 
 #frame .content .message-input .wrap button {
 	float: right;
-	border-radius: 40px;
-	width: 150px;
+	width: 10%;
 	padding: 12px 0;
 	cursor: pointer;
 	background: #0D011A;
@@ -457,8 +462,10 @@
 	}
 }
 
+
 #frame .content .message-input .wrap button:hover {
-	background: #435f7a;
+	background: #DDEEF1;
+	color: #0F3066;
 }
 
 #frame .content .message-input .wrap button:focus {

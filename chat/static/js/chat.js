@@ -3,25 +3,28 @@ const chatInput = document.getElementById('chat-input');
 const chatButton = document.getElementById('btn-send');
 let userList = document.getElementById("user-list");
 let messageList = document.getElementById("messages");
+let miniImage = '';
 
 function updateUserList() {
 	fetch('api/user/')
 		.then(response => response.json())
-		.then(data => {
-			while (userList.firstChild) {
-				userList.removeChild(userList.firstChild);
-			}
+	  	.then(data => {
+			const userList = document.getElementById('user-list');
+			userList.innerHTML = `
+				<a href="" class="list-group-item disabled">
+					
+				</a>`;
 			data.forEach(userData => {
 				const userItem = document.createElement('a');
 				userItem.classList.add('list-group-item', 'user');
 				userItem.textContent = userData.username;
-				userList.appendChild(userItem);
 				userItem.addEventListener('click', function() {
 					const userListChildren = userList.querySelectorAll('.user');
 					userListChildren.forEach(child => child.classList.remove('active'));
 					userItem.classList.add('active');
-					setCurrentRecipient(userItem.textContent);
+					setCurrentRecipient(userData);
 				});
+				userList.appendChild(userItem);
 			});
 		})
 		.catch(error => {
@@ -30,21 +33,24 @@ function updateUserList() {
 }
 
 
-
 function drawMessage(message) {
 	let position = 'sent';
 	const date = new Date(message.timestamp);
 	if (message.user === currentUser) position = 'replies';
+
+	miniProfileImage = miniImage;
+	if (message.user === currentUser) miniProfileImage = profileimage
 	
 
 	const messageItem = 
 		`<li class="${position}">
-			<img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
+			<img src="${miniProfileImage}" alt="" />
 			<p>${message.body}</p>
 		</li>`;
 	
 	document.getElementById('messages').innerHTML += messageItem;
 }
+
 
 function getConversation(recipient) {
 	fetch(`api/message/?target=${recipient}`)
@@ -104,8 +110,18 @@ function sendMessage(recipient, body) {
 	});
 }
 
-function setCurrentRecipient(username) {
-	currentRecipient = username;
+
+function setCurrentRecipient(userData) {
+	miniImage = userData.profile.image
+	currentRecipient = userData.username;
+	const profileLook = `
+		<div class="contact-profile">
+			<img src=${userData.profile.image} alt="" />
+			<p>${currentRecipient}</p>
+		</div>`;
+
+	const contactProfileElement = document.querySelector('.contact-profile');
+	contactProfileElement.innerHTML = profileLook;
 	getConversation(currentRecipient);
 	enableInput();
 }
@@ -124,26 +140,28 @@ function disableInput() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function () {
-	updateUserList();
-	disableInput();
+function initializeChat() {
+    updateUserList();
+    disableInput();
 
-	var socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
+    var socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
 
-	chatInput.addEventListener('keypress', function (e) {
-		if (e.keyCode === 13)
-			chatButton.click();
-	});
+    chatInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter')
+            chatButton.click();
+    });
 
-	chatButton.addEventListener('click', function () {
-		console.log(chatInput)
-		if (chatInput.value.length > 0) {
-			sendMessage(currentRecipient, chatInput.value);
-			chatInput.value = '';
-		}
-	});
+    chatButton.addEventListener('click', function () {
+        if (chatInput.value.length > 0) {
+            sendMessage(currentRecipient, chatInput.value);
+            chatInput.value = '';
+        }
+    });
 
-	socket.addEventListener('message', function (e) {
-		getMessageById(e.data);
-	});
-});
+    socket.addEventListener('message', function (e) {
+        getMessageById(e.data);
+    });
+}
+
+initializeChat();
+

@@ -113,6 +113,26 @@ function aboutPage(back_or_forward = 1) {
     });
 }
 
+function chatPage(back_or_forward = 1) {
+	console.log("chatPage");
+    fetch('/chat/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+        if (back_or_forward == 0)
+            return    
+        updateURL('/chat/');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 function homePage(back_or_forward = 1) {
     console.log('homePage');
     fetch('/', {
