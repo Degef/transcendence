@@ -1,52 +1,43 @@
-
 {% extends 'pong/base.html' %}
 
-{% block header %}
-	<header>
-		<nav class="navbar navbar-expand-lg navbar-light rounded-">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="#"  >
-					<img id="home" src="/media/logo.png" alt='Logo' width="90" height="90">
-				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-	
-				<div class="container">
-					<div class="col-auto">
-						<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-							<a class="nav-link active" aria-current="page" href="#"><i id="home" class="fa fa-home" aria-hidden="true"></i></a>
-							<a class="nav-link" href="#"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
-							<a class="nav-link" href="#"><i class="fa fa-users" aria-hidden="true"></i></a>
-							<a class="nav-link" href="#"><i class="fa fa-trophy" aria-hidden="true"></i></a>
-							<a class="nav-link" href="#"><i class="fa fa-comment" aria-hidden="true"></i></a>
-							{% if user.is_authenticated %}
-								<a id="profile" class="nav-link" href="#">
-									<img id="profile"  class="rounded-circle nav-img ml-4" src="{{ user.profile.image.url }}">
-								</a>
-							{% else %}
-								<a id="req_login" class="nav-link" href="#"><i id="req_login" class="fa fa-user" aria-hidden="true"></i></a>
-							{% endif %}
-						</div>
+{% block content %}
+	<div class="p-left">
+		{% if users|length > 0 %}
+			<h2 class="text-light">Players</h2>
+		{% endif %}
+		{% for user in users %}			
+			<div class= "p-content-section">
+				<div class="media-body row">
+					<div class="col-md-2 align-bottom">
+						<img class=" article-img" src="{{user.profile.image.url}}">
 					</div>
+					<div class="col-md-6 align-bottom">
+						<table id="u_table">
+							<tr  id="u_tr">
+								<th  id="u_th">Username</th>
+								<th  id="u_th">Nickname</th>
+								<th  id="u_th">Date Joined</th>
+								<th  id="u_th">Status</th>
+							</tr>
+							<tr  id="u_tr">
+								<td id="u_td">{{user.username}}</td>
+								<td id="u_td">{{user.user_things.nick}}</td>
+								<td id="u_td">{{user.date_joined|date:"d/m/y"}}</td>
+								<td id="u_td">{{user.user_things.status}}</td>
+							</tr>
+						</table>
+					</div>
+					<!-- <div class="col-md-3">
+						<button class="btn btn-outline-light" onclick="challenge('{{user.username}}')" >Challenge</button>				
+					</div> -->
 				</div>
-			</div>
-		</nav>		
-	</header>
-{% endblock %}
-
-{% comment %} {% block content %}
-	{% comment %} <div class="p-left">
-		<div class= "p-content-section"></div>
-		<div class= "p-content-section"></div>
-		<div class= "p-content-section"></div>
-		<div class= "p-content-section"></div>
-		<div class= "p-content-section"></div>
+			</div>							  
+		{% endfor %}
 	</div>
 	<div class="p-right">
 		<div class="content-section">
 			{% if user.is_authenticated %}
-				<button id="connect1" class="btn p-custom-btn" type="submit">Quick Match Online</button> <br>
+				<button id="quick_match" class="btn btn-outline-light" type="submit">Quick Match Online</button> <br>
 			{% endif %}
 		</div>
 	</div> {% endcomment %}

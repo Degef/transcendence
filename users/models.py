@@ -24,6 +24,8 @@ class user_things(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, default='offline')
     friends = models.ManyToManyField(User, blank=True, default=None, related_name='friends')
+    nick = models.CharField(max_length=100, null=True)
+    last_activity = models.DateTimeField(null=True, blank=True)
 
     def add_friend(self, friend):
         self.friends.add(friend)
