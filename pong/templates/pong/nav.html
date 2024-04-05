@@ -16,7 +16,7 @@
 						<a class="nav-link" href="#"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
 						<a class="nav-link" href="#"><i class="fa fa-users" aria-hidden="true"></i></a>
 						<a class="nav-link" href="#"><i class="fa fa-trophy" aria-hidden="true"></i></a>
-						<a class="nav-link" href="#" id="chatLink"><i class="fa fa-comment" aria-hidden="true"></i></a>
+						<a class="nav-link" href="#" id="chatLink"><i id="chatLink" class="fa fa-comment" aria-hidden="true"></i></a>
 						{% if user.is_authenticated %}
 							<a id="profile" class="nav-link" href="#">
 								<img id="profile"  class="rounded-circle nav-img ml-4" src="{{ user.profile.image.url }}">
