@@ -1,0 +1,71 @@
+
+{% extends 'pong/base.html' %}
+{% load static %}
+
+
+
+{% block header %}
+	{% include "pong/nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+	<div id="frame" class="align-item-center mx-auto">
+		<div id="sidepanel">
+			<div id="profile">
+				<div class="wrap">
+					<img id="profile-img" src="{{ profile_image }}" alt="{{ username }}" />
+					<p>{{ username }}</p>
+				</div>
+			</div>
+			<div id="search">
+				<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+				<input type="text" placeholder="Search contacts..." />
+			</div>
+			<div id="contacts">
+				<div class="col">
+					<div id="user-list" class="list-group">
+					
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div class="contact-profile">
+				<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+				<p id="reci-username"></p>
+			</div>
+			<div class="messages">
+				<ul id="messages">
+					
+				</ul>
+			</div>
+			<div class="message-input">
+				<div class="wrap">
+					<input id="chat-input" type="text" class="form-control input" placeholder="Write your message..." />
+					<button class="chat-btn submit btn rounded-pill btn-primary d-flex align-items-center" id="btn-send">
+						<span class="btn-text d-none d-md-inline-block">Send</span>
+						<i class="fa fa-paper-plane" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		let sessionKey = '{{ request.session.session_key }}';
+		let currentUser = '{{ request.user.username }}';
+		let profileimage = '{{ profile_image }}'
+	</script>
+	<script src="{% static 'js/chat.js' %}"></script>
+
+{% endblock %}
+
+<div class="wrap">
+	<img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+	<div class="meta">
+		<p class="name">Louis Litt</p>
+		<p class="preview">You just got LITT up, Mike.</p>
+	</div>
+</div>

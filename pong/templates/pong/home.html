@@ -17,17 +17,19 @@
 								<th  id="u_th">Username</th>
 								<th  id="u_th">Nickname</th>
 								<th  id="u_th">Date Joined</th>
+								<th  id="u_th">Status</th>
 							</tr>
 							<tr  id="u_tr">
 								<td id="u_td">{{user.username}}</td>
 								<td id="u_td">{{user.user_things.nick}}</td>
-								<td id="u_td">{{user.date_joined|date:"d M, Y"}}</td>
+								<td id="u_td">{{user.date_joined|date:"d/m/y"}}</td>
+								<td id="u_td">{{user.user_things.status}}</td>
 							</tr>
 						</table>
 					</div>
-					<div class="col-md-3">
+					<!-- <div class="col-md-3">
 						<button class="btn btn-outline-light" onclick="challenge('{{user.username}}')" >Challenge</button>				
-					</div>
+					</div> -->
 				</div>
 			</div>							  
 		{% endfor %}
@@ -39,4 +41,79 @@
 			{% endif %}
 		</div>
 	</div>
+
+{% endblock %}
+
+{% block content1%}
+
+<div class="container big-container">
+    <div class="row">
+		<div class="col-12">
+			
+			<div class="inner-row">
+				<div class="row align-items-center justify-content-between">
+					<div class="col-2 bg-light p-2  ">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+					
+					<div class="col-7 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+			
+			<div class="inner-row">
+				<div class="row align-items-center justify-content-between">
+					<div class="col-2 bg-light p-2">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+					<div class="col-2 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						
+					</div>
+					<div class="col-2 bg-light p-2">
+						<i class="fa fa-bell" style="font-size:32px;color:#DDEEF1"></i>
+						<div class="notification-list row align-items-center justify-content-between">
+							<div class="notification-row">Notification 1</div>
+							<div class="notification-row">Notification 2</div>
+							<div class="notification-row">Notification 3</div>
+							<div class="notification-row">Notification 4</div>
+							<div class="notification-row">Notification 5</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</div>
+	</div>
+</div>
+
 {% endblock %}

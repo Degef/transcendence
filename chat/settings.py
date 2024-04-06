@@ -1,0 +1,2 @@
+
+MESSAGES_TO_LOAD = 15

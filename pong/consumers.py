@@ -10,37 +10,37 @@ from asgiref.sync import sync_to_async
 from users.models import user_things
 
 logger = logging.getLogger(__name__)
-class MyConsumer(AsyncWebsocketConsumer):
+# class MyConsumer(AsyncWebsocketConsumer):
 
-    async def connect(self):
-        # Called when a new websocket connection is established
-        await self.accept()
-        user = self.scope['user']
-        if user.is_authenticated:
-            await self.update_user_status(user, 'online')
-        else:
-            await self.update_user_status(user, 'offline')
+#     async def connect(self):
+#         # Called when a new websocket connection is established
+#         await self.accept()
+#         user = self.scope['user']
+#         if user.is_authenticated:
+#             await self.update_user_status(user, 'online')
+#         else:
+#             await self.update_user_status(user, 'offline')
 
-    async def disconnect(self, code):
-        # Called when a websocket is disconnected
-        user = self.scope['user']
-        if user.is_authenticated:
-            await self.update_user_status(user, 'offline')
+#     async def disconnect(self, code):
+#         # Called when a websocket is disconnected
+#         user = self.scope['user']
+#         if user.is_authenticated:
+#             await self.update_user_status(user, 'offline')
 
-    async def receive(self, text_data):
-        # Called when a message is received from the websocket
-        data = json.loads(text_data)
-        if data['type'] == 'update_status':
-            user = self.scope['user']
-            if user.is_authenticated:
-                logger.debug(f"\n\nUpdating status of {user.username} to online {data}")
-                await self.update_user_status(user, "online")
-            else:
-                logger.debug(f"\n\nUser {user.username} is not authenticated \n\n {data}")
-                await self.update_user_status(user, "offline")
-    @database_sync_to_async
-    def update_user_status(self, user, status):
-        user_things.objects.filter(pk=user.pk).update(status=status)
+#     async def receive(self, text_data):
+#         # Called when a message is received from the websocket
+#         data = json.loads(text_data)
+#         if data['type'] == 'update_status':
+#             user = self.scope['user']
+#             if user.is_authenticated:
+#                 logger.debug(f"\n\nUpdating status of {user.username} to online {data}")
+#                 await self.update_user_status(user, "online")
+#             else:
+#                 logger.debug(f"\n\nUser {user.username} is not authenticated \n\n {data}")
+#                 await self.update_user_status(user, "offline")
+#     @database_sync_to_async
+#     def update_user_status(self, user, status):
+#         user_things.objects.filter(pk=user.pk).update(status=status)
 
 
 
@@ -51,7 +51,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     paddleHeight = 60
 
     async def connect(self):
-        logger.debug(" \n\n WebSocket connection established")
+        logger.debug(" \n\n WebSocket connection established\n\n")
+        logger.debug(self.waiting_queue)
         self.room_name = 'game_room'
         self.player_id = str(uuid.uuid4())
 
@@ -86,19 +87,23 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.waiting_queue.remove(self)
         else:
             # Get the game state for the current room
-            game_state = self.game_states[self.room_group_name]
+            try:
+                game_state = self.game_states[self.room_group_name]
 
-            del self.game_states[self.room_group_name]
-            name = self.scope['user'].username
+                del self.game_states[self.room_group_name]
+                name = self.scope['user'].username
 
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'game_end_message',
-                    'message': f'{name} has left the game.'
-                }
-            )
-            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'game_end_message',
+                        'message': f'{name} has left the game.'
+                    }
+                )
+                await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+            except KeyError as e:
+                print(f"\n\nError accessing paddle data: {e}")
+        await self.close()
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -167,6 +172,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     game_state['score2'] += 1
                 else:
                     game_state['score1'] += 1
+                    
                 if game_state['score1'] == 5 or game_state['score2'] == 5:
                     await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
                     await self.send_game_state()
