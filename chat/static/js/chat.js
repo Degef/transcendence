@@ -47,6 +47,7 @@ function drawMessage(message) {
 			<img src="${miniProfileImage}" alt="" />
 			<p>${message.body}</p>
 		</li>`;
+	console.log(messageItem);
 	
 	document.getElementById('messages').innerHTML += messageItem;
 }
