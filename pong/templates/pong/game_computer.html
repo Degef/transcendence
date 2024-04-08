@@ -1,0 +1,13 @@
+
+{% extends 'pong/base.html' %}
+
+{% block content %}
+    <div id="tournament">
+        <div id = "mygame">
+            <div class="canvas_container">
+                <canvas id="gameCanvas" width="600" height="400"></canvas>
+                <button id="start_play_computer" class="btn btn-outline-light" type="submit" onclick="start_play_computer()">Start</button> <br>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -53,7 +53,7 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
-#start_quick_match {
+#start_play_online, #start_play_computer {
     position: absolute;
     top: 50%;
     left: 90%;
