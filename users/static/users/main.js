@@ -13,8 +13,9 @@ function handleButtonClick(event) {
         'pre_register': pre_register,
         'loginWith42': authorize42Intra,
         // 'get_users': getUsers,
-        'quick_match': quick_match,
-        'start_quick_match': start_quick_match,
+        'play_online': play_online,
+        'game_computer': game_computer,
+        'start_play_online': start_play_online,
 		'chatLink' : chatPage,
     };
     

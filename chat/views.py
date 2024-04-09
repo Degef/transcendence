@@ -8,6 +8,7 @@ def chat(request):
     context = {
         'profile_image': profile_image,
         'username': username,
+		'title': 'chat',
     }
 
     return render(request, 'index.html', context)

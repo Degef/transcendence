@@ -234,43 +234,20 @@ canvas {
     margin: 20px auto;
 }
 
-/* tpeter's css */
-.container-fluid {
-	/* border: thick double #32a1ce; */
-	/* margin: 30px; */
-	margin-left: 0%;
-}
-
-.navbar-brand{
-	margin-left: 30px;
-}
-
-.container {
-	height: 110px;
-	border-radius: 35px;
-	max-width: 80%;
-	/* border: thick double #32a1ce; */
-	background-color: #0F3066;
-    /* padding-right: 0%; */
-}
-
-.collapse{
-	max-width: 100%;
-	margin-left: 10%;
-	display: flex;
-  	justify-content: space-between;
-}
-
 .nav-link{
-	margin-top: 25px;
-	color: black;
-	font-size: 1.5em;
 	color: #DDEEF1;
 }
 
-.disabled-field {
-    color: #878787;  /* Set text color to a darker shade */
-    background-color: #dbdbdb !important;  /* Set background color to a lighter shade */
-    border-color: #dee2e6;  /* Set border color */
-    pointer-events: none;  /* Disable pointer events */
+@media (min-width: 1340px) {
+	.container-xxl {
+	  	max-width: 2200px;
+	}
+}
+
+.pong-secondary {
+	background-color: #0F3066;
+}
+
+.pong-primary {
+	background-color: #0D011A;
 }

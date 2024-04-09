@@ -10,47 +10,57 @@
 
 {% block content %}
 
-	<div id="frame" class="align-item-center mx-auto">
-		<div id="sidepanel">
-			<div id="profile">
-				<div class="wrap">
-					<img id="profile-img" src="{{ profile_image }}" alt="{{ username }}" />
-					<p>{{ username }}</p>
+<div class="container-fluid rounded-4 pong-secondary" style="height: 83vh;">
+	<div class="row h-100">
+		<!-- Sidebar -->
+		<div class="col-3 border-1 border-end p-0">
+			<div class="justify-content-start border-2 py-4 mb-1 row w-100 ms-3">
+				<p class='fs-1 text-white'>Chats</p>
+			</div>
+			
+			<div class="search px-3 pb-3 mb-3 ">
+				<div class="input-group pt-3">
+					<input type="text" class="form-control" placeholder="Search contacts..." />
+					<div class="input-group-append">
+						<button class="btn btn-primary" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+					</div>
 				</div>
 			</div>
-			<div id="search">
-				<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
-				<input type="text" placeholder="Search contacts..." />
+			<div class="contacts px-3">
+				<ul class="user-list list-group" id="user-list">
+					<!-- Contacts will be populated here -->
+				</ul>
 			</div>
-			<div id="contacts">
-				<div class="col">
-					<div id="user-list" class="list-group">
+		</div>
+		
+		<!-- Not Sidebar -->
+		<div class="col-9 d-flex flex-column">
+			<div class="contact-profile text-center py-4 border-bottom border-1 d-flex align-items-center justify-content-start">
+				<h5 class="mt-3"></h5>
+			</div>
 					
+			<div class="messages px-4 flex-grow-1">
+				<ul id="messages" class="list-unstyled">
+					<!-- Messages will be populated here -->
+				</ul>
+			</div>
+			<div class="message-input px-4 pb-4">
+				<div class="input-group">
+					<input id="chat-input" type="text" class="form-control" placeholder="Write your message..." />
+					<div class="input-group-append">
+						<button class="btn btn-primary rounded-pill" id="btn-send">
+							<i class="fa fa-paper-plane" aria-hidden="true"></i>
+							<span class="d-none d-md-inline-block ml-2">Send</span>
+						</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="content">
-			<div class="contact-profile">
-				<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-				<p id="reci-username"></p>
-			</div>
-			<div class="messages">
-				<ul id="messages">
-					
-				</ul>
-			</div>
-			<div class="message-input">
-				<div class="wrap">
-					<input id="chat-input" type="text" class="form-control input" placeholder="Write your message..." />
-					<button class="chat-btn submit btn rounded-pill btn-primary d-flex align-items-center" id="btn-send">
-						<span class="btn-text d-none d-md-inline-block">Send</span>
-						<i class="fa fa-paper-plane" aria-hidden="true"></i>
-					</button>
-				</div>
-			</div>
-		</div>
+		
 	</div>
+</div>
+
+
 
 
 	<script>
@@ -62,10 +72,4 @@
 
 {% endblock %}
 
-<div class="wrap">
-	<img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
-	<div class="meta">
-		<p class="name">Louis Litt</p>
-		<p class="preview">You just got LITT up, Mike.</p>
-	</div>
-</div>
+

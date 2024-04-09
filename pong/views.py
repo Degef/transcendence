@@ -34,8 +34,12 @@ def home(request):
         return render(request, 'pong/index.html', context)
 
 def start_game(request):
-    logger.debug(f'\n\n{request.user.user_things.status}\n\n')
+    # logger.debug(f'\n\n{request.user.user_things.status}\n\n')
     return render(request, 'pong/start_game.html')
+
+def game_computer(request):
+    # logger.debug(f'\n\n{request.user.user_things.status}\n\n')
+    return render(request, 'pong/game_computer.html')
 
 def about(request):
     return render(request, 'pong/about.html')

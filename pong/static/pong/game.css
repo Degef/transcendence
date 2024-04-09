@@ -53,7 +53,7 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
-#start_quick_match {
+#start_play_online, #start_play_computer {
     position: absolute;
     top: 50%;
     left: 90%;
@@ -127,4 +127,10 @@ canvas {
     100% {
       transform: rotate(360deg)
     }
+  }
+
+  #play_online, #game_computer {
+    height: 50px;
+    width: 200px;
+    font-size: 20px;
   }

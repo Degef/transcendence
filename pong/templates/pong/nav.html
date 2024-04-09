@@ -1,29 +1,35 @@
 
-<header>
-	<nav class="navbar navbar-expand-lg navbar-light rounded-">
-		<div class="container-fluid navigation">
-			<a class="navbar-brand" href="#"  >
-				<img id="home" src="/media/logo.png" alt='Logo' width="90" height="90">
-			</a>
+<header class="container-xxl">
+	<nav class="navbar navbar-expand-lg">
+		<div class="row w-100 m-auto">
+			<div class="col col-3">
+				<a class="navbar-brand" href="#"  >
+					<img id="home" src="/media/logo.png" alt='Logo' width="90" height="90">
+				</a>
+			</div>
+
+
+			<div class="col offset-1 rounded rounded-pill pong-secondary">
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<div class="container">
-				<div class="col-auto">
-					<div class="collapse navbar-collapse" id="navbarNav">
-						<a class="nav-link active" aria-current="page" href="#"><i id="home" class="fa fa-home" aria-hidden="true"></i></a>
-						<a class="nav-link" href="#"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
-						<a class="nav-link" href="#"><i class="fa fa-users" aria-hidden="true"></i></a>
-						<a class="nav-link" href="#"><i class="fa fa-trophy" aria-hidden="true"></i></a>
-						<a class="nav-link" href="#" id="chatLink"><i id="chatLink" class="fa fa-comment" aria-hidden="true"></i></a>
-						{% if user.is_authenticated %}
-							<a id="profile" class="nav-link" href="#">
-								<img id="profile"  class="rounded-circle nav-img ml-4" src="{{ user.profile.image.url }}">
-							</a>
-						{% else %}
-							<a id="req_login" class="nav-link" href="#"><i id="req_login" class="fa fa-user" aria-hidden="true"></i></a>
-						{% endif %}
+				<div class="container">
+					<div class="col-auto">
+						<div class="collapse navbar-collapse justify-content-between mt-3" id="navbarTogglerDemo02">
+							<a class="nav-link active fs-2" aria-current="page" href="#"><i id="home" class="fa fa-home" aria-hidden="true"></i></a>
+							<a class="nav-link fs-2" href="#"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
+							<a class="nav-link fs-2" href="#"><i class="fa fa-users" aria-hidden="true"></i></a>
+							<a class="nav-link fs-2" href="#"><i class="fa fa-trophy" aria-hidden="true"></i></a>
+							<a class="nav-link fs-2" href="#" id="chatLink"><i id="chatLink" class="fa fa-comment" aria-hidden="true"></i></a>
+							{% if user.is_authenticated %}
+								<a id="profile" class="nav-link" href="#">
+									<img id="profile"  class="rounded-circle nav-img ml-4" src="{{ user.profile.image.url }}">
+								</a>
+							{% else %}
+								<a id="req_login" class="nav-link" href="#"><i id="req_login" class="fa fa-user" aria-hidden="true"></i></a>
+							{% endif %}
+						</div>
 					</div>
 				</div>
 			</div>
