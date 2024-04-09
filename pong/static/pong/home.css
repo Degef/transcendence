@@ -12,6 +12,25 @@ body{
 	margin-left: 30px;
 }
 
+.container-fluid.navigation {
+    width: 84%;
+    align-items: center;
+    margin-left: 10%;
+}
+
+.homeusername {
+	color: #FFF;
+	font-family: Inter;
+	font-size: 54px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: normal;
+	margin-left: 10px;
+	margin-top: 5%;
+	margin-bottom: 5%;
+}
+
+
 .container {
 	height: 110px;
 	border-radius: 35px;
@@ -37,9 +56,9 @@ body{
 .big-container {
 	background-color: #0D011A;
 	/* border: 2px solid white; */
-	max-width: 90%;
+	/* max-width: 90%;
 	height: 85%;
-	overflow-y: auto; 
+	overflow-y: auto;  */
 }
 .row{
 	padding: 20px;

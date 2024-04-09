@@ -190,3 +190,7 @@ def remove_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.remove_friend(user)
     return redirect('profile')
+
+
+def homepage(request, username):
+    return render(request, 'users/homepage.html', {'user': username})
