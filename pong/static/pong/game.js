@@ -3,7 +3,7 @@ var data = {
     'player': null,
     "paddleWidth": 10, 
     "paddleHeight": 60,
-    'paddle_speed': 5,
+    'paddle_speed': 8,
     'paddle': {'speedY': 0},
     'endGame': false,
     'score': { 'player1': 0, 'player2': 0 },
@@ -184,6 +184,7 @@ function start_play_computer() {
         speed : 7,
         color : "WHITE"
     };
+
     data2['user'] = {
         x : 0, // left side of canvas
         y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
@@ -249,6 +250,14 @@ function draw() {
 }
 
 function main_loop () {
+    if (data['gameState'].collision.paddle)
+        data['hit'].play();
+    if (data['gameState'].collision.goal)
+        data['comScore'].play();
+    if (data['gameState'].collision.wall)
+        data['wall'].play();
+
+
     data.paddle.y += data.paddle.speedY;
     // Keep paddles within the canvas
     data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
@@ -266,6 +275,13 @@ function main_loop () {
     }
     data['socket'].send(JSON.stringify(message));
     requestAnimationFrame(main_loop);
+}
+
+function getMousePos2(canvas) {
+    return function(evt) {
+        let rect = canvas.getBoundingClientRect();
+        data['paddle'].y = evt.clientY - rect.top - data['paddleHeight'] / 2;
+    }
 }
 
 function setPlayer(rec) {
@@ -295,11 +311,15 @@ function setPlayer(rec) {
         data['canvas'] = document.getElementById('gameCanvas');
         data['ctx'] = data['canvas'].getContext('2d');
 
+        
         if (data['player'] == 1) {
             data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
         } else if (data['player'] == 2) {
             data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
         }
+
+        data['canvas'].addEventListener('mousemove', getMousePos2(data['canvas']));
+        
         const message = {
             'type': 'startGame',
             'playerId': data['playerId'],
@@ -315,6 +335,15 @@ function start_play_online() {
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
+    data['hit'] = new Audio();
+    data['wall'] = new Audio();
+    data['userScore'] = new Audio();
+    data['comScore'] = new Audio();
+
+    data['hit'].src = "/static/pong/sounds/hit.mp3";
+    data['wall'].src = "/static/pong/sounds/wall.mp3";
+    data['userScore'].src = "/static/pong/sounds/userScore.mp3";
+    data['comScore'].src = "/static/pong/sounds/comScore.mp3";
 
     socket.onopen = function () {
         console.log('WebSocket connection established');
