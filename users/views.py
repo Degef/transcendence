@@ -154,7 +154,7 @@ def exchange_code(request):
 
         if existing_user:
             login(request, existing_user)
-            return render(request, 'pong/home.html', context)
+            return redirect('home')
 
         img_url = user_response['image']['versions']['small']
         # Create a new user
@@ -167,7 +167,8 @@ def exchange_code(request):
         existing_profile = Profile.objects.filter(user=user).first()
         existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
         return text
-    return render(request, 'pong/home.html', context)
+    return redirect('home')
+    # return render(request, 'pong/home.html', context)
 
 # def get_users(request):
 #     users = User.objects.exclude(username=request.user.username)

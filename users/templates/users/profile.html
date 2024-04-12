@@ -7,19 +7,19 @@
 		<div class="text-center">
 			<img class="rounded-circle account-img ml-4" src="{{ user.profile.image.url }}">
 			<h2 class="account-heading">{{ user.user_things.nick }}</h2>
-			<button class="btn p-custom-btn mt-4" type="submit">Enable 2FA</button> <br>
-			<button id="logout" class="btn p-custom-btn mt-4" type="submit">Log out</button>
+			<button class="btn btn-light mt-4" type="submit">Enable 2FA</button> <br>
+			<button id="logout" class="btn btn-light mt-4" type="submit">Log out</button>
 		</div>
 		<form id="profile-form" method="POST" class="form-signin" enctype="multipart/form-data">
 			{% csrf_token %}
 			<fieldset class="form-group text-left px-4">
 				<legend class="border-bottom mb-4">Profile Info</legend>
 				{{ u_form2|crispy }}
-				{{ u_form|crispy }}
-				{{ p_form|crispy }}
+				<p>{{ u_form|crispy }}</p>
+				<p>{{ p_form|crispy }}</p>
 			</fieldset>
 			<div class="form-group text-center">
-				<button id="update" class="btn p-custom-btn" type="submit">Update</button>
+				<button id="update" class="btn btn-light" type="submit">Update</button>
 			</div>
 		</form>
 	</div>
@@ -43,13 +43,13 @@
 						<tr  id="u_tr">
 							<td id="u_td">{{friend.username}}</td>
 							<td id="u_td">{{friend.user_things.nick}}</td>
-							<td id="u_td">{{user.date_joined|date:"d M, Y"}}</td>
+							<td id="u_td">{{user.date_joined|date:"d/m/y"}}</td>
 							<td id="u_td">{{friend.user_things.status}}</td>
 						</tr>
 					</table>
 				</div>
-				<div class="col-md-3">
-					<button class="btn btn-outline-danger align-center" onclick="removeFriend('{{friend.username}}')" >Remove Friend</button>					
+				<div class="col-md-4 text-center">
+					<button class="btn btn-danger " onclick="removeFriend('{{friend.username}}')" >Remove Friend</button>					
 				</div>
 			</div>
 	</div>
@@ -60,7 +60,7 @@
 	{% for user in users %}			
 		{% if user.username not in friends %}
 		<div class= "p-content-section">
-			<div class="media-body row">
+			<div class="media-body row m-0">
 				<div class="col-md-2 align-bottom">
 					<img class=" article-img" src="{{user.profile.image.url}}">
 				</div>
@@ -74,12 +74,12 @@
 						<tr  id="u_tr">
 							<td id="u_td">{{user.username}}</td>
 							<td id="u_td">{{user.user_things.nick}}</td>
-							<td id="u_td">{{user.date_joined|date:"d M, Y"}}</td>
+							<td id="u_td">{{user.date_joined|date:"d/m/y"}}</td>
 						</tr>
 					</table>
 				</div>
-				<div class="col-md-3">
-					<button class="btn btn-outline-success" onclick="addFriend('{{user.username}}')" >Add Friend</button>				
+				<div class="col-md-4 text-center">
+					<button class="btn btn-success" onclick="addFriend('{{user.username}}')" >Add Friend</button>				
 				</div>
 			</div>
 		</div>

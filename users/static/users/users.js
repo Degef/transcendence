@@ -65,8 +65,23 @@ function authorize42Intra() {
     window.location.href = authUrl;// Redirect the user to the 42 authorization page
 }
 
+// function updateURL(url) {
+//     console.log(url);
+//     console.log(window.location.href);
+//     if (window.location.href !== url) {
+//         window.history.pushState({ path: url }, '', url);
+//     }
+// }
+
 function updateURL(url) {
-    window.history.pushState({ path: url }, '', url);
+    // Extract the path from the current URL
+    const currentPath = window.location.pathname;
+    // Check if the current path ends with the path to be pushed
+    if (!currentPath.endsWith(url)) {
+        window.history.pushState({ path: url }, '', url);
+    } else if (url === '/') {
+        window.history.pushState({ path: url }, '', url);
+    }
 }
 
 function updateContent(htmlContent) {
@@ -77,22 +92,6 @@ function updateContent(htmlContent) {
 }
 
 function updateBody(htmlContent) {
-    // if (config.status == false) {
-    //     const soc = new WebSocket(`ws://${window.location.host}/ws/my_consumer/`);
-    //     soc.onopen = function (event) {
-    //         console.log('Connection opened online status');
-    //     };
-    //     soc.onclose = function (event) {
-    //         console.log('Connection closed online status');
-    //     }
-    //     config.status = true;
-    //     config.socket = soc;
-    // } else {
-    //     const message = {
-    //         'type': 'update_status',
-    //     };
-    //     config.socket.send(JSON.stringify(message));
-    // }
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     const newBodyContent = doc.body.innerHTML;
@@ -169,9 +168,9 @@ function homePage(back_or_forward = 1) {
     .then(response => response.text())
     .then(htmlContent => {
         updateBody(htmlContent);
+        updateURL('/');
         if (back_or_forward == 0)
             return    
-        updateURL('/');
     })
     .catch(error => {
         console.error('Error:', error);
@@ -227,7 +226,19 @@ function login(back_or_forward = 1) {
     })
     .then(response => response.text())
     .then(htmlContent => {
-        updateBody(htmlContent);        
+        // updateBody(htmlContent);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        newBodyContent = doc.body.innerHTML;
+        document.body.innerHTML = newBodyContent;
+        // console.log(doc.body.innerHTML)
+        if (doc.body.innerHTML.includes("To keep connected with us please login with your personal info")) {
+            // console.log('login page');
+            updateURL('/login/');
+        }
+        else
+            updateURL('/');
+            // console.log('not login page');
         if (back_or_forward == 0)
             return    
         // updateURL('/login/');

@@ -10,6 +10,7 @@ var data = {
 }
 
 var data2 = null;
+var game_in_progress = false;
 let intervalId;
 
 // draw a rectangle, will be used to draw paddles
@@ -47,7 +48,8 @@ function getMousePos(canvas, user) {
 function resetBall(data2){
     data2['ball'].x = data2['canvas'].width/2;
     data2['ball'].y = data2['canvas'].height/2;
-    data2['ball'].velocityX = -data2['ball'].velocityX;
+    data2['ball'].velocityX = 7;
+    data2['ball'].velocityY = 0;
     data2['ball'].speed = 7;
 }
 
@@ -95,24 +97,15 @@ function update(data2){
 
     if(collision(data2['ball'],player)){
         data2['hit'].play();
-        // where the ball hit the player
         let collidePoint = (data2['ball'].y - (player.y + player.height/2));
-        // normalization
         collidePoint = collidePoint / (player.height/2);
-
-        // calculate angle in radian
         let angleRad = (Math.PI/4) * collidePoint;
-
-        // X direction of the ball when it hits the player
         let direction = (data2['ball'].x < data2['canvas'].width/2) ? 1 : -1;
-        // change velocity X and Y
         data2['ball'].velocityX = direction * data2['ball'].speed * Math.cos(angleRad);
         data2['ball'].velocityY = data2['ball'].speed * Math.sin(angleRad);
-        // speed up the ball
-        data2['ball'].speed += 0.1;
+        data2['ball'].speed += 0.2;
     }
 
-    // change the score of players, if the ball goes to the left "ball.x<0" computer win, else if "ball.x > canvas.width" the user win
     if (data2['ball'].x - data2['ball'].radius < 0){
         data2['com'].score++;
         data2['comScore'].play();
@@ -125,21 +118,12 @@ function update(data2){
 }
 
 function render(data2) {
-    // clear the canvas
     data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
-
-    // put score
     drawText(data2['ctx'], data2['user'].score, data2['canvas'].width/4, data2['canvas'].height/5);
     drawText(data2['ctx'], data2['com'].score, 3*data2['canvas'].width/4, data2['canvas'].height/5);
-
-    // draw the net
     drawNet(data2);
-
-    // draw paddles
     drawRect(data2['ctx'], data2['user'].x, data2['user'].y, data2['user'].width, data2['user'].height, data2['user'].color);
     drawRect(data2['ctx'], data2['com'].x, data2['com'].y, data2['com'].width, data2['com'].height, data2['com'].color);
-
-    // draw the ball
     drawArc(data2, data2['ball'].x, data2['ball'].y, data2['ball'].radius, data2['ball'].color);
 }
 
@@ -151,6 +135,7 @@ function gameLoop(data2) {
         } else {
             drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
         }
+        game_in_progress = false;
         return;
     }
     update(data2);
@@ -158,6 +143,10 @@ function gameLoop(data2) {
 }
 
 function start_play_computer() {
+    if (game_in_progress) {
+        return;
+    }
+    game_in_progress = true;
     
     if (data2 == null) {
         data2 = {};
@@ -179,8 +168,8 @@ function start_play_computer() {
         x : data2['canvas'].width/2,
         y : data2['canvas'].height/2,
         radius : 10,
-        velocityX : 5,
-        velocityY : 5,
+        velocityX : 7,
+        velocityY : 0,
         speed : 7,
         color : "WHITE"
     };
