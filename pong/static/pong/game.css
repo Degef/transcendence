@@ -55,9 +55,12 @@ canvas {
 
 #start_play_online, #start_play_computer {
     position: absolute;
-    top: 50%;
+    top: 25%;
     left: 90%;
     transform: translate(-50%, -50%);
+    height: 50px;
+    width: 200px;
+    font-size: 20px;
 }
 
 #player1, #player2, #score1, #score2, #end_msg{

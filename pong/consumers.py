@@ -7,7 +7,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from pong.models import Game
 from asgiref.sync import sync_to_async
-from users.models import user_things
+import math
 
 logger = logging.getLogger(__name__)
 # class MyConsumer(AsyncWebsocketConsumer):
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 class PongConsumer(AsyncWebsocketConsumer):
     waiting_queue = []
     game_states = {}
-    paddleWidth = 5
+    paddleWidth = 10
     paddleHeight = 60
 
     async def connect(self):
@@ -72,7 +72,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             # Create a new game state and start the game
             self.game_states[self.room_group_name] = {'player1': other_user.player_id, 'player2': self.player_id, 'p1_name': other_user.scope['user'].username, 'p2_name': self.scope['user'].username}
-            self.game_states[self.room_group_name]['ball'] = {'x': 400, 'y': 200, 'speedx': 5, 'speedy': 5, 'radius': 7}
+            self.game_states[self.room_group_name]['ball'] = {'x': 300, 'y': 200, 'velocityX': 5, 'velocityY': 5, 'radius': 10, 'speed': 6}
+            self.game_states[self.room_group_name]['collision'] = {'paddle': False, 'goal': False, 'wall': False }
             self.game_states[self.room_group_name]['score1'] = 0
             self.game_states[self.room_group_name]['score2'] = 0
             self.game_states[self.room_group_name]['end'] = False
@@ -151,7 +152,19 @@ class PongConsumer(AsyncWebsocketConsumer):
         except User.DoesNotExist:
             # Handle the case where a user with the provided username does not exist
             return None
+    async def collision(self, b, p):
+        ptop = p['y']
+        pbottom = p['y'] + self.paddleHeight
+        pleft = p['x']
+        pright = p['x'] + self.paddleWidth
 
+        btop = b['y'] - b['radius']
+        bbottom = b['y'] + b['radius']
+        bleft = b['x'] - b['radius']
+        bright = b['x'] + b['radius']
+
+        return pleft < bright and ptop < bbottom and pright > bleft and pbottom > btop
+        
     async def move_ball(self):
         while True:
             # logger.debug(f"\n\nMoving ball")
@@ -159,24 +172,36 @@ class PongConsumer(AsyncWebsocketConsumer):
             ball = game_state['ball']
 
             # Update the ball position
-            ball['x'] += ball['speedx']
-            ball['y'] += ball['speedy']
+            ball['x'] += ball['velocityX']
+            ball['y'] += ball['velocityY']
 
             # Check if the ball has hit the top or bottom wall
-            if ball['y'] <= 0 or ball['y'] >= 400:
-                ball['speedy'] *= -1
+            if ball['y'] - ball['radius'] < 0 or ball['y'] + ball['radius'] >= 400:
+                game_state['collision']['wall'] = True
+                ball['velocityY'] *= -1
 
+            paddle = game_state['paddle1'] if ball['x'] < 300 else game_state['paddle2']
+            if await self.collision(ball, paddle):
+                game_state['collision']['paddle'] = True
+                collidePoint = (ball['y'] - (paddle['y'] + self.paddleHeight / 2))
+                normalizedCollidePoint = collidePoint / (self.paddleHeight / 2)
+                angleRad = normalizedCollidePoint * (3.14 / 4)
+                dir = 1 if ball['x'] < 300 else -1
+                ball['velocityX'] = dir * ball['speed'] * math.cos(angleRad)
+                ball['velocityY'] = ball['speed'] * math.sin(angleRad)
+                ball['speed'] += 0.1
             # Check if the ball has hit the left or right wall
-            if ball['x'] <= 0 or ball['x'] >= 800:
+            if ball['x'] + ball['radius'] <= 0 or ball['x'] - ball['radius'] >= 600:
+                game_state['collision']['goal'] = True
                 if ball['x'] <= 0:
                     game_state['score2'] += 1
                 else:
                     game_state['score1'] += 1
                     
-                if game_state['score1'] == 5 or game_state['score2'] == 5:
+                if game_state['score1'] == 10 or game_state['score2'] == 10:
                     await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
                     await self.send_game_state()
-                    winner = game_state['p1_name'] if game_state['score1'] == 5 else game_state['p2_name']
+                    winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -186,18 +211,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                     )
                     game_state['end'] = True
                     return
-                ball['x'] = 400
+                ball['x'] = 300
                 ball['y'] = 200
-                ball['speedx'] *= -1
+                ball['velocityX'] *= -1
+                ball['speed'] = 6
             
-            # Check if the ball has hit the paddle
-            if (ball['x'] - ball['radius'] < self.paddleWidth and 
-                game_state['paddle1']['y'] < ball['y'] < game_state['paddle1']['y'] + self.paddleHeight) and ball['speedx'] < 0:
-                ball['speedx'] *= -1
-            elif (ball['x'] + ball['radius'] > 800 - self.paddleWidth and 
-                    game_state['paddle2']['y'] < ball['y'] < game_state['paddle2']['y'] + self.paddleHeight) and ball['speedx'] > 0:
-                ball['speedx'] *= -1
             await self.send_game_state()
+            game_state['collision']['paddle'] = False
+            game_state['collision']['goal'] = False
+            game_state['collision']['wall'] = False
             await asyncio.sleep(0.01)
 
     async def send_game_state(self):

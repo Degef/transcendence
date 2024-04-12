@@ -3,25 +3,36 @@ var data = {
     'player': null,
     "paddleWidth": 10, 
     "paddleHeight": 60,
-    'paddle_speed': 5,
+    'paddle_speed': 8,
     'paddle': {'speedY': 0},
     'endGame': false,
     'score': { 'player1': 0, 'player2': 0 },
 }
 
+var data2 = null;
+let intervalId;
+
 // draw a rectangle, will be used to draw paddles
-function drawRect(data2, x, y, w, h, color){
-    data2['ctx'].fillStyle = color;
-    data2['ctx'].fillRect(x, y, w, h);
+function drawRect(ctx, x, y, w, h, color){
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
 }
 
-// draw circle, will be used to draw the ball
 function drawArc(data2, x, y, r, color){
     data2['ctx'].fillStyle = color;
     data2['ctx'].beginPath();
     data2['ctx'].arc(x,y,r,0,Math.PI*2,true);
     data2['ctx'].closePath();
     data2['ctx'].fill();
+}
+
+function drawNet(data2) {
+    data2.ctx.beginPath();
+    data2.ctx.setLineDash([5, 15]);
+    data2.ctx.moveTo(data2.canvas.width / 2, 0);
+    data2.ctx.lineTo(data2.canvas.width / 2, data2.canvas.height);
+    data2.ctx.strokeStyle = 'white';
+    data2.ctx.stroke();
 }
 
 // ################### Computer Game Logic #################
@@ -40,10 +51,16 @@ function resetBall(data2){
     data2['ball'].speed = 7;
 }
 
-function drawText(data2, text, x, y){
-    data2['ctx'].fillStyle = "#FFF";
-    data2['ctx'].font = "75px fantasy";
-    data2['ctx'].fillText(text, x, y);
+function drawText(ctx, text, x, y){
+    ctx.fillStyle = "#FFF";
+    ctx.font = "75px sans-serif";
+    ctx.fillText(text, x, y);
+}
+
+function drawText2(ctx, text, x, y, color){
+   ctx.fillStyle = "#FFF";
+   ctx.font = "25px sans-serif";
+   ctx.fillText(text, x, y);
 }
 
 function collision(b, p){
@@ -71,7 +88,7 @@ function update(data2){
 
     if(data2['ball'].y + data2['ball'].radius > data2['canvas'].height || data2['ball'].y - data2['ball'].radius < 0){
         data2['ball'].velocityY = -data2['ball'].velocityY;
-        data2['wall'].play();
+        // data2['wall'].play();
     }
 
     let player = (data2['ball'].x < data2['canvas'].width/2) ? data2['user'] : data2['com'];
@@ -96,57 +113,68 @@ function update(data2){
     }
 
     // change the score of players, if the ball goes to the left "ball.x<0" computer win, else if "ball.x > canvas.width" the user win
-    if(data2['ball'].x - data2['ball'].radius < 0){
+    if (data2['ball'].x - data2['ball'].radius < 0){
         data2['com'].score++;
         data2['comScore'].play();
         resetBall(data2);
-    }else if(data2['ball'].x + data2['ball'].radius > data2['canvas'].width){
+    } else if(data2['ball'].x + data2['ball'].radius > data2['canvas'].width){
         data2['user'].score++;
         data2['userScore'].play();
         resetBall(data2);
     }
 }
 
-function render(data2){
+function render(data2) {
     // clear the canvas
     data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
 
-    // draw the user score to the left
-    drawText(data2, data2['user'].score, data2['canvas'].width/4, data2['canvas'].height/5);
-
-    // draw the com score to the right
-    drawText(data2, data2['com'].score, 3*data2['canvas'].width/4, data2['canvas'].height/5);
+    // put score
+    drawText(data2['ctx'], data2['user'].score, data2['canvas'].width/4, data2['canvas'].height/5);
+    drawText(data2['ctx'], data2['com'].score, 3*data2['canvas'].width/4, data2['canvas'].height/5);
 
     // draw the net
-    drawRect(data2, data2['canvas'].width/2 - 1, 0, 2, data2['canvas'].height, "WHITE");
+    drawNet(data2);
 
-    // draw the user and com paddles
-    drawRect(data2, data2['user'].x, data2['user'].y, data2['user'].width, data2['user'].height, data2['user'].color);
-    drawRect(data2, data2['com'].x, data2['com'].y, data2['com'].width, data2['com'].height, data2['com'].color);
+    // draw paddles
+    drawRect(data2['ctx'], data2['user'].x, data2['user'].y, data2['user'].width, data2['user'].height, data2['user'].color);
+    drawRect(data2['ctx'], data2['com'].x, data2['com'].y, data2['com'].width, data2['com'].height, data2['com'].color);
 
     // draw the ball
     drawArc(data2, data2['ball'].x, data2['ball'].y, data2['ball'].radius, data2['ball'].color);
 }
 
-function gameLoop(data2){
+function gameLoop(data2) {
+    if (data2['user'].score == 5 || data2['com'].score == 5) {
+        clearInterval(intervalId);
+        if (data2['user'].score == 5) {
+            drawText2(data2['ctx'], "You Won",  data2['canvas'].width/6, data2['canvas'].height/2, "#333");
+        } else {
+            drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
+        }
+        return;
+    }
     update(data2);
     render(data2);
 }
 
 function start_play_computer() {
-    var data2 = {};
-    data2['hit'] = new Audio();
-    data2['wall'] = new Audio();
-    data2['userScore'] = new Audio();
-    data2['comScore'] = new Audio();
+    
+    if (data2 == null) {
+        data2 = {};
+        data2['hit'] = new Audio();
+        // data2['wall'] = new Audio();
+        data2['userScore'] = new Audio();
+        data2['comScore'] = new Audio();
+    
+        data2['hit'].src = "/static/pong/sounds/wall.mp3";
+        // data2['wall'].src = "/static/pong/sounds/wall.mp3";
+        data2['userScore'].src = "/static/pong/sounds/userScore.mp3";
+        data2['comScore'].src = "/static/pong/sounds/comScore.mp3";
+        data2['canvas'] = document.getElementById('gameCanvas');
+        data2['ctx'] = data2['canvas'].getContext('2d');
+        // console.log('data2 is not defined')
+    }
 
-    data2['hit'].src = "/static/pong/sounds/hit.mp3";
-    data2['wall'].src = "/static/pong/sounds/wall.mp3";
-    data2['userScore'].src = "/static/pong/sounds/user.mp3";
-    data2['comScore'].src = "/static/pong/sounds/com.mp3";
-
-    data2['canvas'] = document.getElementById('gameCanvas');
-    data2['ctx'] = data2['canvas'].getContext('2d');
     data2['ball'] = {
         x : data2['canvas'].width/2,
         y : data2['canvas'].height/2,
@@ -156,11 +184,12 @@ function start_play_computer() {
         speed : 7,
         color : "WHITE"
     };
+
     data2['user'] = {
         x : 0, // left side of canvas
         y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
         width : 10,
-        height : 100,
+        height : 60,
         score : 0,
         color : "WHITE"
     }
@@ -168,13 +197,13 @@ function start_play_computer() {
         x : data2['canvas'].width - 10, // - width of paddle
         y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
         width : 10,
-        height : 100,
+        height : 60,
         score : 0,
         color : "WHITE"
     }
     // canvas.addEventListener("mousemove", getMousePos);
     data2['canvas'].addEventListener("mousemove", getMousePos(data2['canvas'], data2['user']));
-    setInterval(function(){
+    intervalId = setInterval(function(){
         gameLoop(data2);
     }, 1000/50);
 }
@@ -213,12 +242,22 @@ function draw() {
         ctx.stroke();
 
         //update score
-        document.getElementById('score1').innerHTML = data['gameState']['score1'];
-        document.getElementById('score2').innerHTML = data['gameState']['score2'];
+        drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5, 'white');
+        drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5, 'white');
+        // document.getElementById('score1').innerHTML = data['gameState']['score1'];
+        // document.getElementById('score2').innerHTML = data['gameState']['score2'];
     }
 }
 
 function main_loop () {
+    if (data['gameState'].collision.paddle)
+        data['hit'].play();
+    if (data['gameState'].collision.goal)
+        data['comScore'].play();
+    if (data['gameState'].collision.wall)
+        data['wall'].play();
+
+
     data.paddle.y += data.paddle.speedY;
     // Keep paddles within the canvas
     data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
@@ -238,6 +277,13 @@ function main_loop () {
     requestAnimationFrame(main_loop);
 }
 
+function getMousePos2(canvas) {
+    return function(evt) {
+        let rect = canvas.getBoundingClientRect();
+        data['paddle'].y = evt.clientY - rect.top - data['paddleHeight'] / 2;
+    }
+}
+
 function setPlayer(rec) {
     if (data['player'] == null) {
         if (rec['gameState']['player1'] == data['playerId']) {
@@ -246,10 +292,10 @@ function setPlayer(rec) {
             data['player'] = 2;
         }
 
-        data['username1'] = rec['gameState']['p1_name']
-        data['username2'] = rec['gameState']['p2_name']
-        document.getElementById('player1').innerHTML = data['username1'];
-        document.getElementById('player2').innerHTML = data['username2'];
+        // data['username1'] = rec['gameState']['p1_name']
+        // data['username2'] = rec['gameState']['p2_name']
+        // document.getElementById('player1').innerHTML = data['username1'];
+        // document.getElementById('player2').innerHTML = data['username2'];
         
         const canvasContainer = document.querySelector('.canvas_container');
 
@@ -267,11 +313,15 @@ function setPlayer(rec) {
         // data['canvas'].width = window.innerWidth;
         // data['canvas'].height = window.innerHeight;
 
+        
         if (data['player'] == 1) {
             data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
         } else if (data['player'] == 2) {
             data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
         }
+
+        data['canvas'].addEventListener('mousemove', getMousePos2(data['canvas']));
+        
         const message = {
             'type': 'startGame',
             'playerId': data['playerId'],
@@ -287,6 +337,15 @@ function start_play_online() {
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
+    data['hit'] = new Audio();
+    data['wall'] = new Audio();
+    data['userScore'] = new Audio();
+    data['comScore'] = new Audio();
+
+    data['hit'].src = "/static/pong/sounds/hit.mp3";
+    data['wall'].src = "/static/pong/sounds/wall.mp3";
+    data['userScore'].src = "/static/pong/sounds/userScore.mp3";
+    data['comScore'].src = "/static/pong/sounds/comScore.mp3";
 
     socket.onopen = function () {
         console.log('WebSocket connection established');
