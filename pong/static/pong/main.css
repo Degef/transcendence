@@ -234,6 +234,10 @@ canvas {
     margin: 20px auto;
 }
 
+.custom-border-radius {
+    border-radius: 20px!important;
+}
+
 .nav-link{
 	color: #DDEEF1;
 }

@@ -191,6 +191,6 @@ def remove_friend(request, username):
     request.user.user_things.remove_friend(user)
     return redirect('profile')
 
-
+@login_required
 def homepage(request, username):
     return render(request, 'users/homepage.html', {'user': username})
