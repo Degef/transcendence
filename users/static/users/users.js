@@ -93,6 +93,7 @@ function updateBody(htmlContent) {
     //     };
     //     config.socket.send(JSON.stringify(message));
     // }
+	// console.log(htmlContent);
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     const newBodyContent = doc.body.innerHTML;
@@ -148,10 +149,10 @@ function chatPage(back_or_forward = 1) {
     .then(response => response.text())
     .then(htmlContent => {
         updateBody(htmlContent);
-        // initializeChat();
         if (back_or_forward == 0)
-            return    
+			return    
         updateURL('/chat/');
+        handleUserSelection();
     })
     .catch(error => {
         console.error('Error:', error);

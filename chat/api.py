@@ -9,6 +9,7 @@ from rest_framework.authentication import SessionAuthentication
 from chat import settings
 from .serializers import MessageModelSerializer, UserModelSerializer
 from .models import MessageModel
+from users.models import user_things
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -56,12 +57,19 @@ class MessageModelViewSet(ModelViewSet):
 
 
 class UserModelViewSet(ModelViewSet):
-    queryset = User.objects.all()
     serializer_class = UserModelSerializer
     allowed_methods = ('GET', 'HEAD', 'OPTIONS')
     pagination_class = None  # Get all user
 
     def list(self, request, *args, **kwargs):
-        # Get all users except yourself
-        self.queryset = self.queryset.exclude(id=request.user.id)
-        return super(UserModelViewSet, self).list(request, *args, **kwargs)
+        username = kwargs.get('username')
+        
+        user_instance = get_object_or_404(User, username=username)
+
+
+        if user_instance:
+            serializer = self.get_serializer(user_instance)
+            user_username = user_instance
+            return Response(serializer.data)
+        else:
+            return Response({'username': None})

@@ -1,57 +1,73 @@
+.contact-profile { 
+	width: 30%;
+	height: 100px; 
+	display: flex;
+	align-items: center;
+	padding: 10px;
+}
+
 .contact-profile img {
-	width: 40px;
+	width: 15%;
+	width: 60px;
+	height: 60px;
 	border-radius: 50%;
-	float: left;
-	margin: 9px 12px 0 9px;
-}
-
-.contact-profile p {
-	float: left;
-}
-
-.contact-profile .social-media {
-	float: right;
-}
-
-.contact-profile .social-media i {
-	margin-left: 14px;
-	cursor: pointer;
-}
-
-.contact-profile .social-media i:nth-last-child(1) {
-	margin-right: 20px;
-}
-
-.contact-profile .social-media i:hover {
-	color: #435f7a;
+	margin-right: 15px;
 }
 
 .messages {
-	padding-left: -20px;
 	height: auto;
-	/* overflow-y: scroll; */
+	min-height: calc(100% - 230px);
+	max-height: calc(100% - 93px);
+	overflow-y: scroll;
 	overflow-x: hidden;
 }
 
-.sent img {
+@media screen and (max-width: 735px) {
+	.messages {
+		max-height: calc(100% - 105px);
+	}
+}
+
+.messages::-webkit-scrollbar {
+	width: 8px;
+	background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.messages ul li {
+	display: inline-block;
+	clear: both;
+	margin: 15px 15px 5px 15px;
+	width: calc(100% - 25px);
+	font-size: 0.9em;
+}
+
+.messages ul li:nth-last-child(1) {
+	margin-bottom: 20px;
+}
+
+.messages ul li.sent img {
 	width: 20px;
 	height: 20px;
 	margin: 6px 8px 0 0;
 }
 
-.sent p {
+.messages ul li.sent p {
 	background: #2685BF;
 	color: #DDEEF1;
 }
 
-.replies img {
+.messages ul li.replies img {
 	width: 20px;
 	height: 20px;
 	float: right;
 	margin: 6px 0 0 8px;
 }
 
-.replies p {
+.messages ul li.replies p {
 	background: #0C1D40;
 	color: #DDEEF1;
 	float: right;
@@ -69,4 +85,10 @@
 	border-radius: 20px;
 	max-width: 205px;
 	line-height: 130%;
+}
+
+@media screen and (min-width: 735px) {
+	.messages ul li p {
+		max-width: 300px;
+	}
 }

@@ -1,35 +1,29 @@
 let currentRecipient = '';
-const chatInput = document.getElementById('chat-input');
-const chatButton = document.getElementById('btn-send');
+let chatButton = document.getElementById('btn-send');
 let userList = document.getElementById("user-list");
-let messageList = document.getElementById("messages");
 let miniImage = '';
 
-function updateUserList() {
-	fetch('api/user/')
-		.then(response => response.json())
-	  	.then(data => {
-			const userList = document.getElementById('user-list');
-			userList.innerHTML = `
-				<a href="" class="list-group-item disabled">
-					
-				</a>`;
-			data.forEach(userData => {
-				const userItem = document.createElement('a');
-				userItem.classList.add('list-group-item', 'user');
-				userItem.textContent = userData.username;
-				userItem.addEventListener('click', function() {
-					const userListChildren = userList.querySelectorAll('.user');
-					userListChildren.forEach(child => child.classList.remove('active'));
-					userItem.classList.add('active');
-					setCurrentRecipient(userData);
+function handleUserSelection() {
+	const userList = document.getElementById('user-list');
+	const userItems = userList.querySelectorAll('a.list-group-item');
+
+	userItems.forEach(userItem => {
+		userItem.addEventListener('click', function(event) {
+			event.preventDefault();
+			userItems.forEach(child => child.classList.remove('active'));
+			userItem.classList.add('active');
+
+			const username = userItem.innerText.trim();
+			fetch(`api/user/${username}/`)
+				.then(response => response.json())
+				.then(userProfile => {
+					setCurrentRecipient(userProfile);
+				})
+				.catch(error => {
+					console.error('Error fetching user profile:', error);
 				});
-				userList.appendChild(userItem);
 			});
-		})
-		.catch(error => {
-			console.error('Error fetching user data:', error);
-		});
+	});
 }
 
 
@@ -47,13 +41,14 @@ function drawMessage(message) {
 			<img src="${miniProfileImage}" alt="" />
 			<p>${message.body}</p>
 		</li>`;
-	console.log(messageItem);
 	
 	document.getElementById('messages').innerHTML += messageItem;
 }
 
 
 function getConversation(recipient) {
+	document.getElementById("messages").innerHTML = "";
+	let messageList = document.getElementById("messages");
 	fetch(`api/message/?target=${recipient}`)
 		.then(response => response.json())
 		.then(data => {
@@ -66,7 +61,7 @@ function getConversation(recipient) {
 			messageList.scrollTop = messageList.scrollHeight;
 		})
 		.catch(error => {
-			console.log(response)
+			console.log(data)
 			console.error('Error fetching conversation:', error);
 		});
 }
@@ -74,6 +69,7 @@ function getConversation(recipient) {
 
 function getMessageById(message) {
 	const id = JSON.parse(message).message;
+	let messageList = document.getElementById("messages");
 	fetch(`api/message/${id}/`)
 		.then(response => response.json())
 		.then(data => {
@@ -107,62 +103,110 @@ function sendMessage(recipient, body) {
 	})
 	.catch(error => {
 		console.error('Error:', error);
-		alert('Error! Check console!');
 	});
 }
 
 
 function setCurrentRecipient(userData) {
-	miniImage = userData.profile.image
+	miniImage = userData.profile.image;
 	currentRecipient = userData.username;
-	const profileLook = `
-		<div class="contact-profile">
-			<img src=${userData.profile.image} alt="" />
-			<p>${currentRecipient}</p>
-		</div>`;
 
-	const contactProfileElement = document.querySelector('.contact-profile');
-	contactProfileElement.innerHTML = profileLook;
+	const profileImageElement = document.getElementById('profile-image');
+	profileImageElement.src = userData.profile.image;
+	
+	const recipientNameElement = document.getElementById('recipient-name');
+	recipientNameElement.textContent = currentRecipient;
+
+	
 	getConversation(currentRecipient);
-	enableInput();
 }
 
 
-function enableInput() {
-	chatInput.disabled = false;
-	chatButton.disabled = false;
-	chatInput.focus();
-}
-
-
-function disableInput() {
-	chatInput.disabled = true;
-	chatButton.disabled = true;
+function sanitizeInput(input) {
+	return input.replace(/&/g, "&amp;")
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;")
+				.replace(/"/g, "&quot;")
+				.replace(/'/g, "&#x27;")
+				.replace(/\//g, "&#x2F;");
 }
 
 
 function initializeChat() {
-    updateUserList();
-    disableInput();
+	
+	
+	var socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
+	
+	socket.onopen = function() {
+		console.log("WebSocket Established!")
+	};
+	
+	let chatInput = document.getElementById('chat-input');
 
-    var socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
+	chatButton.addEventListener('click', function () {
+		const sanitized_input = sanitizeInput(chatInput.value);
+		if (sanitized_input.length > 0) {
+			sendMessage(currentRecipient, sanitized_input);
+			chatInput.value = '';
+		}
+	});
+	
 
-    chatInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter')
-            chatButton.click();
-    });
-
-    chatButton.addEventListener('click', function () {
-        if (chatInput.value.length > 0) {
-            sendMessage(currentRecipient, chatInput.value);
-            chatInput.value = '';
-        }
-    });
-
-    socket.addEventListener('message', function (e) {
-        getMessageById(e.data);
-    });
+	socket.addEventListener('message', function (e) {
+		getMessageById(e.data);
+	});
 }
 
-initializeChat();
+let chatLink = document.getElementById("chatLink");
 
+chatLink.addEventListener('click', function () {
+    initializeChat();
+	handleUserSelection();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    initializeChat();
+    handleUserSelection();
+});
+
+
+
+function setupSearchFunctionality() {
+	const userList = document.getElementById("user-list");
+	const searchInput = document.getElementById("search-input");
+	const searchButton = document.getElementById("search-button");
+
+	const originalUserNames = Array.from(userList.children).map(function (user) {
+		return user.textContent.trim();
+	});
+
+	searchButton.addEventListener("click", function () {
+		const searchText = searchInput.value.toLowerCase();
+		filterUsers(searchText);
+	});
+
+	searchInput.addEventListener("input", function () {
+		const searchText = searchInput.value.toLowerCase();
+		filterUsers(searchText);
+	});
+
+	function filterUsers(searchText) {
+		const filteredUserNames = originalUserNames.filter(function (userName) {
+			return userName && userName.toLowerCase().includes(searchText);
+		});
+		displayFilteredUsers(filteredUserNames);
+	}
+
+	function displayFilteredUsers(filteredUserNames) {
+        userList.innerHTML = "";
+        filteredUserNames.forEach(function (userName) {
+            const listItem = document.createElement("a");
+            listItem.classList.add("list-group-item");
+            listItem.textContent = userName;
+            userList.appendChild(listItem);
+        });
+    }
+
+}
+
+document.addEventListener("DOMContentLoaded", setupSearchFunctionality);

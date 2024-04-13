@@ -7,7 +7,8 @@ from .api import MessageModelViewSet, UserModelViewSet
 router = DefaultRouter()
 
 router.register(r'message', MessageModelViewSet, basename='message-api')
-router.register(r'user', UserModelViewSet, basename='user-api')
+router.register(r'user/(?P<username>\w+)', UserModelViewSet, basename='user-api')
+# router.register(r'user', UserModelViewSet, basename='user-api')
 
 urlpatterns = [
 	path(r'api/', include(router.urls)),
