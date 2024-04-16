@@ -24,6 +24,11 @@ function handleButtonClick(event) {
         event.preventDefault();
     }
     if (buttonFunctions.hasOwnProperty(buttonId)) {
+        if (game_in_progress) {
+            terminate_game = true;
+            buttonFunctions[buttonId](event);
+            return;
+        }
         buttonFunctions[buttonId](event);
     }
 }

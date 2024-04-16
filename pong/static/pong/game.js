@@ -11,6 +11,7 @@ var data = {
 
 var data2 = null;
 var game_in_progress = false;
+var terminate_game = false;
 let intervalId;
 
 // draw a rectangle, will be used to draw paddles
@@ -115,6 +116,8 @@ function update(data2){
         data2['userScore'].play();
         resetBall(data2);
     }
+     // Keep paddles within the canvas
+     data2['user'].y = Math.max(0, Math.min(data2['canvas'].height - data2['user'].height, data2['user'].y));
 }
 
 function render(data2) {
@@ -136,6 +139,11 @@ function gameLoop(data2) {
             drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
         }
         game_in_progress = false;
+        return;
+    } else if (terminate_game) {
+        clearInterval(intervalId);
+        game_in_progress = false;
+        terminate_game = false;
         return;
     }
     update(data2);
@@ -159,10 +167,12 @@ function start_play_computer() {
         // data2['wall'].src = "/static/pong/sounds/wall.mp3";
         data2['userScore'].src = "/static/pong/sounds/userScore.mp3";
         data2['comScore'].src = "/static/pong/sounds/comScore.mp3";
-        data2['canvas'] = document.getElementById('gameCanvas');
-        data2['ctx'] = data2['canvas'].getContext('2d');
         // console.log('data2 is not defined')
+    } else {
+        data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
     }
+    data2['canvas'] = document.getElementById('gameCanvas');
+    data2['ctx'] = data2['canvas'].getContext('2d');
 
     data2['ball'] = {
         x : data2['canvas'].width/2,
@@ -233,8 +243,6 @@ function draw() {
         //update score
         drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5, 'white');
         drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5, 'white');
-        // document.getElementById('score1').innerHTML = data['gameState']['score1'];
-        // document.getElementById('score2').innerHTML = data['gameState']['score2'];
     }
 }
 
@@ -245,7 +253,6 @@ function main_loop () {
         data['comScore'].play();
     if (data['gameState'].collision.wall)
         data['wall'].play();
-
 
     data.paddle.y += data.paddle.speedY;
     // Keep paddles within the canvas
@@ -260,7 +267,14 @@ function main_loop () {
     };
     if (data['endGame']) {
         data['endGame'] = false;
+        game_in_progress = false;
         return
+    }
+    if (terminate_game) {
+        terminate_game = false;
+        game_in_progress = false;
+        data['socket'].close();
+        return;
     }
     data['socket'].send(JSON.stringify(message));
     requestAnimationFrame(main_loop);
@@ -281,11 +295,6 @@ function setPlayer(rec) {
             data['player'] = 2;
         }
 
-        // data['username1'] = rec['gameState']['p1_name']
-        // data['username2'] = rec['gameState']['p2_name']
-        // document.getElementById('player1').innerHTML = data['username1'];
-        // document.getElementById('player2').innerHTML = data['username2'];
-        
         const canvasContainer = document.querySelector('.canvas_container');
 
         // Find the wait_load div
@@ -295,7 +304,8 @@ function setPlayer(rec) {
         if (waitLoadDiv) {
             // Remove the wait_load div
             canvasContainer.removeChild(waitLoadDiv);
-}
+            document.getElementById('end_game').innerHTML = "";
+        }
 
         data['canvas'] = document.getElementById('gameCanvas');
         data['ctx'] = data['canvas'].getContext('2d');
@@ -321,6 +331,11 @@ function setPlayer(rec) {
 }
 
 function start_play_online() {
+    if (game_in_progress) {
+        return;
+    }
+    game_in_progress = true;
+
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
@@ -369,6 +384,8 @@ function start_play_online() {
     socket.onclose = function () {
         console.log('WebSocket connection closed');
         data['endGame'] = true;
+        data['playerId'] = null;
+        game_in_progress = false;
     }
 
     window.addEventListener('keydown', (e) => {
