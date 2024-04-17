@@ -33,6 +33,12 @@ def home(request):
         context = { 'games': Game.objects.all()}
         return render(request, 'pong/index.html', context)
 
+def homepage(request):
+    context = { 'user' : request.user}
+    # return render(request, 'pong/home.html', context)
+    return render(request, 'pong/homepage.html', context)
+
+
 def start_game(request):
     # logger.debug(f'\n\n{request.user.user_things.status}\n\n')
     return render(request, 'pong/start_game.html')

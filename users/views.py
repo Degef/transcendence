@@ -68,7 +68,8 @@ class CustomLoginView(LoginView):
         form = self.get_form()
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('home')
+            return redirect('homepage')
+            # return redirect('home')
         else:
             return render(request, 'users/login.html', {'form': form})
 
@@ -192,5 +193,5 @@ def remove_friend(request, username):
     return redirect('profile')
 
 @login_required
-def homepage(request, username):
-    return render(request, 'users/homepage.html', {'user': username})
+def homepage2(request, username):
+    return render(request, 'users/homepage2.html', {'user': username})

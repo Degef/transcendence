@@ -434,3 +434,19 @@ function game_computer() {
         console.error('Error:', error);
     });
 }
+
+function quickmatch() {
+    fetch('/start_game/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

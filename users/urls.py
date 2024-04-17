@@ -14,5 +14,5 @@ urlpatterns = [
     path('exchange_code/', views.exchange_code, name='exchange_code'),
     path('add_friend/<str:username>/', views.add_friend, name='add_friend'),
     path('remove_friend/<str:username>/', views.remove_friend, name='remove_friend'),
-    path('homepage/<str:username>/', views.homepage, name='homepage'),
+    path('homepage2/<str:username>/', views.homepage2, name='homepage2'),
 ]

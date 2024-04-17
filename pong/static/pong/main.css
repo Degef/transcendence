@@ -259,3 +259,13 @@ canvas {
 .pong-primary {
 	background-color: #0D011A;
 }
+
+/* homepage.html  */
+p.fw-bold.title {
+    color: #DDEEF1;
+}
+
+p.fs-1.fw-bold.title {
+    margin-top: 7%;
+    margin-left: 10%;
+}

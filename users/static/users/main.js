@@ -17,6 +17,7 @@ function handleButtonClick(event) {
         'game_computer': game_computer,
         'start_play_online': start_play_online,
 		'chatLink' : chatPage,
+        'quickmatch': quickmatch,
     };
     
     const buttonId = event.target.id;
@@ -24,6 +25,7 @@ function handleButtonClick(event) {
         event.preventDefault();
     }
     if (buttonFunctions.hasOwnProperty(buttonId)) {
+        console.log(buttonId);
         buttonFunctions[buttonId](event);
     }
 }
