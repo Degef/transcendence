@@ -198,15 +198,27 @@ function setupSearchFunctionality() {
 	}
 
 	function displayFilteredUsers(filteredUserNames) {
-        userList.innerHTML = "";
-        filteredUserNames.forEach(function (userName) {
-            const listItem = document.createElement("a");
-            listItem.classList.add("list-group-item");
-            listItem.textContent = userName;
-            userList.appendChild(listItem);
-        });
-    }
-
+		userList.innerHTML = "";
+		filteredUserNames.forEach(function (userName) {
+			const listItem = document.createElement("a");
+			listItem.classList.add("list-group-item");
+			listItem.textContent = userName;
+	
+			listItem.addEventListener("click", function () {
+				fetch(`api/user/${userName}/`)
+				.then(response => response.json())
+				.then(userProfile => {
+					setCurrentRecipient(userProfile);
+				})
+				.catch(error => {
+					console.error('Error fetching user profile:', error);
+				});
+			});
+	
+			userList.appendChild(listItem);
+		});
+	}
+	
 }
 
 document.addEventListener("DOMContentLoaded", setupSearchFunctionality);
