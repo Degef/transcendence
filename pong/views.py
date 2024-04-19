@@ -54,3 +54,12 @@ def unload(request):
             user_thing.save()
             # logger.debug(f'\n\n{user_thing.status}\n\n')
     return JsonResponse({'success': False})
+
+def challengeUser(request, username):
+    logger.debug(f'\n\n{username}\n\n')
+    challenged = User.objects.get(username=username)
+    challenged_thing = challenged.user_things
+    challenged_thing.is_challenged = True
+    challenged_thing.save()
+    
+    return JsonResponse({'success': True})
