@@ -17,19 +17,19 @@
 								<th  id="u_th">Username</th>
 								<th  id="u_th">Nickname</th>
 								<th  id="u_th">Date Joined</th>
-								<th  id="u_th">Status</th>
+								<!-- <th  id="u_th">Status</th> -->
 							</tr>
 							<tr  id="u_tr">
 								<td id="u_td">{{user.username}}</td>
 								<td id="u_td">{{user.user_things.nick}}</td>
 								<td id="u_td">{{user.date_joined|date:"d/m/y"}}</td>
-								<td id="u_td">{{user.user_things.status}}</td>
+								<!-- <td id="u_td">{{user.user_things.status}}</td> -->
 							</tr>
 						</table>
 					</div>
-					<!-- <div class="col-md-3">
-						<button class="btn btn-outline-light" onclick="challenge('{{user.username}}')" >Challenge</button>				
-					</div> -->
+					<div class="col-md-3">
+						<button class="btn btn-outline-light" onclick="challengeUser('{{user.username}}')" >Challenge</button>				
+					</div>
 				</div>
 			</div>							  
 		{% endfor %}
