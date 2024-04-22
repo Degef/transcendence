@@ -25,15 +25,30 @@ function handleButtonClick(event) {
         event.preventDefault();
     }
     if (buttonFunctions.hasOwnProperty(buttonId)) {
-        console.log(buttonId);
         buttonFunctions[buttonId](event);
     }
 }
 
+function handleQuickmatchClick(event) {
+    event.preventDefault();
+    quickmatch();
+}
+
+function handlePlayvsComputermatchClick(event) {
+    event.preventDefault();
+    game_computer();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     document.body.addEventListener('click', handleButtonClick);
+
+    var quickmatchLink = document.getElementById('quickmatch');
+    quickmatchLink.addEventListener('click', handleQuickmatchClick);
+    var quickmatchLink = document.getElementById('playVsComputer');
+    quickmatchLink.addEventListener('click', handlePlayvsComputermatchClick);
 }
 );
+
 
 window.onpopstate = function (event) {
     if (event.state == null)
