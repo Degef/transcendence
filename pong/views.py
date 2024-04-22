@@ -60,6 +60,38 @@ def challengeUser(request, username):
     challenged = User.objects.get(username=username)
     challenged_thing = challenged.user_things
     challenged_thing.is_challenged = True
+    challenged_thing.challenger = request.user.username
     challenged_thing.save()
+
+    challenging = request.user.user_things
+    challenging.challenged_user = username
+    challenging.save()
     
+    return JsonResponse({'success': True})
+
+
+def is_challenged(request):
+    user_thing = request.user.user_things
+    if user_thing.is_challenged:
+        user_thing.is_challenged = False
+        chall = user_thing.challenger
+        user_thing.challenger = None
+        user_thing.save()
+        return JsonResponse({'success': True, 'challenged': True, 'challenger': chall })
+    else:
+        return JsonResponse({'success': True, 'challenged': False})
+
+def check_challenge_response(request):
+    challenged_user = User.objects.get(username=request.user.user_things.challenged_user)
+    things = challenged_user.user_things
+    response = things.challenge_response
+    if (response == 'accept' or response == 'decline'):
+        things.challenge_response = None
+        things.save()
+    return JsonResponse({'response': response})    
+
+def give_challenged_response(request, response):
+    user_thing = request.user.user_things
+    user_thing.challenge_response = response
+    user_thing.save()
     return JsonResponse({'success': True})

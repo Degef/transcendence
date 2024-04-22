@@ -170,18 +170,6 @@ def exchange_code(request):
     return redirect('home')
     # return render(request, 'pong/home.html', context)
 
-# def get_users(request):
-#     users = User.objects.exclude(username=request.user.username)
-#     friends = request.user.user_things.friends.values_list('username', flat=True)
-#     friends2 = request.user.user_things.friends.all()
-
-#     context = {
-#         'users': users,
-#         'friends': friends,
-#         'friends2': friends2
-#     }
-#     return render(request, 'users/users.html', context)
-
 def add_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.add_friend(user)
@@ -191,3 +179,4 @@ def remove_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.remove_friend(user)
     return redirect('profile')
+

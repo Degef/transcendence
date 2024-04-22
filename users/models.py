@@ -28,6 +28,8 @@ class user_things(models.Model):
     last_activity = models.DateTimeField(null=True, blank=True)
     is_challenged = models.BooleanField(null=True, default=False)
     challenge_response = models.CharField(max_length=20, null=True)
+    challenger = models.CharField(max_length=20, null=True)
+    challenged_user = models.CharField(max_length=20, null=True)
 
     def add_friend(self, friend):
         self.friends.add(friend)
