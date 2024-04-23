@@ -132,7 +132,7 @@ canvas {
     }
   }
 
-  #play_online, #game_computer {
+  #play_online, #game_computer, #local_game {
     height: 50px;
     width: 200px;
     font-size: 20px;

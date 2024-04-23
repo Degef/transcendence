@@ -16,6 +16,7 @@ function handleButtonClick(event) {
         'play_online': play_online,
         'game_computer': game_computer,
         'start_play_online': start_play_online,
+        'local_game': local_game,
 		'chatLink' : chatPage,
     };
     

@@ -37,7 +37,7 @@ function drawNet(data2) {
     data2.ctx.stroke();
 }
 
-// ################### Computer Game Logic #################
+// ###################################### VS Computer Game ####################################
 
 function getMousePos(canvas, user) {
     return function(evt) {
@@ -334,6 +334,10 @@ function start_play_online() {
     if (game_in_progress) {
         return;
     }
+    if (challengeInterval != null) {
+        clearInterval(challengeInterval);
+        challengeInterval = null;
+    }
     game_in_progress = true;
 
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
@@ -378,6 +382,7 @@ function start_play_online() {
             // };
             // data['socket'].send(JSON.stringify(message));
             data.socket.close();
+            start_challenge_checking();
         }
     }
 
@@ -425,6 +430,22 @@ function play_online() {
 
 function game_computer() {
     fetch('/game_computer/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function local_game() {
+    fetch('/local_game/', {
         method: 'GET',
         headers: {
             'Content-Type': 'text/html',

@@ -34,12 +34,13 @@ def home(request):
         return render(request, 'pong/index.html', context)
 
 def start_game(request):
-    # logger.debug(f'\n\n{request.user.user_things.status}\n\n')
     return render(request, 'pong/start_game.html')
 
 def game_computer(request):
-    # logger.debug(f'\n\n{request.user.user_things.status}\n\n')
     return render(request, 'pong/game_computer.html')
+
+def local_game(request):
+    return render(request, 'pong/local_game.html')
 
 def about(request):
     return render(request, 'pong/about.html')
@@ -75,7 +76,7 @@ def is_challenged(request):
     if user_thing.is_challenged:
         user_thing.is_challenged = False
         chall = user_thing.challenger
-        user_thing.challenger = None
+        user_thing.challenger = "None"
         user_thing.save()
         return JsonResponse({'success': True, 'challenged': True, 'challenger': chall })
     else:
@@ -86,8 +87,13 @@ def check_challenge_response(request):
     things = challenged_user.user_things
     response = things.challenge_response
     if (response == 'accept' or response == 'decline'):
-        things.challenge_response = None
+        logger.debug(f'\n\n{response}\n\n')
+        things.challenge_response = 'None'
         things.save()
+        things2 = request.user.user_things
+        things2.challenged_user = 'None'
+        things2.save()
+        logger.debug(f'\n\n{things.challenge_response}\n\n')
     return JsonResponse({'response': response})    
 
 def give_challenged_response(request, response):

@@ -1,5 +1,5 @@
-var challengeInterval;
-var challengeInterval2;
+var challengeInterval = null;
+var challengeInterval2 = null;
 
 function check_challenge_response() {
     fetch('/check_challenge_response/', {
@@ -13,15 +13,19 @@ function check_challenge_response() {
                 console.log(data)
                 if (data.response === 'accept') {
                     clearInterval(challengeInterval2)
+                    clearInterval(challengeInterval)
+                    challengeInterval = null;
                     console.log('Challenge accepted')
                     play_online();
-                    setTimeout(start_play_online, 3000);
+                    setTimeout(start_play_online, 2000);
                 } else if (data.response === 'decline'){
                     console.log('Challenge declined')
                     clearInterval(challengeInterval2)
-                } else {
-                    console.log('No response yet')
-                }
+                    start_challenge_checking();
+                } 
+                // else {
+                //     console.log('No response yet')
+                // }
             })
         } else {console.log('Failed to check response')}
     }).catch(error => {
@@ -58,7 +62,9 @@ function challengeUser(username) {
 function give_challenged_response(response) {
     if (response === 'accept') {
         play_online();
-        setTimeout(start_play_online, 3000);
+        setTimeout(start_play_online, 2000);
+    } else {
+        start_challenge_checking();
     }
     fetch(`/give_challenged_response/${response}`, {
         method: 'GET',
@@ -91,15 +97,16 @@ function is_challenged() {
     }).then(response => {
         if (response.status === 200) {
             response.json().then(data => {
-                console.log(data)
+                // console.log(data)
                 if (data.challenged) {
                     console.log('Challenged')
                     clearInterval(challengeInterval)
+                    challengeInterval = null;
                     confirm('You have been challenged by ' + data.challenger + '. Do you accept?') ? give_challenged_response("accept") : give_challenged_response("decline")
-                    // window.location.href = '/pong/game'
-                } else {
-                    console.log('Not challenged')
                 }
+                // else {
+                //     console.log('Not challenged')
+                // }
             })
         } else {console.log('Failed to check if challenged')}
     }).catch(error => {
