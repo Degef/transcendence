@@ -1,5 +1,22 @@
 
+function isAnchorElement(element) {
+    // Check if the element itself is an anchor
+    if (element.tagName === "A") {
+        return true;
+    }
+    // Check if any of the element's ancestors are anchors
+    let ancestor = element.parentElement;
+    while (ancestor) {
+        if (ancestor.tagName === "A") {
+            return true;
+        }
+        ancestor = ancestor.parentElement;
+    }
+    return false;
+}
+
 function handleButtonClick(event) {
+    console.log(event);
     const buttonFunctions = {
         'about': aboutPage,
         'home': homePage,
@@ -19,8 +36,9 @@ function handleButtonClick(event) {
 		'chatLink' : chatPage,
         'quickmatch': quickmatch,
     };
-    
+
     const buttonId = event.target.id;
+    console.log(buttonId);
     if (buttonId != 'id_image') {
         event.preventDefault();
     }
@@ -29,23 +47,9 @@ function handleButtonClick(event) {
     }
 }
 
-function handleQuickmatchClick(event) {
-    event.preventDefault();
-    quickmatch();
-}
-
-function handlePlayvsComputermatchClick(event) {
-    event.preventDefault();
-    game_computer();
-}
 
 document.addEventListener('DOMContentLoaded', function () {
     document.body.addEventListener('click', handleButtonClick);
-
-    var quickmatchLink = document.getElementById('quickmatch');
-    quickmatchLink.addEventListener('click', handleQuickmatchClick);
-    var quickmatchLink = document.getElementById('playVsComputer');
-    quickmatchLink.addEventListener('click', handlePlayvsComputermatchClick);
 }
 );
 

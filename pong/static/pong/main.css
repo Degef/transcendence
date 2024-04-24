@@ -262,6 +262,7 @@ canvas {
 
 /* homepage.html  */
 p.fw-bold.title {
+    font-size: 1.5rem !important;
     color: #DDEEF1;
 }
 

@@ -436,7 +436,7 @@ function game_computer() {
 }
 
 function quickmatch() {
-    fetch('/start_game/', {
+    fetch('/home/', {
         method: 'GET',
         headers: {
             'Content-Type': 'text/html',
