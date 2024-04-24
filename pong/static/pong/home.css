@@ -50,10 +50,10 @@ body{
 	height: 15%;
     background-color: #DDEEF1;
     border-radius: 15px; 
-    /* padding: 10px 10px; */
-    padding: 3vh 2vh;
-    /* margin-bottom: 15px; */
-    margin-bottom: 6vh;
+    padding: 10px 10px;
+    /* padding: 3vh 2vh; */
+    margin-bottom: 15px;
+    /* margin-bottom: 6vh; */
     width: calc(100% - 20px);
 	position: relative;
     display: flex;
@@ -61,4 +61,8 @@ body{
     align-items: center;
 }
 
+
+.myhistory {
+    color: #DDEEF1;
+}
 

@@ -35,6 +35,7 @@ function handleButtonClick(event) {
         'start_play_online': start_play_online,
 		'chatLink' : chatPage,
         'quickmatch': quickmatch,
+        'matchhistory': matchhistory,
     };
 
     const buttonId = event.target.id;

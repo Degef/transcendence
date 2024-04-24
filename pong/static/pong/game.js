@@ -450,3 +450,19 @@ function quickmatch() {
         console.error('Error:', error);
     });
 }
+
+function matchhistory() {
+    fetch('/history/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

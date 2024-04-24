@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import logging
 from django.db import transaction
+from django.contrib.auth import login
 
 logger = logging.getLogger(__name__)
 
@@ -64,3 +65,10 @@ def unload(request):
             user_thing.save()
             # logger.debug(f'\n\n{user_thing.status}\n\n')
     return JsonResponse({'success': False})
+
+def matchhistory(request):
+    print("hello world")
+    form = Game.objects.all()
+    context = {'matches' : form}
+    print(form)
+    return render(request, 'pong/history.html', context)

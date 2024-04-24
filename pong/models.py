@@ -25,3 +25,4 @@ class Game(models.Model):
     def save(self, *args, **kwargs):
         self.determine_winner()
         super().save(*args, **kwargs)
+
