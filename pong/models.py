@@ -9,6 +9,9 @@ class Game(models.Model):
     player2_score = models.IntegerField(default=0)
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', null=True)
     date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-date']
 
     def __str__(self):
         return f'{self.player1} vs {self.player2}'

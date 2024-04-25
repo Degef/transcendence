@@ -7,6 +7,7 @@ from django.http import JsonResponse
 import logging
 from django.db import transaction
 from django.contrib.auth import login
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,11 @@ def home(request):
         return render(request, 'pong/index.html', context)
 
 def homepage(request):
-    context = { 'user' : request.user}
+    user = request.user
+    username = request.user.id
+    form = Game.objects.filter(Q(player1 = username) | Q(player2 = username)).order_by('-date')
+
+    context = {'user': user, 'mhistory' : form}
     # return render(request, 'pong/home.html', context)
     return render(request, 'pong/homepage.html', context)
 
@@ -67,8 +72,8 @@ def unload(request):
     return JsonResponse({'success': False})
 
 def matchhistory(request):
-    print("hello world")
-    form = Game.objects.all()
-    context = {'matches' : form}
-    print(form)
+    username = request.user.id
+    form = Game.objects.filter(Q(player1 = username) | Q(player2 = username)).order_by('-date')
+
+    context = {'mhistory' : form}
     return render(request, 'pong/history.html', context)

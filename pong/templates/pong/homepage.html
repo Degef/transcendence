@@ -25,7 +25,7 @@
 					</div>
 					
 					<div class="col-7 bg-light p-2">
-                        <p class="fs-1 fw-bold title"> Welcome {{ user }}</p>
+                        <p class="fs-1 fw-bold title"> Welcome {{user}}</p>
                         <img src="/media/svg_2.png" class="figure-img img-fluid rounded mx-auto d-block" alt="...">
 						
 					</div>
@@ -78,11 +78,11 @@
 							<p id="matchhistory" class="fs-2 fw-bold title"> Match History</p>
 						</a>
 						<div class="notification-list row align-items-center justify-content-between">
-							<div class="notification-row">Notification 1</div>
-							<div class="notification-row">Notification 2</div>
-							<div class="notification-row">Notification 3</div>
-							<div class="notification-row">Notification 4</div>
-							<div class="notification-row">Notification 5</div>
+							{%for match in mhistory%}
+							  
+							<!-- <div class= "notification-row p-history-section first">
+							</div> -->
+						{%endfor%}
 						</div>
 					</div>
 				</div>	

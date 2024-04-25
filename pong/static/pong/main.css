@@ -56,6 +56,11 @@ main {
     margin-right: 16px;
 }
 
+.article-img4 {
+    height: 15px;
+    width: 15px;
+}
+
 .article-img2 {
     height: 20px;
     width: 20px;
@@ -233,6 +238,10 @@ main {
     justify-content: center;
 }
 
+.align-bottom.pname.plyr2 {
+    text-align: right;
+}
+
 .p-custom-btn {
     background-color: #0D011A;
     color: #fff;
@@ -325,3 +334,5 @@ p.fs-1.fw-bold.title {
     width: 98%;
     padding-top: 10px;
 }
+
+

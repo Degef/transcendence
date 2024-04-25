@@ -5,32 +5,31 @@
 {% block content%}
 
 <div class="container-fluid rounded-4 history">
-    <div class= "p-content-section second">
-        <div class="media-body row pl1">
-            <div class="align-bottom">
-                <img class=" article-img" src="{{user.profile.image.url}}">
+    {%for match in mhistory%}
+        <div class= "p-content-section second">
+            <div class="media-body row pl1">
+                <div class="align-bottom">
+                    <img class=" article-img" src="{{user.profile.image.url}}">
+                </div>
+                <div class="align-bottom pname plyr1">
+                    {{match.player1}}
+                </div>
+                <div class="scorebx">
+                    <div class="score-box">{{match.player1_score}}</div>				
+                </div>
             </div>
-            <div class="align-bottom pname">
-                player1
-            </div>
-            <div class="scorebx plyr1">
-                <div class="score-box">10</div>				
+            <div class="media-body row pl2">
+                <div class="scorebx">
+                    <div class="score-box">{{match.player2_score}}</div>				
+                </div>
+                <div class="align-bottom pname plyr2">
+                    {{match.player2}}
+                </div>
+                <div class="align-bottom">
+                    <img class=" article-img" src="{{user.profile.image.url}}">
+                </div>
             </div>
         </div>
-        <div class="media-body row pl2">
-            <div class="scorebx plyr2">
-                <div class="score-box">8</div>				
-            </div>
-            <div class="align-bottom pname">
-                player2
-            </div>
-            <div class="align-bottom">
-                <img class=" article-img" src="{{user.profile.image.url}}">
-            </div>
-        </div>
-    </div>
-    {%for match in context%}
-            <li class="myhistory"> {{match.player1.username}} vs {{match.player2.username}} </li>
     {%endfor%}
 
 </div>
