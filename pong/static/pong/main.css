@@ -336,3 +336,48 @@ p.fs-1.fw-bold.title {
 }
 
 
+.list-group.list-group-horizontal {
+  margin-top: 0.75rem !important;
+}
+
+@media (max-width: 600px) {
+    .container-fluid {
+        width: 100%;
+    }
+    
+}
+
+
+.player-box {
+    background:  #DDEEF1;
+    width: 100%;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.player-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.player-img.pl1 {
+    margin-right: 10px;
+}
+.player-img.pl2 {
+    margin-left: auto;
+}
+
+.player-name {
+    font-weight: bold;
+    font-size: 0.5rem;
+    margin-right: 2px;
+}
+.score {
+    margin-right: 2px;
+    border: 1px solid black;
+    font-size: 0.5rem;
+}

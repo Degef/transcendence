@@ -79,10 +79,18 @@
 						</a>
 						<div class="notification-list row align-items-center justify-content-between">
 							{%for match in mhistory%}
-							  
-							<!-- <div class= "notification-row p-history-section first">
-							</div> -->
-						{%endfor%}
+								<div class="player-box">
+									<img src="{{user.profile.image.url}}" alt="Player 1" class="player-img pl1">
+									<span class="player-name">{{match.player1}}</span>
+									<span class="score">{{match.player1_score}}</span>  <span class="score">{{match.player2_score}}</span>
+									<span class="player-name">{{match.player2}}</span>
+									<img src="{{user.profile.image.url}}" alt="Player 2" class="player-img pl2">
+								</div>
+								<!-- <ul class="list-group list-group-horizontal">
+									<li class="list-group-item">An item</li>
+									<li class="list-group-item">An item</li>
+								</ul> -->
+							{%endfor%}
 						</div>
 					</div>
 				</div>	
