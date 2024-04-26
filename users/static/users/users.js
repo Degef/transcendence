@@ -152,7 +152,7 @@ function chatPage(back_or_forward = 1) {
         if (back_or_forward == 0)
 			return    
         updateURL('/chat/');
-        handleUserSelection();
+        initializeChat();
     })
     .catch(error => {
         console.error('Error:', error);

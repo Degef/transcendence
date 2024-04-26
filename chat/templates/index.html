@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div class="container-fluid rounded-4 pong-secondary" style="height: 83vh;">
+<div class="container-fluid rounded-4 pong-secondary" id="chat-container" style="height: 83vh;">
 	<div class="row h-100">
 		<side class="col-3 border-3 border-end p-0" style="border-color: #0C1D40 !important">
 			<div class="justify-content-start border-2 py-4 mb-1 row w-100 ms-3">
@@ -27,7 +27,7 @@
 			</div>
 			
 			<div class="contacts px-3">
-				<ul class="user-list list-group" id="user-list">
+				<ul class="user-list list-group" id="user-listt">
 					{% for friend in friends %}
 						<a id="user-list-link" href="" class="list-group-item">
 							{{ friend }}
@@ -45,7 +45,18 @@
 				</div>
 				<div class="col align-self-end d-flex justify-content-end me-5" style="height: 100px;">
 					<a class="fs-1 me-5 mt-3" href="#" style="color: #DDEEF1;"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
-					<a class="fs-1 ms-5 mt-3" href="#" style="color: #DDEEF1;"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+					<a class="fs-1 ms-5 mt-3" href="#" style="color: #DDEEF1;"><i class="fa fa-ellipsis-v" aria-hidden="true" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"></i></a>
+
+
+					<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+						<div class="offcanvas-header">
+							<h5 id="offcanvasRightLabel">Offcanvas right</h5>
+							<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+						</div>
+						<div class="offcanvas-body">
+							...
+						</div>
+					</div>
 				</div>
 			</div>
 

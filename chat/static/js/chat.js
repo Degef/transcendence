@@ -1,30 +1,33 @@
 let currentRecipient = '';
-let chatButton = document.getElementById('btn-send');
-let userList = document.getElementById("user-list");
 let miniImage = '';
 
 function handleUserSelection() {
-	const userList = document.getElementById('user-list');
-	const userItems = userList.querySelectorAll('a.list-group-item');
-
-	userItems.forEach(userItem => {
-		userItem.addEventListener('click', function(event) {
-			event.preventDefault();
-			userItems.forEach(child => child.classList.remove('active'));
-			userItem.classList.add('active');
-
-			const username = userItem.innerText.trim();
-			fetch(`api/user/${username}/`)
-				.then(response => response.json())
-				.then(userProfile => {
-					setCurrentRecipient(userProfile);
-				})
-				.catch(error => {
-					console.error('Error fetching user profile:', error);
+	// console.log(document.body.innerHTML);
+	const userList = document.getElementById('user-listt');
+	if (userList) {
+		const userItems = userList.querySelectorAll('#user-list-link');
+		userItems.forEach(userItem => {
+			userItem.addEventListener('click', function(event) {
+				event.preventDefault();
+				userItems.forEach(child => child.classList.remove('active'));
+				userItem.classList.add('active');
+	
+				const username = userItem.innerText.trim();
+				fetch(`api/user/${username}/`)
+					.then(response => response.json())
+					.then(userProfile => {
+						setCurrentRecipient(userProfile);
+					})
+					.catch(error => {
+						console.error('Error fetching user profile:', error);
+					});
 				});
-			});
-	});
+		});
+	} else {
+		console.log("Yes it coming here")
+	}
 }
+
 
 
 function drawMessage(message) {
@@ -131,44 +134,68 @@ function sanitizeInput(input) {
 				.replace(/\//g, "&#x2F;");
 }
 
+let socket = null;
 
 function initializeChat() {
+
+	if (socket)
+		socket.close();
 	
-	
-	var socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
-	
-	socket.onopen = function() {
-		console.log("WebSocket Established!")
-	};
+	if (!socket || socket.readyState !== WebSocket.OPEN) {
+		socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
+
+		socket.onopen = function(event) {
+			console.log('WebSocket connection established');
+		};
+
+		socket.onmessage = function(event) {
+			getMessageById(event.data);
+			console.log('Message received:', event.data);
+		};
+
+		socket.onerror = function(event) {
+			console.error('WebSocket error:', event);
+		};
+
+		socket.onclose = function(event) {
+			console.log('WebSocket connection closed');
+		};
+	} else {
+		console.log("WebSocket Connection Already Established!");
+	}
+
 	
 	let chatInput = document.getElementById('chat-input');
-
-	chatButton.addEventListener('click', function () {
-		const sanitized_input = sanitizeInput(chatInput.value);
-		if (sanitized_input.length > 0) {
-			sendMessage(currentRecipient, sanitized_input);
-			chatInput.value = '';
-		}
-	});
 	
+	let chatButton = document.getElementById('btn-send');
+	if (chatButton) {
+		chatButton.addEventListener('click', function () {
+			const sanitized_input = sanitizeInput(chatInput.value);
+			if (sanitized_input.length > 0) {
+				sendMessage(currentRecipient, sanitized_input);
+				chatInput.value = '';
+			}
+		});
+	}
 
-	socket.addEventListener('message', function (e) {
-		getMessageById(e.data);
-	});
+	handleUserSelection();
+	// setupSearchFunctionality();
 }
 
-let chatLink = document.getElementById("chatLink");
-
-chatLink.addEventListener('click', function () {
-    initializeChat();
-	handleUserSelection();
+window.addEventListener('popstate', function(event) {
+	if (window.location.pathname === '/chat/') {
+		// console.log(document.body.innerHTML);
+		handleUserSelection();
+		// setupSearchFunctionality();
+	}
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    initializeChat();
-    handleUserSelection();
+window.addEventListener('DOMContentLoaded', function(event) {
+	if (window.location.pathname === '/chat/') {
+		chatPage(0);
+		initializeChat();
+	}
 });
-
 
 
 function setupSearchFunctionality() {
@@ -176,26 +203,29 @@ function setupSearchFunctionality() {
 	const searchInput = document.getElementById("search-input");
 	const searchButton = document.getElementById("search-button");
 
-	const originalUserNames = Array.from(userList.children).map(function (user) {
-		return user.textContent.trim();
-	});
-
-	searchButton.addEventListener("click", function () {
-		const searchText = searchInput.value.toLowerCase();
-		filterUsers(searchText);
-	});
-
-	searchInput.addEventListener("input", function () {
-		const searchText = searchInput.value.toLowerCase();
-		filterUsers(searchText);
-	});
-
-	function filterUsers(searchText) {
-		const filteredUserNames = originalUserNames.filter(function (userName) {
-			return userName && userName.toLowerCase().includes(searchText);
+	if (userList) {
+		const originalUserNames = Array.from(userList.children).map(function (user) {
+			return user.textContent.trim();
 		});
-		displayFilteredUsers(filteredUserNames);
+
+		searchButton.addEventListener("click", function () {
+			const searchText = searchInput.value.toLowerCase();
+			filterUsers(searchText);
+		});
+	
+		searchInput.addEventListener("input", function () {
+			const searchText = searchInput.value.toLowerCase();
+			filterUsers(searchText);
+		});
+	
+		function filterUsers(searchText) {
+			const filteredUserNames = originalUserNames.filter(function (userName) {
+				return userName && userName.toLowerCase().includes(searchText);
+			});
+			displayFilteredUsers(filteredUserNames);
+		}
 	}
+
 
 	function displayFilteredUsers(filteredUserNames) {
 		userList.innerHTML = "";
@@ -221,4 +251,3 @@ function setupSearchFunctionality() {
 	
 }
 
-document.addEventListener("DOMContentLoaded", setupSearchFunctionality);
