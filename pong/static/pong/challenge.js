@@ -88,6 +88,27 @@ function give_challenged_response(response) {
     );
 }
 
+function customConfirm(message, onAccept, onDecline) {
+    var modal = document.getElementById('custom-confirm');
+    var messageElement = document.getElementById('challenge-message');
+    var acceptButton = document.getElementById('accept-button');
+    var declineButton = document.getElementById('decline-button');
+  
+    messageElement.innerText = message;
+  
+    acceptButton.onclick = function() {
+      modal.style.display = "none";
+      onAccept();
+    }
+  
+    declineButton.onclick = function() {
+      modal.style.display = "none";
+      onDecline();
+    }
+  
+    modal.style.display = "block";
+  }
+
 function is_challenged() {
     fetch('/is_challenged/', {
         method: 'GET',
@@ -97,12 +118,16 @@ function is_challenged() {
     }).then(response => {
         if (response.status === 200) {
             response.json().then(data => {
-                // console.log(data)
-                if (data.challenged) {
+                if (data.success && data.challenged) {
                     console.log('Challenged')
                     clearInterval(challengeInterval)
                     challengeInterval = null;
-                    confirm('You have been challenged by ' + data.challenger + '. Do you accept?') ? give_challenged_response("accept") : give_challenged_response("decline")
+                    // confirm('You have been challenged by ' + data.challenger + '. Do you accept?') ? give_challenged_response("accept") : give_challenged_response("decline")
+                    customConfirm(data.challenger + " is challenging you to pong game rightnow " + '. Do you accept?', function() {
+                        give_challenged_response("accept");
+                      }, function() {
+                        give_challenged_response("decline");
+                      });
                 }
                 // else {
                 //     console.log('Not challenged')
@@ -120,5 +145,8 @@ function start_challenge_checking() {
         is_challenged();
     }, 3000);
 }
+
+
+  
 
 start_challenge_checking();

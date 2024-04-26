@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Game
 from django.contrib.auth.models import User
 from users.models import user_things
@@ -6,6 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import logging
 from django.db import transaction
+from django.views.generic import View
+from django.contrib.auth.decorators import login_required
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,10 @@ def home(request):
         context = { 'games': Game.objects.all()}
         return render(request, 'pong/index.html', context)
 
+class FaviconView(View):
+    def get(self, request, *args, **kwargs):
+        return redirect('/static/pong/favicon.ico')
+
 def start_game(request):
     return render(request, 'pong/start_game.html')
 
@@ -56,6 +63,7 @@ def unload(request):
             # logger.debug(f'\n\n{user_thing.status}\n\n')
     return JsonResponse({'success': False})
 
+
 def challengeUser(request, username):
     logger.debug(f'\n\n{username}\n\n')
     challenged = User.objects.get(username=username)
@@ -70,8 +78,9 @@ def challengeUser(request, username):
     
     return JsonResponse({'success': True})
 
-
 def is_challenged(request):
+    if (request.user.is_authenticated == False):
+        return JsonResponse({'success': False})
     user_thing = request.user.user_things
     if user_thing.is_challenged:
         user_thing.is_challenged = False
