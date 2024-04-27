@@ -80,7 +80,7 @@ function collision(b, p){
     return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
 }
 
-function update(data2){
+function updateGame(data2){
     // update the ball
     data2['ball'].x += data2['ball'].velocityX;
     data2['ball'].y += data2['ball'].velocityY;
@@ -146,7 +146,7 @@ function gameLoop(data2) {
         terminate_game = false;
         return;
     }
-    update(data2);
+    updateGame(data2);
     render(data2);
 }
 
@@ -412,50 +412,3 @@ function start_play_online() {
     });
 }
 
-function play_online() {
-    fetch('/start_game/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function game_computer() {
-    fetch('/game_computer/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function local_game() {
-    fetch('/local_game/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}

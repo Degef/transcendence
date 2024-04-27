@@ -40,7 +40,7 @@ class FaviconView(View):
     def get(self, request, *args, **kwargs):
         return redirect('/static/pong/favicon.ico')
 
-def start_game(request):
+def play_online(request):
     return render(request, 'pong/start_game.html')
 
 def game_computer(request):
