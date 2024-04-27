@@ -1,7 +1,7 @@
 var challengeInterval = null;
 var challengeInterval2 = null;
 
-function check_challenge_response() {
+function check_challenge_response(check_response_count) {
     fetch('/check_challenge_response/', {
         method: 'GET',
         headers: {
@@ -10,7 +10,7 @@ function check_challenge_response() {
     }).then(response => {
         if (response.status === 200) {
             response.json().then(data => {
-                console.log(data)
+                // console.log(data)
                 if (data.response === 'accept') {
                     clearInterval(challengeInterval2)
                     clearInterval(challengeInterval)
@@ -22,10 +22,14 @@ function check_challenge_response() {
                     console.log('Challenge declined')
                     clearInterval(challengeInterval2)
                     start_challenge_checking();
-                } 
-                // else {
-                //     console.log('No response yet')
-                // }
+                } else if (check_response_count > 15) {
+                    console.log('No response, challenge expired')
+                    clearInterval(challengeInterval2)
+                    start_challenge_checking();
+                }
+                else {
+                    console.log('Waiting for response...')
+                }
             })
         } else {console.log('Failed to check response')}
     }).catch(error => {
@@ -45,8 +49,10 @@ function challengeUser(username) {
                 console.log(data)
                 if (data.success) {
                     console.log('Challenge sent')
+                    let check_response_count = 0;
                     challengeInterval2 = setInterval(function(){
-                        check_challenge_response();
+                        check_challenge_response(check_response_count);
+                        check_response_count++;                        
                     }, 1000);
                 } else {
                     console.log('Failed to send challenge')
@@ -145,8 +151,5 @@ function start_challenge_checking() {
         is_challenged();
     }, 3000);
 }
-
-
-  
 
 start_challenge_checking();

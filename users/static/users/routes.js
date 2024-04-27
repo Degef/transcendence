@@ -27,10 +27,6 @@ function get_ipaddress() {
         });
 }
 
-function loginWith42(back_or_forward = 1) {
-    handleRoute(`http://${config.ipaddress}:8000/exchange_code?code=${code}`);
-}
-
 function authorize42Intra() {
     const clientId = config.client_id;
     const redirectUri = config.redirect_uri;
@@ -42,21 +38,10 @@ function authorize42Intra() {
 }
 
 function updateURL(url) {
-    // Extract the path from the current URL
     const currentPath = window.location.pathname;
-    // Check if the current path ends with the path to be pushed
-    if (!currentPath.endsWith(url)) {
-        window.history.pushState({ path: url }, '', url);
-    } else if (url === '/') {
+    if (!currentPath.endsWith(url) || url === '/') {
         window.history.pushState({ path: url }, '', url);
     }
-}
-
-function updateContent(htmlContent) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, 'text/html');
-    const newContent = doc.getElementById('content');
-    document.getElementById('content').innerHTML = newContent.innerHTML;
 }
 
 function updateBody(htmlContent) {
@@ -67,52 +52,57 @@ function updateBody(htmlContent) {
 }
 
 
+function homePage(back_or_forward = 1) {
+    handleRoute('/', back_or_forward);
+}
+
+function loginWith42() {
+    handleRoute(`http://${config.ipaddress}:8000/exchange_code?code=${code}`);
+}
 
 function aboutPage(back_or_forward = 1) {
-    handleRoute('/about/');
+    handleRoute('/about/', back_or_forward);
 }
 
 function chatPage(back_or_forward = 1) {
-    handleRoute('/chat/');
-}
-
-function homePage(back_or_forward = 1) {
-    handleRoute('/');
+    handleRoute('/chat/', back_or_forward);
 }
 
 function req_registration_page(back_or_forward = 1) {
-    handleRoute('/register/');
+    handleRoute('/register/', back_or_forward);
 }
 
 function profile(back_or_forward = 1) {
-    handleRoute('/profile/');
+    handleRoute('/profile/', back_or_forward);
 }
 
 function req_login_page(back_or_forward = 1) {
-    handleRoute('/login/');
+    handleRoute('/login/', back_or_forward);
 }
 
-function addFriend(name, back_or_forward) {
+function addFriend(name) {
     handleRoute(`/add_friend/${name}`, 0);
 }
 
-function removeFriend(name, back_or_forward) {
+function removeFriend(name) {
     handleRoute(`/remove_friend/${name}`, 0);
 }
 
-function play_online() {
-    handleRoute('/play_online/');
+function play_online(back_or_forward = 1) {
+    handleRoute('/play_online/', back_or_forward);
 }
 
-function game_computer() {
-    handleRoute('/game_computer/');
+function game_computer(back_or_forward = 1) {
+    handleRoute('/game_computer/', back_or_forward);
 }
 
-function local_game() {
-    handleRoute('/local_game/');
+function local_game(back_or_forward = 1) {
+    handleRoute('/local_game/', back_or_forward);
 }
 
-
+window.addEventListener('unload', function() {
+    navigator.sendBeacon('/unload/');
+});
 
 function handleRoute(path, back_or_forward = 1) {
     fetch(path, {
@@ -132,10 +122,6 @@ function handleRoute(path, back_or_forward = 1) {
         console.error('Error:', error);
     });
 }
-
-window.addEventListener('unload', function() {
-    navigator.sendBeacon('/unload/');
-});
 
 function handleButtonClick(event) {
     const buttonFunctions = {
@@ -174,11 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
 );
 
 window.onpopstate = function(event) {
-
     const routeFunctions = {
+        '/home/': homePage,
         '/about/': aboutPage,
         '/chat/': chatPage,
-        '/home/': homePage,
         '/register/': req_registration_page,
         '/login/': req_login_page,
         '/logout/': logout,
@@ -191,7 +176,6 @@ window.onpopstate = function(event) {
     };
     
     const path = event.state ? event.state.path : '/';
-    console.log(path)
     const handler = routeFunctions[path] || homePage;
     handler(0);
 };
