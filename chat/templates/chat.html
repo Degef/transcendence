@@ -3,26 +3,18 @@
 {% load static %}
 
 
-
-{% block header %}
-	{% include "pong/nav.html" %}
-{% endblock %}
-
 {% block content %}
 
-<div class="container-fluid rounded-4 pong-secondary" id="chat-container" style="height: 83vh;">
+<div class="container-fluid rounded-4 pong-secondary" id="chat-container" style="height: 80vh;">
 	<div class="row h-100">
 		<side class="col-3 border-3 border-end p-0" style="border-color: #0C1D40 !important">
-			<div class="justify-content-start border-2 py-4 mb-1 row w-100 ms-3">
-				<p class='fs-1 text-white'>Chats</p>
+			<div class="justify-content-start row w-100 ms-1">
+				<p class='fs-2 mt-3 text-white'>Chats</p>
 			</div>
 			
-			<div class="search px-3 pb-3 mb-3 ">
+			<div class="px-3 pb-3 mb-3 d-none d-md-block">
 				<div class="input-group pt-3">
 					<input type="text" class="form-control" placeholder="Search contacts..." id="search-input"/>
-					<div class="input-group-append">
-						<button class="btn btn-primary" type="button" id="search-button"><i class="fa fa-search" aria-hidden="true"></i></button>
-					</div>
 				</div>
 			</div>
 			
@@ -36,17 +28,16 @@
 					{% endfor %}
 				</ul>
 			</div>
-			
 		</side>
 		
 		<div class="col-9 d-flex flex-column" style="display:none !important;" id="chat-display">
-			<div class="shadow p-3 mb-2 row text-center py-4 border-bottom border-3 d-flex align-items-center" style="border-color: #0C1D40 !important">
+			<div class="shadow p-3 mb-2 row text-center py-4 border-bottom border-3 d-flex align-items-center" style="border-color: #0C1D40 !important;">
 				<div class="contact-profile ms-4 col">
 					<img id="profile-image" src="" alt=""/>
-					<p id="recipient-name" class="fs-2 p-2 mt-3 text-white pt-2"></p>
+					<p id="recipient-name" class="fs-4 p-2 mt-3 text-white pt-2"></p>
 				</div>
 				<div class="col align-self-end d-flex justify-content-end me-5" style="height: 100px;">
-					<a class="fs-1 me-5 mt-3" href="#" style="color: #DDEEF1;"><i class="fa fa-gamepad" aria-hidden="true"></i></a>
+					<a class="fs-1 me-5 mt-3" href="#" style="color: #DDEEF1;" id="gamepad"><i class="fa fa-gamepad" aria-hidden="true" type="button" id="gamepad"></i></a>
 					<a class="fs-1 ms-5 mt-3" href="#" style="color: #DDEEF1;"><i class="fa fa-ellipsis-v" aria-hidden="true" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"></i></a>
 
 

@@ -17,4 +17,4 @@ def chat(request):
 		'friends': friend_profiles
 	}
 
-	return render(request, 'index.html', context)
+	return render(request, 'chat.html', context)

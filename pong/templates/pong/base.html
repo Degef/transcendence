@@ -19,10 +19,14 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'pong/css/game.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'pong/css/home.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Yatra+One&display=swap" rel="stylesheet">
 	</head>
 
 	<body>
-		<main class="container-xxl border border-5 border-success" id="main-container">
+		<main class="container-xxl" id="main-container">
 			{% block login %} {% endblock %}
 			{% include "pong/nav.html" %}
 			{% block content %} {% endblock %}
@@ -39,8 +43,8 @@
         <script src="{% static 'users/route-functions.js' %}"></script>
         <script src="{% static 'users/routes.js' %}"></script>
         <script src="{% static 'pong/js/game.js' %}"></script>
-        <script src="{%static 'pong/js/challenge.js'%}"></script>
-        <script src="{%static 'pong/js/local_game.js'%}"></script>
+        <script src="{% static 'pong/js/challenge.js'%}"></script>
+        <script src="{% static 'pong/js/local_game.js'%}"></script>
 		<script src="{% static 'js/chat.js' %}"></script>
 	</body>
 </html>

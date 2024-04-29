@@ -1,33 +1,30 @@
 let currentRecipient = '';
 let miniImage = '';
 
+let gamepadLink = null;
+
 
 function handleUserSelection() {
-	setTimeout(function() {
-		// console.log(document.body.innerHTML);
-		const userList = document.getElementById('user-listt');
-		if (userList) {
-			const userItems = userList.querySelectorAll('#user-list-link');
-			userItems.forEach(userItem => {
-				userItem.addEventListener('click', function(event) {
-					event.preventDefault();
-					userItems.forEach(child => child.classList.remove('active'));
-					userItem.classList.add('active');
-					const username = userItem.innerText.trim();
-					fetch(`api/user/${username}/`)
-					.then(response => response.json())
-					.then(userProfile => {
-						setCurrentRecipient(userProfile);
-					})
-					.catch(error => {
-						console.error('Error fetching user profile:', error);
-					});
+	const userList = document.getElementById('user-listt');
+	if (userList) {
+		const userItems = userList.querySelectorAll('#user-list-link');
+		userItems.forEach(userItem => {
+			userItem.addEventListener('click', function(event) {
+				event.preventDefault();
+				userItems.forEach(child => child.classList.remove('active'));
+				userItem.classList.add('active');
+				const username = userItem.innerText.trim();
+				fetch(`api/user/${username}/`)
+				.then(response => response.json())
+				.then(userProfile => {
+					setCurrentRecipient(userProfile);
+				})
+				.catch(error => {
+					console.error('Error fetching user profile:', error);
 				});
 			});
-		} else {
-			console.log("Yes it coming here")
-		}
-	}, 1000);
+		});
+	}
 }
 
 
@@ -125,6 +122,12 @@ function setCurrentRecipient(userData) {
 
 	
 	getConversation(currentRecipient);
+	gamepadLink = document.getElementById('gamepad')
+	gamepadLink.addEventListener('click', function(event) {
+		event.preventDefault();
+		challengeUser(currentRecipient);
+	});
+	
 }
 
 
@@ -188,7 +191,7 @@ function initializeChat() {
 
 window.addEventListener('DOMContentLoaded', function(event) {
 	if (window.location.pathname === '/chat/') {
-		initializeChat();
+		setTimeout(initializeChat, 1000);
 	}
 });
 
