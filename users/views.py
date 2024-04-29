@@ -154,7 +154,7 @@ def exchange_code(request):
 
         if existing_user:
             login(request, existing_user)
-            return render(request, 'pong/home.html', context)
+            return redirect('home')
 
         img_url = user_response['image']['versions']['small']
         # Create a new user
@@ -167,19 +167,8 @@ def exchange_code(request):
         existing_profile = Profile.objects.filter(user=user).first()
         existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
         return text
-    return render(request, 'pong/home.html', context)
-
-# def get_users(request):
-#     users = User.objects.exclude(username=request.user.username)
-#     friends = request.user.user_things.friends.values_list('username', flat=True)
-#     friends2 = request.user.user_things.friends.all()
-
-#     context = {
-#         'users': users,
-#         'friends': friends,
-#         'friends2': friends2
-#     }
-#     return render(request, 'users/users.html', context)
+    return redirect('home')
+    # return render(request, 'pong/home.html', context)
 
 def add_friend(request, username):
     user = User.objects.get(username=username)
@@ -190,3 +179,4 @@ def remove_friend(request, username):
     user = User.objects.get(username=username)
     request.user.user_things.remove_friend(user)
     return redirect('profile')
+

@@ -72,7 +72,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             # Create a new game state and start the game
             self.game_states[self.room_group_name] = {'player1': other_user.player_id, 'player2': self.player_id, 'p1_name': other_user.scope['user'].username, 'p2_name': self.scope['user'].username}
-            self.game_states[self.room_group_name]['ball'] = {'x': 300, 'y': 200, 'velocityX': 5, 'velocityY': 5, 'radius': 10, 'speed': 6}
+            self.game_states[self.room_group_name]['ball'] = {'x': 300, 'y': 200, 'velocityX': 4, 'velocityY': 0, 'radius': 10, 'speed': 4}
             self.game_states[self.room_group_name]['collision'] = {'paddle': False, 'goal': False, 'wall': False }
             self.game_states[self.room_group_name]['score1'] = 0
             self.game_states[self.room_group_name]['score2'] = 0
@@ -211,10 +211,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                     )
                     game_state['end'] = True
                     return
+                ball['velocityY'] = 0
+                ball['velocityX'] = 4 if ball['x'] < 300 else -4
                 ball['x'] = 300
                 ball['y'] = 200
-                ball['velocityX'] *= -1
-                ball['speed'] = 6
+                # ball['velocityX'] *= -1
+                ball['speed'] = 4
             
             await self.send_game_state()
             game_state['collision']['paddle'] = False

@@ -10,6 +10,8 @@ var data = {
 }
 
 var data2 = null;
+var game_in_progress = false;
+var terminate_game = false;
 let intervalId;
 
 // draw a rectangle, will be used to draw paddles
@@ -35,7 +37,7 @@ function drawNet(data2) {
     data2.ctx.stroke();
 }
 
-// ################### Computer Game Logic #################
+// ###################################### VS Computer Game ####################################
 
 function getMousePos(canvas, user) {
     return function(evt) {
@@ -47,7 +49,8 @@ function getMousePos(canvas, user) {
 function resetBall(data2){
     data2['ball'].x = data2['canvas'].width/2;
     data2['ball'].y = data2['canvas'].height/2;
-    data2['ball'].velocityX = -data2['ball'].velocityX;
+    data2['ball'].velocityX = 7;
+    data2['ball'].velocityY = 0;
     data2['ball'].speed = 7;
 }
 
@@ -77,7 +80,7 @@ function collision(b, p){
     return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
 }
 
-function update(data2){
+function updateGame(data2){
     // update the ball
     data2['ball'].x += data2['ball'].velocityX;
     data2['ball'].y += data2['ball'].velocityY;
@@ -95,24 +98,15 @@ function update(data2){
 
     if(collision(data2['ball'],player)){
         data2['hit'].play();
-        // where the ball hit the player
         let collidePoint = (data2['ball'].y - (player.y + player.height/2));
-        // normalization
         collidePoint = collidePoint / (player.height/2);
-
-        // calculate angle in radian
         let angleRad = (Math.PI/4) * collidePoint;
-
-        // X direction of the ball when it hits the player
         let direction = (data2['ball'].x < data2['canvas'].width/2) ? 1 : -1;
-        // change velocity X and Y
         data2['ball'].velocityX = direction * data2['ball'].speed * Math.cos(angleRad);
         data2['ball'].velocityY = data2['ball'].speed * Math.sin(angleRad);
-        // speed up the ball
-        data2['ball'].speed += 0.1;
+        data2['ball'].speed += 0.2;
     }
 
-    // change the score of players, if the ball goes to the left "ball.x<0" computer win, else if "ball.x > canvas.width" the user win
     if (data2['ball'].x - data2['ball'].radius < 0){
         data2['com'].score++;
         data2['comScore'].play();
@@ -122,24 +116,17 @@ function update(data2){
         data2['userScore'].play();
         resetBall(data2);
     }
+     // Keep paddles within the canvas
+     data2['user'].y = Math.max(0, Math.min(data2['canvas'].height - data2['user'].height, data2['user'].y));
 }
 
 function render(data2) {
-    // clear the canvas
     data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
-
-    // put score
     drawText(data2['ctx'], data2['user'].score, data2['canvas'].width/4, data2['canvas'].height/5);
     drawText(data2['ctx'], data2['com'].score, 3*data2['canvas'].width/4, data2['canvas'].height/5);
-
-    // draw the net
     drawNet(data2);
-
-    // draw paddles
     drawRect(data2['ctx'], data2['user'].x, data2['user'].y, data2['user'].width, data2['user'].height, data2['user'].color);
     drawRect(data2['ctx'], data2['com'].x, data2['com'].y, data2['com'].width, data2['com'].height, data2['com'].color);
-
-    // draw the ball
     drawArc(data2, data2['ball'].x, data2['ball'].y, data2['ball'].radius, data2['ball'].color);
 }
 
@@ -151,13 +138,23 @@ function gameLoop(data2) {
         } else {
             drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
         }
+        game_in_progress = false;
+        return;
+    } else if (terminate_game) {
+        clearInterval(intervalId);
+        game_in_progress = false;
+        terminate_game = false;
         return;
     }
-    update(data2);
+    updateGame(data2);
     render(data2);
 }
 
 function start_play_computer() {
+    if (game_in_progress) {
+        return;
+    }
+    game_in_progress = true;
     
     if (data2 == null) {
         data2 = {};
@@ -170,17 +167,19 @@ function start_play_computer() {
         // data2['wall'].src = "/static/pong/sounds/wall.mp3";
         data2['userScore'].src = "/static/pong/sounds/userScore.mp3";
         data2['comScore'].src = "/static/pong/sounds/comScore.mp3";
-        data2['canvas'] = document.getElementById('gameCanvas');
-        data2['ctx'] = data2['canvas'].getContext('2d');
         // console.log('data2 is not defined')
+    } else {
+        data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
     }
+    data2['canvas'] = document.getElementById('gameCanvas');
+    data2['ctx'] = data2['canvas'].getContext('2d');
 
     data2['ball'] = {
         x : data2['canvas'].width/2,
         y : data2['canvas'].height/2,
         radius : 10,
-        velocityX : 5,
-        velocityY : 5,
+        velocityX : 7,
+        velocityY : 0,
         speed : 7,
         color : "WHITE"
     };
@@ -244,8 +243,6 @@ function draw() {
         //update score
         drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5, 'white');
         drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5, 'white');
-        // document.getElementById('score1').innerHTML = data['gameState']['score1'];
-        // document.getElementById('score2').innerHTML = data['gameState']['score2'];
     }
 }
 
@@ -256,7 +253,6 @@ function main_loop () {
         data['comScore'].play();
     if (data['gameState'].collision.wall)
         data['wall'].play();
-
 
     data.paddle.y += data.paddle.speedY;
     // Keep paddles within the canvas
@@ -271,7 +267,14 @@ function main_loop () {
     };
     if (data['endGame']) {
         data['endGame'] = false;
+        game_in_progress = false;
         return
+    }
+    if (terminate_game) {
+        terminate_game = false;
+        game_in_progress = false;
+        data['socket'].close();
+        return;
     }
     data['socket'].send(JSON.stringify(message));
     requestAnimationFrame(main_loop);
@@ -292,11 +295,6 @@ function setPlayer(rec) {
             data['player'] = 2;
         }
 
-        // data['username1'] = rec['gameState']['p1_name']
-        // data['username2'] = rec['gameState']['p2_name']
-        // document.getElementById('player1').innerHTML = data['username1'];
-        // document.getElementById('player2').innerHTML = data['username2'];
-        
         const canvasContainer = document.querySelector('.canvas_container');
 
         // Find the wait_load div
@@ -306,7 +304,8 @@ function setPlayer(rec) {
         if (waitLoadDiv) {
             // Remove the wait_load div
             canvasContainer.removeChild(waitLoadDiv);
-}
+            document.getElementById('end_game').innerHTML = "";
+        }
 
         data['canvas'] = document.getElementById('gameCanvas');
         data['ctx'] = data['canvas'].getContext('2d');
@@ -332,6 +331,15 @@ function setPlayer(rec) {
 }
 
 function start_play_online() {
+    if (game_in_progress) {
+        return;
+    }
+    if (challengeInterval != null) {
+        clearInterval(challengeInterval);
+        challengeInterval = null;
+    }
+    game_in_progress = true;
+
     const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
@@ -374,12 +382,15 @@ function start_play_online() {
             // };
             // data['socket'].send(JSON.stringify(message));
             data.socket.close();
+            start_challenge_checking();
         }
     }
 
     socket.onclose = function () {
         console.log('WebSocket connection closed');
         data['endGame'] = true;
+        data['playerId'] = null;
+        game_in_progress = false;
     }
 
     window.addEventListener('keydown', (e) => {
@@ -401,34 +412,3 @@ function start_play_online() {
     });
 }
 
-function play_online() {
-    fetch('/start_game/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function game_computer() {
-    fetch('/game_computer/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/html',
-        },
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
