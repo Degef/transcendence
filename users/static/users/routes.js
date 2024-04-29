@@ -66,6 +66,7 @@ function aboutPage(back_or_forward = 1) {
 
 function chatPage(back_or_forward = 1) {
     handleRoute('/chat/', back_or_forward);
+    initializeChat();
 }
 
 function req_registration_page(back_or_forward = 1) {

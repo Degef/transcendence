@@ -30,14 +30,16 @@
 				<ul class="user-list list-group" id="user-listt">
 					{% for friend in friends %}
 						<a id="user-list-link" href="" class="list-group-item">
-							{{ friend }}
+							<img src="{{ friend.image.url }}" alt="{{ friend.user.username }}" class="contact-profile-image">
+							{{ friend.user.username }}
 						</a>
 					{% endfor %}
 				</ul>
 			</div>
+			
 		</side>
 		
-		<div class="col-9 d-flex flex-column">
+		<div class="col-9 d-flex flex-column" style="display:none !important;" id="chat-display">
 			<div class="shadow p-3 mb-2 row text-center py-4 border-bottom border-3 d-flex align-items-center" style="border-color: #0C1D40 !important">
 				<div class="contact-profile ms-4 col">
 					<img id="profile-image" src="" alt=""/>

@@ -1,19 +1,20 @@
 let currentRecipient = '';
 let miniImage = '';
 
+
 function handleUserSelection() {
-	// console.log(document.body.innerHTML);
-	const userList = document.getElementById('user-listt');
-	if (userList) {
-		const userItems = userList.querySelectorAll('#user-list-link');
-		userItems.forEach(userItem => {
-			userItem.addEventListener('click', function(event) {
-				event.preventDefault();
-				userItems.forEach(child => child.classList.remove('active'));
-				userItem.classList.add('active');
-	
-				const username = userItem.innerText.trim();
-				fetch(`api/user/${username}/`)
+	setTimeout(function() {
+		// console.log(document.body.innerHTML);
+		const userList = document.getElementById('user-listt');
+		if (userList) {
+			const userItems = userList.querySelectorAll('#user-list-link');
+			userItems.forEach(userItem => {
+				userItem.addEventListener('click', function(event) {
+					event.preventDefault();
+					userItems.forEach(child => child.classList.remove('active'));
+					userItem.classList.add('active');
+					const username = userItem.innerText.trim();
+					fetch(`api/user/${username}/`)
 					.then(response => response.json())
 					.then(userProfile => {
 						setCurrentRecipient(userProfile);
@@ -22,12 +23,12 @@ function handleUserSelection() {
 						console.error('Error fetching user profile:', error);
 					});
 				});
-		});
-	} else {
-		console.log("Yes it coming here")
-	}
+			});
+		} else {
+			console.log("Yes it coming here")
+		}
+	}, 1000);
 }
-
 
 
 function drawMessage(message) {
@@ -111,6 +112,8 @@ function sendMessage(recipient, body) {
 
 
 function setCurrentRecipient(userData) {
+	const chatDisplay = document.getElementById('chat-display');
+	chatDisplay.style.display = 'block';
 	miniImage = userData.profile.image;
 	currentRecipient = userData.username;
 
@@ -179,26 +182,19 @@ function initializeChat() {
 	}
 
 	handleUserSelection();
-	// setupSearchFunctionality();
+	setupSearchFunctionality();
 }
 
-window.addEventListener('popstate', function(event) {
-	if (window.location.pathname === '/chat/') {
-		// console.log(document.body.innerHTML);
-		handleUserSelection();
-		// setupSearchFunctionality();
-	}
-});
 
 window.addEventListener('DOMContentLoaded', function(event) {
 	if (window.location.pathname === '/chat/') {
-		chatPage(0);
 		initializeChat();
 	}
 });
 
 
 function setupSearchFunctionality() {
+	console.info("Setting up search functionality");
 	const userList = document.getElementById("user-list");
 	const searchInput = document.getElementById("search-input");
 	const searchButton = document.getElementById("search-button");
