@@ -36,6 +36,7 @@ function handleButtonClick(event) {
 		'chatLink' : chatPage,
         'quickmatch': quickmatch,
         'matchhistory': matchhistory,
+        'tournament' : tournament,
     };
 
     const buttonId = event.target.id;

@@ -77,3 +77,10 @@ def matchhistory(request):
 
     context = {'mhistory' : form}
     return render(request, 'pong/history.html', context)
+
+def pretour(request):
+    # username = request.user.id
+    # form = Game.objects.filter(Q(player1 = username) | Q(player2 = username)).order_by('-date')
+
+    # context = {'mhistory' : form}
+    return render(request, 'pong/tournament.html')

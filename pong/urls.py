@@ -9,4 +9,5 @@ urlpatterns = [
     path('start_game/', views.start_game, name='start_game'),
     path('game_computer/', views.game_computer, name='game_computer'),
     path('history/', views.matchhistory, name='history'),
+    path('pretour/', views.pretour, name='pretour'),
 ]

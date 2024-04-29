@@ -178,6 +178,26 @@ function homePage(back_or_forward = 1) {
     });
 }
 
+function tournament(back_or_forward = 1) {
+    console.log('pretour');
+    fetch('/pretour/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+        if (back_or_forward == 0)
+            return    
+        updateURL('/tournament/');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 function req_registration_page(back_or_forward = 1) {
     fetch('/register/', {
         method: 'GET',

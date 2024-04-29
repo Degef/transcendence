@@ -381,3 +381,16 @@ p.fs-1.fw-bold.title {
     border: 1px solid black;
     font-size: 0.5rem;
 }
+
+.card { 
+    margin-right: auto; 
+    margin-left: auto; 
+    width: 250px; 
+    box-shadow: 0 15px 25px rgba(129, 124, 124, 0.2); 
+    height: 300px; 
+    border-radius: 5px; 
+    backdrop-filter: blur(14px); 
+    background-color: #0F3066;
+    padding: 10px; 
+    text-align: center; 
+} 
