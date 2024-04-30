@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 import os
 from django.http import JsonResponse
 
+
+
 load_dotenv()
 
 def get_ipaddress(request):
@@ -195,3 +197,6 @@ def remove_friend(request, username):
 @login_required
 def homepage2(request, username):
     return render(request, 'users/homepage2.html', {'user': username})
+
+
+

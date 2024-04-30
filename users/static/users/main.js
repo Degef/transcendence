@@ -37,6 +37,7 @@ function handleButtonClick(event) {
         'quickmatch': quickmatch,
         'matchhistory': matchhistory,
         'tournament' : tournament,
+        'fourPlayers' : fourPlayers,
     };
 
     const buttonId = event.target.id;

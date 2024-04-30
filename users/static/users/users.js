@@ -198,6 +198,27 @@ function tournament(back_or_forward = 1) {
     });
 }
 
+function fourPlayers(back_or_forward = 1) {
+    console.log('fourplayerssssssss');
+    fetch('/join-tournament/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}) // Empty body, if no additional data is needed
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+        if (back_or_forward == 0)
+            return    
+        updateURL('/mytournament/');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 function req_registration_page(back_or_forward = 1) {
     fetch('/register/', {
         method: 'GET',

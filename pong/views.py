@@ -8,6 +8,9 @@ import logging
 from django.db import transaction
 from django.contrib.auth import login
 from django.db.models import Q
+from .models import Tournament, TournamentPlayer
+from django.db import transaction
+
 
 logger = logging.getLogger(__name__)
 
@@ -84,3 +87,62 @@ def pretour(request):
 
     # context = {'mhistory' : form}
     return render(request, 'pong/tournament.html')
+
+
+
+
+
+@transaction.atomic
+def join_tournament(user):
+    global waiting_players_count
+
+    # Check if the user is already participating in any tournament
+    if TournamentPlayer.objects.filter(user=user).exists():
+        # User is already participating in a tournament, no need to join again
+        return False
+
+    # Increase the waiting players count
+    waiting_players_count += 1
+
+    if waiting_players_count >= 8:
+        # Create a new tournament
+        new_tournament = Tournament.objects.create()
+        
+        # Get the waiting users and assign them to the new tournament
+        waiting_players = TournamentPlayer.objects.filter(tournament__isnull=True)[:8]
+        for player in waiting_players:
+            player.tournament = new_tournament
+            player.save()
+
+        # Reset the waiting players count
+        waiting_players_count = 0
+
+        # Fetch all players who joined the tournament
+        tournament_players = list(new_tournament.players.all())
+
+        return new_tournament, tournament_players
+
+    else:
+        # Create a TournamentPlayer instance for the user
+        TournamentPlayer.objects.create(user=user)
+
+    return True, None
+
+def join_tournament_view(request):
+    if request.method == 'POST':
+        # Get the user making the request (assuming the user is authenticated)
+        user = request.user
+
+        # Call the join_tournament function
+        result = join_tournament(user)
+
+        if result[0]:
+            if waiting_players_count < 8:
+                return JsonResponse({'success': 'Joined tournament waiting for more players'})
+            else:
+                # Send tournament players data to the front end
+                return render(request, 'tournament.html', {'players': result[1]})
+        else:
+            return JsonResponse({'error': 'User is already participating in a tournament'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
