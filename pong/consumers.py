@@ -255,3 +255,42 @@ class PongConsumer(AsyncWebsocketConsumer):
             'type': 'gameEnd',
             'message': message
         }))
+
+
+class TournamentConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        pass  # Clean up if needed
+
+    async def receive(self, text_data):
+        message = json.loads(text_data)
+        action = message.get('action')
+        user_id = await sync_to_async(self.get_user_id)()
+        
+        if action == 'join_tournament':
+            user_id = message.get('user_id')
+            if user_id:
+                await self.add_player_to_tournament(user_id)
+
+    @sync_to_async
+    def add_player_to_tournament(self, user_id):
+        # Check if the tournament already has 4 players
+        tournament = Tournament.objects.filter(players__isnull=False).distinct().annotate(player_count=models.Count('players')).get(player_count__lt=4)
+        if tournament:
+            # Check if the user is already participating in any tournament
+            if not TournamentPlayer.objects.filter(user_id=user_id).exists():
+                user = User.objects.get(pk=user_id)
+                TournamentPlayer.objects.create(user=user, tournament=tournament)
+                # Check if the tournament now has 4 players
+                if tournament.players.count() == 4:
+                    self.start_tournament(tournament)
+        else:
+            print("No available tournament with less than 4 players.")
+
+    @sync_to_async
+    def start_tournament(self, tournament):
+        # Update tournament start_date and end_date
+        # Start the tournament
+        pass

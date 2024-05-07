@@ -89,8 +89,7 @@ def pretour(request):
     return render(request, 'pong/tournament.html')
 
 
-
-
+waiting_players_count = 0
 
 @transaction.atomic
 def join_tournament(user):
@@ -124,9 +123,12 @@ def join_tournament(user):
 
     else:
         # Create a TournamentPlayer instance for the user
-        TournamentPlayer.objects.create(user=user)
+        tournament = Tournament.objects.create() 
+        TournamentPlayer.objects.create(user=user, tournament=tournament)
 
     return True, None
+
+
 
 def join_tournament_view(request):
     if request.method == 'POST':

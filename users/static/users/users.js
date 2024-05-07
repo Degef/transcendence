@@ -198,26 +198,49 @@ function tournament(back_or_forward = 1) {
     });
 }
 
-function fourPlayers(back_or_forward = 1) {
-    console.log('fourplayerssssssss');
-    fetch('/join-tournament/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}) // Empty body, if no additional data is needed
-    })
-    .then(response => response.text())
-    .then(htmlContent => {
-        updateBody(htmlContent);
-        if (back_or_forward == 0)
-            return    
-        updateURL('/mytournament/');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+// Function to fetch the user ID from the Django request object
+function getUserId() {
+    // Check if the user is authenticated
+    if (window.user_authenticated) {
+        // Access the user ID from the user object
+        return window.user_id;
+    } else {
+        return null; // User is not authenticated
+    }
 }
+
+
+
+function fourPlayers() {
+
+    const socket = new WebSocket(`ws://${window.location.host}/ws/tournament/`);
+
+    socket.onopen = function() {
+        console.log('WebSocket connection established.');
+        // Fetch the user ID dynamically
+        sendMessage({ action: 'join_tournament'});
+    };
+
+    socket.onmessage = function(event) {
+        console.log('Message received:', event.data);
+        // Handle incoming messages from the server
+        // For example, update UI based on tournament status
+    };
+
+    socket.onclose = function(event) {
+        console.log('WebSocket connection closed:', event);
+    };
+
+    // Send messages to the server
+    function sendMessage(message) {
+        socket.send(JSON.stringify(message));
+    }
+
+}
+
+// Call the fourPlayers function when the page is loaded
+document.addEventListener('DOMContentLoaded', fourPlayers);
+
 
 function req_registration_page(back_or_forward = 1) {
     fetch('/register/', {
