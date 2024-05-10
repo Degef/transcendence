@@ -1,5 +1,20 @@
 from django.shortcuts import render
 from users.models import user_things, Profile
+from django.http import JsonResponse
+
+def get_current_user(request):
+	sessionKey = request.session.session_key
+	currentUser = request.user.username
+	currentUserImage = request.user.profile.image.url
+
+	data = {
+		'sessionKey': sessionKey,
+		'currentUser': currentUser,
+		'currentUserImage': currentUserImage,
+	}
+
+	return JsonResponse(data)
+
 
 def chat(request):
 	profile_image = request.user.profile.image.url

@@ -1,8 +1,23 @@
 let currentRecipient = '';
 let miniImage = '';
+let sessionKey = '';
+let currentUser = '';
+let profileimage = '';
 
 let gamepadLink = null;
 
+function get_current_user() {
+	fetch('get_current_user/')
+	.then(response => response.json())
+	.then(data => {
+		currentUser = data.currentUser;
+		profileimage = data.currentUserImage;
+		sessionKey = data.sessionKey;
+	})
+	.catch(error => {
+		console.error('Error fetching user:', error);
+	});
+}
 
 function handleUserSelection() {
 	const userList = document.getElementById('user-listt');
@@ -43,7 +58,10 @@ function drawMessage(message) {
 			<p>${message.body}</p>
 		</li>`;
 	
-	document.getElementById('messages').innerHTML += messageItem;
+	const messageList = document.getElementById('messages');
+	messageList.innerHTML += messageItem;
+	messageList.scrollTop = messageList.scrollHeight;
+
 }
 
 
@@ -57,13 +75,16 @@ function getConversation(recipient) {
 				messageList.removeChild(messageList.firstChild);
 			}
 			data.results.reverse().forEach(message => {
-				drawMessage(message);
+				setTimeout(drawMessage(message), 500);
 			});
 			messageList.scrollTop = messageList.scrollHeight;
 		})
 		.catch(error => {
 			console.log(data)
 			console.error('Error fetching conversation:', error);
+		})
+		.finally(() => {
+			messageList.scrollTop = messageList.scrollHeight;
 		});
 }
 
@@ -143,7 +164,7 @@ function sanitizeInput(input) {
 let socket = null;
 
 function initializeChat() {
-
+	get_current_user();
 	if (socket)
 		socket.close();
 	
@@ -183,7 +204,6 @@ function initializeChat() {
 			}
 		});
 	}
-
 	handleUserSelection();
 	setupSearchFunctionality();
 }

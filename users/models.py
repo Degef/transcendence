@@ -30,6 +30,7 @@ class user_things(models.Model):
     challenge_response = models.CharField(max_length=20, null=True)
     challenger = models.CharField(max_length=20, null=True)
     challenged_user = models.CharField(max_length=20, null=True)
+    blocked_users = models.ManyToManyField(User, blank=True, default=None, related_name='blocked_users')
 
     def add_friend(self, friend):
         self.friends.add(friend)
