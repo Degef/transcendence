@@ -1,0 +1,14 @@
+{% extends 'pong/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content%}
+    <div class="container-fluid rounded-4 history">
+        <h1>Tournament Players</h1>
+        <ul id="playerList">
+        {% for player in players %}
+            <li>{{ player }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

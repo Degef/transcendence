@@ -4,22 +4,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 
-class Tournament(models.Model):
-    id = models.AutoField(primary_key=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    players = models.ManyToManyField(User, through='TournamentPlayer')
-    games = models.ManyToManyField('Game', related_name='tournament_games')
-
-class TournamentPlayer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('user', 'tournament')
-
-
-
 class Game(models.Model):
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player1')
     player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player2')
@@ -47,3 +31,17 @@ class Game(models.Model):
         self.determine_winner()
         super().save(*args, **kwargs)
 
+
+class Tournament(models.Model):
+    id = models.AutoField(primary_key=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    players = models.ManyToManyField(User, through='TournamentPlayer')
+    games = models.ManyToManyField('Game', related_name='tournament_games')
+
+class TournamentPlayer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'tournament')

@@ -217,22 +217,36 @@ function fourPlayers() {
 
     socket.onopen = function() {
         console.log('WebSocket connection established.');
-        // Fetch the user ID dynamically
         sendMessage({ action: 'join_tournament'});
     };
+    // Log messages from the server
+    // socket.onmessage = function(event) {
+    //     const message = JSON.parse(event.data);
+    //     console.log('Message from server:', message);
+    // };
+    
+    socket.onmessage = function(e){
+        let data = JSON.parse(e.data)
+        console.log('Data:', data)
 
-    socket.onmessage = function(event) {
-        console.log('Message received:', event.data);
-        // Handle incoming messages from the server
-        // For example, update UI based on tournament status
-    };
+        if(data.type === 'chat'){
+            let messages = document.getElementById('messages')
+
+            messages.insertAdjacentHTML('beforeend', `<div>
+                                    <p>${data.message}</p>
+                                </div>`)
+        }
+    }
+
 
     socket.onclose = function(event) {
         console.log('WebSocket connection closed:', event);
     };
-
+    
     // Send messages to the server
     function sendMessage(message) {
+        console.log("sending messgesage to server");
+        console.log(message);
         socket.send(JSON.stringify(message));
     }
 
