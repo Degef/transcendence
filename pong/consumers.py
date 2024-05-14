@@ -9,7 +9,7 @@ from pong.models import Game
 from pong.models import Tournament ,TournamentPlayer
 from asgiref.sync import sync_to_async
 from asgiref.sync import async_to_sync
-
+import datetime
 import math
 
 logger = logging.getLogger(__name__)
@@ -386,19 +386,25 @@ class PongConsumer(AsyncWebsocketConsumer):
 #             'message': 'Waiting for more players to join the tournament.'
 #         }))
 
-
+global players_waiting
+players_waiting = []
 class TournamentConsumer(AsyncWebsocketConsumer):
-    players_waiting = []
+    # players_waiting = []
 
     async def connect(self):
+        user_id = await sync_to_async(self.get_user_id)()
+        print(f"Player id is : {user_id}")
         self.room_group_name = 'test'
 
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
         await self.accept()
+
+    def get_user_id(self):
+        return self.scope["session"]["_auth_user_id"]
+
 
     async def chat_message(self, event):
         message = event['message']
@@ -409,7 +415,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         }))
 
     async def disconnect(self, close_code):
-        pass  # Clean up if needed
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
 
     async def receive(self, text_data):
         # text_data_json = json.loads(text_data)
@@ -424,20 +434,31 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.fetch_and_add_player_to_tournament()
 
     async def fetch_and_add_player_to_tournament(self):
-        players_waiting = await self.get_players_waiting_count()
-        print(f"Value of players_waiting: {players_waiting}")
-        if players_waiting >= 4:
-            players_to_join = TournamentPlayer.objects.filter(tournament__isnull=True)[:4]
-            tournament = Tournament.objects.create()
+        # players_waiting = await self.get_players_waiting_count()
+        print(f"Value of players_waiting: {len(players_waiting)}")
+        # await self.send_join_message(str(len(players_waiting)))
+        if len(players_waiting) >= 4:
+            players_query = TournamentPlayer.objects.filter(tournament__isnull=True)
+            players_count = await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
+            # players_to_join = await sync_to_async(list)(players_query)[:4]
+            players_to_join = players_waiting
+            players_to_join = players_to_join[:4]
+
+
+            await self.send_join_message(str(len(players_waiting)))
+            
+            tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
             player_names = []
             for player in players_to_join:
                 player.tournament = tournament
                 player.save()
                 player_names.append(player.user.username)
+                # await self.send_join_message("aandom")
             await self.start_tournament(tournament)
             await self.broadcast_player_names(player_names)
         else:
-            await self.send_waiting_message()
+            players_waiting.append(self)
+            # await self.send_waiting_message()
 
     async def get_players_waiting_count(self):
         return await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
@@ -447,8 +468,14 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         pass
 
     async def send_waiting_message(self):
+        newm = 'Waiting for more players to join the tournament.- ' + str(len(players_waiting))
         await self.send(text_data=json.dumps({
-            'message': 'Waiting for more players to join the tournament.'
+            'message': newm
+        }))
+    async def send_join_message(self, playername):
+        newm = 'Playerjoined.- ' + playername
+        await self.send(text_data=json.dumps({
+            'message': newm
         }))
 
     async def broadcast_player_names(self, player_names):

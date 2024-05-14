@@ -34,8 +34,8 @@ class Game(models.Model):
 
 class Tournament(models.Model):
     id = models.AutoField(primary_key=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
     players = models.ManyToManyField(User, through='TournamentPlayer')
     games = models.ManyToManyField('Game', related_name='tournament_games')
 
