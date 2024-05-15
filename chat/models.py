@@ -6,8 +6,30 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 
-class MessageModel(Model):
+class BlockModel(Model):
+    user_blocker = ForeignKey(User, on_delete=CASCADE, verbose_name='blocking user',
+                              related_name='blocker_user', db_index=True)
 
+    user_blocked = ForeignKey(User, on_delete=CASCADE,
+                              db_index=True)
+
+    timestamp = DateTimeField('timestamp', auto_now_add=True, editable=False,
+                              db_index=True)
+
+    # Meta
+    class Meta:
+        app_label = 'chat'
+        verbose_name = 'block'
+        verbose_name_plural = 'blocks'
+        unique_together = ('user_blocker', 'user_blocked')
+
+
+def is_blocked(user, recipient):
+    return BlockModel.objects.filter(user_blocker=user, user_blocked=recipient).exists()\
+           or BlockModel.objects.filter(user_blocked=user, user_blocker=recipient).exists()
+
+
+class MessageModel(Model):
     user = ForeignKey(User, on_delete=CASCADE, verbose_name='user',
                       related_name='from_user', db_index=True)
     recipient = ForeignKey(User, on_delete=CASCADE, verbose_name='recipient',
@@ -49,6 +71,8 @@ class MessageModel(Model):
         """
         new = self.id
         self.body = self.body.strip()  # Trimming whitespaces from the body
+        if is_blocked(self.user, self.recipient):
+            return
         super(MessageModel, self).save(*args, **kwargs)
         if new is None:
             self.notify_ws_clients()
