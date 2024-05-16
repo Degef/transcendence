@@ -386,14 +386,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 #             'message': 'Waiting for more players to join the tournament.'
 #         }))
 
-global players_waiting
-players_waiting = []
+# global players_waiting
+# players_waiting = []
 class TournamentConsumer(AsyncWebsocketConsumer):
-    # players_waiting = []
+    players_waiting = []
+    list_players = []
 
     async def connect(self):
-        user_id = await sync_to_async(self.get_user_id)()
-        print(f"Player id is : {user_id}")
+        self.user_id = await sync_to_async(self.get_user_id)()
+        print(f"Player id is : {self.user_id}")
         self.room_group_name = 'test'
 
         await self.channel_layer.group_add(
@@ -432,33 +433,41 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         #     }
         # )
         await self.fetch_and_add_player_to_tournament()
+    
 
     async def fetch_and_add_player_to_tournament(self):
-        # players_waiting = await self.get_players_waiting_count()
-        print(f"Value of players_waiting: {len(players_waiting)}")
-        # await self.send_join_message(str(len(players_waiting)))
-        if len(players_waiting) >= 4:
-            players_query = TournamentPlayer.objects.filter(tournament__isnull=True)
-            players_count = await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
-            # players_to_join = await sync_to_async(list)(players_query)[:4]
-            players_to_join = players_waiting
-            players_to_join = players_to_join[:4]
+            username = self.scope["user"].username
+            player_names2 = []
+            if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
+                self.players_waiting.append(self)
+                self.list_players.append(self)
+                tournament = await database_sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
+                player_names2 = []
+                playersoftour = []
+                await self.send_join_message(str(username))
+                for player in self.players_waiting[:4]:
+                    username = player.scope["user"].username
+                    # await self.send_join_message(str(username))
+                    player_instance = await database_sync_to_async(User.objects.get)(username=username)
+                    playersoftour.append(playersoftour)
+                    player_instance.tournament = tournament
+                    await database_sync_to_async(player_instance.save)()  # Ensure saving is asynchronous
+                    player_names2.append(username)
 
+                # await self.start_tournament(tournament)
+                # await self.broadcast_player_names(playersoftour)
+                
+                del player_names2[:4]
+                del self.players_waiting[:4]
+                del self.list_players[:4]
+            elif (self.user_id not in self.list_players):
+                print(self.list_players)
+                await self.send_join_message("adding the player " + str(username))
+                self.list_players.append(self.user_id)
+                self.players_waiting.append(self)
+                print(self.list_players)
 
-            await self.send_join_message(str(len(players_waiting)))
             
-            tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
-            player_names = []
-            for player in players_to_join:
-                player.tournament = tournament
-                player.save()
-                player_names.append(player.user.username)
-                # await self.send_join_message("aandom")
-            await self.start_tournament(tournament)
-            await self.broadcast_player_names(player_names)
-        else:
-            players_waiting.append(self)
-            # await self.send_waiting_message()
 
     async def get_players_waiting_count(self):
         return await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
@@ -468,12 +477,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         pass
 
     async def send_waiting_message(self):
-        newm = 'Waiting for more players to join the tournament.- ' + str(len(players_waiting))
+        newm = 'Waiting for more players to join the tournament.- ' + str(len(self.players_waiting))
         await self.send(text_data=json.dumps({
             'message': newm
         }))
     async def send_join_message(self, playername):
-        newm = 'Playerjoined.- ' + playername
+        newm = 'joinmsg - ' + playername
         await self.send(text_data=json.dumps({
             'message': newm
         }))
