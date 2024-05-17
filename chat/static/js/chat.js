@@ -19,28 +19,119 @@ function get_current_user() {
 	});
 }
 
+// document.addEventListener('contextmenu', event => event.preventDefault());
+
+
 function handleUserSelection() {
 	const userList = document.getElementById('user-listt');
-	if (userList) {
-		const userItems = userList.querySelectorAll('#user-list-link');
-		userItems.forEach(userItem => {
-			userItem.addEventListener('click', function(event) {
-				event.preventDefault();
-				userItems.forEach(child => child.classList.remove('active'));
-				userItem.classList.add('active');
-				const username = userItem.innerText.trim();
-				fetch(`api/user/${username}/`)
-				.then(response => response.json())
-				.then(userProfile => {
-					setCurrentRecipient(userProfile);
-				})
-				.catch(error => {
-					console.error('Error fetching user profile:', error);
-				});
-			});
-		});
-	}
+	const contextMenu = document.getElementById('context-menu');
+
+
+	function hideContextMenu() {
+        contextMenu.style.display = 'none';
+    }
+
+    if (userList) {
+        const userItems = userList.querySelectorAll('#user-list-link');
+        userItems.forEach(userItem => {
+            userItem.addEventListener('click', function(event) {
+                event.preventDefault();
+                userItems.forEach(child => child.classList.remove('active'));
+                userItem.classList.add('active');
+                const username = userItem.innerText.trim();
+                fetch(`api/user/${username}/`)
+                .then(response => response.json())
+                .then(userProfile => {
+                    setCurrentRecipient(userProfile);
+                })
+                .catch(error => {
+                    console.error('Error fetching user profile:', error);
+                });
+            });
+
+            userItem.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+                userItems.forEach(child => child.classList.remove('active'));
+                userItem.classList.add('active');
+                const username = userItem.innerText.trim();
+                contextMenu.style.display = 'block';
+                contextMenu.style.left = `${event.pageX}px`;
+                contextMenu.style.top = `${event.pageY}px`;
+
+            //     document.getElementById('view-profile').onclick = function() {
+            //         fetch(`api/user/${username}/`)
+            //         .then(response => response.json())
+            //         .then(userProfile => {
+            //             viewUserProfile(userProfile); // Define this function to handle profile viewing
+            //         })
+            //         .catch(error => {
+            //             console.error('Error fetching user profile:', error);
+            //         });
+            //         hideContextMenu();
+            //     };
+			//
+                document.getElementById('block-user').onclick = function() {
+                    blockUser(username);
+                    hideContextMenu();
+                };
+			//
+            //     document.getElementById('invite-to-game').onclick = function() {
+            //         inviteToGame(username); // Define this function to handle inviting the user to a game
+            //         hideContextMenu();
+            //     };
+            // });
+        // });
+
+        document.addEventListener('click', function(event) {
+            if (!contextMenu.contains(event.target)) {
+                hideContextMenu();
+            }
+        });
+    });
+
+})}}
+
+
+
+function blockUser(username) {
+    fetch('block_unblock/', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'username': username})
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            return response.json().then(data => {
+                throw new Error(data.Error);
+            });
+        }
+    })
+    .then(data => {
+        console.log(data.Success);
+    })
+    .catch(error => {
+        console.error(error.message);
+        if (error.message.includes('Cannot block yourself')) {
+            console.error('You cannot block yourself');
+        } else if (error.message.includes('User is already blocked')) {
+            console.error('User is already blocked');
+        } else if (error.message.includes('Invalid request data')) {
+            console.error('Invalid request data');
+        } else if (error.message.includes('Invalid request method')) {
+            console.error('Invalid request method');
+        } else {
+            console.error('An unknown error occurred');
+        }
+    });
 }
+
+
+
+
 
 
 function drawMessage(message) {
@@ -50,14 +141,14 @@ function drawMessage(message) {
 
 	miniProfileImage = miniImage;
 	if (message.user === currentUser) miniProfileImage = profileimage
-	
 
-	const messageItem = 
+
+	const messageItem =
 		`<li class="${position}">
 			<img src="${miniProfileImage}" alt="" />
 			<p>${message.body}</p>
 		</li>`;
-	
+
 	const messageList = document.getElementById('messages');
 	messageList.innerHTML += messageItem;
 	messageList.scrollTop = messageList.scrollHeight;
@@ -95,7 +186,7 @@ function getMessageById(message) {
 	fetch(`api/message/${id}/`)
 		.then(response => response.json())
 		.then(data => {
-			if (data.user === currentRecipient || 
+			if (data.user === currentRecipient ||
 				(data.recipient === currentRecipient && data.user === currentUser)) {
 				drawMessage(data);
 			}
@@ -137,18 +228,18 @@ function setCurrentRecipient(userData) {
 
 	const profileImageElement = document.getElementById('profile-image');
 	profileImageElement.src = userData.profile.image;
-	
+
 	const recipientNameElement = document.getElementById('recipient-name');
 	recipientNameElement.textContent = currentRecipient;
 
-	
+
 	getConversation(currentRecipient);
 	gamepadLink = document.getElementById('gamepad')
 	gamepadLink.addEventListener('click', function(event) {
 		event.preventDefault();
 		challengeUser(currentRecipient);
 	});
-	
+
 }
 
 
@@ -167,7 +258,7 @@ function initializeChat() {
 	get_current_user();
 	if (socket)
 		socket.close();
-	
+
 	if (!socket || socket.readyState !== WebSocket.OPEN) {
 		socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
 
@@ -191,9 +282,9 @@ function initializeChat() {
 		console.log("WebSocket Connection Already Established!");
 	}
 
-	
+
 	let chatInput = document.getElementById('chat-input');
-	
+
 	let chatButton = document.getElementById('btn-send');
 	if (chatButton) {
 		chatButton.addEventListener('click', function () {
@@ -231,12 +322,12 @@ function setupSearchFunctionality() {
 			const searchText = searchInput.value.toLowerCase();
 			filterUsers(searchText);
 		});
-	
+
 		searchInput.addEventListener("input", function () {
 			const searchText = searchInput.value.toLowerCase();
 			filterUsers(searchText);
 		});
-	
+
 		function filterUsers(searchText) {
 			const filteredUserNames = originalUserNames.filter(function (userName) {
 				return userName && userName.toLowerCase().includes(searchText);
@@ -252,7 +343,7 @@ function setupSearchFunctionality() {
 			const listItem = document.createElement("a");
 			listItem.classList.add("list-group-item");
 			listItem.textContent = userName;
-	
+
 			listItem.addEventListener("click", function () {
 				fetch(`api/user/${userName}/`)
 				.then(response => response.json())
@@ -263,10 +354,9 @@ function setupSearchFunctionality() {
 					console.error('Error fetching user profile:', error);
 				});
 			});
-	
+
 			userList.appendChild(listItem);
 		});
 	}
-	
 }
 
