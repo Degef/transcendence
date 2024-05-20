@@ -229,12 +229,15 @@ function fourPlayers() {
         let data = JSON.parse(e.data)
         console.log('Data:', data)
 
-        if(data.type === 'chat'){
-            let messages = document.getElementById('messages')
-
-            messages.insertAdjacentHTML('beforeend', `<div>
-                                    <p>${data.message}</p>
-                                </div>`)
+        if(data.type === 'player_names'){
+            let messages = document.getElementById('messages');
+            messages.innerHTML = '';
+            data.player_names.forEach((player, index) => {
+                messages.insertAdjacentHTML('beforeend', `<div class="player-entry">
+                    <img src="${player.profile_img}" alt="${player.username}'s profile picture" class="profile-img">
+                    <p>${index + 1}. ${player.username}</p>
+                </div>`);
+            });
         }
     }
 
@@ -253,7 +256,7 @@ function fourPlayers() {
 }
 
 // Call the fourPlayers function when the page is loaded
-document.addEventListener('DOMContentLoaded', fourPlayers);
+// document.addEventListener('DOMContentLoaded', fourPlayers);
 
 
 function req_registration_page(back_or_forward = 1) {

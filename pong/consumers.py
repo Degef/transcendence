@@ -394,6 +394,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user_id = await sync_to_async(self.get_user_id)()
+        self.username = self.scope["user"].username
         print(f"Player id is : {self.user_id}")
         self.room_group_name = 'test'
 
@@ -436,36 +437,37 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     
 
     async def fetch_and_add_player_to_tournament(self):
-            username = self.scope["user"].username
-            player_names2 = []
-            if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
-                self.players_waiting.append(self)
-                self.list_players.append(self)
-                tournament = await database_sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
-                player_names2 = []
-                playersoftour = []
-                await self.send_join_message(str(username))
-                for player in self.players_waiting[:4]:
-                    username = player.scope["user"].username
-                    # await self.send_join_message(str(username))
-                    player_instance = await database_sync_to_async(User.objects.get)(username=username)
-                    playersoftour.append(playersoftour)
-                    player_instance.tournament = tournament
-                    await database_sync_to_async(player_instance.save)()  # Ensure saving is asynchronous
-                    player_names2.append(username)
+        if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
+            self.players_waiting.append(self.user_id)
+            self.list_players.append(self.user_id)
+            tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
 
-                # await self.start_tournament(tournament)
-                # await self.broadcast_player_names(playersoftour)
-                
-                del player_names2[:4]
-                del self.players_waiting[:4]
-                del self.list_players[:4]
-            elif (self.user_id not in self.list_players):
-                print(self.list_players)
-                await self.send_join_message("adding the player " + str(username))
-                self.list_players.append(self.user_id)
-                self.players_waiting.append(self)
-                print(self.list_players)
+            await self.send_join_message(f"the last player is joining {self.username}")
+
+            player_names2 = []
+            tourn_players = []
+            for user_id in self.players_waiting[:4]:
+                user = await sync_to_async(User.objects.get)(id=user_id)
+                profile_img = await sync_to_async(lambda: user.profile.image.url)()
+                tourn_players.append({
+                    'username':user.username,
+                    'profile_img':profile_img
+                    })
+                user.tournament = tournament
+                await sync_to_async(user.save)()
+                player_names2.append(user.username)
+
+            await self.broadcast_player_names(tourn_players)
+
+            del player_names2[:4]
+            del self.players_waiting[:4]
+            del self.list_players[:4]
+        elif self.user_id not in self.list_players:
+            print(self.list_players)
+            await self.send_join_message(f"adding the player {self.username}")
+            self.list_players.append(self.user_id)
+            self.players_waiting.append(self.user_id)
+            print(self.list_players)
 
             
 

@@ -41,7 +41,7 @@ function handleButtonClick(event) {
     };
 
     const buttonId = event.target.id;
-    console.log(buttonId);
+    console.log("buttonId = " + buttonId);
     if (buttonId != 'id_image') {
         event.preventDefault();
     }
