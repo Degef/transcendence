@@ -6,9 +6,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('pong.urls')),
-    path('', include('users.urls')),
-    path('chat/', include('chat.urls')),
+    path('', include('apps.pong.urls')),
+    path('', include('apps.users.urls')),
+    path('chat/', include('apps.chat.urls')),
 ]
 
 if settings.DEBUG:

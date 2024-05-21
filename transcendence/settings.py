@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d!1zg!gabeifdp5b*s=x!eg9c@$5pg5759nhfnx=fh_^i9#i+h'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -24,12 +24,12 @@ ALLOWED_HOSTS = ['localhost', os.environ.get('IP_ADDRESS'), "*"]
 # Application definition
 
 INSTALLED_APPS = [
-	'chat',
-    "daphne",
+    'daphne',
 	'channels',
 	'rest_framework',
-    'pong.apps.PongConfig',
-    'users.apps.UsersConfig',
+    'apps.pong.apps.PongConfig',
+    'apps.users.apps.UsersConfig',
+	'apps.chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'transcendence.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['Templates', 'Templates/pong', 'Templates/users', 'Templates/chat'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,7 +131,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / 'chat/static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

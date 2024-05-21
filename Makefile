@@ -1,18 +1,27 @@
+
+COMPOSE_FILE = docker-compose.yml
+
+PROJECT_NAME = transcendence
+
+DOCKER_COMPOSE = docker compose -p $(PROJECT_NAME)
+
 all: build up
 
-build:
-	docker compose build
-
 up:
-	docker compose up
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env up
+
+build:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env build
 
 down:
-	docker compose down
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down
 
-clean:
-	-$(MAKE) down
-	-docker compose rm -f
-	-docker volume rm $$(docker volume ls -q --filter=dangling=true)
-	-docker network rm $$(docker network ls -q --filter=dangling=true)
+clean: stop
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down -v --remove-orphans
+	-docker volume prune -f
+	-docker network prune -f
 
-.PHONY: all build up down clean
+stop:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env stop
+
+.PHONY: all up build clean stop

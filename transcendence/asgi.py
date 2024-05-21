@@ -35,8 +35,8 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from channels.sessions import SessionMiddlewareStack
 
 
-from chat.routing import websocket_urlpatterns as chat_websocket_urlpatterns
-from pong.routing import websocket_urlpatterns as pong_websocket_urlpatterns
+from apps.chat.routing import websocket_urlpatterns as chat_websocket_urlpatterns
+from apps.pong.routing import websocket_urlpatterns as pong_websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'transcendence.settings')
 
