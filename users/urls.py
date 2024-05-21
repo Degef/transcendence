@@ -8,6 +8,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('get_ipaddress/', views.get_ipaddress, name='get_ipaddress'),
     path('profile/', views.profile, name='profile'),
+    # path('tournam/', views.tournament, name='tornam'),
     # path('get_users/', views.get_users, name='get_users'),
     path('login/', CustomLoginView.as_view(template_name='pong/home.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),

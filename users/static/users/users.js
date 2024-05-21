@@ -230,14 +230,23 @@ function fourPlayers() {
         console.log('Data:', data)
 
         if(data.type === 'player_names'){
-            let messages = document.getElementById('messages');
-            messages.innerHTML = '';
-            data.player_names.forEach((player, index) => {
-                messages.insertAdjacentHTML('beforeend', `<div class="player-entry">
-                    <img src="${player.profile_img}" alt="${player.username}'s profile picture" class="profile-img">
-                    <p>${index + 1}. ${player.username}</p>
-                </div>`);
-            });
+            // let messages = document.getElementById('messages');
+            // messages.innerHTML = '';
+            // data.player_names.forEach((player, index) => {
+            //     messages.insertAdjacentHTML('beforeend', `<div class="player-entry">
+            //         <img src="${player.profile_img}" alt="${player.username}'s profile picture" class="profile-img">
+            //         <p>${index + 1}. ${player.username}</p>
+            //     </div>`);
+            // });
+        }
+        if (data.type === 'html_content') {
+            // let messages = document.getElementById('tourn');
+            // Replace the current content with the received HTML
+
+            const newHtmlContent = data.html;
+            document.body.innerHTML = newHtmlContent;
+            
+            // messages.innerHTML = data.html;
         }
     }
 

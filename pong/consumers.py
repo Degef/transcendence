@@ -11,6 +11,7 @@ from asgiref.sync import sync_to_async
 from asgiref.sync import async_to_sync
 import datetime
 import math
+from django.template.loader import render_to_string
 
 logger = logging.getLogger(__name__)
 # class MyConsumer(AsyncWebsocketConsumer):
@@ -259,135 +260,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             'message': message
         }))
 
-
-# class TournamentConsumer(AsyncWebsocketConsumer):
-#     async def connect(self):
-#         await self.accept()
-#         await self.add_player_to_tournament()
-#         # players_waiting = TournamentPlayer.objects.filter(tournament__isnull=True).count()
-#         # print(f"Value of a players_waiting: {players_waiting}")
-#         # if players_waiting >= 4:
-#         #     # Gather 4 players to start a tournament
-#         #     players_to_join = TournamentPlayer.objects.filter(tournament__isnull=True)[:4]
-#         #     tournament = Tournament.objects.create()
-#         #     # Assign the tournament to the selected players
-#         #     for player in players_to_join:
-#         #         player.tournament = tournament
-#         #         player.save()
-#         #     # Start the tournament
-#         #     self.start_tournament(tournament)
-#         # else:
-#         #     # Send a message back to the player indicating waiting for more players
-#         #     self.send_waiting_message()
-    
-
-#     async def disconnect(self, close_code):
-#         pass  # Clean up if needed
-
-#     async def receive(self, text_data):
-#         pass
-
-#     def add_player_to_tournament(self):
-#         # Check if there are more than 4 players waiting to join
-#         players_waiting = TournamentPlayer.objects.filter(tournament__isnull=True).count()
-#         print(f"Value of a players_waiting: {players_waiting}")
-#         if players_waiting >= 4:
-#             # Gather 4 players to start a tournament
-#             players_to_join = TournamentPlayer.objects.filter(tournament__isnull=True)[:4]
-#             tournament = Tournament.objects.create()
-#             # Assign the tournament to the selected players
-#             for player in players_to_join:
-#                 player.tournament = tournament
-#                 player.save()
-#             # Start the tournament
-#             self.start_tournament(tournament)
-#         else:
-#             # Send a message back to the player indicating waiting for more players
-#             self.send_waiting_message()
-    
-#     async def send_waiting_message(self):
-#         await self.send(text_data=json.dumps({
-#             'message': 'Waiting for more players to join the tournament.'
-#         }))
-
-
-#     @sync_to_async
-#     def start_tournament(self, tournament):
-#         # Implement tournament start logic here
-#         pass
-
-
-# class TournamentConsumer(AsyncWebsocketConsumer):
-#     players_waiting = []
-
-#     async def connect(self):
-#         self.room_group_name = 'test'
-
-#         await self.channel_layer.group_add(
-#             self.room_group_name,
-#             self.channel_name
-#         )
-
-#         await self.accept()
-#         # await self.accept()
-#     async def chat_message(self, event):
-#         message = event['message']
-
-#         self.send(text_data=json.dumps({
-#             'type':'chat',
-#             'message':message
-#         }))
-
-#     async def disconnect(self, close_code):
-#         pass  # Clean up if needed
-
-#     # async def receive(self, text_data):
-#     #     pass
-
-#     async def receive(self, text_data):
-#         text_data_json = json.loads(text_data)
-#         message = text_data_json['action']
-
-#         async_to_sync(self.channel_layer.group_send)(
-#             self.room_group_name,
-#             {
-#                 'type':'chat_message',
-#                 'message':message
-#             }
-#         )
-
-#     async def fetch_and_add_player_to_tournament(self):
-#         # Check if there are more than 4 players waiting to join
-#         players_waiting = await self.get_players_waiting_count()
-#         print(f"Value of a players_waiting: {players_waiting}")
-#         if players_waiting >= 4:
-#             # Gather 4 players to start a tournament
-#             players_to_join = TournamentPlayer.objects.filter(tournament__isnull=True)[:4]
-#             tournament = Tournament.objects.create()
-#             # Assign the tournament to the selected players
-#             for player in players_to_join:
-#                 player.tournament = tournament
-#                 player.save()
-#             # Start the tournament
-#             await self.start_tournament(tournament)
-#         else:
-#             # Send a message back to the player indicating waiting for more players
-#             await self.send_waiting_message()
-
-#     async def get_players_waiting_count(self):
-#         return await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
-
-#     async def start_tournament(self, tournament):
-#         # Implement tournament start logic here
-#         pass
-
-#     async def send_waiting_message(self):
-#         await self.send(text_data=json.dumps({
-#             'message': 'Waiting for more players to join the tournament.'
-#         }))
-
-# global players_waiting
-# players_waiting = []
 class TournamentConsumer(AsyncWebsocketConsumer):
     players_waiting = []
     list_players = []
@@ -444,7 +316,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
             await self.send_join_message(f"the last player is joining {self.username}")
 
-            player_names2 = []
             tourn_players = []
             for user_id in self.players_waiting[:4]:
                 user = await sync_to_async(User.objects.get)(id=user_id)
@@ -455,11 +326,24 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                     })
                 user.tournament = tournament
                 await sync_to_async(user.save)()
-                player_names2.append(user.username)
+            player1 = tourn_players[0];
+            player2 = tourn_players[1];
+            player3 = tourn_players[2];
+            player4 = tourn_players[3];
+            tourplayer =  {'p1' : player1, 'p2' : player2, 'p3':player3, 'p4':player4}
 
-            await self.broadcast_player_names(tourn_players)
+            html_content = await sync_to_async(render_to_string)('pong/tour.html', {'players_list': tourn_players})
+            # try:
+            #     logger.info("Starting template rendering")
+            #     html_content = await sync_to_async(render_to_string)('pong/tour.html', {'players_list': tourn_players})
+            #     logger.info("Template rendered successfully")
+            #     await self.send(text_data=json.dumps({'html_content': html_content}))
+            # except Exception as e:
+            #     logger.error(f"Error rendering template: {e}")
 
-            del player_names2[:4]
+            # await self.broadcast_player_names(tourn_players)
+            await self.broadcast_html_content(html_content)
+
             del self.players_waiting[:4]
             del self.list_players[:4]
         elif self.user_id not in self.list_players:
@@ -503,4 +387,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'player_names',
             'player_names': player_names
+        }))
+    async def broadcast_html_content(self, html_content):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "html.message",
+                "html": html_content
+            }
+        )
+
+    async def html_message(self, event):
+        html_content = event["html"]
+        await self.send(text_data=json.dumps({
+            "type": "html_content",
+            "html": html_content
         }))

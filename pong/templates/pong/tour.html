@@ -36,6 +36,7 @@
 
 {% block content %}
 		<div id="tournament">
+        
                 <div class="container2">
                   <div class="split split-one">
                     <div class="round round-one current">
@@ -46,10 +47,10 @@
                         <ul class="matchup">
                           <li class="team team-top">
                             <img src="/media/profile.jpeg" alt="Player2's profile picture">
-                            Player1<input class="score-input" type="number" value=""></li>
+                            {{ players_list.0.username }}<input class="score-input" type="number" value=""></li>
                           <li class="team team-bottom">
-                            <img src="/media/profile.jpeg" alt="Player2's profile picture">
-                            Player2 <input class="score-input" type="number" value=""></li>
+                            <img src="{{ players_list.1.profile_img }}" alt="Player2's profile picture">
+                            {{ players_list.1.username }} <input class="score-input" type="number" value=""></li>
                         </ul>
                       </div>
                       <div class="matches">
@@ -129,10 +130,10 @@
                         <ul class="matchup">
                           <li class="team team-top">
                             <img src="/media/profile.jpeg" alt="Player2's profile picture">
-                            Player5<input class="score-input" type="number" value=""></li>
+                            {{ players_list.2.username }}<input class="score-input" type="number" value=""></li>
                           <li class="team team-bottom">
                             <img src="/media/profile.jpeg" alt="Player2's profile picture">
-                            Player6 <input class="score-input" type="number" value=""></li>
+                            {{ players_list.3.username }} <input class="score-input" type="number" value=""></li>
                         </ul>
                       </div>
                       <div class="matches">
