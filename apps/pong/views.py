@@ -34,7 +34,7 @@ def home(request):
         return render(request, 'home.html', context)
     else:
         context = { 'games': Game.objects.all()}
-        return render(request, 'landing.html', context)
+        return render(request, 'pong/landing.html', context)
 
 class FaviconView(View):
     def get(self, request, *args, **kwargs):

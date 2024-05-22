@@ -26,6 +26,12 @@
 	border-radius: 12px;
 }
 
+@media screen and (max-width: 1500px) {
+	.hero-image-wrapper {
+		max-width: 1280px;
+	}
+}
+
 @media screen and (max-width: 991px) {
 	.hero-image-wrapper {
 		min-height: 300px;

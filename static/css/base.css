@@ -1,3 +1,11 @@
+:root {
+	--background-color: #121421;
+	--card-accent-color: #1a1f33;
+	--text-color: #fff;
+	--text-accent-color: #8f9ecc;
+	--button-primary-color: #0d36c9;
+}
+
 html {
 	display: flex;
 	justify-content: center;
@@ -9,6 +17,7 @@ body {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	background-color: #1a1f33;
+	background-color: var(--background-color);
 	overflow-x: hidden;
+	color: var(--text-color);
 }

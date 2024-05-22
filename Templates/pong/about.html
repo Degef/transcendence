@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block content %}
+{% include "../nav.html" %}
+
+<div class="main-container">
+	<section class="section section--about">
+		<div class="section__wrapper">
+			<header class="section__header">
+				<h2 class="section__title">About PongBuddies</h2>
+				<p class="section__description">We're a team of game makers and players who make it easy for anyone to play their favorite games with friends, family, or coworkers, no matter where they are.</p>
+			</header>
+			<div class="section__content">
+				<div class="section__image-container">
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/c8109f08ac12e9053412293bc8fa087369c3b2ff5244f24f61fdcc88f0cf34b1?apiKey=f66aec64b0f942bf9e093fc3177a33c4&" alt="Game illustration" class="section__image">
+				</div>
+				<div class="section__text-container">
+					<h3 class="section__title">Game on</h3>
+					<p class="section__text">Our platform hosts online tournaments and leagues, so you can compete against others and track your progress over time. Whether you're a casual player or a seasoned pro, there's always someone to challenge.</p>
+					<div class="section__button-container">
+						<button class="button button--start">
+							<span>Start playing</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--why">
+		<div class="section__wrapper">
+			<header class="section__header">
+				<h2 class="section__title">Why Play with Us?</h2>
+			</header>
+			<div class="section__cards">
+				<article class="card">
+					<div class="card__icon">
+						<i class="fas fa-users"></i>
+					</div>
+					<h3 class="card__title">Meet new people</h3>
+					<p class="card__text">Join our global community of players online. Find opponents matching your skill and play style, or team up with friends for doubles.</p>
+				</article>
+				<article class="card">
+					<div class="card__icon">
+						<i class="fas fa-trophy"></i>
+					</div>
+					<h3 class="card__title">Compete for glory</h3>
+					<p class="card__text">Battle your way to the top ranks and earn bragging rights. Our platform supports many games and formats to showcase your skills.</p>
+				</article>
+				<article class="card">
+					<div class="card__icon">
+						<i class="fa-solid fa-calendar-check"></i>
+					</div>
+					<h3 class="card__title">Never miss a match</h3>
+					<p class="card__text">Our scheduling tools make it easy to set up matches and tournaments. We'll even send you reminders, so you never miss out on the action.</p>
+				</article>
+				<article class="card">
+					<div class="card__icon">
+						<i class="fa-solid fa-circle-info"></i>
+					</div>
+					<h3 class="card__title">Get help when you need it</h3>
+					<p class="card__text">Have questions or need help troubleshooting? Our 24/7 support team is here to assist you. We also provide guides and tutorials to help you improve.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--getting-started">
+		<div class="section__wrapper">
+			<header class="section__header">
+				<h2 class="section__title">Getting Started</h2>
+			</header>
+			<div class="section__steps">
+				<article class="step">
+					<div class="step__image-container">
+						<img src="/media/about/image1.png" alt="Sign up" class="step__image">
+					</div>
+					<h3 class="step__title">1. Sign up</h3>
+					<p class="step__text">Create an account and fill out your profile. This helps us match you with opponents who share your interests and skill level.</p>
+				</article>
+				<article class="step">
+					<div class="step__image-container">
+						<img src="/media/about/image2.png" alt="Choose your game" class="step__image">
+					</div>
+					<h3 class="step__title">2. Choose your game</h3>
+					<p class="step__text">Whether you're into classics like chess and poker, or prefer modern favorites like Among Us and Fortnite, we've got you covered.</p>
+				</article>
+				<article class="step">
+					<div class="step__image-container">
+						<img src="/media/about/image3.png" alt="Find a match" class="step__image">
+					</div>
+					<h3 class="step__title">3. Find a match</h3>
+					<p class="step__text">Browse our list of open games and tournaments, or create your own. You can also use our search feature to find specific players or events.</p>
+				</article>
+				<article class="step">
+					<div class="step__image-container">
+						<img src="/media/about/image4.png" alt="Start playing" class="step__image">
+					</div>
+					<h3 class="step__title">4. Start playing</h3>
+					<p class="step__text">Once you've found a match, it's time to play! Use our chat and video features to communicate with your opponent, and don't forget to have fun.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+</div>
+
+{% include "../footer.html" %}
+
+{% endblock %}
