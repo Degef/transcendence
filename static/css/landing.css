@@ -1,20 +1,8 @@
-.main {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
 .hero {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-}
-
-@media (max-width: 991px) {
-	.hero {
-		padding: 0 20px;
-	}
 }
 
 .hero-image-wrapper {
@@ -26,13 +14,13 @@
 	border-radius: 12px;
 }
 
-@media screen and (max-width: 1500px) {
+@media (max-width: 1500px) {
 	.hero-image-wrapper {
 		max-width: 1280px;
 	}
 }
 
-@media screen and (max-width: 991px) {
+@media (max-width: 991px) {
 	.hero-image-wrapper {
 		min-height: 300px;
 	}
@@ -69,16 +57,16 @@
 	font-size: 48px;
 	letter-spacing: 2px;
 	font-family: Space Grotesk, sans-serif;
+	white-space: nowrap;
 }
 
 @media (max-width: 991px) {
 	.hero-title {
-		font-size: 40px;
+		font-size: 36px;
 	}
 }
 
 .hero-button {
-	max-width: 70px;
 	margin-top: 32px;
 	background-color: #2442e8;
 	color: #fff;
@@ -110,29 +98,20 @@
 	margin-top: 40px;
 }
 
-@media (max-width: 991px) {
-	.features-wrapper {
-		flex-direction: column;
-		align-items: stretch;
-	}
-}
-
 .feature {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 33%;
 	padding: 16px;
 	background-color: #1a1f33;
 	border: 1px solid rgba(51, 61, 102, 1);
 	border-radius: 8px;
+	transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-@media (max-width: 991px) {
-	.feature {
-		width: 100%;
-		margin-top: 12px;
-	}
+.feature:hover {
+	background-color: #242947;
+	transform: scale(1.05);
 }
 
 .feature-icon {
@@ -163,12 +142,6 @@
 	color: #fff;
 }
 
-@media (max-width: 991px) {
-	.cta {
-		padding: 40px 16px;
-	}
-}
-
 .cta-title {
 	font-size: 36px;
 	font-weight: 700;
@@ -185,12 +158,6 @@
 	text-decoration: none;
 }
 
-.nav__link:hover {
-	color: #2442e8;
-	transition: color 0.3s ease-in-out;
-}
-
-
 .hero-image-wrapper {
 	animation: fadeIn 2s ease-in-out;
 }
@@ -198,10 +165,4 @@
 @keyframes fadeIn {
 	0% { opacity: 0; }
 	100% { opacity: 1; }
-}
-
-.feature:hover {
-	background-color: #242947;
-	transform: scale(1.05);
-	transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }

@@ -3,87 +3,84 @@
 {% load static %}
 
 {% block content %}
-{% include "../nav.html" %}
 
-<section class="profile-container">
-	<header class="profile-header">
-	  <article class="profile-details">
-		<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/88556bafe9ef5c8fe11e4ff06d0ce406dd52983c14c4049b5589f689a7c39ea8?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="Megan's profile picture" class="profile-image" />
-		<h2 class="profile-name">Megan</h2>
-		<div class="profile-actions">
-		  <button class="profile-action-edit">Edit</button>
-		  <button class="profile-action-play">Play</button>
-		</div>
-	  </article>
+<section class="profile-container container">
+	<header class="profile-header text-center">
+		<article class="profile-details">
+			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/88556bafe9ef5c8fe11e4ff06d0ce406dd52983c14c4049b5589f689a7c39ea8?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="Megan's profile picture" class="profile-image img-fluid rounded-circle" />
+			<h2 class="profile-name">Megan</h2>
+			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
+				<button class="btn btn-outline-light profile-action-edit">Edit</button>
+				<button class="btn btn-primary profile-action-play">Play</button>
+			</div>
+		</article>
 	</header>
-	<section class="stats-section">
-	  <div class="stats-container">
-		<div class="stats-column">
-		  <div class="stats-item">
-			<div class="stats-content">
-			  <span class="stats-number">123</span>
-			  <p class="stats-label">Games</p>
+	<section class="stats-section my-4">
+		<div class="row stats-container">
+			<div class="col-md-4 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">123</span>
+						<p class="stats-label">Games</p>
+					</div>
+				</div>
 			</div>
-		  </div>
-		</div>
-		<div class="stats-column">
-		  <div class="stats-item">
-			<div class="stats-content">
-			  <span class="stats-number">23</span>
-			  <p class="stats-label">Wins</p>
+			<div class="col-md-4 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">23</span>
+						<p class="stats-label">Wins</p>
+					</div>
+				</div>
 			</div>
-		  </div>
-		</div>
-		<div class="stats-column">
-		  <div class="stats-item">
-			<div class="stats-content">
-			  <span class="stats-number">12</span>
-			  <p class="stats-label">Losses</p>
+			<div class="col-md-4 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">12</span>
+						<p class="stats-label">Losses</p>
+					</div>
+				</div>
 			</div>
-		  </div>
 		</div>
-	  </div>
 	</section>
-	<nav class="highlighted-tab">
-	  <div class="highlighted-label">Stats</div>
-	  <div class="highlighted-stats">History</div>
-	  <div class="highlighted-friends">Friends</div>
+	<nav class="highlighted-tab d-flex justify-content-between border-bottom py-2 mb-3">
+		<div class="highlighted-label">Stats</div>
+		<div class="highlighted-stats active">History</div>
+		<div class="highlighted-friends">Friends</div>
 	</nav>
 	<section class="history-section">
-	  <div class="history-item">
-		<div class="history_image_time">
-			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image" />
-			<div class="history-details">
-			  <span class="history-title">You lost to Joe</span>
-			  <time class="history-time">9:00PM</time>
+		<div class="history-item d-flex justify-content-between align-items-center py-2">
+			<div class="d-flex align-items-center gap-3">
+				<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image rounded-circle" />
+				<div class="history-details">
+					<span class="history-title">You lost to Joe</span>
+					<time class="history-time">9:00PM</time>
+				</div>
 			</div>
+			<span class="history-score">2-0</span>
 		</div>
-		<span class="history-score">2-0</span>
-	  </div>
-	  <div class="history-item">
-		<div class="history_image_time">
-			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image" />
-			<div class="history-details">
-			  <span class="history-title">You lost to Joe</span>
-			  <time class="history-time">9:00PM</time>
+		<div class="history-item d-flex justify-content-between align-items-center py-2">
+			<div class="d-flex align-items-center gap-3">
+				<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image rounded-circle" />
+				<div class="history-details">
+					<span class="history-title">You lost to Joe</span>
+					<time class="history-time">9:00PM</time>
+				</div>
 			</div>
+			<span class="history-score">2-0</span>
 		</div>
-		<span class="history-score">2-0</span>
-	  </div>
-	  <div class="history-item">
-		<div class="history_image_time">
-			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image" />
-			<div class="history-details">
-			  <span class="history-title">You lost to Joe</span>
-			  <time class="history-time">9:00PM</time>
+		<div class="history-item d-flex justify-content-between align-items-center py-2">
+			<div class="d-flex align-items-center gap-3">
+				<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image rounded-circle" />
+				<div class="history-details">
+					<span class="history-title">You lost to Joe</span>
+					<time class="history-time">9:00PM</time>
+				</div>
 			</div>
+			<span class="history-score">2-0</span>
 		</div>
-		<span class="history-score">2-0</span>
-	  </div>
 	</section>
-  </section>
+</section>
 
-{% include "../footer.html" %}
 
 {% endblock %}
-

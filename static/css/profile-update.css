@@ -1,0 +1,197 @@
+.profile-container {
+    /* background-color: #fff; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profile-section {
+    background-color: #121421;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 40px 80px 80px;
+  }
+
+  @media (max-width: 991px) {
+    .profile-section {
+      padding: 0 20px;
+    }
+  }
+
+  .edit-title {
+    width: 512px;
+    max-width: 100%;
+    color: #fff;
+    padding: 16px;
+    font: 700 32px Manrope, sans-serif;
+    letter-spacing: -0.8px;
+  }
+
+  @media (max-width: 991px) {
+    .edit-title {
+      padding-right: 20px;
+    }
+  }
+
+  .label {
+    color: #fff;
+    margin-top: 12px;
+    font: 500 16px/150% Manrope, sans-serif;
+  }
+
+  @media (max-width: 991px) {
+    .label {
+      max-width: 100%;
+    }
+  }
+
+  .input-field {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    border-radius: 12px;
+    border: 1px solid rgba(61, 71, 84, 1);
+    background-color: #1c2126;
+    margin-top: 8px;
+    width: 480px;
+    max-width: 100%;
+    color: #fff;
+    white-space: nowrap;
+    padding: 15px;
+    font: 400 16px/150% Manrope, sans-serif;
+  }
+
+  @media (max-width: 991px) {
+    .input-field {
+      padding-right: 20px;
+      white-space: initial;
+    }
+  }
+
+  .input-field.password {
+    color: #9eabb8;
+  }
+
+  .profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #121417;
+    margin-top: 12px;
+    width: 512px;
+    max-width: 100%;
+    padding: 8px 16px;
+  }
+
+  .profile-picture-wrapper {
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 0 1px;
+  }
+
+  @media (max-width: 991px) {
+    .profile-picture-wrapper {
+      flex-wrap: wrap;
+    }
+  }
+
+  .profile-picture {
+    display: flex;
+    gap: 16px;
+  }
+
+  .profile-picture-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background-color: #293038;
+    width: 40px;
+    height: 40px;
+    padding: 0 8px;
+  }
+
+  .image-1 {
+    aspect-ratio: 1;
+    object-fit: auto;
+    object-position: center;
+    width: 24px;
+  }
+
+  .profile-picture-text {
+    color: #fff;
+    font: 400 16px/150% Manrope, sans-serif;
+    margin: auto 0;
+  }
+
+  .image-2 {
+    aspect-ratio: 1;
+    object-fit: auto;
+    object-position: center;
+    width: 24px;
+    margin: auto 0;
+  }
+
+  .delete-account-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 512px;
+    max-width: 100%;
+    color: #fff;
+    margin: 16px 0 7px;
+    padding: 0 16px;
+  }
+
+  .delete-account-title {
+    font: 700 18px Manrope, sans-serif;
+    letter-spacing: -0.27px;
+  }
+
+  .delete-account-description {
+    margin-top: 12px;
+    font: 400 16px/150% Manrope, sans-serif;
+  }
+
+  .delete-account-buttons {
+    display: flex;
+    margin-top: 72px;
+    gap: 12px;
+    font-size: 14px;
+    letter-spacing: 0.21px;
+    line-height: 150%;
+  }
+
+  .delete-account-buttons .cancel,
+  .delete-account-buttons .delete {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 12px;
+    white-space: nowrap;
+    padding: 10px 16px;
+  }
+
+  .cancel {
+    background-color: #293038;
+  }
+
+  .delete {
+    background-color: #121417;
+  }
+
+  @media (max-width: 991px) {
+    .delete-account-buttons {
+      margin-top: 40px;
+    }
+
+    .delete-account-buttons .cancel,
+    .delete-account-buttons .delete {
+      white-space: initial;
+    }
+  }

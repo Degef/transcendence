@@ -2,53 +2,46 @@
 
 {% load static %}
 
-
 {% block content %}
-{% include "../nav.html" %}
-
-<main class="main">
-	<section class="hero">
-		<div class="hero-image-wrapper">
-			<img 
-				loading="lazy" 
-				src="media/images/pong.jpeg"
-				class="hero-image" 
-				alt="Enter the Game"
-			/>
-			<div class="hero-content">
-				<h1 class="hero-title">Enter the Game</h1>
-				<a href="#play" class="hero-button">Play Now</a>
-			</div>
+<section class="hero">
+	<div class="hero-image-wrapper position-relative">
+		<img 
+			loading="lazy" 
+			src="media/images/pong.jpeg"
+			class="hero-image img-fluid" 
+			alt="Enter the Game"
+		/>
+		<div class="hero-content position-absolute d-flex flex-column justify-content-end text-center">
+			<h1 class="hero-title">Enter the Game</h1>
+			<a href="#play" class="btn btn-primary hero-button">Play Now</a>
 		</div>
-	</section>
-	
-	<section class="features">
-		<h2 class="features-title">Why play pong on PongBuddies?</h2>
-		<div class="features-wrapper">
-			<div class="feature">
-				<i class="fas fa-users feature-icon"></i>
-				<h3 class="feature-title">Compete with Friends</h3>
-				<p class="feature-description">Invite friends to a private game or join a public room and make new friends</p>
-			</div>
-			<div class="feature">
-				<i class="fas fa-trophy feature-icon"></i>
-				<h3 class="feature-title">Find New Challengers</h3>
-				<p class="feature-description">Join a public game room and play against others of all skill levels</p>
-			</div>
-			<div class="feature">
-				<i class="fa-solid fa-robot feature-icon"></i>
-				<h3 class="feature-title">Train Against Bots</h3>
-				<p class="feature-description">Improve your skills by playing against computer-controlled opponents</p>
-			</div>
-		</div>
-	</section>
-	
-	<section class="cta">
-		<h2 class="cta-title">Ready to become a pong champion?</h2>
-		<a href="./signup.html" class="cta-button">Sign Up</a>
-	</section>
-</main>
+	</div>
+</section>
 
-{% include "../footer.html" %}
+<section class="features text-center py-5">
+	<h2 class="features-title">Why play pong on PongBuddies?</h2>
+	<div class="features-wrapper row mt-4">
+		<div class="feature col-lg-4 col-md-6 col-sm-12 p-3">
+			<i class="fas fa-users feature-icon"></i>
+			<h3 class="feature-title">Compete with Friends</h3>
+			<p class="feature-description">Invite friends to a private game or join a public room and make new friends</p>
+		</div>
+		<div class="feature col-lg-4 col-md-6 col-sm-12 p-3">
+			<i class="fas fa-trophy feature-icon"></i>
+			<h3 class="feature-title">Find New Challengers</h3>
+			<p class="feature-description">Join a public game room and play against others of all skill levels</p>
+		</div>
+		<div class="feature col-lg-4 col-md-6 col-sm-12 p-3">
+			<i class="fa-solid fa-robot feature-icon"></i>
+			<h3 class="feature-title">Train Against Bots</h3>
+			<p class="feature-description">Improve your skills by playing against computer-controlled opponents</p>
+		</div>
+	</div>
+</section>
+
+<section class="cta text-center py-5">
+	<h2 class="cta-title">Ready to become a pong champion?</h2>
+	<a href="./signup.html" class="btn btn-primary cta-button mt-3">Sign Up</a>
+</section>
 
 {% endblock %}

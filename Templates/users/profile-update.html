@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div class="profile-container">
+    <section class="profile-section">
+      <h1 class="edit-title">Edit Profile</h1>
+      <form>
+          <label for="usernameInput" class="label">Username</label>
+          <input class="input-field" type="text" id="usernameInput" value="jackson" aria-label="Username" />
+          
+          <label for="emailInput" class="label">Email</label>
+          <input class="input-field" type="email" id="emailInput" value="jackson@pong.com" aria-label="Email" />
+          
+          <label for="passwordInput" class="label">Password</label>
+          <input class="input-field password" type="password" id="passwordInput" value="********" aria-label="Password" />
+      </form>
+      <div class="profile-picture-section">
+        <div class="profile-picture-wrapper">
+          <div class="profile-picture">
+            <div class="profile-picture-icon">
+              <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/e211a04b1385b3468610a7ceb8cba3be7175fdb3c9c360ad55b1bbf7d99e1b9a?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="Profile Picture Icon" class="image-1" />
+            </div>
+            <p class="profile-picture-text">Profile Picture</p>
+          </div>
+          <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/1f950246d774e6a2e8430b415697640e503a622a9e394431ae1772bdf03bb8aa?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="Profile Picture" class="image-2" />
+        </div>
+      </div>
+      <aside class="delete-account-section">
+        <h2 class="delete-account-title">Delete Account</h2>
+        <p class="delete-account-description">
+          If you delete your account, it will be permanently deleted. You will lose all data, including your profile, friends, chat history, and any game progress. Once deleted, your account cannot be restored.
+        </p>
+        <div class="delete-account-buttons">
+          <button class="cancel" role="button">Cancel</button>
+          <button class="delete" role="button">Delete Account</button>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+
+{% endblock %}
+

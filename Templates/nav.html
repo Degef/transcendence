@@ -1,25 +1,29 @@
 {% load static %}
 
-
-<header class="header">
-	<div class="header__logo">
-		<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/5e4d177b52b244d002cd32c045604b65a40f89db7a94626e9675eee42b19c712?apiKey=f66aec64b0f942bf9e093fc3177a33c4&" alt="PongBuddies Logo" class="header__logo-image">
-		<h1 class="header__title">PongBuddies</h1>
+<nav class="navbar navbar-expand-lg navbar-dark">
+	<div class="container-xxl">
+		<a class="navbar-brand" href="#">
+			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/5e4d177b52b244d002cd32c045604b65a40f89db7a94626e9675eee42b19c712?apiKey=f66aec64b0f942bf9e093fc3177a33c4&" alt="PongBuddies Logo" width="30" height="30" class="d-inline-block align-top">
+			PongBuddies
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav ms-auto">
+				{% if user.is_authenticated %}
+					<li class="nav-item me-2"><a class="nav-link" href="#">Profile</a></li>
+					<li class="nav-item me-2"><a class="nav-link" href="#">Play</a></li>
+					<li class="nav-item me-2"><a class="nav-link" href="#">Tournaments</a></li>
+					<li class="nav-item me-2"><a class="nav-link" href="#">Leaderboard</a></li>
+					<li class="nav-item me-2"><a class="nav-link" href="#">Chat</a></li>
+					<li class="nav-item me-auto"><a class="nav-link btn btn-primary" href="./login.html">Log out</a></li>
+				{% else %}
+					<li class="nav-item me-2"><a class="nav-link" href="#">Home</a></li>
+					<li class="nav-item me-2"><a class="nav-link" href="#">About</a></li>
+					<li class="nav-item me-auto"><a class="nav-link btn btn-primary" href="./login.html">Log In</a></li>
+				{% endif %}
+			</ul>
+		</div>
 	</div>
-	<nav class="nav">
-		<ul class="nav__list">
-			{% if user.is_authenticated %}
-				<li class="nav__item"><a href="#" class="nav__link">Profile</a></li>
-				<li class="nav__item"><a href="#" class="nav__link">Play</a></li>
-				<li class="nav__item"><a href="#" class="nav__link">Tournaments</a></li>
-				<li class="nav__item"><a href="#" class="nav__link">Leaderboard</a></li>
-				<li class="nav__item"><a href="#" class="nav__link">Chat</a></li>
-				<li class="nav__item nav__auth"><a href="./login.html" class="nav__auth-link">Log out</a></li>
-			{% else %}
-				<li class="nav__item"><a href="#" class="nav__link">Home</a></li>
-				<li class="nav__item"><a href="#" class="nav__link">About</a></li>
-				<li class="nav__item nav__auth"><a href="./login.html" class="nav__auth-link">Log In</a></li>
-			{% endif %}
-		</ul>
-	</nav>
-</header>
+</nav>

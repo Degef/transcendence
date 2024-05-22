@@ -3,48 +3,51 @@
 {% load static %}
 
 {% block content %}
-{% include "./nav.html" %}
-
-<div class="container__home">
+<div class="container__home container">
 	<section class="main-section">
-	  <article class="card-container">
-		<div class="card">
-		  <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/035eff0f780153a3b1d61fb8f9e451170f12e77e98be0c58ca33bbe7b30aac67?apiKey=f66aec64b0f942bf9e093fc3177a33c4&" alt="Play Pong game" />
-		  <div class="play-section">
-			<div class="play-title">Play Pong with friends</div>
-			<div class="play-button-wrapper">
-			  <button class="play-button">Play Online</button>
+		<article class="card-container mb-4">
+			<div class="card position-relative text-center">
+				<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/035eff0f780153a3b1d61fb8f9e451170f12e77e98be0c58ca33bbe7b30aac67?apiKey=f66aec64b0f942bf9e093fc3177a33c4&" alt="Play Pong game" class="card-img">
+				<div class="card-body play-section">
+					<h3 class="card-title play-title">Play Pong with friends</h3>
+					<div class="play-button-wrapper">
+						<button class="btn btn-primary play-button">Play Online</button>
+					</div>
+				</div>
 			</div>
-		  </div>
-		</div>
-	  </article>
-  
-	  <article class="details-section">
-		<div class="details-card">
-		  <div class="details-title">
-			<div class="subtitle">Join Tournament</div>
-			<div class="details-desc">Join a tournament and compete with the best</div>
-		  </div>
-		  <button class="custom-button">Join Tournament</button>
-		</div>
-		<div class="details-card">
-		  <div class="details-title">
-			<div class="subtitle">Play Local</div>
-			<div class="details-desc">Play a game with a friend on the same device</div>
-		  </div>
-		  <button class="custom-button">Play Local</button>
-		</div>
-		<div class="details-card">
-		  <div class="details-title">
-			<div class="subtitle">Play Against Computer</div>
-			<div class="details-desc">Sharpen your skills with a game against the computer</div>
-		  </div>
-		  <button class="custom-button">Play Against Computer</button>
-		</div>
-	  </article>
+		</article>
+
+		<article class="details-section">
+			<div class="row">
+				<div class="col-md-4 mb-3">
+					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
+						<div class="details-title">
+							<h4 class="subtitle">Join Tournament</h4>
+							<p class="details-desc">Join a tournament and compete with the best</p>
+						</div>
+						<button class="btn btn-primary custom-button">Join Tournament</button>
+					</div>
+				</div>
+				<div class="col-md-4 mb-3">
+					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
+						<div class="details-title">
+							<h4 class="subtitle">Play Local</h4>
+							<p class="details-desc">Play a game with a friend on the same device</p>
+						</div>
+						<button class="btn btn-primary custom-button">Play Local</button>
+					</div>
+				</div>
+				<div class="col-md-4 mb-3">
+					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
+						<div class="details-title">
+							<h4 class="subtitle">Play Against Computer</h4>
+							<p class="details-desc">Sharpen your skills with a game against the computer</p>
+						</div>
+						<button class="btn btn-primary custom-button">Play Against Computer</button>
+					</div>
+				</div>
+			</div>
+		</article>
 	</section>
 </div>
-
-{% include "./footer.html" %}
-
 {% endblock %}
