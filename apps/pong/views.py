@@ -50,7 +50,7 @@ def local_game(request):
     return render(request, 'pong/local_game.html')
 
 def about(request):
-    return render(request, 'pong/about.html')
+    return render(request, 'pong/leaderboard.html')
 
 @csrf_exempt
 def unload(request):

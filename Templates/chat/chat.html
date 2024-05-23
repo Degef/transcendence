@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="chat__container">
+	<div class="chat-layout">
+		<aside class="sidebar col-lg-3 col-md-12">
+			<div class="search-bar">
+				<i class="fas fa-search search-icon"></i>
+				<input type="text" class="search-input" placeholder="Search">
+			</div>
+			<div class="contacts">
+				<div class="contact">
+					<div class="contact-details">
+						<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/34b3ea8e5f9f5a5e045183d4ab598109dbb4fec8300c0b21f3d78f6a20e6f4e1?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="contact-avatar" alt="Chris Avatar"/>
+						<div class="contact-info">
+							<div class="contact-name">Chris</div>
+						</div>
+					</div>
+					<i class="fas fa-ellipsis-v contact-action"></i>
+				</div>
+				<div class="contact">
+					<div class="contact-details">
+						<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/9743642b5f75fb79f637d9dd9edbf15e653b2c1f7b4f721a2d72fefbcd308ae1?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="contact-avatar" alt="Jason Avatar"/>
+						<div class="contact-info">
+							<div class="contact-name">Jason</div>
+						</div>
+					</div>
+					<i class="fas fa-ellipsis-v contact-action"></i>
+				</div>
+			</div>
+		</aside>
+		<section class="chat-window col-lg-9 col-md-12">
+			<div class="chat-header">Chat with Chris</div>
+			<div class="chat">
+				<div class="message-container received-message">
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/658c65e7b333f4f4da4414904cc996965bce7ad36dc2e71cc100f9091447521b?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Chris Avatar"/>
+					<div class="message-content">
+						<div class="message-author">Chris</div>
+						<div class="message-text">Hey, how's it going</div>
+					</div>
+				</div>
+				<div class="message-container sent-message">
+					<div class="message-content">
+						<div class="message-author">Jason</div>
+						<div class="message-text">Hey Chris, I'm doing great. How about you?</div>
+					</div>
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/194546796d0ff3d7dc0885fe500c4de73cae62d916f36fa22c162ab6078fd23e?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Jason Avatar"/>
+				</div>
+				<div class="message-container sent-message">
+					<div class="message-content">
+						<div class="message-author">Jason</div>
+						<div class="message-text">Hey Chris, I'm doing great. How about you?</div>
+					</div>
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/194546796d0ff3d7dc0885fe500c4de73cae62d916f36fa22c162ab6078fd23e?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Jason Avatar"/>
+				</div>
+				<div class="message-container received-message">
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/658c65e7b333f4f4da4414904cc996965bce7ad36dc2e71cc100f9091447521b?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Chris Avatar"/>
+					<div class="message-content">
+						<div class="message-author">Chris</div>
+						<div class="message-text">Hey, how's it going</div>
+					</div>
+				</div>
+				<div class="message-container sent-message">
+					<div class="message-content">
+						<div class="message-author">Jason</div>
+						<div class="message-text">Hey Chris, I'm doing great. How about you?</div>
+					</div>
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/194546796d0ff3d7dc0885fe500c4de73cae62d916f36fa22c162ab6078fd23e?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Jason Avatar"/>
+				</div>
+				<div class="message-container sent-message">
+					<div class="message-content">
+						<div class="message-author">Jason</div>
+						<div class="message-text">Hey Chris, I'm doing great. How about you?</div>
+					</div>
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/194546796d0ff3d7dc0885fe500c4de73cae62d916f36fa22c162ab6078fd23e?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Jason Avatar"/>
+				</div>
+				<div class="message-container sent-message">
+					<div class="message-content">
+						<div class="message-author">Jason</div>
+						<div class="message-text">Hey Chris, I'm doing great. How about you?</div>
+					</div>
+					<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/194546796d0ff3d7dc0885fe500c4de73cae62d916f36fa22c162ab6078fd23e?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="message-avatar" alt="Jason Avatar"/>
+				</div>
+			</div>
+			<div class="input-container">
+				<div class="input-wrapper">
+					<input type="text" class="form-control message-input" placeholder="Type a message...">
+					<button class="btn send-button"><i class="fas fa-paper-plane"></i></button>
+				</div>
+			</div>
+		</section>
+		
+	</div>
+{% endblock %}
+</div>

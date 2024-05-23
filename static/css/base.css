@@ -1,9 +1,12 @@
 :root {
-	--background-color: #121421;
-	--card-accent-color: #1a1f33;
-	--text-color: #fff;
-	--text-accent-color: #8f9ecc;
-	--button-primary-color: #0d36c9;
+    --background-color: #121421;
+    --card-accent-color: #1a1f33;
+    --text-color: #fff;
+    --text-accent-color: #8f9ecc;
+    --button-primary-color: #0d36c9;
+    --hover-color: #1c1c24;
+    --message-received-color: #292b38;
+    --message-sent-color: #1730b5;
 }
 
 html {
