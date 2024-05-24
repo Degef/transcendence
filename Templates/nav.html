@@ -2,7 +2,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark">
 	<div class="container-xxl">
-		<a class="navbar-brand" href="#">
+		<a class="navbar-brand" href="#" id="home">
 			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/5e4d177b52b244d002cd32c045604b65a40f89db7a94626e9675eee42b19c712?apiKey=f66aec64b0f942bf9e093fc3177a33c4&" alt="PongBuddies Logo" width="30" height="30" class="d-inline-block align-top">
 			PongBuddies
 		</a>
@@ -12,16 +12,17 @@
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav ms-auto">
 				{% if user.is_authenticated %}
-					<li class="nav-item me-2"><a class="nav-link" href="#">Profile</a></li>
-					<li class="nav-item me-2"><a class="nav-link" href="#">Play</a></li>
+					<li class="nav-item me-2"><a title="profile" id="profile" class="nav-link" href="#">Profile</a></li>
+					<li class="nav-item me-2"><a title="Home" id="home" class="nav-link" href="#">Play</a></li>
 					<li class="nav-item me-2"><a class="nav-link" href="#">Tournaments</a></li>
-					<li class="nav-item me-2"><a class="nav-link" href="#">Leaderboard</a></li>
-					<li class="nav-item me-2"><a class="nav-link" href="#">Chat</a></li>
-					<li class="nav-item me-auto"><a class="nav-link btn btn-primary" href="./login.html">Log out</a></li>
+					<li class="nav-item me-2"><a title="leaderboard" id="leaderboard" class="nav-link" href="#">Leaderboard</a></li>
+					<li class="nav-item me-2"><a title="Chat" id="chatLink" class="nav-link" href="#">Chat</a></li>
+					<li class="nav-item me-auto"><button id="logout" class="nav-link btn btn-primary" type="submit">Log out</button></li>
 				{% else %}
-					<li class="nav-item me-2"><a class="nav-link" href="#">Home</a></li>
+					<li class="nav-item me-2"><a class="nav-link" href="#" id="home">Home</a></li>
 					<li class="nav-item me-2"><a class="nav-link" href="#">About</a></li>
-					<li class="nav-item me-auto"><a class="nav-link btn btn-primary" href="./login.html">Log In</a></li>
+					<li class="nav-item me-auto" title="Login"><a id="req_login" class="nav-link btn btn-primary" href="{% url 'login' %}">Log In</a></li>
+					</li>
 				{% endif %}
 			</ul>
 		</div>

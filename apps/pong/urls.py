@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('favicon.ico', views.FaviconView.as_view()),
     path('about/', views.about, name='about'),
+    path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('unload/', views.unload, name='unload'),
     path('play_online/', views.play_online, name='play_online'),
     path('game_computer/', views.game_computer, name='game_computer'),

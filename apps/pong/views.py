@@ -38,7 +38,7 @@ def home(request):
 
 class FaviconView(View):
     def get(self, request, *args, **kwargs):
-        return redirect('/static/pong/favicon.ico')
+        return redirect('media/favicon.ico')
 
 def play_online(request):
     return render(request, 'pong/start_game.html')
@@ -50,6 +50,9 @@ def local_game(request):
     return render(request, 'pong/local_game.html')
 
 def about(request):
+    return render(request, 'pong/about.html')
+
+def leaderboard(request):
     return render(request, 'pong/leaderboard.html')
 
 @csrf_exempt

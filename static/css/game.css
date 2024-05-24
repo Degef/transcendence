@@ -1,0 +1,118 @@
+#tournament {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--card-accent-color);
+	padding: 30px;
+	margin: 0 auto;
+	border-radius: 35px;
+	width: 90%;
+	height: calc(100vh - 100px);
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.header {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.header h1 {
+	color: var(--text-color);
+	font-size: 2.5rem;
+	margin: 0;
+}
+
+#mygame {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.canvas_container {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 70vh;
+	border-radius: 15px;
+	border: 2px solid var(--text-accent-color);
+	background: var(--background-color);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	margin-bottom: 20px;
+	padding: 20px;
+}
+
+canvas {
+	border-radius: 15px;
+	border: 2px solid var(--text-accent-color);
+	background-color: var(--background-color);
+}
+
+#start_play_computer {
+	margin-top: 20px;
+	padding: 15px 30px;
+	background-color: var(--button-primary-color);
+	color: var(--text-color);
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+	box-shadow: 0 4px 6px var(--button-shadow-color);
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	align-self: center; /* Center the button horizontally within #mygame */
+}
+
+#start_play_computer:hover {
+	background-color: var(--button-hover-color);
+	transform: translateY(-3px);
+	box-shadow: 0 6px 12px var(--button-shadow-color);
+}
+
+#scoreboard {
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+}
+
+.player {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.player_name {
+	font-size: 1.5rem;
+	color: var(--text-accent-color);
+	margin-bottom: 10px;
+}
+
+.score {
+	font-size: 2rem;
+	background-color: var(--score-background);
+	padding: 10px 20px;
+	border-radius: 10px;
+	color: var(--score-color);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#wait_load {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border: 16px solid rgba(164, 164, 164, 0.2);
+	border-top: 16px solid rgb(27, 116, 20);
+	border-radius: 50%;
+	width: 140px;
+	height: 140px;
+	animation: spin 1s linear infinite;
+	z-index: 9999;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
