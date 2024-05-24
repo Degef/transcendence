@@ -88,6 +88,12 @@ def pretour(request):
     # context = {'mhistory' : form}
     return render(request, 'pong/tournament.html')
 
+def pre_tourn(request):
+    return render(request, 'pong/pre-tour.html')
+
+def pre_offline(request):
+    return render(request, 'pong/pre_offline.html')
+
 
 waiting_players_count = 0
 

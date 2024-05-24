@@ -198,6 +198,76 @@ function tournament(back_or_forward = 1) {
     });
 }
 
+async function pre_offline(back_or_forward = 1) {
+    console.log('preoffline');
+    const response = await fetch('/pre_offline/', {
+        method: 'GET',
+        headers: { 'Content-Type': 'text/html', },
+    });
+    const htmlContent = await response.text();
+    updateBody(htmlContent);
+    if(back_or_forward == 0) {
+        updateURL('/pre-offline');
+    }
+}
+
+// async function pre_offline(back_or_forward = 1) {
+//     console.log('preoffline');
+
+//     try {
+//         const response = await fetch('/pre_offline/', {
+//             method: 'GET',
+//             headers: { 'Content-Type': 'text/html',},
+//         });
+//         const htmlContent = await response.text();
+//         updateBody(htmlContent);
+
+//         if (back_or_forward == 0) {
+//             updateURL('/pre-offline');
+//         }
+//     } catch (error) {
+//         console.error('Fetch error:', error);
+//     }
+// }
+
+
+
+
+async function pre_online(back_or_forward = 1) {
+    console.log('preonline');
+    const response = fetch('/pre_online/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    });
+    const htmlContent = await response.text();
+    updateBody(htmlContent);
+    if(back_or_forward == 0) {
+        updateURL('/pre-online');
+    }
+}
+
+function pre_tourn(back_or_forward = 1) {
+    console.log('pre_tourn');
+    fetch('/pre_tourn/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/html',
+        },
+    })
+    .then(response => response.text())
+    .then(htmlContent => {
+        updateBody(htmlContent);
+        if (back_or_forward == 0)
+            return    
+        updateURL('/pre_tourn/');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 // Function to fetch the user ID from the Django request object
 function getUserId() {
     // Check if the user is authenticated
@@ -511,3 +581,86 @@ window.addEventListener('unload', function() {
     // navigator.sendBeacon('/user_offline/');
     navigator.sendBeacon('/unload/');
 });
+
+
+
+
+// function setupTournament(playerCount) {
+//     const players = [];
+
+//     for (let i = 0; i < playerCount; i++) {
+//         const playerName = prompt(`Enter username for player ${i + 1}:`);
+//         if (playerName) {
+//             players.push(playerName);
+//         } else {
+//             alert('Player name cannot be empty.');
+//             i--; // Decrement to retry this iteration
+//         }
+//     }
+
+//     console.log('Players:', players);
+//     // You can now set up the tournament with these players
+//     // For example, you can call another function to organize matches
+//     organizeTournament(players);
+// }
+
+// function organizeTournament(players) {
+//     // Placeholder function for organizing the tournament
+//     // You can implement the logic to set up the tournament here
+//     console.log('Setting up tournament for the following players:', players);
+// }
+
+
+
+
+
+
+let players = [];
+let currentPlayerIndex = 0;
+let totalPlayers = 0;
+
+function setupTournament(playerCount) {
+    players = [];
+    currentPlayerIndex = 0;
+    totalPlayers = playerCount;
+    document.body.innerHTML = `
+        <div id="playerFormContainer">
+            <h2>Enter Player Names</h2>
+            <form id="playerForm">
+                <div id="playerInputs">
+                    <label for="playerName">Player 1:</label>
+                    <input type="text" id="playerName" name="playerName" required>
+                </div>
+                <button type="button" id="submitPlayer">Next</button>
+            </form>
+        </div>
+    `;
+    document.getElementById('submitPlayer').addEventListener('click', submitPlayerName);
+}
+
+function submitPlayerName() {
+    const playerNameInput = document.getElementById('playerName');
+    const playerName = playerNameInput.value.trim();
+
+    if (playerName) {
+        players.push(playerName);
+        currentPlayerIndex++;
+        
+        if (currentPlayerIndex < totalPlayers) {
+            document.getElementById('playerInputs').innerHTML = `
+                <label for="playerName">Player ${currentPlayerIndex + 1}:</label>
+                <input type="text" id="playerName" name="playerName" required>
+            `;
+        } else {
+            organizeTournament(players);
+        }
+    } else {
+        alert('Player name cannot be empty.');
+    }
+}
+
+function organizeTournament(players) {
+    console.log('Setting up tournament for the following players:', players);
+    // Implement the logic to organize the tournament here
+    document.body.innerHTML = '<h2>Tournament Setup Complete</h2>';
+}

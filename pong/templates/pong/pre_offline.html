@@ -1,0 +1,28 @@
+{% extends 'pong/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content%}
+    <div id="tourn" class="container-fluid rounded-4 history">
+        <div class="row row-cols-1 row-cols-md-3 g-4" style="justify-content: center;">
+            <div class="col">
+                <a id="offlinefour" href="#" style="text-decoration: none;">
+                <div id="offlinefour" class="card" style="width: 18rem; height: 14rem;">
+                    <div id="offlinefour" class="card-body">
+                        <h5 id="offlinefour"  class="card-title">4 player</h5>
+                    </div>
+                </div>
+                </a>
+            </div>
+            <div class="col">
+                <a id="offlineeight" href="#" style="text-decoration: none;">
+                <div id="offlineeight" class="card" style="width: 18rem; height: 14rem;">
+                    <div id="offlineeight" class="card-body">
+                        <h5 id="offlineeight" class="card-title">8 players</h5>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -38,6 +38,9 @@ function handleButtonClick(event) {
         'matchhistory': matchhistory,
         'tournament' : tournament,
         'fourPlayers' : fourPlayers,
+        'pre_tourn': pre_tourn,
+        'online': pre_online,
+        'offlinetour': pre_offline,
     };
 
     const buttonId = event.target.id;
@@ -45,7 +48,13 @@ function handleButtonClick(event) {
     if (buttonId != 'id_image') {
         event.preventDefault();
     }
-    if (buttonFunctions.hasOwnProperty(buttonId)) {
+    if (buttonId === 'offlinefour') {
+        setupTournament(4);
+    }
+    else if (buttonId === 'offlineeight') {
+        setupTournament(8);
+    }
+    else if (buttonFunctions.hasOwnProperty(buttonId)) {
         buttonFunctions[buttonId](event);
     }
 }

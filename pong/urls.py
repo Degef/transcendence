@@ -10,5 +10,7 @@ urlpatterns = [
     path('game_computer/', views.game_computer, name='game_computer'),
     path('history/', views.matchhistory, name='history'),
     path('pretour/', views.pretour, name='pretour'),
+    path('pre_tourn/', views.pre_tourn, name='pre_tourn'),
+    path('pre_offline/', views.pre_offline, name='pre_offline'),
     path('join-tournament/', views.join_tournament_view, name='join_tournament'),
 ]

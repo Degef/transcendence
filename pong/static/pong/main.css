@@ -415,3 +415,12 @@ p.fs-1.fw-bold.title {
 .player-entry p {
     margin: 0;  /* Remove default margin from the paragraph */
 }
+
+
+
+#playerFormContainer {
+    display: none;
+}
+.player-input {
+    margin-bottom: 10px;
+}
