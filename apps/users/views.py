@@ -28,7 +28,7 @@ def get_ipaddress(request):
     }
     return JsonResponse(data)
 
-def get_context(request, u_form, p_form, u_form2): 
+def get_context(request, u_form, p_form, u_form2):
     all_games = Game.objects.all()
     total_match, total_win, total_lose, total_draw = 0, 0, 0, 0
     for game in all_games:
@@ -54,7 +54,7 @@ def get_context(request, u_form, p_form, u_form2):
         'total_draw': total_draw,
         'users': users,
         'friends': friends,
-        'friends2': friends2
+        'friends2': friends2,
     }
     return context
 

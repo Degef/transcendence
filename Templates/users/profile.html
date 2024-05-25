@@ -3,46 +3,41 @@
 {% load static %}
 
 {% block content %}
-
 <section class="profile-container container">
 	<header class="profile-header text-center">
 		<article class="profile-details">
 			<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/88556bafe9ef5c8fe11e4ff06d0ce406dd52983c14c4049b5589f689a7c39ea8?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="Megan's profile picture" class="profile-image img-fluid rounded-circle" />
 			<h2 class="profile-name">Megan</h2>
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
-				<button id="" class="btn btn-outline-light profile-action-edit">Edit</button>
-				<button class="btn btn-primary profile-action-play">Play</button>
+				{% if is_own_profile %}
+					<button class="btn btn-outline-light profile-action-edit">Edit</button>
+				{% else %}
+					<button class="btn btn-outline-light rounded-pill profile-action-add-friend">Add Friend</button>
+					<button class="btn btn-primary profile-action-play">Play</button>
+				{% endif %}
 			</div>
 		</article>
 	</header>
-	<section class="stats-section my-4">
-		<div class="row stats-container">
-			<div class="col-md-4 stats-column">
-				<div class="stats-item text-center py-3">
-					<div class="stats-content">
-						<span class="stats-number">123</span>
-						<p class="stats-label">Games</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 stats-column">
-				<div class="stats-item text-center py-3">
-					<div class="stats-content">
-						<span class="stats-number">23</span>
-						<p class="stats-label">Wins</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 stats-column">
-				<div class="stats-item text-center py-3">
-					<div class="stats-content">
-						<span class="stats-number">12</span>
-						<p class="stats-label">Losses</p>
-					</div>
-				</div>
-			</div>
+	
+	{% comment %} <!-- Chart Section -->
+	<section class="container">
+		<h1>Pong Game Statistics</h1>
+		<div class="controls">
+			<button onclick="updateChart('all')">All</button>
+			<button onclick="updateChart('monthly')">Monthly</button>
+			<button onclick="updateChart('weekly')">Weekly</button>
+			<button onclick="updateChart('daily')">Daily</button>
+			<select id="chartType" onchange="changeChartType()">
+				<option value="bar">Bar</option>
+				<option value="line">Line</option>
+				<option value="radar">Radar</option>
+				<option value="doughnut">Doughnut</option>
+				<option value="polarArea">Polar Area</option>
+			</select>
 		</div>
-	</section>
+		<canvas id="gameStatsChart"></canvas>
+	</section> {% endcomment %}
+
 	<nav class="highlighted-tab d-flex justify-content-between border-bottom py-2 mb-3">
 		<div class="highlighted-label">Stats</div>
 		<div class="highlighted-stats active">History</div>
@@ -81,6 +76,5 @@
 		</div>
 	</section>
 </section>
-
 
 {% endblock %}

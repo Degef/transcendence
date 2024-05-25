@@ -3,360 +3,279 @@ let miniImage = '';
 let sessionKey = '';
 let currentUser = '';
 let profileimage = '';
-
-let gamepadLink = null;
-
-function get_current_user() {
-	fetch('get_current_user/')
-	.then(response => response.json())
-	.then(data => {
-		currentUser = data.currentUser;
-		profileimage = data.currentUserImage;
-		sessionKey = data.sessionKey;
-	})
-	.catch(error => {
-		console.error('Error fetching user:', error);
-	});
-}
-
-// document.addEventListener('contextmenu', event => event.preventDefault());
-
-
-function handleUserSelection() {
-	const userList = document.getElementById('user-listt');
-	const contextMenu = document.getElementById('context-menu');
-
-
-	function hideContextMenu() {
-        contextMenu.style.display = 'none';
-    }
-
-    if (userList) {
-        const userItems = userList.querySelectorAll('#user-list-link');
-        userItems.forEach(userItem => {
-            userItem.addEventListener('click', function(event) {
-                event.preventDefault();
-                userItems.forEach(child => child.classList.remove('active'));
-                userItem.classList.add('active');
-                const username = userItem.innerText.trim();
-                fetch(`api/user/${username}/`)
-                .then(response => response.json())
-                .then(userProfile => {
-                    setCurrentRecipient(userProfile);
-                })
-                .catch(error => {
-                    console.error('Error fetching user profile:', error);
-                });
-            });
-
-            userItem.addEventListener('contextmenu', function(event) {
-                event.preventDefault();
-                userItems.forEach(child => child.classList.remove('active'));
-                userItem.classList.add('active');
-                const username = userItem.innerText.trim();
-                contextMenu.style.display = 'block';
-                contextMenu.style.left = `${event.pageX}px`;
-                contextMenu.style.top = `${event.pageY}px`;
-
-            //     document.getElementById('view-profile').onclick = function() {
-            //         fetch(`api/user/${username}/`)
-            //         .then(response => response.json())
-            //         .then(userProfile => {
-            //             viewUserProfile(userProfile); // Define this function to handle profile viewing
-            //         })
-            //         .catch(error => {
-            //             console.error('Error fetching user profile:', error);
-            //         });
-            //         hideContextMenu();
-            //     };
-			//
-                document.getElementById('block-user').onclick = function() {
-                    blockUser(username);
-                    hideContextMenu();
-                };
-			//
-            //     document.getElementById('invite-to-game').onclick = function() {
-            //         inviteToGame(username); // Define this function to handle inviting the user to a game
-            //         hideContextMenu();
-            //     };
-            // });
-        // });
-
-        document.addEventListener('click', function(event) {
-            if (!contextMenu.contains(event.target)) {
-                hideContextMenu();
-            }
-        });
-    });
-
-})}}
-
-
-
-function blockUser(username) {
-    fetch('block_unblock/', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'username': username})
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            return response.json().then(data => {
-                throw new Error(data.Error);
-            });
-        }
-    })
-    .then(data => {
-        console.log(data.Success);
-    })
-    .catch(error => {
-        console.error(error.message);
-        if (error.message.includes('Cannot block yourself')) {
-            console.error('You cannot block yourself');
-        } else if (error.message.includes('User is already blocked')) {
-            console.error('User is already blocked');
-        } else if (error.message.includes('Invalid request data')) {
-            console.error('Invalid request data');
-        } else if (error.message.includes('Invalid request method')) {
-            console.error('Invalid request method');
-        } else {
-            console.error('An unknown error occurred');
-        }
-    });
-}
-
-
-
-
-
-
-function drawMessage(message) {
-	let position = 'sent';
-	const date = new Date(message.timestamp);
-	if (message.user === currentUser) position = 'replies';
-
-	miniProfileImage = miniImage;
-	if (message.user === currentUser) miniProfileImage = profileimage
-
-
-	const messageItem =
-		`<li class="${position}">
-			<img src="${miniProfileImage}" alt="" />
-			<p>${message.body}</p>
-		</li>`;
-
-	const messageList = document.getElementById('messages');
-	messageList.innerHTML += messageItem;
-	messageList.scrollTop = messageList.scrollHeight;
-
-}
-
-
-function getConversation(recipient) {
-	document.getElementById("messages").innerHTML = "";
-	let messageList = document.getElementById("messages");
-	fetch(`api/message/?target=${recipient}`)
-		.then(response => response.json())
-		.then(data => {
-			while (messageList.firstChild) {
-				messageList.removeChild(messageList.firstChild);
-			}
-			data.results.reverse().forEach(message => {
-				setTimeout(drawMessage(message), 500);
-			});
-			messageList.scrollTop = messageList.scrollHeight;
-		})
-		.catch(error => {
-			console.log(data)
-			console.error('Error fetching conversation:', error);
-		})
-		.finally(() => {
-			messageList.scrollTop = messageList.scrollHeight;
-		});
-}
-
-
-function getMessageById(message) {
-	const id = JSON.parse(message).message;
-	let messageList = document.getElementById("messages");
-	fetch(`api/message/${id}/`)
-		.then(response => response.json())
-		.then(data => {
-			if (data.user === currentRecipient ||
-				(data.recipient === currentRecipient && data.user === currentUser)) {
-				drawMessage(data);
-			}
-			messageList.scrollTop = messageList.scrollHeight;
-		})
-		.catch(error => {
-			console.error('Error fetching message:', error);
-		});
-}
-
-
-function sendMessage(recipient, body) {
-	fetch('api/message/', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-			recipient: recipient,
-			body: body
-		})
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error('Network response was not ok');
-		}
-	})
-	.catch(error => {
-		console.error('Error:', error);
-	});
-}
-
-
-function setCurrentRecipient(userData) {
-	const chatDisplay = document.getElementById('chat-display');
-	chatDisplay.style.display = 'block';
-	miniImage = userData.profile.image;
-	currentRecipient = userData.username;
-
-	const profileImageElement = document.getElementById('profile-image');
-	profileImageElement.src = userData.profile.image;
-
-	const recipientNameElement = document.getElementById('recipient-name');
-	recipientNameElement.textContent = currentRecipient;
-
-
-	getConversation(currentRecipient);
-	gamepadLink = document.getElementById('gamepad')
-	gamepadLink.addEventListener('click', function(event) {
-		event.preventDefault();
-		challengeUser(currentRecipient);
-	});
-
-}
-
-
-function sanitizeInput(input) {
-	return input.replace(/&/g, "&amp;")
-				.replace(/</g, "&lt;")
-				.replace(/>/g, "&gt;")
-				.replace(/"/g, "&quot;")
-				.replace(/'/g, "&#x27;")
-				.replace(/\//g, "&#x2F;");
-}
-
 let socket = null;
 
+const api = {
+	fetchCurrentUser: () => fetch('get_current_user/').then(response => response.json()),
+	fetchUserProfile: username => fetch(`api/user/${username}/`).then(response => response.json()),
+	fetchMessages: recipient => fetch(`api/message/?target=${recipient}`).then(response => response.json()),
+	fetchMessageById: id => fetch(`api/message/${id}/`).then(response => response.json()),
+	sendMessage: message => fetch('api/message/', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(message)
+	}),
+	blockUser: username => fetch('block_unblock/', {
+		method: "POST",
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ 'username': username })
+	}).then(response => {
+		if (!response.ok) return response.json().then(data => { throw new Error(data.Error); });
+		return response.json();
+	})
+};
+
+const utils = {
+	sanitizeInput: input => input.replace(/&/g, "&amp;")
+								.replace(/</g, "&lt;")
+								.replace(/>/g, "&gt;")
+								.replace(/"/g, "&quot;")
+								.replace(/'/g, "&#x27;")
+								.replace(/\//g, "&#x2F;"),
+	logError: error => console.error('Error:', error),
+};
+
 function initializeChat() {
-	get_current_user();
-	if (socket)
-		socket.close();
+	getCurrentUser().then(() => setupWebSocket());
 
-	if (!socket || socket.readyState !== WebSocket.OPEN) {
-		socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
-
-		socket.onopen = function(event) {
-			console.log('WebSocket connection established');
-		};
-
-		socket.onmessage = function(event) {
-			getMessageById(event.data);
-			console.log('Message received:', event.data);
-		};
-
-		socket.onerror = function(event) {
-			console.error('WebSocket error:', event);
-		};
-
-		socket.onclose = function(event) {
-			console.log('WebSocket connection closed');
-		};
-	} else {
-		console.log("WebSocket Connection Already Established!");
+	const chatForm = document.querySelector('.input-wrapper');
+	if (chatForm) {
+		const chatInput = document.querySelector('.message-input');
+		chatForm.addEventListener('submit', event => handleChatFormSubmit(event, chatInput, chatForm));
+		chatInput.addEventListener('keydown', event => handleChatInputKeydown(event, chatForm));
 	}
 
-
-	let chatInput = document.getElementById('chat-input');
-
-	let chatButton = document.getElementById('btn-send');
-	if (chatButton) {
-		chatButton.addEventListener('click', function () {
-			const sanitized_input = sanitizeInput(chatInput.value);
-			if (sanitized_input.length > 0) {
-				sendMessage(currentRecipient, sanitized_input);
-				chatInput.value = '';
-			}
-		});
-	}
 	handleUserSelection();
 	setupSearchFunctionality();
 }
 
+function getCurrentUser() {
+	return api.fetchCurrentUser()
+		.then(data => {
+			currentUser = data.currentUser;
+			profileimage = data.currentUserImage;
+			sessionKey = data.sessionKey;
+		})
+		.catch(utils.logError);
+}
 
-window.addEventListener('DOMContentLoaded', function(event) {
-	if (window.location.pathname === '/chat/') {
-		setTimeout(initializeChat, 1000);
+function handleChatFormSubmit(event, chatInput, chatForm) {
+	event.preventDefault();
+	const sanitizedInput = utils.sanitizeInput(chatInput.value);
+	if (sanitizedInput.length > 0) {
+		const message = { recipient: currentRecipient, body: sanitizedInput, user: currentUser };
+		api.sendMessage(message)
+			.then(() => {
+				chatInput.value = '';
+				drawMessage(message); // Draw the message immediately after sending
+			})
+			.catch(utils.logError);
 	}
-});
+}
 
+function handleChatInputKeydown(event, chatForm) {
+	if (event.key === 'Enter') {
+		event.preventDefault();
+		chatForm.dispatchEvent(new Event('submit'));
+	}
+}
+
+function setupWebSocket() {
+	if (socket && socket.readyState === WebSocket.OPEN) return;
+
+	socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
+	socket.onopen = () => console.log('WebSocket connection established');
+	socket.onmessage = event => {
+		getMessageById(event.data);
+		console.log('Message received:', event.data);
+	};
+	socket.onerror = event => console.error('WebSocket error:', event);
+	socket.onclose = () => console.log('WebSocket connection closed');
+}
+
+function handleUserSelection() {
+	const userList = document.getElementById('user-listt');
+	if (!userList) return;
+
+	const userItems = userList.querySelectorAll('#user-list-link');
+	userItems.forEach(userItem => {
+		userItem.addEventListener('click', event => handleUserItemClick(event, userItem, userItems));
+		const contactAction = userItem.querySelector('.contact-action');
+		contactAction.addEventListener('click', event => handleContactActionClick(event, contactAction));
+	});
+
+	document.addEventListener('click', event => handleDocumentClick(event));
+}
+
+function handleUserItemClick(event, userItem, userItems) {
+	event.preventDefault();
+	userItems.forEach(child => child.classList.remove('active'));
+	userItem.classList.add('active');
+	const username = userItem.querySelector('.contact-name').innerText.trim();
+
+	api.fetchUserProfile(username)
+		.then(userProfile => setCurrentRecipient(userProfile))
+		.catch(utils.logError);
+}
+
+function handleContactActionClick(event, contactAction) {
+	event.preventDefault();
+	event.stopPropagation();
+	const username = contactAction.getAttribute('data-username');
+	showDropdownMenu(contactAction, username);
+}
+
+function handleDocumentClick(event) {
+	const dropdownMenu = document.getElementById('dropdownMenu');
+	if (!dropdownMenu.contains(event.target)) {
+		dropdownMenu.classList.remove('show');
+	}
+}
+
+function showDropdownMenu(target, username) {
+	const dropdownMenu = document.getElementById('dropdownMenu');
+	const rect = target.getBoundingClientRect();
+
+	dropdownMenu.style.top = `${rect.bottom + window.scrollY}px`;
+	dropdownMenu.style.left = `${rect.left + window.scrollX - dropdownMenu.offsetWidth + rect.width}px`;
+	dropdownMenu.classList.add('show');
+
+	document.getElementById('view-profile').onclick = () => viewUserProfile(username);
+	document.getElementById('block-user').onclick = () => blockUser(username);
+	document.getElementById('invite-to-game').onclick = () => inviteToGame(username);
+}
+
+function viewUserProfile(username) {
+	api.fetchUserProfile(username)
+		.then(userProfile => viewUserProfile(userProfile))
+		.catch(utils.logError);
+	document.getElementById('dropdownMenu').classList.remove('show');
+}
+
+function blockUser(username) {
+	api.blockUser(username)
+		.then(data => console.log(data.Success))
+		.catch(handleBlockUserError);
+	document.getElementById('dropdownMenu').classList.remove('show');
+}
+
+function handleBlockUserError(error) {
+	const errorMessage = error.message;
+	console.error(errorMessage);
+	const messages = {
+		'Cannot block yourself': 'You cannot block yourself',
+		'User is already blocked': 'User is already blocked',
+		'Invalid request data': 'Invalid request data',
+		'Invalid request method': 'Invalid request method',
+	};
+	console.error(messages[errorMessage] || 'An unknown error occurred');
+}
+
+function drawMessage(message) {
+	const isSent = message.user === currentUser;
+	const position = isSent ? 'sent-message' : 'received-message';
+	const miniProfileImage = isSent ? profileimage : miniImage;
+
+	const messageItem = `
+		<div class="message-container ${position}">
+			${!isSent ? `<img src="${miniProfileImage}" class="message-avatar" alt="" />` : ''}
+			<div class="message-content">
+				<div class="message-author">${message.user}</div>
+				<div class="message-text">${message.body}</div>
+			</div>
+			${isSent ? `<img src="${miniProfileImage}" class="message-avatar" alt="" />` : ''}
+		</div>`;
+
+	const messageList = document.querySelector('.chat');
+	messageList.innerHTML += messageItem;
+	messageList.scrollTop = messageList.scrollHeight;
+}
+
+function getConversation(recipient) {
+	const messageList = document.querySelector('.chat');
+	messageList.innerHTML = "";
+
+	api.fetchMessages(recipient)
+		.then(data => {
+			messageList.innerHTML = "";
+			data.results.reverse().forEach(message => drawMessage(message));
+			messageList.scrollTop = messageList.scrollHeight;
+		})
+		.catch(utils.logError)
+		.finally(() => messageList.scrollTop = messageList.scrollHeight);
+}
+
+function getMessageById(message) {
+	const id = JSON.parse(message).message;
+	const messageList = document.querySelector('.chat');
+
+	api.fetchMessageById(id)
+		.then(data => {
+			if (data.user === currentRecipient || (data.recipient === currentRecipient && data.user === currentUser)) {
+				drawMessage(data);
+			}
+			messageList.scrollTop = messageList.scrollHeight;
+		})
+		.catch(utils.logError);
+}
+
+function setCurrentRecipient(userData) {
+	const chatHeader = document.querySelector('.chat-header');
+	const messageList = document.querySelector('.chat');
+	miniImage = userData.profile.image;
+	currentRecipient = userData.username;
+
+	chatHeader.textContent = `Chat with ${currentRecipient}`;
+	messageList.innerHTML = "";
+
+	getConversation(currentRecipient);
+}
 
 function setupSearchFunctionality() {
 	console.info("Setting up search functionality");
-	const userList = document.getElementById("user-list");
-	const searchInput = document.getElementById("search-input");
-	const searchButton = document.getElementById("search-button");
+	const userList = document.getElementById("user-listt");
+	const searchInput = document.querySelector(".search-input");
 
-	if (userList) {
-		const originalUserNames = Array.from(userList.children).map(function (user) {
-			return user.textContent.trim();
-		});
+	if (!userList) return;
 
-		searchButton.addEventListener("click", function () {
-			const searchText = searchInput.value.toLowerCase();
-			filterUsers(searchText);
-		});
+	const originalUserNames = Array.from(userList.children).map(user => user.querySelector('.contact-name').textContent.trim());
 
-		searchInput.addEventListener("input", function () {
-			const searchText = searchInput.value.toLowerCase();
-			filterUsers(searchText);
-		});
+	searchInput.addEventListener("input", function () {
+		const searchText = searchInput.value.toLowerCase();
+		filterUsers(searchText);
+	});
 
-		function filterUsers(searchText) {
-			const filteredUserNames = originalUserNames.filter(function (userName) {
-				return userName && userName.toLowerCase().includes(searchText);
-			});
-			displayFilteredUsers(filteredUserNames);
-		}
+	function filterUsers(searchText) {
+		const filteredUserNames = originalUserNames.filter(userName => userName.toLowerCase().includes(searchText));
+		displayFilteredUsers(filteredUserNames);
 	}
-
 
 	function displayFilteredUsers(filteredUserNames) {
 		userList.innerHTML = "";
-		filteredUserNames.forEach(function (userName) {
+		filteredUserNames.forEach(userName => {
 			const listItem = document.createElement("a");
 			listItem.classList.add("list-group-item");
-			listItem.textContent = userName;
-
-			listItem.addEventListener("click", function () {
-				fetch(`api/user/${userName}/`)
-				.then(response => response.json())
-				.then(userProfile => {
-					setCurrentRecipient(userProfile);
-				})
-				.catch(error => {
-					console.error('Error fetching user profile:', error);
-				});
-			});
-
+			listItem.innerHTML = `<div class="contact-details">
+									<img src="" alt="${userName}" class="contact-profile-image">
+									<div class="contact-info">
+										<div class="contact-name">${userName}</div>
+									</div>
+									<i class="fas fa-ellipsis-v contact-action" data-username="${userName}"></i>
+								</div>`;
+			listItem.addEventListener("click", () => fetchUserProfileAndSetRecipient(userName));
 			userList.appendChild(listItem);
 		});
 	}
 }
 
+function fetchUserProfileAndSetRecipient(userName) {
+	api.fetchUserProfile(userName)
+		.then(userProfile => setCurrentRecipient(userProfile))
+		.catch(utils.logError);
+}
+
+window.addEventListener('DOMContentLoaded', function (event) {
+	if (window.location.pathname === '/chat/') {
+		setTimeout(initializeChat, 1000);
+	}
+});

@@ -241,3 +241,40 @@
 		flex-wrap: wrap;
 	}
 }
+
+
+.controls {
+    margin-bottom: 20px;
+}
+
+.controls button, .controls select {
+    background-color: var(--button-primary-color);
+    border: none;
+    color: var(--text-color);
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.controls button:hover, .controls select:hover {
+    background-color: var(--hover-color);
+}
+
+.controls select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+canvas {
+    width: 100%;
+    height: 400px;
+    background: var(--card-accent-color);
+    border: 1px solid var(--hover-color);
+    border-radius: 8px;
+}
