@@ -9,26 +9,23 @@
 				<i class="fas fa-search search-icon"></i>
 				<input type="text" class="search-input" placeholder="Search">
 			</div>
-			<div class="contacts">
-				<div class="contact">
-					<div class="contact-details">
-						<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/34b3ea8e5f9f5a5e045183d4ab598109dbb4fec8300c0b21f3d78f6a20e6f4e1?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="contact-avatar" alt="Chris Avatar"/>
-						<div class="contact-info">
-							<div class="contact-name">Chris</div>
-						</div>
-					</div>
-					<i class="fas fa-ellipsis-v contact-action"></i>
-				</div>
-				<div class="contact">
-					<div class="contact-details">
-						<img src="https://cdn.builder.io/api/v1/image/assets/TEMP/9743642b5f75fb79f637d9dd9edbf15e653b2c1f7b4f721a2d72fefbcd308ae1?apiKey=d2095187850a4552946c7d55d8bfdb90&" class="contact-avatar" alt="Jason Avatar"/>
-						<div class="contact-info">
-							<div class="contact-name">Jason</div>
-						</div>
-					</div>
-					<i class="fas fa-ellipsis-v contact-action"></i>
-				</div>
+			
+			<div class="contacts px-3">
+				<ul class="user-list list-group" id="user-listt">
+					{% for friend in friends %}
+						<a id="user-list-link" href="" class="list-group-item">
+							<div class="contact-details">
+								<img src="{{ friend.image.url }}" alt="{{ friend.user.username }}" class="contact-profile-image">
+								<div class="contact-info">
+									<div class="contact-name">{{ friend.user.username }}</div>
+								</div>
+							</div>
+							<i class="fas fa-ellipsis-v contact-action"></i>
+						</a>
+					{% endfor %}
+				</ul>
 			</div>
+			
 		</aside>
 		<section class="chat-window col-lg-9 col-md-12">
 			<div class="chat-header">Chat with Chris</div>
