@@ -148,6 +148,12 @@
 	gap: 20px;
 	padding: 8px 16px;
 	line-height: 150%;
+	overflow-y: scroll;
+	scrollbar-width: none;
+}
+
+.history-section::-webkit-scrollbar {
+	display: none;
 }
 
 .history-item {

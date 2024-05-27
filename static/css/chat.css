@@ -13,7 +13,7 @@
 }
 
 .chat {
-	height: calc(100vh - 400px);
+	height: 60vh;
 	overflow-y: scroll;
 	scrollbar-width: none;
 }

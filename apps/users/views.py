@@ -15,6 +15,9 @@ from django.contrib.auth.views import LoginView
 from dotenv import load_dotenv
 import os
 from django.http import JsonResponse
+from django.db.models import Q
+import logging
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -88,34 +91,64 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'signup.html', {'form': form})
 
+
+def get_total_wins(userid):
+	total_wins = Game.objects.filter(winner=userid).count()
+	return total_wins
+
+def get_total_losses(userid):
+	total_losses = Game.objects.filter(Q(player1=userid) | Q(player2=userid)).exclude(winner=userid).count()
+	return total_losses
+
+def get_win_rate(total_wins, total_losses):
+	total_games = total_wins + total_losses
+	if total_games == 0:
+		return 0
+	win_rate = (total_wins / total_games) * 100
+	return win_rate
+
+
 @login_required
-def profile(request):
-    if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST, instance=request.user.user_things)
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-        u_form2 = UserUpdateForm2(instance=request.user)
+def profile(request, user=''):
+	is_own_profile = True
+	if user == '':
+		user = request.user.username
+	
+	if user != request.user.username:
+		is_own_profile = False
+	
+	userr = User.objects.filter(username=user).first()
+	if userr == None:
+		messages.error(request, f'User {user} does not exist')
+		return redirect('home')
 
-        new_image = request.FILES.get('image')
-        old_image_path = request.user.profile.image.path if request.user.profile.image else None
+	userid = userr.id
+	games = Game.objects.filter(Q(player1=userid) | Q(player2=userid)).order_by('-date')
 
-        if u_form.is_valid() and p_form.is_valid():
-            print('forms are valid')
-            p_form.save()
-            u_form.save()
+	total_wins = get_total_wins(userid)
+	total_losses = get_total_losses(userid)
+	total_games = total_wins + total_losses
+	win_rate = get_win_rate(total_wins, total_losses)
+	profile_image = Profile.objects.filter(user=userid).first().image
 
-            if new_image and old_image_path:
-                if 'default.png' not in old_image_path:
-                    default_storage.delete(old_image_path)
+	context = {
+		'username': user,
+		'total_wins': total_wins,
+		'total_losses': total_losses,
+		'total_games': total_games,
+		'win_rate': win_rate,
+		'is_own_profile': is_own_profile,
+		'profile_image': profile_image,
+		'games': games,
+	}
+	return render(request, 'profile.html', context)
 
-            messages.success(request, f'Your account has been updated!')
-            context = get_context(request, u_form, p_form, u_form2)
-            return render(request, 'users/profile.html', context)
-    else:
-        u_form = UserUpdateForm(instance=request.user.user_things)
-        p_form = ProfileUpdateForm(instance=request.user.profile)
-        u_form2 = UserUpdateForm2(instance=request.user)
-    context = get_context(request, u_form, p_form, u_form2)
-    return render(request, 'users/profile.html', context)
+@login_required
+def edit_profile(request):
+
+	context = {}
+	return render(request, 'profile-update.html', context)
+
 
 def exchange_code(request):
     code = request.GET.get('code')

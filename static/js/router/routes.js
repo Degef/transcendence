@@ -61,6 +61,7 @@ async function handleRoute(path, pushState = true) {
 	}
 }
 
+
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
@@ -68,7 +69,9 @@ const routeHandlers = {
 	'/chat/': () => {handleRoute('/chat/', true); setTimeout(initializeChat, 1000);},
 	'/register/': () => handleRoute('/register/', true),
 	'/login/': () => handleRoute('/login/', true),
-	'/profile/': () => handleRoute('/profile/', true),
+	'/profile/': () => handleRoute(`/profile/`, true),
+	'/friends/': () => handleRoute('/friends/', true),
+	'/edit_profile/': () => handleRoute('/edit_profile/', true),
 	'/play_online/': () => handleRoute('/play_online/', true),
 	'/game_computer/': () => handleRoute('/game_computer/', true),
 	'/local_game/': () => handleRoute('/local_game/', true),
@@ -82,16 +85,17 @@ function handleButtonClick(event) {
 		about: routeHandlers['/about/'],
 		leaderboard: routeHandlers['/leaderboard/'],
 		req_register: routeHandlers['/register/'],
-		register: () => handleRoute('/register/', true),
+		register: routeHandlers['/register/'],
 		req_login: routeHandlers['/login/'],
-		login: () => handleRoute('/login/', true),
-		logout: () => handleRoute('/logout/', true),
+		login: routeHandlers['/login/'],
 		profile: routeHandlers['/profile/'],
+		edit_profile: routeHandlers['/edit_profile/'],
 		update: () => handleRoute('/update/', true),
+		logout: () => handleRoute('/logout/', true),
 		loginWith42: authorize42Intra,
 		play_online: routeHandlers['/play_online/'],
 		game_computer: routeHandlers['/game_computer/'],
-		start_play_online: () => handleRoute('/start_play_online/', true),
+		start_play_online: () => handleRoute('/play_online/', true),
 		local_game: routeHandlers['/local_game/'],
 		chatLink: routeHandlers['/chat/'],
 	};

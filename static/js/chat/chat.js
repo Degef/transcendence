@@ -7,7 +7,7 @@ let socket = null;
 
 const api = {
 	fetchCurrentUser: () => fetch('get_current_user/').then(response => response.json()),
-	fetchUserProfile: username => fetch(`api/user/${username}/`).then(response => response.json()),
+	fetchUserProfile: username => fetch(`/profile/${username}/`).then(response => response.json()),
 	fetchMessages: recipient => fetch(`api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`api/message/${id}/`).then(response => response.json()),
 	sendMessage: message => fetch('api/message/', {
@@ -81,7 +81,7 @@ function handleChatInputKeydown(event, chatForm) {
 }
 
 function setupWebSocket() {
-	if (socket && socket.readyState === WebSocket.OPEN) return;
+	if (socket && socket.readyState === WebSocket.OPEN) socket.close();
 
 	socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
 	socket.onopen = () => console.log('WebSocket connection established');
