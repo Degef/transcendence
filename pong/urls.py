@@ -12,5 +12,6 @@ urlpatterns = [
     path('pretour/', views.pretour, name='pretour'),
     path('pre_tourn/', views.pre_tourn, name='pre_tourn'),
     path('pre_offline/', views.pre_offline, name='pre_offline'),
+    path('off_tour/', views.off_tour, name='off_tour'),
     path('join-tournament/', views.join_tournament_view, name='join_tournament'),
 ]

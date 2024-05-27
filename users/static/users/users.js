@@ -585,82 +585,262 @@ window.addEventListener('unload', function() {
 
 
 
-// function setupTournament(playerCount) {
-//     const players = [];
-
-//     for (let i = 0; i < playerCount; i++) {
-//         const playerName = prompt(`Enter username for player ${i + 1}:`);
-//         if (playerName) {
-//             players.push(playerName);
-//         } else {
-//             alert('Player name cannot be empty.');
-//             i--; // Decrement to retry this iteration
-//         }
-//     }
-
-//     console.log('Players:', players);
-//     // You can now set up the tournament with these players
-//     // For example, you can call another function to organize matches
-//     organizeTournament(players);
-// }
-
-// function organizeTournament(players) {
-//     // Placeholder function for organizing the tournament
-//     // You can implement the logic to set up the tournament here
-//     console.log('Setting up tournament for the following players:', players);
-// }
-
-
-
-
-
-
 let players = [];
 let currentPlayerIndex = 0;
 let totalPlayers = 0;
 
 function setupTournament(playerCount) {
+    console.log('Setting up tournament for the following players:', playerCount);
     players = [];
     currentPlayerIndex = 0;
     totalPlayers = playerCount;
-    document.body.innerHTML = `
-        <div id="playerFormContainer">
-            <h2>Enter Player Names</h2>
-            <form id="playerForm">
-                <div id="playerInputs">
-                    <label for="playerName">Player 1:</label>
-                    <input type="text" id="playerName" name="playerName" required>
-                </div>
-                <button type="button" id="submitPlayer">Next</button>
-            </form>
+    const tournElement = document.getElementById('tourn');
+    tournElement.innerHTML = `
+        <div class="center-container">
+            <div id="playerFormContainer" class="input-group mb-3 square-box">
+                <h2">Enter Player Names <br></h2>
+                <form id="playerForm">
+                    <div id="playerInputs">
+                        <label for="playerName">Player 1:</label>
+                        <input type="text" id="playerName" name="playerName" required>
+                    </div>
+                    <button type="button" id="submitPlayer">Next</button>
+                </form>
+            </div>
         </div>
     `;
+    const playerFormContainer = document.getElementById('playerFormContainer');
+    playerFormContainer.style.display = 'block';
+    console.log('calling submitPlayerName:', totalPlayers);
     document.getElementById('submitPlayer').addEventListener('click', submitPlayerName);
+    document.getElementById('playerName').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
+
 }
 
-function submitPlayerName() {
-    const playerNameInput = document.getElementById('playerName');
-    const playerName = playerNameInput.value.trim();
 
-    if (playerName) {
-        players.push(playerName);
-        currentPlayerIndex++;
-        
-        if (currentPlayerIndex < totalPlayers) {
-            document.getElementById('playerInputs').innerHTML = `
-                <label for="playerName">Player ${currentPlayerIndex + 1}:</label>
-                <input type="text" id="playerName" name="playerName" required>
-            `;
+
+
+function submitPlayerName(event) {
+    if (event.type === 'click' || (event.type === 'keypress' && event.key === 'Enter')) {
+        event.preventDefault();
+        console.log('submitPlayerName:', totalPlayers);
+        const playerNameInput = document.getElementById('playerName');
+        const playerName = playerNameInput.value.trim();
+        playerNameInput.style.display = 'block';
+
+        if (playerName && (!players.includes(playerName))) {
+            players.push(playerName);
+            currentPlayerIndex++;
+            
+            if (currentPlayerIndex < totalPlayers) {
+                document.getElementById('playerInputs').innerHTML = `
+                    <label for="playerName">Player ${currentPlayerIndex + 1}:</label>
+                    <input type="text" id="playerName" name="playerName" required>
+                `;
+            } else {
+                organizeTournament(players);
+            }
+        } else if (players.includes(playerName)) {
+            alert('Player name taken.');
         } else {
-            organizeTournament(players);
+            alert('Player name cannot be empty.');
         }
-    } else {
-        alert('Player name cannot be empty.');
     }
 }
 
+
 function organizeTournament(players) {
     console.log('Setting up tournament for the following players:', players);
-    // Implement the logic to organize the tournament here
-    document.body.innerHTML = '<h2>Tournament Setup Complete</h2>';
+
+    // Make a fetch request to the backend endpoint
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    console.log(players)
+
+    fetch('/off_tour/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ 'players': players })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Parse the JSON response
+    })
+    .then(data => {
+        // Handle the JSON data received from the backend
+        if (data && data.tournament_bracket) {
+            // Assuming the response contains a property 'tournament_bracket'
+            // Insert the HTML response into the document
+            document.getElementById('tourn').innerHTML = data.tournament_bracket;
+            startFirstMatch();
+        } else {
+            console.error('Invalid response from the backend');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching tournament bracket:', error);
+        // Handle any errors
+    });
+
 }
+
+
+function startFirstMatch() {
+    console.log("about to start the first game");
+    const firstMatchElement = document.querySelector('.round-one .matches .matchup');
+    console.log("the folling match is being selected : ", firstMatchElement);
+    if (firstMatchElement) {
+        const player1 = firstMatchElement.querySelector('.team-top').innerText;
+        const player2 = firstMatchElement.querySelector('.team-bottom').innerText;
+        const matchId = firstMatchElement.getAttribute('.matchup');
+        console.log("p1 : ", player1);
+        console.log("p2 : ", player2);
+        console.log("mid : ", matchId);
+
+        startMatch(player1, player2, firstMatchElement);
+    }
+}
+
+
+function startMatch(player1, player2, matchElement) {
+    player1_score = 10;
+    player2_score = 6;
+    alert(`Match between ${player1} and ${player2} is about to start!`);
+    
+    setTimeout(() => {
+        const winner = player1;
+        alert(`Match finished! The winner is ${winner}`);
+        updateScores(matchElement, player1_score, player2_score);
+        updateBracket(matchElement, winner);
+    }, 3000); // Simulate match duration
+    // updateNextRound();
+}
+
+function updateScores(matchElement, player1_score, player2_score) {
+    const player1ScoreInput = matchElement.querySelector('.team-top .score-input');
+    const player2ScoreInput = matchElement.querySelector('.team-bottom .score-input');
+    player1ScoreInput.value = player1_score;
+    player2ScoreInput.value = player2_score;
+}
+
+
+function updateBracket(matchElement, winner) {
+    const nextMatchElement = getNextMatchElement(matchElement);
+    if (nextMatchElement) {
+        const playerSpots = nextMatchElement.querySelectorAll('.team');
+        if (!playerSpots[0].innerText.trim()) {
+            playerSpots[0].innerText = winner;
+        } else if (!playerSpots[1].innerText.trim()) {
+            playerSpots[1].innerText = winner;
+        }
+        startNextMatch(matchElement);
+    }
+}
+
+function startNextMatch(currentMatchElement) {
+    // Find the next match in the same round
+    const nextMatchInRound = getNextMatchInSameRound(currentMatchElement);
+    console.log("nextmatchinround :" , nextMatchInRound);
+    if (nextMatchInRound) {
+        const player1 = nextMatchInRound.querySelector('.team-top').innerText.trim();
+        const player2 = nextMatchInRound.querySelector('.team-bottom').innerText.trim();
+        startMatch(player1, player2, nextMatchInRound);
+    } else {
+        // Find the first match in the next round or split
+        // const nextMatchElement = getNextMatchElement(currentMatchElement);
+        // if (nextMatchElement) {
+        //     const player1 = nextMatchElement.querySelector('.team-top').innerText.trim();
+        //     const player2 = nextMatchElement.querySelector('.team-bottom').innerText.trim();
+        //     startMatch(player1, player2, nextMatchElement);
+        // }
+    }
+}
+
+function getNextMatchInSameRound(currentMatchElement) {
+    const currentRound = currentMatchElement.closest('.round');
+    const allMatchesInRound = currentRound.querySelectorAll('.matchup');
+    console.log(allMatchesInRound);
+    let foundCurrentMatch = false;
+
+    // Check for next match in the same split
+    for (let match of allMatchesInRound) {
+        if (foundCurrentMatch) {
+            return match;
+        }
+        if (match === currentMatchElement) {
+            foundCurrentMatch = true;
+        }
+    }
+
+    // If no more matches in the same split, check the other split in the same round
+    const currentSplit = currentMatchElement.closest('.split');
+    const otherSplit = currentSplit.nextElementSibling || currentSplit.previousElementSibling;
+    if (otherSplit) {
+        const otherSplitMatches = otherSplit.querySelectorAll('.round-one .matches .matchup');
+        if (otherSplitMatches.length > 0) {
+            return otherSplitMatches[0];
+        }
+    }
+    return null;
+}
+
+function getNextMatchElement(currentMatchElement) {
+    // Check if we are in the championship round
+    const currentSplit = currentMatchElement.closest('.split');
+    let nextMatchElement = null;
+
+    if (currentSplit.nextElementSibling) {
+        // Check for the next match in the same split (next round)
+        nextMatchElement = currentSplit.nextElementSibling.querySelector('.matches .matchup');
+    } else {
+        // Move to the championship if there is no next split
+        const championshipMatchElement = document.querySelector('.champion .matches .matchup');
+        if (championshipMatchElement) {
+            nextMatchElement = championshipMatchElement;
+        }
+    }
+    
+    return nextMatchElement;
+}
+
+// using popup window 
+// function setupTournament(playerCount) {
+//     console.log('Setting up tournament for the following players:', playerCount);
+//     let players = [];
+//     let currentPlayerIndex = 0;
+//     let totalPlayers = playerCount;
+
+//     function getPlayerName(playerIndex) {
+//         const playerName = window.prompt(`Enter name for Player ${playerIndex + 1}:`);
+//         return playerName ? playerName.trim() : null;
+//     }
+
+//     function addPlayers() {
+//         while (currentPlayerIndex < totalPlayers) {
+//             const playerName = getPlayerName(currentPlayerIndex);
+//             if (playerName) {
+//                 players.push(playerName);
+//                 currentPlayerIndex++;
+//             } else {
+//                 alert('Please enter a valid name.');
+//             }
+//         }
+//         alert('All players have been entered: ' + players.join(', '));
+//         console.log('Players:', players);
+//         // Proceed with the tournament setup using the players array
+//     }
+
+//     // Start adding players
+//     addPlayers();
+// }
+
+
+

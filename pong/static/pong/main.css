@@ -420,7 +420,28 @@ p.fs-1.fw-bold.title {
 
 #playerFormContainer {
     display: none;
+    background-color: #DDEEF1;
 }
 .player-input {
     margin-bottom: 10px;
+}
+
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+/* Custom CSS for square box */
+.square-box {
+    max-width: 500px; /* Adjust as needed */
+    max-height: 500px; /* Same as width for square */
+    min-width: 300px; /* Adjust as needed */
+    min-height: 300px; /* Same as width for square */
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #DDEEF1;
+    color: black;
 }

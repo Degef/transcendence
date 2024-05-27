@@ -10,6 +10,11 @@ from django.contrib.auth import login
 from django.db.models import Q
 from .models import Tournament, TournamentPlayer
 from django.db import transaction
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+import json
+
+
 
 
 logger = logging.getLogger(__name__)
@@ -154,3 +159,28 @@ def join_tournament_view(request):
             return JsonResponse({'error': 'User is already participating in a tournament'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
+def off_tour(request):
+    if request.method == 'POST':
+        # Get the player names from the request
+        data = json.loads(request.body)
+        player_names = data.get('players', [])
+        print(player_names)
+
+        # Here you can process the player names and generate the tournament bracket
+        tournament_bracket = generate_tournament_bracket(player_names)
+        
+        # Return the tournament bracket as JSON response
+        return JsonResponse({'tournament_bracket': tournament_bracket})
+    else:
+        # Return an error response if the request method is not POST
+       return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+# Example function to generate tournament bracket
+def generate_tournament_bracket(player_names):
+    # Implement your logic here to generate the tournament bracket
+    # This is just a placeholder function
+    html_content = render_to_string('pong/off_tour.html', {'player_names': player_names})
+    return html_content
