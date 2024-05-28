@@ -8,6 +8,11 @@ import logging
 from django.db import transaction
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import timedelta
+
+
+from apps.users.views import get_total_wins, get_total_losses, get_win_rate
 
 
 logger = logging.getLogger(__name__)
@@ -40,6 +45,7 @@ class FaviconView(View):
     def get(self, request, *args, **kwargs):
         return redirect('media/favicon.ico')
 
+@login_required
 def play_online(request):
     return render(request, 'pong/start_game.html')
 
@@ -52,8 +58,65 @@ def local_game(request):
 def about(request):
     return render(request, 'pong/about.html')
 
+@login_required
 def leaderboard(request):
-    return render(request, 'pong/leaderboard.html')
+    one_week_ago = timezone.now() - timedelta(days=7)
+    one_month_ago = timezone.now() - timedelta(days=30)
+
+    players = User.objects.all()
+    leaderboard_data = []
+    leaderboard_weekly = []
+    leaderboard_monthly = []
+
+    for player in players:
+        total_wins = get_total_wins(player.id)
+        total_losses = get_total_losses(player.id)
+        win_rate = get_win_rate(total_wins, total_losses)
+        games_played = total_wins + total_losses
+        
+        leaderboard_data.append({
+            'username': player.username,
+            'total_wins': total_wins,
+            'win_rate': win_rate,
+            'games_played': games_played
+        })
+
+        weekly_wins = get_total_wins(player.id, since=one_week_ago)
+        weekly_losses = get_total_losses(player.id, since=one_week_ago)
+        weekly_games_played = weekly_wins + weekly_losses
+        weekly_win_rate = get_win_rate(weekly_wins, weekly_losses)
+
+        leaderboard_weekly.append({
+            'username': player.username,
+            'total_wins': weekly_wins,
+            'win_rate': weekly_win_rate,
+            'games_played': weekly_games_played
+        })
+
+        # Monthly calculations
+        monthly_wins = get_total_wins(player.id, since=one_month_ago)
+        monthly_losses = get_total_losses(player.id, since=one_month_ago)
+        monthly_games_played = monthly_wins + monthly_losses
+        monthly_win_rate = get_win_rate(monthly_wins, monthly_losses)
+
+        leaderboard_monthly.append({
+            'username': player.username,
+            'total_wins': monthly_wins,
+            'win_rate': monthly_win_rate,
+            'games_played': monthly_games_played
+        })
+
+    leaderboard_data = sorted(leaderboard_data, key=lambda x: (-x['total_wins'], -x['games_played']))[:10]
+    leaderboard_weekly = sorted(leaderboard_weekly, key=lambda x: (-x['total_wins'], -x['games_played']))[:10]
+    leaderboard_monthly = sorted(leaderboard_monthly, key=lambda x: (-x['total_wins'], -x['games_played']))[:10]
+
+    context = {
+        'leaderboard_weekly': leaderboard_weekly,
+        'leaderboard_monthly': leaderboard_monthly,
+        'leaderboard_data': leaderboard_data
+    }
+    
+    return render(request, 'pong/leaderboard.html', context)
 
 @csrf_exempt
 def unload(request):

@@ -68,7 +68,7 @@
 }
 
 .play-button {
-	border-radius: 12px;
+	border-radius: 24px;
 	background-color: var(--button-primary-color);
 	padding: 12px 20px;
 	font-family: Space Grotesk, sans-serif;

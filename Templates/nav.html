@@ -13,16 +13,15 @@
 			<ul class="navbar-nav ms-auto">
 				{% if user.is_authenticated %}
 					<li class="nav-item me-2"><a title="profile" id="profile" class="nav-link" href="#">Profile</a></li>
-					<li class="nav-item me-2"><a title="Home" id="home" class="nav-link" href="#">Play</a></li>
 					<li class="nav-item me-2"><a class="nav-link" href="#">Tournaments</a></li>
 					<li class="nav-item me-2"><a title="leaderboard" id="leaderboard" class="nav-link" href="#">Leaderboard</a></li>
 					<li class="nav-item me-2"><a title="Chat" id="chatLink" class="nav-link" href="#">Chat</a></li>
+					<li class="nav-item me-2"><a title="about" id="about" class="nav-link" href="#">About</a></li>
 					<li class="nav-item me-auto"><button id="logout" class="nav-link btn btn-primary" type="submit">Log out</button></li>
 				{% else %}
 					<li class="nav-item me-2"><a class="nav-link" href="#" id="home">Home</a></li>
-					<li class="nav-item me-2"><a class="nav-link" href="#" id="about">About</a></li>
+					<li class="nav-item me-2"><a title="about" class="nav-link" href="#" id="about">About</a></li>
 					<li class="nav-item me-auto" title="Login"><a id="req_login" class="nav-link btn btn-primary" href="{% url 'login' %}">Log In</a></li>
-					</li>
 				{% endif %}
 			</ul>
 		</div>

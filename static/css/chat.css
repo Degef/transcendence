@@ -1,6 +1,7 @@
 
 .chat__container {
 	justify-content: center;
+	width: 100%;
 	padding: 20px 24px;
 	border: var(--text-accent-color) 0.5px solid;
 	border-radius: 12px;
