@@ -10,7 +10,7 @@
 			<h1 class="leaderboard__title">Leaderboard</h1>
 		</header>
 		<nav class="leaderboard__tabs nav mb-4">
-			<a class="nav-link activee" href="#">All Time</a>
+			<a class="nav-link active" href="#">All Time</a>
 			<a class="nav-link" href="#">This Week</a>
 			<a class="nav-link" href="#">This Month</a>
 		</nav>
@@ -22,76 +22,15 @@
 				<div class="col-2 leaderboard__cell">Win Rate</div>
 				<div class="col-2 leaderboard__cell">Games Played</div>
 			</div>
+			{% for player in leaderboard_data %}
 			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">1</div>
-				<div class="col-3 leaderboard__cell">ProPongPlayer</div>
-				<div class="col-2 leaderboard__cell">100</div>
-				<div class="col-2 leaderboard__cell">80%</div>
-				<div class="col-2 leaderboard__cell">125</div>
+				<div class="col-1 leaderboard__cell">{{ forloop.counter }}</div>
+				<div class="col-3 leaderboard__cell">{{ player.username }}</div>
+				<div class="col-2 leaderboard__cell">{{ player.total_wins }}</div>
+				<div class="col-2 leaderboard__cell">{{ player.win_rate|floatformat:2 }}%</div>
+				<div class="col-2 leaderboard__cell">{{ player.games_played }}</div>
 			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">2</div>
-				<div class="col-3 leaderboard__cell">PaddleMaster</div>
-				<div class="col-2 leaderboard__cell">90</div>
-				<div class="col-2 leaderboard__cell">88%</div>
-				<div class="col-2 leaderboard__cell">110</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">3</div>
-				<div class="col-3 leaderboard__cell">KingPong</div>
-				<div class="col-2 leaderboard__cell">85</div>
-				<div class="col-2 leaderboard__cell">76%</div>
-				<div class="col-2 leaderboard__cell">105</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">4</div>
-				<div class="col-3 leaderboard__cell">PongChampion</div>
-				<div class="col-2 leaderboard__cell">80</div>
-				<div class="col-2 leaderboard__cell">84%</div>
-				<div class="col-2 leaderboard__cell">100</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">5</div>
-				<div class="col-3 leaderboard__cell">PongNinja</div>
-				<div class="col-2 leaderboard__cell">75</div>
-				<div class="col-2 leaderboard__cell">78%</div>
-				<div class="col-2 leaderboard__cell">95</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">6</div>
-				<div class="col-3 leaderboard__cell">PaddlePrincess</div>
-				<div class="col-2 leaderboard__cell">70</div>
-				<div class="col-2 leaderboard__cell">82%</div>
-				<div class="col-2 leaderboard__cell">90</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">7</div>
-				<div class="col-3 leaderboard__cell">PongSamurai</div>
-				<div class="col-2 leaderboard__cell">65</div>
-				<div class="col-2 leaderboard__cell">72%</div>
-				<div class="col-2 leaderboard__cell">85</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">8</div>
-				<div class="col-3 leaderboard__cell">PongQueen</div>
-				<div class="col-2 leaderboard__cell">60</div>
-				<div class="col-2 leaderboard__cell">86%</div>
-				<div class="col-2 leaderboard__cell">80</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">9</div>
-				<div class="col-3 leaderboard__cell">PongWarrior</div>
-				<div class="col-2 leaderboard__cell">55</div>
-				<div class="col-2 leaderboard__cell">74%</div>
-				<div class="col-2 leaderboard__cell">75</div>
-			</div>
-			<div class="row leaderboard__row">
-				<div class="col-1 leaderboard__cell">10</div>
-				<div class="col-3 leaderboard__cell">PongGoddess</div>
-				<div class="col-2 leaderboard__cell">50</div>
-				<div class="col-2 leaderboard__cell">80%</div>
-				<div class="col-2 leaderboard__cell">70</div>
-			</div>
+			{% endfor %}
 		</div>
 	</div>
 </section>

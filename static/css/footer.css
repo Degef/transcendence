@@ -35,9 +35,9 @@
 }
 
 .footer__link {
-	font-family: "Space Grotesk", sans-serif;
+	font-family: Arial, sans-serif;
 	font-size: 16px;
-	color: #949cc7;
+	color: var(--text-accent-color);
 	font-weight: 400;
 	text-align: center;
 	line-height: 150%;
@@ -49,4 +49,16 @@
 	.footer__link {
 		padding: 0 10px;
 	}
+}
+
+.footer__developed {
+    text-align: center;
+    padding: 10px;
+    color: var(--text-color);
+    background-color: var(--card-accent-color);
+}
+
+.footer__text {
+    margin: 0;
+    font-size: 0.8rem;
 }

@@ -70,23 +70,3 @@ async function logout(back_or_forward = 1) {
 		console.error('Error:', error);
 	}
 }
-
-async function update(back_or_forward = 1) {
-	console.log('update');
-	const form = document.getElementById('profile-form');
-	const formData = new FormData(form);
-
-	try {
-		const response = await fetch('/profile/', {
-			method: 'POST',
-			body: formData,
-		});
-		const htmlContent = await response.text();
-		updateBody(htmlContent);
-		if (back_or_forward !== 0) {
-			updateURL('/profile/');
-		}
-	} catch (error) {
-		console.error('Error:', error);
-	}
-}

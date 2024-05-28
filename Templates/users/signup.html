@@ -4,7 +4,8 @@
 
 {% block content %}
 <div class="signup">
-	<form class="signup__form">
+	<form id="registration-form" class="signup__form" method="post" action="{% url 'register' %}">
+		{% csrf_token %}
 		<div class="signup__title-container">
 			<div class="signup__title-text">Create an account</div>
 		</div>
@@ -12,7 +13,7 @@
 			<div class="signup__input-container">
 				<div class="signup__input-box">
 					<label for="usernameInput" class="signup__input-label visually-hidden">User name</label>
-					<input type="text" id="usernameInput" placeholder="Enter your user name" class="signup__input-text" aria-label="User name" />
+					<input type="text" id="usernameInput" name="username" placeholder="Enter your user name" class="signup__input-text" aria-label="User name" />
 				</div>
 			</div>
 		</div>
@@ -20,7 +21,7 @@
 			<div class="signup__input-container">
 				<div class="signup__input-box">
 					<label for="emailInput" class="signup__input-label visually-hidden">Email address</label>
-					<input type="email" id="emailInput" placeholder="Enter your email address" class="signup__input-text" aria-label="Email address" />
+					<input type="email" id="emailInput" name="email" placeholder="Enter your email address" class="signup__input-text" aria-label="Email address" />
 				</div>
 			</div>
 		</div>
@@ -28,7 +29,15 @@
 			<div class="signup__input-container">
 				<div class="signup__input-box">
 					<label for="passwordInput" class="signup__input-label visually-hidden">Password</label>
-					<input type="password" id="passwordInput" placeholder="Enter your password" class="signup__input-text" aria-label="Password" />
+					<input type="password" id="passwordInput" name="password1" placeholder="Enter your password" class="signup__input-text" aria-label="Password" />
+				</div>
+			</div>
+		</div>
+		<div class="signup__input-group">
+			<div class="signup__input-container">
+				<div class="signup__input-box">
+					<label for="password2Input" class="signup__input-label visually-hidden">Confirm Password</label>
+					<input type="password" id="password2Input" name="password2" placeholder="Confirm your password" class="signup__input-text" aria-label="Confirm Password" />
 				</div>
 			</div>
 		</div>
@@ -38,14 +47,14 @@
 			</div>
 		</div>
 		<div class="signup__action-buttons">
-			<button id="register" class="signup__action-button signup__create-account-btn">Create account</button>
+			<button type="submit" id="register" class="signup__action-button signup__create-account-btn">Create account</button>
 		</div>
 		<div class="signup__action-buttons">
-			<button id="loginWith42" class="signup__action-button signup__continue-42-btn">Continue with 42</button>
+			<button type="button" id="loginWith42" class="signup__action-button signup__continue-42-btn">Continue with 42</button>
 		</div>
 		<div class="signup__already-account">Already have an account?</div>
 		<div class="signup__login-container">
-			<button id="req_login" class="signup__action-button signup__login-btn">Login</button>
+			<button type="button" id="req_login" class="signup__action-button signup__login-btn">Login</button>
 		</div>
 	</form>
 </div>

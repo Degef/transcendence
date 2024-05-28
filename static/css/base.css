@@ -1,29 +1,32 @@
 :root {
-	--background-color: #121421;
-	--card-accent-color: #1a1f33;
-	--text-color: #fff;
-	--text-accent-color: #8f9ecc;
-	--button-primary-color: #0d36c9;
-	--hover-color: #1c1c24;
-	--message-received-color: #292b38;
-	--message-sent-color: #1730b5;
+    --background-color: #1A1F33;
+    --card-accent-color: #111937;
+    --text-color: #fff;
+    --text-accent-color: #8f9ecc;
+    --button-primary-color: #0d36c9;
+    --hover-color: #1c1c24;
+    --message-received-color: #292b38;
+    --message-sent-color: #1730b5;
+    --input-background-color: #26263b;
+    --input-text-color: white;
+    --button-background-color: #00f;
+    --button-text-color: #fff;
+    --other-button-background-color: #26263b;
+    --other-button-text-color: #fff;
+    --create-account-button-background-color: #0f0f17;
+    --create-account-button-text-color: #fff;
 }
 
 html, body {
-	height: 100%;
 	margin: 0;
 	padding: 0;
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
 	background-color: var(--background-color);
 	color: var(--text-color);
 	font-family: Arial, sans-serif;
-	overflow-y: scroll;
-	scrollbar-width: none;
-}
-
-::-webkit-scrollbar {
-	display: none;
+	overflow-y: auto;
+	height: 100%;
 }
 
 body {
@@ -36,6 +39,31 @@ main {
 	flex: 1;
 }
 
+header, footer {
+	flex-shrink: 0;
+}
+
 #main-container {
 	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+::-webkit-scrollbar {
+	display: none;
+}
+
+#nav-header {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	width: 100%;
+	background-color: var(--background-color);
+}
+
+@media (max-width: 991px) {
+	#main-container {
+		padding: 0 8px;
+	}
 }

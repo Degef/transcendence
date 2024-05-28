@@ -19,7 +19,7 @@
 	display: flex;
 	justify-content: center;
 	font-size: 22px;
-	color: #fff;
+	color: var(--text-color);
 	font-weight: 700;
 	text-align: center;
 	letter-spacing: -0.33px;
@@ -30,7 +30,7 @@
 	display: flex;
 	flex-direction: column;
 	font-size: 16px;
-	color: #9999bd;
+	color: var(--text-accent-color);
 	font-weight: 400;
 	line-height: 150%;
 	padding: 12px 16px;
@@ -49,7 +49,7 @@
 	justify-content: center;
 	align-items: start;
 	border-radius: 12px;
-	background-color: #26263b;
+	background-color: var(--input-background-color);
 }
 
 .signup__input-label {
@@ -62,10 +62,10 @@
 	border-radius: 12px;
 	padding: 16px;
 	width: 100%;
-	background-color: #26263b;
+	background-color: var(--input-background-color);
 	border: none;
 	outline: none;
-	color: white;
+	color: var(--input-text-color);
 }
 
 .signup__agreement-container {
@@ -85,7 +85,7 @@
 	display: flex;
 	flex-direction: column;
 	font-size: 16px;
-	color: #fff;
+	color: var(--text-color);
 	font-weight: 400;
 	line-height: 150%;
 	justify-content: center;
@@ -105,7 +105,7 @@
 	align-items: center;
 	border-radius: 12px;
 	padding: 10px 16px;
-	color: #fff;
+	color: var(--button-text-color);
 	font-weight: 700;
 	font-family: Lexend, sans-serif;
 	text-align: center;
@@ -115,18 +115,18 @@
 }
 
 .signup__create-account-btn {
-	background-color: #00f;
+	background-color: var(--button-primary-color);
 }
 
 .signup__continue-42-btn {
-	background-color: #26263b;
+	background-color: var(--input-background-color);
 }
 
 .signup__already-account {
 	display: flex;
 	flex-direction: column;
 	font-size: 14px;
-	color: #9999bd;
+	color: var(--text-accent-color);
 	font-weight: 400;
 	text-align: center;
 	line-height: 150%;
@@ -138,7 +138,7 @@
 	margin-bottom: 18px;
 	flex-direction: column;
 	font-size: 14px;
-	color: #fff;
+	color: var(--text-color);
 	font-weight: 700;
 	text-align: center;
 	letter-spacing: 0.21px;
@@ -148,11 +148,11 @@
 }
 
 .signup__login-btn {
-	background-color: #0f0f17;
+	background-color: var(--create-account-button-background-color);
 	border: none;
 	border-radius: 12px;
 	padding: 12px 16px;
-	color: #fff;
+	color: var(--button-text-color);
 	font-weight: 700;
 	cursor: pointer;
 }

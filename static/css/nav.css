@@ -1,25 +1,8 @@
-
 .navbar .container-xxl {
-	width: 1228px;
-	margin: 20px 0 20px 0;
-}
-
-.header__logo {
-	display: flex;
-	align-items: center;
-}
-
-.header__logo-image {
-	width: 30px;
-	object-fit: contain;
-	object-position: center;
-}
-
-.header__title {
-	font-size: 24px;
-	color: #fff;
-	font-weight: 700;
-	margin-left: 8px;
+	width: 100%;
+	max-width: 1228px;
+	margin: 20px auto;
+	padding: 0 15px;
 }
 
 .navbar-brand {
@@ -33,24 +16,24 @@
 
 .nav-link {
 	font-size: 16px;
-	color: #fff;
+	color: var(--text-color);
 }
 
 .nav-link:hover {
-	color: #2442e8;
+	color: var(--button-primary-color);
 	transition: color 0.3s ease-in-out;
 }
 
 .navbar-dark .navbar-nav .nav-link.btn {
-	color: #fff;
-	background-color: #2442e8;
+	color: var(--text-color);
+	background-color: var(--button-primary-color);
 	border-radius: 20px;
 	font-weight: 700;
 	text-align: center;
 }
 
 .navbar-dark .navbar-nav .nav-link.btn:hover {
-	background-color: #1a1f33;
-	color: #fff;
+	background-color: var(--card-accent-color);
+	color: var(--text-color);
 	transition: background-color 0.3s ease-in-out;
 }
