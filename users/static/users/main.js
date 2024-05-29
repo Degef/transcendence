@@ -16,7 +16,7 @@ function isAnchorElement(element) {
 }
 
 function handleButtonClick(event) {
-    console.log(event);
+    // console.log(event);
     const buttonFunctions = {
         'about': aboutPage,
         'home': homePage,
@@ -44,7 +44,7 @@ function handleButtonClick(event) {
     };
 
     const buttonId = event.target.id;
-    console.log("buttonId = " + buttonId);
+    // console.log("buttonId = " + buttonId);
     if (buttonId != 'id_image') {
         event.preventDefault();
     }

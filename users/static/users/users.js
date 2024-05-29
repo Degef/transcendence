@@ -729,10 +729,15 @@ function updateScores(matchElement, player1_score, player2_score) {
     const player2ScoreInput = matchElement.querySelector('.team-bottom .score-input');
     player1ScoreInput.value = player1_score;
     player2ScoreInput.value = player2_score;
-    const changeEvent = new Event('change', { bubbles: true });
-
-    player1ScoreInput.dispatchEvent(changeEvent);
-    player2ScoreInput.dispatchEvent(changeEvent);
+    // Check if the match is not in the championship final
+    if (!matchElement.closest('.champion')) {
+        // Proceed with updating the next round and starting the next match
+        updateNextRound(matchElement);
+        startNextMatch(matchElement);
+    } else {
+        console.log("This is the final game. The tournament is complete.");
+        // Additional actions when the tournament is complete can be added here
+    }
 }
 
 
@@ -768,33 +773,179 @@ function startNextMatch(currentMatchElement) {
     }
 }
 
+// function getNextMatchInSameRound(currentMatchElement) {
+//     // Find the current round
+//     const currentRound = currentMatchElement.closest('.round');
+//     console.log("current-round:", currentRound);
+
+//     // Find all matches in the current round
+//     const allMatchesInRound = Array.from(currentRound.querySelectorAll('.matchup'));
+//     // console.log("all-matches-in-round:", allMatchesInRound);
+
+//     // Locate the index of the current match
+//     const currentIndex = allMatchesInRound.indexOf(currentMatchElement);
+//     if (currentIndex === -1) {
+//         // Current match not found in the list of matches in the round
+//         return null;
+//     }
+
+//     // Check for the next match in the same split
+//     if (currentIndex + 1 < allMatchesInRound.length) {
+//         return allMatchesInRound[currentIndex + 1];
+//     }
+
+//     // Get the current split
+//     const currentSplit = currentMatchElement.closest('.split');
+//     console.log("current-split:", currentSplit);
+//     let otherSplit = null;
+
+//     // Determine the other split based on the current split class
+//     if (currentSplit.classList.contains('split-one')) {
+//         otherSplit = currentRound.querySelector('.split-two');
+//     } else if (currentSplit.classList.contains('split-two')) {
+//         otherSplit = currentRound.querySelector('.split-one');
+//     }
+//     console.log("other-split:", otherSplit);
+//     // Check if the other split exists and has matches
+//     if (otherSplit) {
+//         const otherSplitMatches = otherSplit.querySelectorAll('.matchup');
+//         if (otherSplitMatches.length > 0) {
+//             return otherSplitMatches[0];
+//         }
+//     }
+
+//     // No next match found
+//     return null;
+// }
+
+
+// function getNextMatchInSameRound(currentMatchElement) {
+//     // Find the current round and current split
+//     const currentRound = currentMatchElement.closest('.round');
+//     const currentSplit = currentMatchElement.closest('.split');
+//     console.log("current-round:", currentRound);
+//     console.log("current-split:", currentSplit);
+
+//     // Find all matches in the current round within the current split
+//     const allMatchesInCurrentSplit = Array.from(currentSplit.querySelectorAll('.round .matchup'));
+//     console.log("all-matches-in-current-split:", allMatchesInCurrentSplit);
+
+//     // Locate the index of the current match within the current split
+//     const currentIndex = allMatchesInCurrentSplit.indexOf(currentMatchElement);
+//     if (currentIndex === -1) {
+//         // Current match not found in the list of matches in the split
+//         return null;
+//     }
+
+//     // Check for the next match in the same split
+//     if (currentIndex + 1 < allMatchesInCurrentSplit.length) {
+//         return allMatchesInCurrentSplit[currentIndex + 1];
+//     }
+
+//     // If no more matches in the current split, check the other split within the same round
+//     let otherSplit = null;
+//     if (currentSplit.classList.contains('split-one')) {
+//         otherSplit = currentRound.closest('.container2').querySelector('.split-two');
+//     } else if (currentSplit.classList.contains('split-two')) {
+//         otherSplit = currentRound.closest('.container2').querySelector('.split-one');
+//     }
+
+//     // Check if the other split exists and has matches in the same round
+//     if (otherSplit) {
+//         const otherSplitMatches = otherSplit.querySelectorAll('.round .matchup');
+//         if (otherSplitMatches.length > 0) {
+//             return otherSplitMatches[0];
+//         }
+//     }
+
+//     // No next match found
+//     return null;
+// }
+
+
 function getNextMatchInSameRound(currentMatchElement) {
-    const currentRound = currentMatchElement.closest('.round');
-    const allMatchesInRound = currentRound.querySelectorAll('.matchup');
-    console.log(allMatchesInRound);
-    let foundCurrentMatch = false;
-
-    // Check for next match in the same split
-    for (let match of allMatchesInRound) {
-        if (foundCurrentMatch) {
-            return match;
-        }
-        if (match === currentMatchElement) {
-            foundCurrentMatch = true;
-        }
-    }
-
-    // If no more matches in the same split, check the other split in the same round
+    // Find the current round and current split
     const currentSplit = currentMatchElement.closest('.split');
-    const otherSplit = currentSplit.nextElementSibling || currentSplit.previousElementSibling;
+    const currentRound = currentMatchElement.closest('.round');
+
+    // Find all matches in the current round within the current split
+    var allMatchesInCurrentSplit = Array.from(currentSplit.querySelectorAll('.round .matchup'));
+    // Filter matches to include only those in the same round as the current match
+    allMatchesInCurrentSplit = allMatchesInCurrentSplit.filter(match => {
+        return match.closest('.round') === currentRound;
+    });
+
+    // Locate the index of the current match within the current split
+    const currentIndex = allMatchesInCurrentSplit.indexOf(currentMatchElement);
+    if (currentIndex === -1) {
+        // Current match not found in the list of matches in the split
+        return null;
+    }
+
+    // Check for the next match in the same split
+    if (currentIndex + 1 < allMatchesInCurrentSplit.length) {
+        return allMatchesInCurrentSplit[currentIndex + 1];
+    }
+
+    // If no more matches in the current split, check the other split within the same round
+    let otherSplit = null;
+
+    if (currentSplit.classList.contains('split-one')) {
+        otherSplit = currentRound.closest('.container2').querySelector('.split-two');
+    }
+
     if (otherSplit) {
-        const otherSplitMatches = otherSplit.querySelectorAll('.round-one .matches .matchup');
-        if (otherSplitMatches.length > 0) {
-            return otherSplitMatches[0];
+        const otherSplitMatches = Array.from(otherSplit.querySelectorAll('.round .matchup'));
+        const otherRoundMatches = otherSplitMatches.filter(match => {
+            return match.closest('.round').classList.toString() === currentRound.classList.toString();
+        });
+        if (otherRoundMatches.length > 0) {
+            return otherRoundMatches[0];
         }
     }
+
+    // If no more matches in the current round, find the next round
+    let nextRound = null;
+    if (currentSplit.classList.contains('split-two')) {
+        // Move to the next round in split-one
+        const container = currentRound.closest('.container2');
+        const splitOne = container.querySelector('.split-one');
+        if (splitOne) {
+            const splitOneRounds = Array.from(splitOne.querySelectorAll('.round'));
+            const currentRoundIndex = splitOneRounds.findIndex(round => 
+                round.classList.toString() === currentRound.classList.toString()
+            );
+            if (currentRoundIndex !== -1 && currentRoundIndex + 1 < splitOneRounds.length) {
+                nextRound = splitOneRounds[currentRoundIndex + 1];
+            }
+        }
+    }
+
+    // If next round is found, get the first match of that round
+    if (nextRound) {
+        const nextRoundMatches = Array.from(nextRound.querySelectorAll('.matchup'));
+        if (nextRoundMatches.length > 0) {
+            return nextRoundMatches[0];
+        }
+    }
+
+    // If next round is not found, check for the final championship round
+    const container = currentRound.closest('.container2');
+    const finalRound = container.querySelector('.champion .final');
+    if (finalRound) {
+        const finalRoundMatches = Array.from(finalRound.querySelectorAll('.matchup'));
+        if (finalRoundMatches.length > 0) {
+            return finalRoundMatches[0];
+        }
+    }
+
+    // No next match found
     return null;
 }
+
+
+
+
 
 function getNextMatchElement(currentMatchElement) {
     // Check if we are in the championship round
@@ -817,7 +968,6 @@ function getNextMatchElement(currentMatchElement) {
 
 // using popup window 
 // function setupTournament(playerCount) {
-//     console.log('Setting up tournament for the following players:', playerCount);
 //     let players = [];
 //     let currentPlayerIndex = 0;
 //     let totalPlayers = playerCount;
@@ -838,7 +988,6 @@ function getNextMatchElement(currentMatchElement) {
 //             }
 //         }
 //         alert('All players have been entered: ' + players.join(', '));
-//         console.log('Players:', players);
 //         // Proceed with the tournament setup using the players array
 //     }
 
@@ -854,18 +1003,7 @@ console.log(scoreInputs);
 //   input.addEventListener("change", updateNextRound);
 // });
 
-function createEventListners(scoreInputs) {
-    scoreInputs.forEach(function (input) {
-        input.addEventListener("change", updateNextRound);
-      });
-}
-
-createEventListners(scoreInputs);
-
-function updateNextRound(event) {
-  var changedInput = event.target;
-  var currentMatchup = changedInput.closest(".matchup");
-  console.log( Array.from(currentMatchup.querySelectorAll(".matchup")));
+function updateNextRound(currentMatchup) {
 
   // Get the teams and scores for the current matchup
   var teamTop = currentMatchup.querySelector(".team-top");
@@ -925,8 +1063,8 @@ function updateNextMatchup(winner, loser) {
             else if (currentMatchupIndex === nextMatchupIndex + 1) {
                 updateMatchCell(nextTeamBottom, winnerName, winnerImg, winnerScore);
             }
-            var newScoreInputs = nextMatchup.querySelectorAll(".score-input");
-            createEventListners(newScoreInputs);
+            // var newScoreInputs = nextMatchup.querySelectorAll(".score-input");
+            // createEventListners(newScoreInputs);
         }
     }
     else {
