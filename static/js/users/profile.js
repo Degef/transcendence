@@ -79,7 +79,6 @@ function drawChart() {
     });
 }
 
-
 function update() {
     const form = document.getElementById('profile_form');
     const formData = new FormData(form);
