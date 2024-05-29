@@ -589,6 +589,14 @@ let players = [];
 let currentPlayerIndex = 0;
 let totalPlayers = 0;
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 function setupTournament(playerCount) {
     console.log('Setting up tournament for the following players:', playerCount);
     players = [];
@@ -642,7 +650,10 @@ function submitPlayerName(event) {
                     <input type="text" id="playerName" name="playerName" required>
                 `;
             } else {
-                organizeTournament(players);
+                // console.log("before-shuffle", players);
+                myplayers = shuffleArray(players);
+                // console.log("after-shuffle", myplayers);
+                organizeTournament(myplayers);
             }
         } else if (players.includes(playerName)) {
             alert('Player name taken.');
