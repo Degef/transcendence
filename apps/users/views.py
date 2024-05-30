@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 import requests
 from django.contrib.auth.models import User
-from django.contrib.auth import login as auth_login, update_session_auth_hash, authenticate
+from django.contrib.auth import login as auth_login, update_session_auth_hash, authenticate, logout as auth_logout
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 from .models import Profile
@@ -33,21 +33,6 @@ def get_ipaddress(request):
 	}
 	return JsonResponse(data)
 
-class CustomLoginView(LoginView):
-	template_name = 'login.html'
-	form_class = CustomAuthenticationForm
-
-	def get(self, request, *args, **kwargs):
-		return render(request, 'login.html', {'form': self.get_form()})
-
-	def post(self, request, *args, **kwargs):
-		form = self.get_form()
-		if form.is_valid():
-			login(request, form.get_user())
-			return redirect('home')
-		else:
-			return render(request, 'login.html', {'form': form_class})
-
 def login(request):
 	if request.method == 'POST':
 		form = CustomAuthenticationForm(request, data=request.POST)
@@ -68,16 +53,22 @@ def login(request):
 		form = CustomAuthenticationForm()
 	return render(request, 'login.html', {'form': form})
 
+def logout(request):
+	auth_logout(request)
+	return render(request, 'landing.html')
+
 def register(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
-		logger.debug(f'\n\n{form}\n\n')
 		if form.is_valid():
 			form.save()
 			messages.success(request, f'Your account has been created! You are now able to log in.')
 			form = AuthenticationForm()
 			context = {'messages': messages.get_messages(request), 'form': form}
 			return render(request, 'signup.html', context)
+		else:
+			errors = form.errors.as_json()
+			return JsonResponse({'success': False, 'errors': errors})
 	else:
 		form = UserRegisterForm()
 	return render(request, 'signup.html', {'form': form})

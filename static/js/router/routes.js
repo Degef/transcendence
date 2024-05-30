@@ -61,7 +61,6 @@ async function handleRoute(path, pushState = true) {
 	}
 }
 
-
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
@@ -70,8 +69,9 @@ const routeHandlers = {
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
 	'/login/': () => login(),
+	'/logout/': () => handleRoute('/logout/', false),
 	'/req_login/': () => handleRoute('/login/', true),
-	'/profile/': () => handleRoute(`/profile/`, true),
+	'/profile/': () => handleRoute('/profile/', true),
 	'/friends/': () => handleRoute('/friends/', true),
 	'/edit_profile/': () => handleRoute('/edit_profile/', true),
 	'/update': () => update(),
@@ -94,7 +94,7 @@ function handleButtonClick(event) {
 		profile: routeHandlers['/profile/'],
 		edit_profile: routeHandlers['/edit_profile/'],
 		update: routeHandlers['/update'],
-		logout: () => handleRoute('/logout/', true),
+		logout: routeHandlers['/logout/'],
 		loginWith42: authorize42Intra,
 		play_online: routeHandlers['/play_online/'],
 		game_computer: routeHandlers['/game_computer/'],

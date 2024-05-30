@@ -1,31 +1,31 @@
-document.getElementById('history-tab').addEventListener('click', function() {
-    document.getElementById('history-section').classList.remove('d-none');
-    document.getElementById('friends-section').classList.add('d-none');
-    document.getElementById('stats-section').classList.add('d-none');
-    document.getElementById('history-tab').classList.add('active');
-    document.getElementById('friends-tab').classList.remove('active');
-    document.getElementById('stats-tab').classList.remove('active');
-});
+// document.getElementById('history-tab').addEventListener('click', function() {
+//     document.getElementById('history-section').classList.remove('d-none');
+//     document.getElementById('friends-section').classList.add('d-none');
+//     document.getElementById('stats-section').classList.add('d-none');
+//     document.getElementById('history-tab').classList.add('active');
+//     document.getElementById('friends-tab').classList.remove('active');
+//     document.getElementById('stats-tab').classList.remove('active');
+// });
 
-document.getElementById('friends-tab').addEventListener('click', function() {
-    document.getElementById('history-section').classList.add('d-none');
-    document.getElementById('stats-section').classList.add('d-none');
-    document.getElementById('friends-section').classList.remove('d-none');
-    document.getElementById('history-tab').classList.remove('active');
-    document.getElementById('stats-tab').classList.remove('active');
-    document.getElementById('friends-tab').classList.add('active');
-});
+// document.getElementById('friends-tab').addEventListener('click', function() {
+//     document.getElementById('history-section').classList.add('d-none');
+//     document.getElementById('stats-section').classList.add('d-none');
+//     document.getElementById('friends-section').classList.remove('d-none');
+//     document.getElementById('history-tab').classList.remove('active');
+//     document.getElementById('stats-tab').classList.remove('active');
+//     document.getElementById('friends-tab').classList.add('active');
+// });
 
 
-document.getElementById('stats-tab').addEventListener('click', function() {
-    document.getElementById('history-section').classList.add('d-none');
-    document.getElementById('friends-section').classList.add('d-none');
-    document.getElementById('stats-section').classList.remove('d-none');
-    document.getElementById('history-tab').classList.remove('active');
-    document.getElementById('friends-tab').classList.remove('active');
-    document.getElementById('stats-tab').classList.add('active');
-    drawChart();
-});
+// document.getElementById('stats-tab').addEventListener('click', function() {
+//     document.getElementById('history-section').classList.add('d-none');
+//     document.getElementById('friends-section').classList.add('d-none');
+//     document.getElementById('stats-section').classList.remove('d-none');
+//     document.getElementById('history-tab').classList.remove('active');
+//     document.getElementById('friends-tab').classList.remove('active');
+//     document.getElementById('stats-tab').classList.add('active');
+//     drawChart();
+// });
 
 
 function drawChart() {
