@@ -51,6 +51,8 @@ function render1(data3) {
     data3['ctx'].clearRect(0, 0, data3['canvas'].width, data3['canvas'].height);
     drawText(data3['ctx'], data3['player1'].score, data3['canvas'].width/4, data3['canvas'].height/5);
     drawText(data3['ctx'], data3['player2'].score, 3*data3['canvas'].width/4, data3['canvas'].height/5);
+    // drawText2(data3['ctx'], 'Player 1', data3['canvas'].width / 8, 30);
+    // drawText2(data3['ctx'], 'Player 2', 5 * data3['canvas'].width / 8, 30);
     drawNet(data3);
     drawRect(data3['ctx'], data3['player1'].x, data3['player1'].y, data3['player1'].width, data3['player1'].height, data3['player1'].color);
     drawRect(data3['ctx'], data3['player2'].x, data3['player2'].y, data3['player2'].width, data3['player2'].height, data3['player2'].color);

@@ -1,6 +1,7 @@
 #tournament {
     overflow:hidden;
 	background-color: #0F3066;
+    justify-content: center;
     padding-top: 30px;
     font-size: 12px;
     margin-left: 5%;
@@ -41,6 +42,9 @@
     border-width: medium ;
     z-index: 1;
     height: 100vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 canvas {
@@ -48,19 +52,21 @@ canvas {
 	border-radius: 15px;
     border-width: medium ;
     z-index: 1;
-    top: 20%;
+    top: 27%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
 #start_play_online, #start_play_computer {
     position: absolute;
-    top: 25%;
-    left: 90%;
+    /* top: 25%; */
+    left: 50%;
     transform: translate(-50%, -50%);
     height: 50px;
     width: 200px;
     font-size: 20px;
+    /* margin-top: 5px; */
+    margin-top: 34px;
 }
 
 #player1, #player2, #score1, #score2, #end_msg{
@@ -137,3 +143,37 @@ canvas {
     width: 200px;
     font-size: 20px;
   } */
+
+  /* #playerNames {
+    display: flex;
+    justify-content: space-between;
+    width: 76%;
+    max-width: 400px;
+    margin-left: 33%;
+    margin-bottom: 1039px;
+    padding: 10px 0;
+    color: #DDEEF1;
+} */
+
+  #playerNames {
+    padding: 1rem;
+    color: #DDEEF1;
+}
+
+
+.player-names-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    max-width: 400px;
+    position: absolute;
+    top: 6.5%;
+}
+.player-name {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
