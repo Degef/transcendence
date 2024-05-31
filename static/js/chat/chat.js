@@ -127,8 +127,10 @@ function handleContactActionClick(event, contactAction) {
 
 function handleDocumentClick(event) {
 	const dropdownMenu = document.getElementById('dropdownMenu');
-	if (!dropdownMenu.contains(event.target)) {
-		dropdownMenu.classList.remove('show');
+	if (dropdownMenu) {
+		if (!dropdownMenu.contains(event.target)) {
+			dropdownMenu.classList.remove('show');
+		}
 	}
 }
 

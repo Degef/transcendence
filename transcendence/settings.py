@@ -26,6 +26,7 @@ ALLOWED_HOSTS = ['localhost', os.environ.get('IP_ADDRESS'), "*"]
 INSTALLED_APPS = [
     'daphne',
 	'channels',
+    'django_ratelimit',
 	'rest_framework',
     'apps.pong.apps.PongConfig',
     'apps.users.apps.UsersConfig',
@@ -153,3 +154,16 @@ CHANNEL_LAYERS = {
 
 # Configure the root logger to capture prints
 logging.basicConfig(level=logging.DEBUG)
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{os.getenv("CACHE_HOST", "127.0.0.1")}:{os.getenv("CACHE_PORT", "6379")}/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+RATELIMIT_CACHE = 'default'

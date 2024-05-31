@@ -3,10 +3,14 @@
 {% load static %}
 
 {% block content %}
-<section class="profile-container container">
+<section class="profile-container__ container">
 	<header class="profile-header text-center">
 		<article class="profile-details">
-			<img loading="lazy" src="{{ user.profile.image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
+			<div class="profile-image-container position-relative">
+				<img loading="lazy" src="{{ user.profile.image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
+				<h1 style="color:white !important">{{ is_online }}</h1>
+				<span class="status-indicator position-absolute {% if is_online %} online {% else %} offline {% endif %}"></span>
+			</div>
 			<h2 class="profile-name">{{ username }}</h2>
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
 				{% if is_own_profile %}
@@ -120,28 +124,27 @@
 			{% for non_friend in non_friends %}
 				<div class="friend-item d-flex justify-content-between align-items-center py-2">
 					<div class="d-flex align-items-center gap-3">
-						<a href="{% url 'profile' non_friend.username %}">
+						<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;">
 							<img loading="lazy" src="{{ non_friend.profile.image.url }}" alt="Non-friend's profile image" class="friend-image rounded-circle" />
 						</a>
 						<div class="friend-details">
-							<a href="{% url 'profile' non_friend.username %}" class="friend-name">{{ non_friend.username }}</a>
+							<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;" class="friend-name">{{ non_friend.username }}</a>
 						</div>
 					</div>
 					<button class="btn btn-outline-success btn-sm" onclick="addFriend('{{ non_friend.username }}')">Add Friend</button>
 				</div>
 			{% endfor %}
+
 		</div>
 	</section>
 
-
-    <section id="stats-section" class="stats-section d-none">
-        <canvas id="gamesChart" width="400" height="200"></canvas>
-    </section>
-    <script id="gamesData" type="application/json">{{ games2|safe }}</script>
-    <script>
-        const user_id = {{ user.id }};
-    </script>
-
+	<section id="stats-section" class="stats-section d-none">
+		<canvas id="gamesChart" width="400" height="200"></canvas>
+	</section>
+	<script id="gamesData" type="application/json">{{ games2|safe }}</script>
+	<script>
+		const user_id = {{ user.id }};
+	</script>
 
 </section>
 

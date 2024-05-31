@@ -1,4 +1,4 @@
-.profile-container {
+.profile-container__ {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -337,4 +337,25 @@ canvas {
 .friend-item .btn,
 .history-item .btn {
 	min-width: 75px;
+}
+
+.profile-image-container {
+    position: relative;
+}
+
+.status-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    bottom: 5px;
+    right: 5px;
+}
+
+.online {
+    background-color: #28a745;
+}
+
+.offline {
+    background-color: #dc3545;
 }

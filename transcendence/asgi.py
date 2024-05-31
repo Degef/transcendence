@@ -37,10 +37,11 @@ from channels.sessions import SessionMiddlewareStack
 
 from apps.chat.routing import websocket_urlpatterns as chat_websocket_urlpatterns
 from apps.pong.routing import websocket_urlpatterns as pong_websocket_urlpatterns
+from apps.users.routing import websocket_urlpatterns as users_websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'transcendence.settings')
 
-websocket_urlpatterns = pong_websocket_urlpatterns + chat_websocket_urlpatterns
+websocket_urlpatterns = pong_websocket_urlpatterns + chat_websocket_urlpatterns + users_websocket_urlpatterns
 
 application = ProtocolTypeRouter({
 	"http": get_asgi_application(),
