@@ -10,6 +10,9 @@ from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import timedelta
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+import json
 
 
 from apps.users.views import get_total_wins, get_total_losses, get_win_rate
@@ -176,3 +179,36 @@ def give_challenged_response(request, response):
     user_thing.challenge_response = response
     user_thing.save()
     return JsonResponse({'success': True})
+
+def pre_tourn(request):
+    return render(request, 'pong/pre_tourn.html')
+
+def offline_tourn(request):
+    return render(request, 'pong/offline_tourn.html')
+
+def off_tour_bracket(request):
+
+    print("Here it is..................")
+    print(request.method)
+    if request.method == 'POST':
+        # Get the player names from the request
+        data = json.loads(request.body)
+        player_names = data.get('players', [])
+        print(player_names)
+
+        # Here you can process the player names and generate the tournament bracket
+        tournament_bracket = generate_tournament_bracket(player_names)
+        
+        # Return the tournament bracket as JSON response
+        return JsonResponse({'tournament_bracket': tournament_bracket})
+    else:
+        # Return an error response if the request method is not POST
+       return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+# Example function to generate tournament bracket
+def generate_tournament_bracket(player_names):
+    # Implement your logic here to generate the tournament bracket
+    # This is just a placeholder function
+    print(player_names)
+    html_content = render_to_string('pong/off_tour_bracket.html', {'player_names': player_names})
+    return html_content

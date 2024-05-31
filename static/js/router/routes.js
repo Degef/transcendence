@@ -46,6 +46,7 @@ function updateBody(htmlContent) {
 }
 
 async function handleRoute(path, pushState = true) {
+	console.log(path);
 	try {
 		const response = await fetch(path, {
 			method: 'GET',
@@ -80,6 +81,10 @@ const routeHandlers = {
 	'/local_game/': () => handleRoute('/local_game/', true),
 	'/add_friend/:name': name => handleRoute(`/add_friend/${name}`, false),
 	'/remove_friend/:name': name => handleRoute(`/remove_friend/${name}`, false),
+	'/pre_tourn/': name => handleRoute('/pre_tourn/', false),
+	'/offline_tourn/': name => handleRoute('/offline_tourn/', false),
+	'/four_players/': () => setupTournament(4),
+	'/eight_players/':  () => setupTournament(8),
 };
 
 function handleButtonClick(event) {
@@ -101,11 +106,17 @@ function handleButtonClick(event) {
 		start_play_online: () => handleRoute('/play_online/', true),
 		local_game: routeHandlers['/local_game/'],
 		chatLink: routeHandlers['/chat/'],
+		pre_tourn: routeHandlers['/pre_tourn/'],
+		offline_tourn:routeHandlers['/offline_tourn/'],
+		four_players:routeHandlers['/four_players/'],
+		eight_players:routeHandlers['/eight_players/'],
 	};
 
 	event.preventDefault();
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
+	console.log(buttonId);
+	console.log(handler);
 
 	if (handler) {
 		if (window.game_in_progress) {
