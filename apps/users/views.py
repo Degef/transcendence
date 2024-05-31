@@ -3,7 +3,6 @@ from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, CustomAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.core.files.storage import default_storage
 import requests
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login, update_session_auth_hash, authenticate, logout as auth_logout
@@ -11,7 +10,6 @@ from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 from .models import Profile
 from apps.pong.models import Game
-from django.contrib.auth.views import LoginView
 from dotenv import load_dotenv
 import os
 from django.http import JsonResponse
@@ -19,7 +17,6 @@ from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
 from django.core.serializers import serialize
-from django.views.decorators.http import require_POST
 
 load_dotenv()
 
@@ -65,7 +62,7 @@ def register(request):
 			messages.success(request, f'Your account has been created! You are now able to log in.')
 			form = AuthenticationForm()
 			context = {'messages': messages.get_messages(request), 'form': form}
-			return render(request, 'signup.html', context)
+			return JsonResponse({'success': True, 'message': 'Your account has been created.'})
 		else:
 			errors = form.errors.as_json()
 			return JsonResponse({'success': False, 'errors': errors})
