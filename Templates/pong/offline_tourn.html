@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<div class="container__home container">
+	<section class="main-section">
+		<article class="card-container mb-4">
+			<div class="card position-relative text-center">
+				<img loading="lazy" src="/media/images/tourn.png" alt="Play Pong game" class="card-img">
+				<div class="card-body play-section">
+					<h3 class="card-title play-title">You will play offline Trounament</h3>
+					<div class="play-button-wrapper">
+						<!-- <button class="btn btn-primary play-button" id="play_online">Play Online</button> -->
+					</div>
+				</div>
+			</div>
+		</article>
+
+		<article class="details-section">
+			<div class="row">
+				<div class="col-md-4 mb-3">
+					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
+						<div class="details-title">
+							<h4 class="subtitle">Four Players</h4>
+							<p class="details-desc">Play offline tournament with 4 Players on the same device</p>
+						</div>
+						<button class="btn btn-primary custom-button" id="four_players" >4 Players</button>
+					</div>
+				</div>
+				<div class="col-md-4 mb-3">
+					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
+						<div class="details-title">
+							<h4 class="subtitle">Eight Players</h4>
+							<p class="details-desc">Play offline tournament with 8 Players on the same device</p>
+						</div>
+						<button class="btn btn-primary custom-button" id="eight_players" >8 Players</button>
+					</div>
+				</div>
+			</div>
+		</article>
+	</section>
+</div>
+{% endblock %}
