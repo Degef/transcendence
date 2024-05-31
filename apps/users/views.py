@@ -17,6 +17,7 @@ from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
 from django.core.serializers import serialize
+from django_ratelimit.decorators import ratelimit
 
 load_dotenv()
 
@@ -30,6 +31,7 @@ def get_ipaddress(request):
 	}
 	return JsonResponse(data)
 
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login(request):
 	if request.method == 'POST':
 		form = CustomAuthenticationForm(request, data=request.POST)
@@ -39,7 +41,8 @@ def login(request):
 			user = authenticate(username=username, password=password)
 			if user is not None:
 				auth_login(request, user)
-				messages.success(request, 'You are now logged in.')
+				logger.info(f"User {username} logged in successfully.")
+				# messages.success(request, 'You are now logged in.')
 				return JsonResponse({'success': True, 'message': 'You are now logged in.'})
 			else:
 				return JsonResponse({'success': False, 'message': 'Invalid username or password.'})
@@ -59,7 +62,7 @@ def register(request):
 		form = UserRegisterForm(request.POST)
 		if form.is_valid():
 			form.save()
-			messages.success(request, f'Your account has been created! You are now able to log in.')
+			# messages.success(request, f'Your account has been created! You are now able to log in.')
 			form = AuthenticationForm()
 			context = {'messages': messages.get_messages(request), 'form': form}
 			return JsonResponse({'success': True, 'message': 'Your account has been created.'})
@@ -127,6 +130,7 @@ def profile(request, user=''):
 	all_users = User.objects.all().exclude(username=user)
 	friends = userr.user_things.friends.all()
 	non_friends = all_users.difference(friends)
+	is_online = userr.user_things.status == 'online'
 
 	context = {
 		'username': user,
@@ -140,6 +144,7 @@ def profile(request, user=''):
 		'non_friends': non_friends,
 		'games': games,
 		'games2': games_data,
+		'is_online': is_online,
 	}
 	return render(request, 'profile.html', context)
 

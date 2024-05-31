@@ -61,17 +61,26 @@ async function handleRoute(path, pushState = true) {
 	}
 }
 
+async function handleLogout() {
+	if (statusSocket) {
+		statusSocket.send(JSON.stringify({ 'status': 'offline' }));
+		statusSocket.close();
+		statusSocket = null;
+	}
+}
+
+
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
 	'/leaderboard/': () => handleRoute('/leaderboard/', true),
-	'/chat/': () => {handleRoute('/chat/', true); setTimeout(initializeChat, 1000);},
+	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 1000); },
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
 	'/login/': () => login(),
-	'/logout/': () => handleRoute('/logout/', false),
+	'/logout/': () => { handleLogout(); handleRoute('/logout/', false); },
 	'/req_login/': () => handleRoute('/login/', true),
-	'/profile/': () => handleRoute('/profile/', true),
+	'/profile/': () => { handleRoute('/profile/', true); setTimeout(init_profile, 1000); },
 	'/friends/': () => handleRoute('/friends/', true),
 	'/edit_profile/': () => handleRoute('/edit_profile/', true),
 	'/update': () => update(),

@@ -1,8 +1,20 @@
+let statusSocket = null;
+
 async function handleFormSubmission(formId, url, successRoute, back_or_forward = 1) {
 	const form = document.getElementById(formId);
 	const formData = new FormData(form);
 	const responseMessageDiv = document.querySelector('.response__message');
 	const responseAlert = document.getElementById('responseAlert');
+
+	const showAlert = (message, type) => {
+		responseMessageDiv.innerHTML = message;
+		responseAlert.classList.remove('d-none', 'alert-success', 'alert-danger', 'show');
+		responseAlert.classList.add(`alert-${type}`, 'show');
+		setTimeout(() => {
+			responseAlert.classList.remove('show');
+			setTimeout(() => responseAlert.classList.add('d-none'), 500);
+		}, 5000);
+	};
 
 	try {
 		const response = await fetch(url, {
@@ -10,24 +22,21 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			body: formData,
 		});
 
-		const contentType = response.headers.get('Content-Type');
-		
-		if (contentType && contentType.indexOf('application/json') !== -1) {
+		if (response.headers.get('Content-Type')?.includes('application/json')) {
 			const jsonResponse = await response.json();
-			if (jsonResponse.success === false) {
-				let jsonErrors = JSON.parse(jsonResponse.errors);
-				let firstError = Object.entries(jsonErrors)[0][1][0].message;
+			if (!jsonResponse.success) {
+				const errors = JSON.parse(jsonResponse.errors);
+				let firstError = Object.entries(errors)[0][1][0].message;
 				if (firstError === 'This field is required.') firstError = 'All fields are required.';
-				responseMessageDiv.innerHTML = `${firstError}`;
-				responseAlert.classList.remove('d-none', 'alert-success');
-				responseAlert.classList.add('alert-danger', 'show');
+				showAlert(firstError, 'danger');
 				form.reset();
 			} else {
-				responseMessageDiv.innerHTML = `${formId.split('-')[0]} successful!`;
-				responseAlert.classList.remove('d-none', 'alert-danger');
-				responseAlert.classList.add('alert-success', 'show');
 				form.reset();
-				handleRoute(successRoute, true);
+				showAlert(jsonResponse.message, 'success');
+				if (url === '/login/' && jsonResponse.success) {
+					setUpStatusWebSocket();
+				}
+				setTimeout(() => { handleRoute(successRoute, true); }, 2000);
 			}
 		} else {
 			const htmlContent = await response.text();
@@ -36,9 +45,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 		}
 	} catch (error) {
 		console.error('Error:', error);
-		responseMessageDiv.innerHTML = 'An error occurred while processing your request.';
-		responseAlert.classList.remove('d-none', 'alert-success');
-		responseAlert.classList.add('alert-danger', 'show');
+		showAlert('An error occurred while processing your request.', 'danger');
 		form.reset();
 	}
 }
@@ -49,4 +56,22 @@ async function register(back_or_forward = 1) {
 
 async function login(back_or_forward = 1) {
 	await handleFormSubmission('login-form', '/login/', '/', back_or_forward);
+}
+
+function setUpStatusWebSocket() {
+	statusSocket = new WebSocket('ws://' + window.location.host + '/ws/status/');
+
+	statusSocket.onopen = function(e) {
+		console.log('WebSocket connection established');
+		statusSocket.send(JSON.stringify({ 'status': 'online' }));
+	};
+
+	statusSocket.onclose = function(e) {
+		console.log('WebSocket connection closed');
+	};
+
+	statusSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+		console.log(data.message);
+	};
 }
