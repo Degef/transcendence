@@ -8,7 +8,6 @@
 		<article class="profile-details">
 			<div class="profile-image-container position-relative">
 				<img loading="lazy" src="{{ user.profile.image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
-				<h1 style="color:white !important">{{ is_online }}</h1>
 				<span class="status-indicator position-absolute {% if is_online %} online {% else %} offline {% endif %}"></span>
 			</div>
 			<h2 class="profile-name">{{ username }}</h2>
@@ -104,12 +103,15 @@
 			{% for friend in friends %}
 				<div class="friend-item d-flex justify-content-between align-items-center py-2">
 					<div class="d-flex align-items-center gap-3">
-						<a href="{% url 'profile' friend.username %}">
+						<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;">
 							<img loading="lazy" src="{{ friend.profile.image.url }}" alt="Friend's profile image" class="friend-image rounded-circle" />
 						</a>
 						<div class="friend-details">
-							<a href="{% url 'profile' friend.username %}" class="friend-name">{{ friend.username }}</a>
+							<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;"class="friend-name">{{ friend.username }}</a>
 						</div>
+					</div>
+					<div>
+						<p>{{friend.date_joined|date:"d/m/y"}}</p>
 					</div>
 					<button class="btn btn-danger btn-sm" onclick="removeFriend('{{ friend.username }}')">Remove</button>
 				</div>
@@ -130,6 +132,9 @@
 						<div class="friend-details">
 							<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;" class="friend-name">{{ non_friend.username }}</a>
 						</div>
+					</div>
+					<div>
+						<p>{{non_friend.date_joined|date:"d/m/y"}}</p>
 					</div>
 					<button class="btn btn-outline-success btn-sm" onclick="addFriend('{{ non_friend.username }}')">Add Friend</button>
 				</div>

@@ -61,6 +61,9 @@ def local_game(request):
 def about(request):
     return render(request, 'pong/about.html')
 
+def privacy(request):
+	return render(request, 'pong/privacy.html')
+
 @login_required
 def leaderboard(request):
     one_week_ago = timezone.now() - timedelta(days=7)

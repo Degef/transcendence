@@ -128,3 +128,11 @@ function loadProfile(username) {
 	if (username)
 		handleRoute('/profile/' + username);
 }
+
+function addFriend(name) {
+	handleRoute(`/add_friend/${name}`, false);
+}
+
+function removeFriend(name) {
+	handleRoute(`/remove_friend/${name}`, false);
+}

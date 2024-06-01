@@ -3,7 +3,8 @@
 	justify-content: center;
 	width: 100%;
 	padding: 20px 24px;
-	border: var(--text-accent-color) 0.5px solid;
+	/* border: var(--text-accent-color) 0.5px solid; */
+	background-color: #121217;
 	border-radius: 12px;
 }
 
@@ -288,4 +289,33 @@
 	color: var(--text-accent-color);
 	cursor: pointer;
 	margin-left: auto;
+}
+
+.contact-details {
+    position: relative;
+}
+
+.contact-profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.chat__status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: gray;
+}
+
+.chat__status-indicator.chat__online {
+    background-color: green;
+}
+
+.chat__status-indicator.chat__offline {
+    background-color: red;
 }
