@@ -46,7 +46,7 @@ function updateBody(htmlContent) {
 }
 
 async function handleRoute(path, pushState = true) {
-	console.log(path);
+	// console.log(path);
 	try {
 		const response = await fetch(path, {
 			method: 'GET',
@@ -75,6 +75,7 @@ const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
 	'/leaderboard/': () => handleRoute('/leaderboard/', true),
+	'/privacy/': () => handleRoute('/privacy/', true),
 	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 1000); },
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
@@ -88,8 +89,6 @@ const routeHandlers = {
 	'/play_online/': () => handleRoute('/play_online/', true),
 	'/game_computer/': () => handleRoute('/game_computer/', true),
 	'/local_game/': () => handleRoute('/local_game/', true),
-	'/add_friend/:name': name => handleRoute(`/add_friend/${name}`, false),
-	'/remove_friend/:name': name => handleRoute(`/remove_friend/${name}`, false),
 	'/pre_tourn/': name => handleRoute('/pre_tourn/', false),
 	'/offline_tourn/': name => handleRoute('/offline_tourn/', false),
 	'/four_players/': () => setupTournament(4),
@@ -101,6 +100,7 @@ function handleButtonClick(event) {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],
 		leaderboard: routeHandlers['/leaderboard/'],
+		privacy: routeHandlers['/privacy/'],
 		req_register: routeHandlers['/req_register/'],
 		register: routeHandlers['/register/'],
 		req_login: routeHandlers['/req_login/'],
@@ -124,8 +124,8 @@ function handleButtonClick(event) {
 	event.preventDefault();
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-	console.log(buttonId);
-	console.log(handler);
+	// console.log(buttonId);
+	// console.log(handler);
 
 	if (handler) {
 		if (window.game_in_progress) {

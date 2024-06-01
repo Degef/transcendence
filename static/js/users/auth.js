@@ -2,6 +2,10 @@ let statusSocket = null;
 
 async function handleFormSubmission(formId, url, successRoute, back_or_forward = 1) {
 	const form = document.getElementById(formId);
+	if (!form) {
+		handleRoute(url, true);
+		return ;
+	}
 	const formData = new FormData(form);
 	const responseMessageDiv = document.querySelector('.response__message');
 	const responseAlert = document.getElementById('responseAlert');
@@ -40,6 +44,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			}
 		} else {
 			const htmlContent = await response.text();
+			console.log(htmlContent);
 			updateBody(htmlContent);
 			if (back_or_forward !== 0) updateURL(url);
 		}
