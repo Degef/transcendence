@@ -29,6 +29,11 @@
 	width: 100%;
 }
 
+#gameCanvas {
+	width: 600px;
+	height: 400px;
+}
+
 .canvas_container {
 	position: relative;
 	display: flex;

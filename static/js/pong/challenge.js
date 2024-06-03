@@ -152,4 +152,4 @@ function start_challenge_checking() {
     }, 3000);
 }
 
-start_challenge_checking();
+// start_challenge_checking();
