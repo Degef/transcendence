@@ -174,5 +174,7 @@ function start_local_game() {
 
 
 function goBack() {
+    terminate_game = true;
+    document.getElementById('tournament').style.display = 'block';
     history.back();
 }

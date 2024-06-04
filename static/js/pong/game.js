@@ -352,10 +352,10 @@ function start_play_online() {
     data['userScore'] = new Audio();
     data['comScore'] = new Audio();
 
-    data['hit'].src = "media/sounds/hit.mp3";
-    data['wall'].src = "media/sounds/wall.mp3";
-    data['userScore'].src = "media/sounds/userScore.mp3";
-    data['comScore'].src = "media/sounds/comScore.mp3";
+    data['hit'].src = "/media/sounds/hit.mp3";
+    data['wall'].src = "/media/sounds/wall.mp3";
+    data['userScore'].src = "/media/sounds/userScore.mp3";
+    data['comScore'].src = "/media/sounds/comScore.mp3";
 
     socket.onopen = function () {
         console.log('WebSocket connection established');
