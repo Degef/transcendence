@@ -40,8 +40,13 @@
 	border: 2px solid var(--text-accent-color);
 	background: var(--background-color);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	margin-bottom: 20px;
+	/* margin-bottom: 20px; */
 	padding: 20px;
+	
+	display: flex;
+	flex-direction: column;  /* Stacks elements vertically */
+	margin-bottom: 1px;  /* Margin for spacing between rows */
+	  
 }
 
 canvas {
@@ -50,7 +55,26 @@ canvas {
 	background-color: var(--background-color);
 }
 
-#start_play_computer {
+/* #start_play_computer {
+	margin-top: 20px;
+	padding: 15px 30px;
+	background-color: var(--button-primary-color);
+	color: var(--text-color);
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+	box-shadow: 0 4px 6px var(--button-shadow-color);
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	align-self: center;
+} */
+
+#restart_btn {
+	display: none;
+}
+
+.btn-custom {
 	margin-top: 20px;
 	padding: 15px 30px;
 	background-color: var(--button-primary-color);
@@ -65,10 +89,21 @@ canvas {
 	align-self: center; /* Center the button horizontally within #mygame */
 }
 
-#start_play_computer:hover {
+/* #start_play_computer:hover {
 	background-color: var(--button-hover-color);
 	transform: translateY(-3px);
 	box-shadow: 0 6px 12px var(--button-shadow-color);
+} */
+
+.btn-custom:hover {
+	background-color: var(--button-hover-color);
+	transform: translateY(-3px);
+	box-shadow: 0 6px 12px var(--button-shadow-color);
+}
+
+.button-container {
+	display: flex;
+	gap: 10px; /* Adjust the gap between buttons as needed */
 }
 
 #scoreboard {
@@ -115,4 +150,30 @@ canvas {
 @keyframes spin {
 	0% { transform: rotate(0deg); }
 	100% { transform: rotate(360deg); }
+}
+
+
+
+
+#playerNames {
+    padding: 1rem;
+    color: #DDEEF1;
+}
+
+
+.player-names-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    max-width: 500px;
+    position: absolute;
+    top: 6.5%;
+}
+.player-name {
+    background-color: rgb(0 0 0 / 0%);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
 }

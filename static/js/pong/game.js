@@ -138,6 +138,7 @@ function gameLoop(data2) {
         } else {
             drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
         }
+        document.getElementById('restart_btn').style.display = 'block';
         game_in_progress = false;
         return;
     } else if (terminate_game) {
@@ -151,6 +152,9 @@ function gameLoop(data2) {
 }
 
 function start_play_computer() {
+    document.getElementById('start_play_computer').style.display = 'none';
+    document.getElementById('restart_btn').style.display = 'none';
+    document.getElementById('quit_game').style.display = 'block';
     if (game_in_progress) {
         return;
     }

@@ -1,4 +1,6 @@
 var data3 = null;
+var player1_name = "Player1"
+var player2_name = "Player2"
 
 function update1(data3){
     // update the ball
@@ -61,11 +63,16 @@ function gameLoop1(data3) {
     if (data3['player1'].score == 5 || data3['player2'].score == 5) {
         clearInterval(intervalId);
         if (data3['player1'].score == 5) {
-            drawText2(data3['ctx'], "You Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
+            drawText2(data3['ctx'], player1_name + " Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
+            drawText2(data3['ctx'], player2_name + " Lost",  data3['canvas'].width/1.5, data3['canvas'].height/2, "#333");
         } else {
-            drawText2(data3['ctx'], "You Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], player1_name + " Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], player2_name + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
         }
         game_in_progress = false;
+        document.getElementById('restart_btn').style.display = 'block';
+        // document.getElementById('quit_game').style.display = 'none';
+
         return;
     } else if (terminate_game) {
         clearInterval(intervalId);
@@ -79,6 +86,9 @@ function gameLoop1(data3) {
 }
 
 function start_local_game() {
+    document.getElementById('start_play_computer').style.display = 'none';
+    document.getElementById('restart_btn').style.display = 'none';
+    document.getElementById('quit_game').style.display = 'block';
     if (game_in_progress) {
         return;
     }
@@ -163,4 +173,6 @@ function start_local_game() {
 }
 
 
-
+function goBack() {
+    history.back();
+}

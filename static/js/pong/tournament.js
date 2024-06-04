@@ -53,7 +53,7 @@ function submitPlayerName(event) {
         const playerName = playerNameInput.value.trim();
         playerNameInput.style.display = 'block';
 
-        if (playerName && (!players.includes(playerName))) {
+        if (playerName && (!players.includes(playerName)) && !(playerName.length > 10)) {
             players.push(playerName);
             currentPlayerIndex++;
             
@@ -68,6 +68,8 @@ function submitPlayerName(event) {
             }
         } else if (players.includes(playerName)) {
             alert('Player name taken.');
+        } else if (playerName.length > 10) {
+            alert('Player name too  long.');
         } else {
             alert('Player name cannot be empty.');
         }
