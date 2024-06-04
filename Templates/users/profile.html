@@ -69,7 +69,7 @@
 		{% for match in games %}
 			<div class="history-item d-flex justify-content-between align-items-center py-2">
 				<div class="d-flex align-items-center gap-3">
-					<img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8eb8f23fe11a3c3450466bbe658d6ea00a2675736ea982f17c716d8e2cc722ea?apiKey=d2095187850a4552946c7d55d8bfdb90&" alt="History item image" class="history-image rounded-circle" />
+					<div class="rounded-circle {% if match.winner == user %} alert alert-primary {% else %} alert alert-danger {% endif %}" style="width: 56px; height: 56px;"></div>
 					<div class="history-details">
 						{% if match.winner == user and match.player1 == user %}
 							<span class="history-title">You won against {{ match.player2 }}</span>

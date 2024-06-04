@@ -4,12 +4,12 @@
 	align-items: center;
 	width: 100%;
 	padding: 20px 0;
-	max-width: 1500px;
+	max-width: 1228px;
 }
 
 .main-section {
 	width: 100%;
-	max-width: 1500px;
+	max-width: 1228px;
 	padding-bottom: 35px;
 	flex-direction: column;
 }

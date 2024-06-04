@@ -113,7 +113,7 @@ def profile(request, user=''):
 
 	userr = User.objects.filter(username=user).first()
 	if userr is None:
-		messages.error(request, f'User {user} does not exist')
+		# messages.error(request, f'User {user} does not exist')
 		return redirect('home')
 
 	userid = userr.id

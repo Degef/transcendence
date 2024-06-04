@@ -10,6 +10,7 @@ const api = {
 	fetchUserProfile: username => fetch(`api/user/${username}/`).then(response => response.json()),
 	fetchMessages: recipient => fetch(`api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`api/message/${id}/`).then(response => response.json()),
+	fetchUserProfilePage: username => handleRoute(`/profile/${username}`, true),
 	sendMessage: message => fetch('api/message/', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -17,6 +18,14 @@ const api = {
 	}),
 	blockUser: username => fetch('block_unblock/', {
 		method: "POST",
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ 'username': username })
+	}).then(response => {
+		if (!response.ok) return response.json().then(data => { throw new Error(data.Error); });
+		return response.json();
+	}),
+	unblockUser: username => fetch('block_unblock/', {
+		method: "DELETE",
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'username': username })
 	}).then(response => {
@@ -67,7 +76,7 @@ function handleChatFormSubmit(event, chatInput, chatForm) {
 		api.sendMessage(message)
 			.then(() => {
 				chatInput.value = '';
-				drawMessage(message); // Draw the message immediately after sending
+				// drawMessage(message);
 			})
 			.catch(utils.logError);
 	}
@@ -144,18 +153,24 @@ function showDropdownMenu(target, username) {
 
 	document.getElementById('view-profile').onclick = () => viewUserProfile(username);
 	document.getElementById('block-user').onclick = () => blockUser(username);
+	document.getElementById('unblock-user').onclick = () => unblockUser(username);
 	document.getElementById('invite-to-game').onclick = () => inviteToGame(username);
 }
 
 function viewUserProfile(username) {
-	api.fetchUserProfile(username)
-		.then(userProfile => viewUserProfile(userProfile))
-		.catch(utils.logError);
+	api.fetchUserProfilePage(username);
 	document.getElementById('dropdownMenu').classList.remove('show');
 }
 
 function blockUser(username) {
 	api.blockUser(username)
+		.then(data => console.log(data.Success))
+		.catch(handleBlockUserError);
+	document.getElementById('dropdownMenu').classList.remove('show');
+}
+
+function unblockUser(username) {
+	api.unblockUser(username)
 		.then(data => console.log(data.Success))
 		.catch(handleBlockUserError);
 	document.getElementById('dropdownMenu').classList.remove('show');
