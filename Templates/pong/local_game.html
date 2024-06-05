@@ -6,12 +6,20 @@
             <div id="tournament" class="canvas_container" class="container border">
                 <div id="playerNames" class="row player-names-container d-flex align-items-center">
                     <div id="player1Name" class="col player-name d-flex justify-content-start">
-                      Player 1
+                      {{player1}}
                     </div>
                     <div id="player2Name" class="col player-name d-flex justify-content-end">
-                      Player 2
+                      {{player2}}
                     </div>
+                </div>
+                <div id="scoreSection" style="display: none;">
+                  <div class="row">
+                      <div class="col">
+                          <p id="player1ScoreDisplay">0</p>
+                          <p id="player2ScoreDisplay">0</p>
+                      </div>
                   </div>
+                </div>
                   
                 <div class="row">
                     <div class="col">

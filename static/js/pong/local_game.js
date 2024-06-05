@@ -1,6 +1,41 @@
 var data3 = null;
-var player1_name = "Player1"
-var player2_name = "Player2"
+
+const player1Element = document.getElementById('player1Name');
+const player2Element = document.getElementById('player2Name');
+const player1_name = player1Element ? player1Element.textContent.trim() : 'Player1';
+const player2_name = player2Element ? player2Element.textContent.trim() : 'Player2';
+// var player1_name = "Player1"
+// var player2_name = "Player2"
+
+function getTextContentById(id) {
+    const element = document.getElementById(id);
+    return element ? element.textContent.trim() : '';
+}
+
+function getScoresDisplay() {
+    // Retrieve the text content of the score paragraphs
+    const player1ScoreText = document.getElementById('player1ScoreDisplay').textContent;
+    const player2ScoreText = document.getElementById('player2ScoreDisplay').textContent;
+
+    // Extract the scores from the text content
+    const player1Score = parseInt(player1ScoreText.trim());
+    const player2Score = parseInt(player2ScoreText.trim());
+
+    // Return the scores as an object
+    return {
+        player1Score: player1Score,
+        player2Score: player2Score
+    };
+}
+
+function updateScoresDisplay(player1Score, player2Score) {
+    // Update the text content of the score paragraphs
+    document.getElementById('player1ScoreDisplay').textContent = `${player1Score}`;
+    document.getElementById('player2ScoreDisplay').textContent = `${player2Score}`;
+
+    // Show the score section if it was hidden
+    // document.getElementById('scoreSection').style.display = 'block';
+}
 
 function update1(data3){
     // update the ball
@@ -63,11 +98,11 @@ function gameLoop1(data3) {
     if (data3['player1'].score == 5 || data3['player2'].score == 5) {
         clearInterval(intervalId);
         if (data3['player1'].score == 5) {
-            drawText2(data3['ctx'], player1_name + " Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
-            drawText2(data3['ctx'], player2_name + " Lost",  data3['canvas'].width/1.5, data3['canvas'].height/2, "#333");
+            drawText2(data3['ctx'], getTextContentById('player1Name') + " Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
+            drawText2(data3['ctx'], getTextContentById('player2Name') + " Lost",  data3['canvas'].width/1.5, data3['canvas'].height/2, "#333");
         } else {
-            drawText2(data3['ctx'], player1_name + " Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
-            drawText2(data3['ctx'], player2_name + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], getTextContentById('player1Name') + " Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], getTextContentById('player2Name') + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
         }
         game_in_progress = false;
         // document.getElementById('restart_btn').style.display = 'block';

@@ -489,69 +489,147 @@ function updateNextMatchup(winner, loser) {
 
 
 
-function startMatch(player1, player2, matchElement) {
+// function startMatch(player1, player2, matchElement) {
+//     const mainSection = document.querySelector('.main-section');
+//     const mainContainer = document.getElementById('main-container');
+//     setTimeout(() => {
+//         mainSection.style.display = 'none';
+//     }, 1000);
+//     // Wait for 10 seconds before hiding the content of the whole page
+//     setTimeout(() => {
+//         // Make a request to the backend to get the local game page
+//         fetch('/local_game/')
+//             .then(response => response.text())
+//             .then(html => {
+//                 // Replace the entire body content with the fetched content
+//                 const parser = new DOMParser();
+//                 const parsedHtml = parser.parseFromString(html, 'text/html');
+
+//                 // Select the tournament section from the parsed HTML content
+//                 const tournamentSection = parsedHtml.getElementById('tournament');
+//                 // Select and remove the buttons from the parsed HTML content
+//                 const restartButton = parsedHtml.getElementById('restart_btn');
+//                 const quitButton = parsedHtml.getElementById('quit_game');
+
+//                 if (restartButton && restartButton.parentNode) {
+//                     restartButton.parentNode.removeChild(restartButton);
+//                 }
+
+//                 if (quitButton && quitButton.parentNode) {
+//                     quitButton.parentNode.removeChild(quitButton);
+//                 }
+
+//                 // Append the tournament section before the footer
+//                 mainContainer.appendChild(tournamentSection);
+
+//                 // Function to be called when the game is completed
+//                 function onGameCompleted() {
+//                     // Restore the original body content
+//                     if (tournamentSection && tournamentSection.parentNode) {
+//                         tournamentSection.parentNode.removeChild(tournamentSection);
+//                     }
+//                     if (finishButton && finishButton.parentNode) {
+//                         finishButton.parentNode.removeChild(finishButton);
+//                     }
+//                     mainSection.style.display = 'block';
+
+//                     // After the game is finished, update the scores and tournament bracket
+//                     const player1_score = 10; // Example score
+//                     const player2_score = 6; // Example score
+//                     const winner = player1; // Example winner
+//                     alert(`Match finished! The winner is ${winner}`);
+//                     updateScores(matchElement, player1_score, player2_score);
+
+//                     alert(`Match finished! The winner is ${winner}`);
+//                 }
+
+//                 // Example: Wait for user action (e.g., clicking a "Finish" button)
+//                 const finishButton = document.createElement('button');
+//                 finishButton.textContent = 'Finish';
+//                 finishButton.addEventListener('click', onGameCompleted);
+//                 document.body.appendChild(finishButton);
+//             })
+//             .catch(error => {
+//                 console.error('Error fetching local game page:', error);
+//                 // If there is an error, display an error message or handle it appropriately
+//             });
+//     }, 1000); // 10 seconds delay
+// }
+
+
+async function startMatch(player1, player2, matchElement) {
     const mainSection = document.querySelector('.main-section');
     const mainContainer = document.getElementById('main-container');
     setTimeout(() => {
         mainSection.style.display = 'none';
     }, 1000);
+    
     // Wait for 10 seconds before hiding the content of the whole page
-    setTimeout(() => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const csrftoken = getCookie('csrftoken');
+
+    try {
         // Make a request to the backend to get the local game page
-        fetch('/local_game/')
-            .then(response => response.text())
-            .then(html => {
-                // Replace the entire body content with the fetched content
-                const parser = new DOMParser();
-                const parsedHtml = parser.parseFromString(html, 'text/html');
+        // const response = await fetch('/local_game/');
+        const response = await fetch('/local_game/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ player1, player2 })
+        });
+        const html = await response.text();
 
-                // Select the tournament section from the parsed HTML content
-                const tournamentSection = parsedHtml.getElementById('tournament');
-                // Select and remove the buttons from the parsed HTML content
-                const restartButton = parsedHtml.getElementById('restart_btn');
-                const quitButton = parsedHtml.getElementById('quit_game');
+        // Replace the entire body content with the fetched content
+        const parser = new DOMParser();
+        const parsedHtml = parser.parseFromString(html, 'text/html');
 
-                if (restartButton && restartButton.parentNode) {
-                    restartButton.parentNode.removeChild(restartButton);
-                }
+        // Select the tournament section from the parsed HTML content
+        const tournamentSection = parsedHtml.getElementById('tournament');
+        // Select and remove the buttons from the parsed HTML content
+        const restartButton = parsedHtml.getElementById('restart_btn');
+        const quitButton = parsedHtml.getElementById('quit_game');
 
-                if (quitButton && quitButton.parentNode) {
-                    quitButton.parentNode.removeChild(quitButton);
-                }
+        if (restartButton && restartButton.parentNode) {
+            restartButton.parentNode.removeChild(restartButton);
+        }
 
-                // Append the tournament section before the footer
-                mainContainer.appendChild(tournamentSection);
+        if (quitButton && quitButton.parentNode) {
+            quitButton.parentNode.removeChild(quitButton);
+        }
 
-                // Function to be called when the game is completed
-                function onGameCompleted() {
-                    // Restore the original body content
-                    if (tournamentSection && tournamentSection.parentNode) {
-                        tournamentSection.parentNode.removeChild(tournamentSection);
-                    }
-                    if (finishButton && finishButton.parentNode) {
-                        finishButton.parentNode.removeChild(finishButton);
-                    }
-                    mainSection.style.display = 'block';
+        // Append the tournament section before the footer
+        mainContainer.appendChild(tournamentSection);
 
-                    // After the game is finished, update the scores and tournament bracket
-                    const player1_score = 10; // Example score
-                    const player2_score = 6; // Example score
-                    const winner = player1; // Example winner
-                    alert(`Match finished! The winner is ${winner}`);
-                    updateScores(matchElement, player1_score, player2_score);
+        // Function to be called when the game is completed
+        function onGameCompleted() {
+            // Restore the original body content
+            if (tournamentSection && tournamentSection.parentNode) {
+                tournamentSection.parentNode.removeChild(tournamentSection);
+            }
+            if (finishButton && finishButton.parentNode) {
+                finishButton.parentNode.removeChild(finishButton);
+            }
+            mainSection.style.display = 'block';
 
-                    alert(`Match finished! The winner is ${winner}`);
-                }
+            // After the game is finished, update the scores and tournament bracket
+            const player1_score = 10; // Example score
+            const player2_score = 6; // Example score
+            const winner = player1; // Example winner
+            alert(`Match finished! The winner is ${winner}`);
+            updateScores(matchElement, player1_score, player2_score);
 
-                // Example: Wait for user action (e.g., clicking a "Finish" button)
-                const finishButton = document.createElement('button');
-                finishButton.textContent = 'Finish';
-                finishButton.addEventListener('click', onGameCompleted);
-                document.body.appendChild(finishButton);
-            })
-            .catch(error => {
-                console.error('Error fetching local game page:', error);
-                // If there is an error, display an error message or handle it appropriately
-            });
-    }, 1000); // 10 seconds delay
+            alert(`Match finished! The winner is ${winner}`);
+        }
+
+        // Example: Wait for user action (e.g., clicking a "Finish" button)
+        const finishButton = document.createElement('button');
+        finishButton.textContent = 'Finish';
+        finishButton.addEventListener('click', onGameCompleted);
+        document.body.appendChild(finishButton);
+    } catch (error) {
+        console.error('Error fetching local game page:', error);
+        // If there is an error, display an error message or handle it appropriately
+    }
 }
