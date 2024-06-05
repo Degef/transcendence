@@ -163,10 +163,10 @@ function start_play_computer() {
         data2['userScore'] = new Audio();
         data2['comScore'] = new Audio();
     
-        data2['hit'].src = "/static/pong/sounds/wall.mp3";
-        // data2['wall'].src = "/static/pong/sounds/wall.mp3";
-        data2['userScore'].src = "/static/pong/sounds/userScore.mp3";
-        data2['comScore'].src = "/static/pong/sounds/comScore.mp3";
+        data2['hit'].src = "/media/sounds/wall.mp3";
+        // data2['wall'].src = "media/sounds/wall.mp3";
+        data2['userScore'].src = "/media/sounds/userScore.mp3";
+        data2['comScore'].src = "/media/sounds/comScore.mp3";
         // console.log('data2 is not defined')
     } else {
         data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
@@ -348,10 +348,10 @@ function start_play_online() {
     data['userScore'] = new Audio();
     data['comScore'] = new Audio();
 
-    data['hit'].src = "media/sounds/hit.mp3";
-    data['wall'].src = "media/sounds/wall.mp3";
-    data['userScore'].src = "media/sounds/userScore.mp3";
-    data['comScore'].src = "media/sounds/comScore.mp3";
+    data['hit'].src = "/media/sounds/hit.mp3";
+    data['wall'].src = "/media/sounds/wall.mp3";
+    data['userScore'].src = "/media/sounds/userScore.mp3";
+    data['comScore'].src = "/media/sounds/comScore.mp3";
 
     socket.onopen = function () {
         console.log('WebSocket connection established');

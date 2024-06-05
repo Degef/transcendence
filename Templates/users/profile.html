@@ -7,7 +7,7 @@
 	<header class="profile-header text-center">
 		<article class="profile-details">
 			<div class="profile-image-container position-relative">
-				<img loading="lazy" src="{{ user.profile.image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
+				<img loading="lazy" src="{{ profile_image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
 				<span class="status-indicator position-absolute {% if is_online %} online {% else %} offline {% endif %}"></span>
 			</div>
 			<h2 class="profile-name">{{ username }}</h2>
@@ -15,7 +15,7 @@
 				{% if is_own_profile %}
 					<button class="btn btn-outline-light profile-action-edit" id="edit_profile">Edit</button>
 				{% else %}
-					<button class="btn btn-outline-light rounded-pill profile-action-add-friend" onclick="addFriend('{{username}}')">Add Friend</button>
+					<button class="btn btn-outline-light rounded-pill profile-action-add-friend" onclick="addFriend('{{ username }}')">Add Friend</button>
 					<button class="btn btn-primary profile-action-play">Play</button>
 				{% endif %}
 			</div>
@@ -48,6 +48,7 @@
 					</div>
 				</div>
 			</div>
+		</div>
 	</section>
 
 	<nav class="highlighted-tab d-flex justify-content-between border-bottom py-2 mb-3">
@@ -69,27 +70,30 @@
 		{% for match in games %}
 			<div class="history-item d-flex justify-content-between align-items-center py-2">
 				<div class="d-flex align-items-center gap-3">
-					<div class="rounded-circle {% if match.winner == user %} alert alert-primary {% else %} alert alert-danger {% endif %}" style="width: 56px; height: 56px;"></div>
+					<div class="rounded-circle {% if match.winner.username == username %} alert alert-primary {% else %} alert alert-danger {% endif %}" style="width: 56px; height: 56px;"></div>
 					<div class="history-details">
-						{% if match.winner == user and match.player1 == user %}
-							<span class="history-title">You won against {{ match.player2 }}</span>
-						{% elif match.winner == user and match.player2 == user %}
-							<span class="history-title">You won against {{ match.player1 }}</span>
-						{% elif match.player1 == user %}
-							<span class="history-title">You lost to {{ match.player2 }}</span>
-						{% else %}
-							<span class="history-title">You lost to {{ match.player1 }}</span>
-						{% endif %}
+						{% if match.winner.username == username %}
+                            {% if match.player1.username == username %}
+                                <span class="history-title">You won against {{ match.player2.username }}</span>
+                            {% else %}
+                                <span class="history-title">You won against {{ match.player1.username }}</span>
+                            {% endif %}
+                        {% else %}
+                            {% if match.player1.username == username %}
+                                <span class="history-title">You lost to {{ match.player2.username }}</span>
+                            {% else %}
+                                <span class="history-title">You lost to {{ match.player1.username }}</span>
+                            {% endif %}
+                        {% endif %}
 						<time class="history-time">{{ match.date }}</time>
 					</div>
 				</div>
-				<span class="history-score">{{match.player1_score}} - {{match.player2_score}}</span>
+				<span class="history-score">{{ match.player1_score }} - {{ match.player2_score }}</span>
 			</div>
 		{% endfor %}
 	</section>
 
 	<section id="friends-section" class="friends-section d-none">
-		
 		<div id="friends-list" class="list-container">
 			{% if friends|length == 0 %}
 				<div class="friend-item d-flex justify-content-between align-items-center py-2">
@@ -107,40 +111,43 @@
 							<img loading="lazy" src="{{ friend.profile.image.url }}" alt="Friend's profile image" class="friend-image rounded-circle" />
 						</a>
 						<div class="friend-details">
-							<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;"class="friend-name">{{ friend.username }}</a>
+							<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;" class="friend-name">{{ friend.username }}</a>
 						</div>
 					</div>
 					<div>
-						<p>{{friend.date_joined|date:"d/m/y"}}</p>
+						<p>{{ friend.date_joined|date:"d/m/y" }}</p>
 					</div>
-					<button class="btn btn-danger btn-sm" onclick="removeFriend('{{ friend.username }}')">Remove</button>
+					{% if is_own_profile %}
+						<button class="btn btn-danger btn-sm" onclick="removeFriend('{{ friend.username }}')">Remove</button>
+					{% endif %}
 				</div>
 			{% endfor %}
 		</div>
-		<div id="non-friends-list" class="list-container mt-4">
-			<h5>All Players</h5>
-			<div class="search-bar">
-				<i class="fas fa-search search-icon"></i>
-				<input type="text" class="search-input" placeholder="Search Players">
+		{% if is_own_profile %}
+			<div id="non-friends-list" class="list-container mt-4">
+				<h5>All Players</h5>
+				<div class="search-bar">
+					<i class="fas fa-search search-icon"></i>
+					<input type="text" class="search-input" placeholder="Search Players">
+				</div>
+				{% for non_friend in non_friends %}
+					<div class="friend-item d-flex justify-content-between align-items-center py-2">
+						<div class="d-flex align-items-center gap-3">
+							<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;">
+								<img loading="lazy" src="{{ non_friend.profile.image.url }}" alt="Non-friend's profile image" class="friend-image rounded-circle" />
+							</a>
+							<div class="friend-details">
+								<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;" class="friend-name">{{ non_friend.username }}</a>
+							</div>
+						</div>
+						<div>
+							<p>{{ non_friend.date_joined|date:"d/m/y" }}</p>
+						</div>
+						<button class="btn btn-outline-success btn-sm" onclick="addFriend('{{ non_friend.username }}')">Add Friend</button>
+					</div>
+				{% endfor %}
 			</div>
-			{% for non_friend in non_friends %}
-				<div class="friend-item d-flex justify-content-between align-items-center py-2">
-					<div class="d-flex align-items-center gap-3">
-						<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;">
-							<img loading="lazy" src="{{ non_friend.profile.image.url }}" alt="Non-friend's profile image" class="friend-image rounded-circle" />
-						</a>
-						<div class="friend-details">
-							<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;" class="friend-name">{{ non_friend.username }}</a>
-						</div>
-					</div>
-					<div>
-						<p>{{non_friend.date_joined|date:"d/m/y"}}</p>
-					</div>
-					<button class="btn btn-outline-success btn-sm" onclick="addFriend('{{ non_friend.username }}')">Add Friend</button>
-				</div>
-			{% endfor %}
-
-		</div>
+		{% endif %}
 	</section>
 
 	<section id="stats-section" class="stats-section d-none">
@@ -150,7 +157,6 @@
 	<script>
 		const user_id = {{ user.id }};
 	</script>
-
 </section>
 
 {% endblock %}
