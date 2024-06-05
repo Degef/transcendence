@@ -70,7 +70,8 @@ function gameLoop1(data3) {
             drawText2(data3['ctx'], player2_name + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
         }
         game_in_progress = false;
-        document.getElementById('restart_btn').style.display = 'block';
+        // document.getElementById('restart_btn').style.display = 'block';
+        displayBtn('restart_btn');
         // document.getElementById('quit_game').style.display = 'none';
 
         return;
@@ -86,9 +87,12 @@ function gameLoop1(data3) {
 }
 
 function start_local_game() {
-    document.getElementById('start_play_computer').style.display = 'none';
-    document.getElementById('restart_btn').style.display = 'none';
-    document.getElementById('quit_game').style.display = 'block';
+    // document.getElementById('start_play_computer').style.display = 'none';
+    // document.getElementById('restart_btn').style.display = 'none';
+    // document.getElementById('quit_game').style.display = 'block';
+    hideBtn('start_play_computer');
+    hideBtn('restart_btn');
+    displayBtn('quit_game');
     if (game_in_progress) {
         return;
     }
