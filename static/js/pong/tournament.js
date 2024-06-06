@@ -2,6 +2,9 @@ let players = [];
 let currentPlayerIndex = 0;
 let totalPlayers = 0;
 
+let tournamentSection, mainSection, player1, player2, matchElement;
+
+
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -11,7 +14,6 @@ function shuffleArray(array) {
 }
 
 function setupTournament(playerCount) {
-    console.log('Setting up tournament for the following players:', playerCount);
     players = [];
     currentPlayerIndex = 0;
     totalPlayers = playerCount;
@@ -33,7 +35,6 @@ function setupTournament(playerCount) {
     `;
     const playerFormContainer = document.getElementById('playerFormContainer');
     playerFormContainer.style.display = 'block';
-    console.log('calling submitPlayerName:', totalPlayers);
     document.getElementById('submitPlayer').addEventListener('click', submitPlayerName);
     document.getElementById('playerName').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
@@ -93,10 +94,7 @@ function getCookie(name) {
 
 
 async function organizeTournament(players) {
-    console.log('Setting up tournament for the following players:', players);
     const csrftoken = getCookie('csrftoken');
-
-
     try {
         const response = await fetch('/off_tour_bracket/', {
             method: 'POST',
@@ -131,115 +129,15 @@ async function organizeTournament(players) {
 
 
 function startFirstMatch() {
-    console.log("about to start the first game");
     const firstMatchElement = document.querySelector('.round-one .matches .matchup');
-    var selectround = document.querySelector('.round-one .matchup');
-    if (selectround) {
-        const player1 = selectround.querySelector('.team-top').innerText;
-        const player2 = selectround.querySelector('.team-bottom').innerText;
-        const matchId = selectround.getAttribute('.matchup');
-        startMatch(player1, player2, selectround);
+    matchElement = document.querySelector('.round-one .matchup');
+    if (matchElement) {
+        player1 = matchElement.querySelector('.team-top').innerText;
+        player2 = matchElement.querySelector('.team-bottom').innerText;
+        const matchId = matchElement.getAttribute('.matchup');
+        startMatch(player1, player2, matchElement);
     }
 }
-
-
-// function startMatch(player1, player2, matchElement) {
-//     const detailsSection = document.querySelector('.details-section');
-//     setTimeout(() => {
-//         detailsSection.style.display = 'none';
-    
-//         // Make a request to the backend to get the local game page
-//         fetch('/local_game/')
-//             .then(response => response.text())
-//             .then(html => {
-//                 // Display the local game page
-//                 const parser = new DOMParser();
-//                 const doc = parser.parseFromString(html, 'text/html');
-//                 const specificElement = doc.querySelector('#tournament');
-//                 const gameContainer = specificElement.cloneNode(true);
-//                 const footer = document.querySelector('.footer');
-//                 document.body.insertBefore(gameContainer, footer);
-//                 // document.body.appendChild(gameContainer);
-    
-//                 // Function to be called when the game is completed
-//                 function onGameCompleted() {
-//                     // After the game is finished, update the scores and tournament bracket
-//                     document.body.removeChild(gameContainer);
-//                     detailsSection.style.display = 'block';
-//                     const player1_score = 10; // Example score
-//                     const player2_score = 6; // Example score
-//                     const winner = player1; // Example winner
-//                     alert(`Match finished! The winner is ${winner}`);
-//                     updateScores(matchElement, player1_score, player2_score);
-//                     // updateBracket(matchElement, winner);
-    
-//                     // Show the tournament bracket section
-//                 }
-    
-//                 // Example: Wait for user action (e.g., clicking a "Finish" button)
-//                 const finishButton = document.createElement('button');
-//                 finishButton.textContent = 'Finish';
-//                 finishButton.addEventListener('click', onGameCompleted);
-//                 gameContainer.appendChild(finishButton);
-//             })
-//             .catch(error => {
-//                 console.error('Error fetching local game page:', error);
-//                 // If there is an error, display an error message or handle it appropriately
-//             });
-//     }, 1000);
-// }
-
-
-// function startMatch(player1, player2, matchElement) {
-//     const originalBracketContent = document.querySelector('#bracket').innerHTML
-//     const originalContent = document.body.innerHTML;
-//     const matchElementClass = matchElement.className;
-//     const matchElementIndex = Array.from(document.querySelectorAll(`.${matchElementClass}`)).indexOf(matchElement);
-//     // console.log(originalBracketContent);
-
-//     // Wait for 10 seconds before hiding the content of the whole page
-//     setTimeout(() => {
-//         // Make a request to the backend to get the local game page
-//         fetch('/local_game/')
-//             .then(response => response.text())
-//             .then(html => {
-//                 // Replace the entire body content with the fetched content
-//                 document.body.innerHTML = html;
-
-//                 // Function to be called when the game is completed
-//                 function onGameCompleted() {
-//                     // Restore the original body content
-//                     document.body.innerHTML = originalContent;
-//                     const newMatchElements = document.querySelectorAll(`.${matchElementClass}`);
-//                     const newMatchElement = newMatchElements[matchElementIndex];
-
-//                     // After the game is finished, update the scores and tournament bracket
-//                     const player1_score = 10; // Example score
-//                     const player2_score = 6; // Example score
-//                     const winner = player1; // Example winner
-//                     alert(`Match finished! The winner is ${winner}`);
-//                     updateScores(newMatchElement, player1_score, player2_score);
-
-//                     alert(`Match finished! The winner is ${winner}`);
-//                     // updateBracket(matchElement, winner);
-
-//                     // Show the original content of the page
-//                     // document.body.innerHTML = originalContent;
-//                 }
-
-//                 // Example: Wait for user action (e.g., clicking a "Finish" button)
-//                 const finishButton = document.createElement('button');
-//                 finishButton.textContent = 'Finish';
-//                 finishButton.addEventListener('click', onGameCompleted);
-//                 document.body.appendChild(finishButton);
-//             })
-//             .catch(error => {
-//                 console.error('Error fetching local game page:', error);
-//                 // If there is an error, display an error message or handle it appropriately
-//             });
-//     }, 1000); // 10 seconds delay
-// }
-
 
 function updateScores(matchElement, player1_score, player2_score) {
     const player1ScoreInput = matchElement.querySelector('.team-top .score-input');
@@ -251,9 +149,6 @@ function updateScores(matchElement, player1_score, player2_score) {
     // Check if the match is not in the championship final
     if (!matchElement.closest('.champion')) {
         // Proceed with updating the next round and starting the next match
-        // const detailsSection = document.querySelector('.details-section');
-        // detailsSection.style.display = 'block';
-        console.log("updating next round");
         updateNextRound(matchElement);
         setTimeout(() => {
             startNextMatch(matchElement);
@@ -280,22 +175,11 @@ function updateBracket(matchElement, winner) {
 
 function startNextMatch(currentMatchElement) {
     // Find the next match in the same round
-    const nextMatchInRound = getNextMatchInSameRound(currentMatchElement);
-    console.log(nextMatchInRound);
-    if (nextMatchInRound) {
-        const player1 = nextMatchInRound.querySelector('.team-top').innerText.trim();
-        console.log("player1-", player1);
-        const player2 = nextMatchInRound.querySelector('.team-bottom').innerText.trim();
-        console.log("player2-", player2)
-        startMatch(player1, player2, nextMatchInRound);
-    } else {
-        // Find the first match in the next round or split
-        // const nextMatchElement = getNextMatchElement(currentMatchElement);
-        // if (nextMatchElement) {
-        //     const player1 = nextMatchElement.querySelector('.team-top').innerText.trim();
-        //     const player2 = nextMatchElement.querySelector('.team-bottom').innerText.trim();
-        //     startMatch(player1, player2, nextMatchElement);
-        // }
+    matchElement = getNextMatchInSameRound(currentMatchElement);
+    if (matchElement) {
+        player1 = matchElement.querySelector('.team-top').innerText.trim();
+        player2 = matchElement.querySelector('.team-bottom').innerText.trim();
+        startMatch(player1, player2, matchElement);
     }
 }
 
@@ -314,7 +198,6 @@ function getNextMatchInSameRound(currentMatchElement) {
     // Locate the index of the current match within the current split
     const currentIndex = allMatchesInCurrentSplit.indexOf(currentMatchElement);
     if (currentIndex === -1) {
-        // Current match not found in the list of matches in the split
         return null;
     }
 
@@ -430,7 +313,6 @@ function updateMatchCell(nextCell, winnerName, winnerImg, winnerScore) {
 function updateNextMatchup(winner, loser) {
     // Find the current round
     var currentRound = winner.closest(".round");
-    //   console.log( Array.from(currentRound.querySelectorAll(".matchup")).indexOf(winner.closest(".matchup")));
     
     // Find the index of the current matchup within its round
     var currentMatchupIndex = Array.from(currentRound.querySelectorAll(".matchup")).indexOf(winner.closest(".matchup"));
@@ -484,81 +366,26 @@ function updateNextMatchup(winner, loser) {
     }
 }
 
+function onGameCompleted() {
+    if (tournamentSection && tournamentSection.parentNode) {
+        tournamentSection.parentNode.removeChild(tournamentSection);
+    }
+    // Restore the original body content
+    mainSection.style.display = 'block';
 
+    const player1_score = getScoresDisplay('p1');
+    const player2_score = getScoresDisplay('p2');
+    // const player1_score = p1score; // Example score
+    // const player2_score = p2score; // Example score
 
-
-
-
-// function startMatch(player1, player2, matchElement) {
-//     const mainSection = document.querySelector('.main-section');
-//     const mainContainer = document.getElementById('main-container');
-//     setTimeout(() => {
-//         mainSection.style.display = 'none';
-//     }, 1000);
-//     // Wait for 10 seconds before hiding the content of the whole page
-//     setTimeout(() => {
-//         // Make a request to the backend to get the local game page
-//         fetch('/local_game/')
-//             .then(response => response.text())
-//             .then(html => {
-//                 // Replace the entire body content with the fetched content
-//                 const parser = new DOMParser();
-//                 const parsedHtml = parser.parseFromString(html, 'text/html');
-
-//                 // Select the tournament section from the parsed HTML content
-//                 const tournamentSection = parsedHtml.getElementById('tournament');
-//                 // Select and remove the buttons from the parsed HTML content
-//                 const restartButton = parsedHtml.getElementById('restart_btn');
-//                 const quitButton = parsedHtml.getElementById('quit_game');
-
-//                 if (restartButton && restartButton.parentNode) {
-//                     restartButton.parentNode.removeChild(restartButton);
-//                 }
-
-//                 if (quitButton && quitButton.parentNode) {
-//                     quitButton.parentNode.removeChild(quitButton);
-//                 }
-
-//                 // Append the tournament section before the footer
-//                 mainContainer.appendChild(tournamentSection);
-
-//                 // Function to be called when the game is completed
-//                 function onGameCompleted() {
-//                     // Restore the original body content
-//                     if (tournamentSection && tournamentSection.parentNode) {
-//                         tournamentSection.parentNode.removeChild(tournamentSection);
-//                     }
-//                     if (finishButton && finishButton.parentNode) {
-//                         finishButton.parentNode.removeChild(finishButton);
-//                     }
-//                     mainSection.style.display = 'block';
-
-//                     // After the game is finished, update the scores and tournament bracket
-//                     const player1_score = 10; // Example score
-//                     const player2_score = 6; // Example score
-//                     const winner = player1; // Example winner
-//                     alert(`Match finished! The winner is ${winner}`);
-//                     updateScores(matchElement, player1_score, player2_score);
-
-//                     alert(`Match finished! The winner is ${winner}`);
-//                 }
-
-//                 // Example: Wait for user action (e.g., clicking a "Finish" button)
-//                 const finishButton = document.createElement('button');
-//                 finishButton.textContent = 'Finish';
-//                 finishButton.addEventListener('click', onGameCompleted);
-//                 document.body.appendChild(finishButton);
-//             })
-//             .catch(error => {
-//                 console.error('Error fetching local game page:', error);
-//                 // If there is an error, display an error message or handle it appropriately
-//             });
-//     }, 1000); // 10 seconds delay
-// }
+    const winner = player1_score > player2_score ? player1 : player2;
+    isIntournament = false;
+    updateScores(matchElement, player1_score, player2_score);
+}
 
 
 async function startMatch(player1, player2, matchElement) {
-    const mainSection = document.querySelector('.main-section');
+    mainSection = document.querySelector('.main-section');
     const mainContainer = document.getElementById('main-container');
     setTimeout(() => {
         mainSection.style.display = 'none';
@@ -570,7 +397,6 @@ async function startMatch(player1, player2, matchElement) {
 
     try {
         // Make a request to the backend to get the local game page
-        // const response = await fetch('/local_game/');
         const response = await fetch('/local_game/', {
             method: 'POST',
             headers: {
@@ -580,13 +406,14 @@ async function startMatch(player1, player2, matchElement) {
             body: JSON.stringify({ player1, player2 })
         });
         const html = await response.text();
+        isIntournament = true;
 
         // Replace the entire body content with the fetched content
         const parser = new DOMParser();
         const parsedHtml = parser.parseFromString(html, 'text/html');
 
         // Select the tournament section from the parsed HTML content
-        const tournamentSection = parsedHtml.getElementById('tournament');
+        tournamentSection = parsedHtml.getElementById('tournament');
         // Select and remove the buttons from the parsed HTML content
         const restartButton = parsedHtml.getElementById('restart_btn');
         const quitButton = parsedHtml.getElementById('quit_game');
@@ -601,35 +428,7 @@ async function startMatch(player1, player2, matchElement) {
 
         // Append the tournament section before the footer
         mainContainer.appendChild(tournamentSection);
-
-        // Function to be called when the game is completed
-        function onGameCompleted() {
-            // Restore the original body content
-            if (tournamentSection && tournamentSection.parentNode) {
-                tournamentSection.parentNode.removeChild(tournamentSection);
-            }
-            if (finishButton && finishButton.parentNode) {
-                finishButton.parentNode.removeChild(finishButton);
-            }
-            mainSection.style.display = 'block';
-
-            // After the game is finished, update the scores and tournament bracket
-            const player1_score = 10; // Example score
-            const player2_score = 6; // Example score
-            const winner = player1; // Example winner
-            alert(`Match finished! The winner is ${winner}`);
-            updateScores(matchElement, player1_score, player2_score);
-
-            alert(`Match finished! The winner is ${winner}`);
-        }
-
-        // Example: Wait for user action (e.g., clicking a "Finish" button)
-        const finishButton = document.createElement('button');
-        finishButton.textContent = 'Finish';
-        finishButton.addEventListener('click', onGameCompleted);
-        document.body.appendChild(finishButton);
     } catch (error) {
         console.error('Error fetching local game page:', error);
-        // If there is an error, display an error message or handle it appropriately
     }
 }

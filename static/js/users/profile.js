@@ -1,7 +1,6 @@
 let chartInstance = null;
 
 function init_profile() {
-	console.log("I am here my friend");
 	if (window.location.pathname === '/profile/') {
 		const tabs = [
 			{ id: 'history-tab', section: 'history-section' },

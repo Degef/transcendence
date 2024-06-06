@@ -1,40 +1,26 @@
 var data3 = null;
 
+var p1score = 0;
+var p2score = 0;
+var isIntournament = false;
+
 const player1Element = document.getElementById('player1Name');
 const player2Element = document.getElementById('player2Name');
 const player1_name = player1Element ? player1Element.textContent.trim() : 'Player1';
 const player2_name = player2Element ? player2Element.textContent.trim() : 'Player2';
-// var player1_name = "Player1"
-// var player2_name = "Player2"
 
 function getTextContentById(id) {
     const element = document.getElementById(id);
     return element ? element.textContent.trim() : '';
 }
 
-function getScoresDisplay() {
-    // Retrieve the text content of the score paragraphs
-    const player1ScoreText = document.getElementById('player1ScoreDisplay').textContent;
-    const player2ScoreText = document.getElementById('player2ScoreDisplay').textContent;
-
-    // Extract the scores from the text content
-    const player1Score = parseInt(player1ScoreText.trim());
-    const player2Score = parseInt(player2ScoreText.trim());
-
-    // Return the scores as an object
-    return {
-        player1Score: player1Score,
-        player2Score: player2Score
-    };
+function getScoresDisplay(playerid) {
+    return (playerid === 'p1' ? p1score : p2score);
 }
 
 function updateScoresDisplay(player1Score, player2Score) {
-    // Update the text content of the score paragraphs
-    document.getElementById('player1ScoreDisplay').textContent = `${player1Score}`;
-    document.getElementById('player2ScoreDisplay').textContent = `${player2Score}`;
-
-    // Show the score section if it was hidden
-    // document.getElementById('scoreSection').style.display = 'block';
+    p1score = player1Score;
+    p2score = player2Score;
 }
 
 function update1(data3){
@@ -105,10 +91,13 @@ function gameLoop1(data3) {
             drawText2(data3['ctx'], getTextContentById('player2Name') + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
         }
         game_in_progress = false;
+        updateScoresDisplay(data3['player1'].score, data3['player2'].score);
         // document.getElementById('restart_btn').style.display = 'block';
         displayBtn('restart_btn');
         // document.getElementById('quit_game').style.display = 'none';
-
+        if (isIntournament) {
+            onGameCompleted();
+        }
         return;
     } else if (terminate_game) {
         clearInterval(intervalId);
@@ -144,10 +133,10 @@ function start_local_game() {
         data3['userScore'] = new Audio();
         data3['comScore'] = new Audio();
     
-        data3['hit'].src = "/static/pong/sounds/wall.mp3";
-        // data3['wall'].src = "/static/pong/sounds/wall.mp3";
-        data3['userScore'].src = "/static/pong/sounds/userScore.mp3";
-        data3['comScore'].src = "/static/pong/sounds/comScore.mp3";
+        data3['hit'].src = "/media/sounds/wall.mp3";
+        // data3['wall'].src = "/media/sounds/wall.mp3";
+        data3['userScore'].src = "/media/sounds/userScore.mp3";
+        data3['comScore'].src = "/media/sounds/comScore.mp3";
         // console.log('data3 is not defined')
     } else {
         data3['ctx'].clearRect(0, 0, data3['canvas'].width, data3['canvas'].height);
