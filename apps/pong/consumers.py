@@ -6,8 +6,10 @@ import asyncio
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from apps.pong.models import Game
+from pong.models import Tournament ,TournamentPlayer
 from asgiref.sync import sync_to_async
 import math
+from django.template.loader import render_to_string
 
 logger = logging.getLogger(__name__)
 # class MyConsumer(AsyncWebsocketConsumer):
@@ -260,4 +262,149 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'gameEnd',
             'message': message
+        }))
+
+
+class TournamentConsumer(AsyncWebsocketConsumer):
+    players_waiting = []
+    list_players = []
+
+    async def connect(self):
+        self.user_id = await sync_to_async(self.get_user_id)()
+        self.username = self.scope["user"].username
+        print(f"Player id is : {self.user_id}")
+        self.room_group_name = 'test'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+    def get_user_id(self):
+        return self.scope["session"]["_auth_user_id"]
+
+
+    async def chat_message(self, event):
+        message = event['message']
+
+        await self.send(text_data=json.dumps({
+            'type': 'chat',
+            'message': message
+        }))
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+
+    async def receive(self, text_data):
+        # text_data_json = json.loads(text_data)
+        # message = text_data_json['action']
+        # await self.channel_layer.group_send(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'chat_message',
+        #         'message': message
+        #     }
+        # )
+        await self.fetch_and_add_player_to_tournament()
+    
+
+    async def fetch_and_add_player_to_tournament(self):
+        if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
+            self.players_waiting.append(self.user_id)
+            self.list_players.append(self.user_id)
+            tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
+
+            await self.send_join_message(f"the last player is joining {self.username}")
+
+            tourn_players = []
+            for user_id in self.players_waiting[:4]:
+                user = await sync_to_async(User.objects.get)(id=user_id)
+                profile_img = await sync_to_async(lambda: user.profile.image.url)()
+                tourn_players.append({
+                    'username':user.username,
+                    'profile_img':profile_img
+                    })
+                user.tournament = tournament
+                await sync_to_async(user.save)()
+            player1 = tourn_players[0];
+            player2 = tourn_players[1];
+            player3 = tourn_players[2];
+            player4 = tourn_players[3];
+            tourplayer =  {'p1' : player1, 'p2' : player2, 'p3':player3, 'p4':player4}
+
+            html_content = await sync_to_async(render_to_string)('/pong/online_tourn.html', {'players_list': tourn_players})
+            # try:
+            #     logger.info("Starting template rendering")
+            #     html_content = await sync_to_async(render_to_string)('pong/tour.html', {'players_list': tourn_players})
+            #     logger.info("Template rendered successfully")
+            #     await self.send(text_data=json.dumps({'html_content': html_content}))
+            # except Exception as e:
+            #     logger.error(f"Error rendering template: {e}")
+
+            # await self.broadcast_player_names(tourn_players)
+            await self.broadcast_html_content(html_content)
+
+            del self.players_waiting[:4]
+            del self.list_players[:4]
+        elif self.user_id not in self.list_players:
+            print(self.list_players)
+            await self.send_join_message(f"adding the player {self.username}")
+            self.list_players.append(self.user_id)
+            self.players_waiting.append(self.user_id)
+            print(self.list_players)
+
+            
+
+    async def get_players_waiting_count(self):
+        return await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
+
+    async def start_tournament(self, tournament):
+        # Implement tournament start logic here
+        pass
+
+    async def send_waiting_message(self):
+        newm = 'Waiting for more players to join the tournament.- ' + str(len(self.players_waiting))
+        await self.send(text_data=json.dumps({
+            'message': newm
+        }))
+    async def send_join_message(self, playername):
+        newm = 'joinmsg - ' + playername
+        await self.send(text_data=json.dumps({
+            'message': newm
+        }))
+
+    async def broadcast_player_names(self, player_names):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'player_names',
+                'player_names': player_names
+            }
+        )
+
+    async def player_names(self, event):
+        player_names = event['player_names']
+        await self.send(text_data=json.dumps({
+            'type': 'player_names',
+            'player_names': player_names
+        }))
+    async def broadcast_html_content(self, html_content):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "html.message",
+                "html": html_content
+            }
+        )
+
+    async def html_message(self, event):
+        html_content = event["html"]
+        await self.send(text_data=json.dumps({
+            "type": "html_content",
+            "html": html_content
         }))
