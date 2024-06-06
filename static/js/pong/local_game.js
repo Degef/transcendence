@@ -91,15 +91,14 @@ function start_local_game() {
     if (data3 == null) {
         data3 = {};
         data3['hit'] = new Audio();
-        // data3['wall'] = new Audio();
+        data3['wall'] = new Audio();
         data3['userScore'] = new Audio();
         data3['comScore'] = new Audio();
     
-        data3['hit'].src = "/static/pong/sounds/wall.mp3";
-        // data3['wall'].src = "/static/pong/sounds/wall.mp3";
-        data3['userScore'].src = "/static/pong/sounds/userScore.mp3";
-        data3['comScore'].src = "/static/pong/sounds/comScore.mp3";
-        // console.log('data3 is not defined')
+        data3['hit'].src = "/media/sounds/hit.mp3";
+        data3['wall'].src ="/media/sounds/wall.mp3";
+        data3['userScore'].src =  "/media/sounds/userScore.mp3";
+        data3['comScore'].src = "/media/sounds/comScore.mp3";
     } else {
         data3['ctx'].clearRect(0, 0, data3['canvas'].width, data3['canvas'].height);
     }

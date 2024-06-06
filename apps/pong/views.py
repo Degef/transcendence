@@ -50,7 +50,7 @@ class FaviconView(View):
 
 @login_required
 def play_online(request):
-    return render(request, 'pong/start_game.html')
+    return render(request, 'pong/play_online.html')
 
 def game_computer(request):
     return render(request, 'pong/game_computer.html')

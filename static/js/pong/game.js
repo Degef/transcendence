@@ -247,7 +247,6 @@ function draw() {
 }
 
 function main_loop () {
-    console.log("Inside MainLoop")
     if (data['gameState'].collision.paddle)
         data['hit'].play();
     if (data['gameState'].collision.goal)
@@ -296,8 +295,7 @@ function setPlayer(rec) {
             data['player'] = 2;
         }
 
-        console.log("Player Number   " +  data.player)
-
+        // console.log("Player Number   " +  data.player)
         const canvasContainer = document.querySelector('.canvas_container');
 
         // Find the wait_load div
@@ -334,7 +332,6 @@ function setPlayer(rec) {
 }
 
 function start_play_online() {
-    console.log("hello World!\n")
     if (game_in_progress) {
         return;
     }
@@ -363,14 +360,13 @@ function start_play_online() {
 
     socket.onmessage = function (event) {
         const rec = JSON.parse(event.data);
-        console.log(rec);
+        // console.log(rec);
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
             document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
             document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
-            console.log(data['playerId']);
         } else if (rec['type'] == 'gameState') {
-            console.log("Received game state")
+            // console.log("Received game state")
             data['gameState'] = rec['gameState'];
             setPlayer(rec);
             // draw(rec['gameState']);

@@ -55,7 +55,7 @@ canvas {
 	background-color: var(--background-color);
 }
 
-#start_play_computer {
+#start_game_btn {
 	margin-top: 20px;
 	padding: 15px 30px;
 	background-color: var(--button-primary-color);
@@ -70,7 +70,7 @@ canvas {
 	align-self: center; /* Center the button horizontally within #mygame */
 }
 
-#start_play_computer:hover {
+#start_game_btn:hover {
 	background-color: var(--button-hover-color);
 	transform: translateY(-3px);
 	box-shadow: 0 6px 12px var(--button-shadow-color);

@@ -52,7 +52,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         logger.debug(" \n\n WebSocket connection established\n\n")
-        logger.debug(self.waiting_queue)
+        # logger.debug(self.waiting_queue)
         self.room_name = 'game_room'
         self.player_id = str(uuid.uuid4())
 
@@ -70,16 +70,20 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
             await self.channel_layer.group_add(self.room_group_name, other_user.channel_name)
 
-            # Create a new game state and start the game
-            self.game_states[self.room_group_name] = {'player1': other_user.player_id, 'player2': self.player_id, 'p1_name': other_user.scope['user'].username, 'p2_name': self.scope['user'].username}
-            self.game_states[self.room_group_name]['ball'] = {'x': 300, 'y': 200, 'velocityX': 4, 'velocityY': 0, 'radius': 10, 'speed': 4}
-            self.game_states[self.room_group_name]['collision'] = {'paddle': False, 'goal': False, 'wall': False }
-            self.game_states[self.room_group_name]['score1'] = 0
-            self.game_states[self.room_group_name]['score2'] = 0
-            self.game_states[self.room_group_name]['end'] = False
+            self.game_states[self.room_group_name] = {
+                'player1': other_user.player_id,
+                'player2': self.player_id,
+                'p1_name': other_user.scope['user'].username,
+                'p2_name': self.scope['user'].username,
+                'ball': {'x': 300, 'y': 200, 'velocityX': 4, 'velocityY': 0, 'radius': 10, 'speed': 4},
+                'collision': {'paddle': False, 'goal': False, 'wall': False},
+                'score1': 0,
+                'score2': 0,
+                'end': False,
+                'paddle1': None,
+                'paddle2': None
+            }
             await self.send_game_state()
-            self.game_states[self.room_group_name]['paddle1'] = None
-            self.game_states[self.room_group_name]['paddle2'] = None
         else:
             self.waiting_queue.append(self)
 
@@ -108,40 +112,72 @@ class PongConsumer(AsyncWebsocketConsumer):
                 print(f"\n\nError accessing paddle data: {e}")
         await self.close()
 
+    # async def receive(self, text_data):
+    #     data = json.loads(text_data)
+    #     logger.debug(f"\n\nReceived data: {data}")
+    #     if (data['type'] == 'updateState'):
+    #         # logger.debug(f"\n\n Type of player {type(data['player'])}")
+    #         try:
+    #             if data['player'] == 1:
+    #                 self.game_states[self.room_group_name]['paddle1'] = data['paddle']
+    #             elif data['player'] == 2:
+    #                 self.game_states[self.room_group_name]['paddle2'] = data['paddle']
+    #         except KeyError as e:
+    #             print(f"\n\nError accessing paddle data: {e}")
+    #     elif (data['type'] == 'startGame'):
+    #         logger.debug(f"\n\nStarting game")
+    #         try:
+    #             if data['player'] == 1:
+    #                 self.game_states[self.room_group_name]['paddle1'] = data['paddle']
+    #             elif data['player'] == 2:
+    #                 self.game_states[self.room_group_name]['paddle2'] = data['paddle']
+                
+    #             logger.debug(f"\n\n{self.game_states[self.room_group_name]}")
+    #             paddle1 = self.game_states[self.room_group_name]['paddle1']
+    #             paddle2 = self.game_states[self.room_group_name]['paddle2']
+    #             if paddle1 != None and paddle2 != None:
+    #                 asyncio.create_task(self.move_ball())
+    #         except KeyError as e:
+    #             logger.debug(f"\n\nError accessing paddle data: {e}")
+    #     elif (data['type'] == 'endGame'):
+    #         try:
+    #             del self.game_states[self.room_group_name]
+    #             await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+    #         except KeyError as e:
+    #             print(f"\n\nError accessing paddle data: {e}")
+    #         self.close()
+
     async def receive(self, text_data):
         data = json.loads(text_data)
-        logger.debug(f"\n\nReceived data: {data}")
-        if (data['type'] == 'updateState'):
-            # logger.debug(f"\n\n Type of player {type(data['player'])}")
-            try:
+        # logger.debug(f"\n\nReceived data: {data}")
+        room_group_name = getattr(self, 'room_group_name', None)
+        if not room_group_name:
+            logger.error("\n\nRoom group name not set")
+            return
+        
+        try:
+            if data['type'] == 'updateState':
                 if data['player'] == 1:
-                    self.game_states[self.room_group_name]['paddle1'] = data['paddle']
+                    self.game_states[room_group_name]['paddle1'] = data['paddle']
                 elif data['player'] == 2:
-                    self.game_states[self.room_group_name]['paddle2'] = data['paddle']
-            except KeyError as e:
-                print(f"\n\nError accessing paddle data: {e}")
-        elif (data['type'] == 'startGame'):
-            logger.debug(f"\n\nStarting game")
-            # try:
-            if data['player'] == 1:
-                self.game_states[self.room_group_name]['paddle1'] = data['paddle']
-            elif data['player'] == 2:
-                self.game_states[self.room_group_name]['paddle2'] = data['paddle']
-            
-            logger.debug(f"\n\n{self.game_states[self.room_group_name]}")
-            paddle1 = self.game_states[self.room_group_name]['paddle1']
-            paddle2 = self.game_states[self.room_group_name]['paddle2']
-            # if paddle1 != None and paddle2 != None:
-            #     asyncio.create_task(self.move_ball())
-            # except KeyError as e:
-            #     logger.debug(f"\n\nError accessing paddle data: {e}")
-        elif (data['type'] == 'endGame'):
-            try:
-                del self.game_states[self.room_group_name]
-                await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-            except KeyError as e:
-                print(f"\n\nError accessing paddle data: {e}")
-            self.close()
+                    self.game_states[room_group_name]['paddle2'] = data['paddle']
+            elif data['type'] == 'startGame':
+                logger.debug("\n\nStarting game")
+                if data['player'] == 1:
+                    self.game_states[room_group_name]['paddle1'] = data['paddle']
+                elif data['player'] == 2:
+                    self.game_states[room_group_name]['paddle2'] = data['paddle']
+
+                paddle1 = self.game_states[room_group_name]['paddle1']
+                paddle2 = self.game_states[room_group_name]['paddle2']
+                if paddle1 is not None and paddle2 is not None:
+                    asyncio.create_task(self.move_ball())
+            elif data['type'] == 'endGame':
+                del self.game_states[room_group_name]
+                await self.channel_layer.group_discard(room_group_name, self.channel_name)
+                await self.close()
+        except KeyError as e:
+            logger.error(f"Error accessing paddle data: {e}")
     async def save_game(self, player1_username, player2_username, player1_score, player2_score):
         try:
             player1 = await sync_to_async(User.objects.get)(username=player1_username)
