@@ -16,7 +16,6 @@ function setupTournament(playerCount) {
     currentPlayerIndex = 0;
     totalPlayers = playerCount;
     var tournElementtmp = document.getElementsByClassName("details-section");
-    console.log(tournElementtmp);
     const tournElement = tournElementtmp[0];
     tournElement.innerHTML = `
         <div class="center-container">
@@ -32,7 +31,6 @@ function setupTournament(playerCount) {
             </div>
         </div>
     `;
-    console.log(tournElement);
     const playerFormContainer = document.getElementById('playerFormContainer');
     playerFormContainer.style.display = 'block';
     console.log('calling submitPlayerName:', totalPlayers);
@@ -51,7 +49,6 @@ function setupTournament(playerCount) {
 function submitPlayerName(event) {
     if (event.type === 'click' || (event.type === 'keypress' && event.key === 'Enter')) {
         event.preventDefault();
-        console.log('submitPlayerName:', totalPlayers);
         const playerNameInput = document.getElementById('playerName');
         const playerName = playerNameInput.value.trim();
         playerNameInput.style.display = 'block';
@@ -66,9 +63,7 @@ function submitPlayerName(event) {
                     <input type="text" id="playerName" name="playerName" required>
                 `;
             } else {
-                // console.log("before-shuffle", players);
                 myplayers = shuffleArray(players);
-                // console.log("after-shuffle", myplayers);
                 organizeTournament(myplayers);
             }
         } else if (players.includes(playerName)) {
@@ -109,9 +104,6 @@ async function organizeTournament(players) {
             },
             body: JSON.stringify({ players: players })
         });
-        console.log("hello brother how are you");
-        console.log(response);
-
         // Check if the response is OK (status code 200-299)
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -119,7 +111,6 @@ async function organizeTournament(players) {
 
         // Try to parse the JSON response
         const parsedjson = await response.json();
-        console.log(parsedjson); // Debugging
 
         // Ensure there's a details-section element
         const tournElementtmp = document.getElementsByClassName("details-section");
@@ -140,16 +131,15 @@ async function organizeTournament(players) {
 function startFirstMatch() {
     console.log("about to start the first game");
     const firstMatchElement = document.querySelector('.round-one .matches .matchup');
-    console.log("the folling match is being selected : ", firstMatchElement);
-    if (firstMatchElement) {
-        const player1 = firstMatchElement.querySelector('.team-top').innerText;
-        const player2 = firstMatchElement.querySelector('.team-bottom').innerText;
-        const matchId = firstMatchElement.getAttribute('.matchup');
-        console.log("p1 : ", player1);
-        console.log("p2 : ", player2);
-        console.log("mid : ", matchId);
-
-        startMatch(player1, player2, firstMatchElement);
+    const selectround = document.querySelector('.round-one .matchup');
+    if (selectround) {
+        const player1 = selectround.querySelector('.team-top').innerText;
+        const player2 = selectround.querySelector('.team-bottom').innerText;
+        const matchId = selectround.getAttribute('.matchup');
+        // console.log("p1 : ", player1);
+        // console.log("p2 : ", player2);
+        // console.log("mid : ", matchId);
+        startMatch(player1, player2, selectround);
     }
 }
 
@@ -201,7 +191,6 @@ function updateBracket(matchElement, winner) {
 function startNextMatch(currentMatchElement) {
     // Find the next match in the same round
     const nextMatchInRound = getNextMatchInSameRound(currentMatchElement);
-    console.log("nextmatchinround :" , nextMatchInRound);
     if (nextMatchInRound) {
         const player1 = nextMatchInRound.querySelector('.team-top').innerText.trim();
         const player2 = nextMatchInRound.querySelector('.team-bottom').innerText.trim();
@@ -245,7 +234,7 @@ function getNextMatchInSameRound(currentMatchElement) {
     let otherSplit = null;
 
     if (currentSplit.classList.contains('split-one')) {
-        otherSplit = currentRound.closest('.container2').querySelector('.split-two');
+        otherSplit = currentRound.closest('.custom-container').querySelector('.split-two');
     }
 
     if (otherSplit) {
@@ -262,7 +251,7 @@ function getNextMatchInSameRound(currentMatchElement) {
     let nextRound = null;
     if (currentSplit.classList.contains('split-two')) {
         // Move to the next round in split-one
-        const container = currentRound.closest('.container2');
+        const container = currentRound.closest('.custom-container');
         const splitOne = container.querySelector('.split-one');
         if (splitOne) {
             const splitOneRounds = Array.from(splitOne.querySelectorAll('.round'));
@@ -284,7 +273,7 @@ function getNextMatchInSameRound(currentMatchElement) {
     }
 
     // If next round is not found, check for the final championship round
-    const container = currentRound.closest('.container2');
+    const container = currentRound.closest('.custom-container');
     const finalRound = container.querySelector('.champion .final');
     if (finalRound) {
         const finalRoundMatches = Array.from(finalRound.querySelectorAll('.matchup'));
@@ -340,7 +329,8 @@ function updateNextRound(currentMatchup) {
 function updateMatchCell(nextCell, winnerName, winnerImg, winnerScore) {
     nextCell.innerHTML = "";
     nextCell.appendChild(winnerImg);
-    nextCell.insertAdjacentHTML("beforeend", winnerName);
+    nextCell.appendChild(winnerName);
+    // nextCell.insertAdjacentHTML("beforeend", winnerName);
     nextCell.insertAdjacentHTML("beforeend", `<input class="score-input" type="number" value="${winnerScore}">`);
 }
 
@@ -358,7 +348,8 @@ function updateNextMatchup(winner, loser) {
     // Find the next round
     var nextRound = isLeftSide ? currentRound.nextElementSibling : currentRound.previousElementSibling;
     var winnerImg = winner.querySelector("img").cloneNode(true);
-    var winnerName = winner.textContent.trim();
+    var winnerName = winner.querySelector(".player-name").cloneNode(true);
+    // var winnerName = winner.textContent.trim();
         
     var winnerScore = "";
 
