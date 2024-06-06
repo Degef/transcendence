@@ -130,12 +130,14 @@
 .team {
     padding: 0 5px;
     margin: 3px 0;
-    height: 25px; 
+    height: 35px; 
     line-height: 25px;
     white-space: nowrap; 
     overflow: hidden;
     position: relative; 
     border-radius: 10px;
+    display: flex;
+    align-items: center; /* Center items vertically */
 }
 .round-two .matchup {
     margin:0; 
@@ -160,6 +162,7 @@
     /* opacity: 0.45; */
 }
 .current li {opacity: 1;}
+
 .current li.team {
     background-color: #0D011A;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
@@ -255,31 +258,22 @@
 .player-name {
     margin-bottom: 10px;
 }
-
-
-
-
-
-.team {
-    display: flex;
-    align-items: center; /* Center items vertically */
-    justify-content: center; /* Center items horizontally */
-  }
   
-  .player-image {
-    width: 27px; /* Adjust size as needed */
-    height: 27px; /* Adjust size as needed */
-    border-radius: 50%; /* Make the image circular if it's square */
-    margin-right: 5px; /* Space between image and name */
-  }
+.player-image {
+  width: 27px; /* Adjust size as needed */
+  height: 27px; /* Adjust size as needed */
+  /* border-radius: 50%;  */
+  border-radius: 20%; 
+  margin-right: 5px; /* Space between image and name */
+}
   
-  .player-name {
-    margin: 0 10px; /* Space between name and other elements */
-  }
-  
-  .score {
-    margin-left: 10px; /* Space between score and name */
-  }
+.player-name {
+  margin: 0 10px; /* Space between name and other elements */
+}
+
+.score {
+  margin-left: 10px; /* Space between score and name */
+}
   
 
 .round.round-two .round-details {

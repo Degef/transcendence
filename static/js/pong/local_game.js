@@ -1,5 +1,28 @@
 var data3 = null;
 
+var p1score = 0;
+var p2score = 0;
+var isIntournament = false;
+
+const player1Element = document.getElementById('player1Name');
+const player2Element = document.getElementById('player2Name');
+const player1_name = player1Element ? player1Element.textContent.trim() : 'Player1';
+const player2_name = player2Element ? player2Element.textContent.trim() : 'Player2';
+
+function getTextContentById(id) {
+    const element = document.getElementById(id);
+    return element ? element.textContent.trim() : '';
+}
+
+function getScoresDisplay(playerid) {
+    return (playerid === 'p1' ? p1score : p2score);
+}
+
+function updateScoresDisplay(player1Score, player2Score) {
+    p1score = player1Score;
+    p2score = player2Score;
+}
+
 function update1(data3){
     // update the ball
     data3['ball'].x += data3['ball'].velocityX;
@@ -61,11 +84,20 @@ function gameLoop1(data3) {
     if (data3['player1'].score == 5 || data3['player2'].score == 5) {
         clearInterval(intervalId);
         if (data3['player1'].score == 5) {
-            drawText2(data3['ctx'], "You Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
+            drawText2(data3['ctx'], getTextContentById('player1Name') + " Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
+            drawText2(data3['ctx'], getTextContentById('player2Name') + " Lost",  data3['canvas'].width/1.5, data3['canvas'].height/2, "#333");
         } else {
-            drawText2(data3['ctx'], "You Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], getTextContentById('player1Name') + " Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], getTextContentById('player2Name') + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
         }
         game_in_progress = false;
+        updateScoresDisplay(data3['player1'].score, data3['player2'].score);
+        // document.getElementById('restart_btn').style.display = 'block';
+        displayBtn('restart_btn');
+        // document.getElementById('quit_game').style.display = 'none';
+        if (isIntournament) {
+            onGameCompleted();
+        }
         return;
     } else if (terminate_game) {
         clearInterval(intervalId);
@@ -79,6 +111,12 @@ function gameLoop1(data3) {
 }
 
 function start_local_game() {
+    // document.getElementById('start_play_computer').style.display = 'none';
+    // document.getElementById('restart_btn').style.display = 'none';
+    // document.getElementById('quit_game').style.display = 'block';
+    hideBtn('start_play_computer');
+    hideBtn('restart_btn');
+    displayBtn('quit_game');
     if (game_in_progress) {
         return;
     }
@@ -162,4 +200,8 @@ function start_local_game() {
 }
 
 
-
+function goBack() {
+    terminate_game = true;
+    document.getElementById('tournament').style.display = 'block';
+    history.back();
+}

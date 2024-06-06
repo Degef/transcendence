@@ -56,7 +56,19 @@ def game_computer(request):
     return render(request, 'pong/game_computer.html')
 
 def local_game(request):
-    return render(request, 'pong/local_game.html')
+    player1 = 'Player1'
+    player2 = 'Player2'
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        player1 = data.get('player1')
+        player2 = data.get('player2')
+    print(player1);
+    print(player2)
+    context = {
+        'player1': player1,
+        'player2': player2,
+    }
+    return render(request, 'pong/local_game.html', context)
 
 def about(request):
     return render(request, 'pong/about.html')
@@ -190,11 +202,7 @@ def offline_tourn(request):
     return render(request, 'pong/offline_tourn.html')
 
 def off_tour_bracket(request):
-
-    print("Here it is..................")
-    print(request.method)
     if request.method == 'POST':
-        # Get the player names from the request
         data = json.loads(request.body)
         player_names = data.get('players', [])
         print(player_names)

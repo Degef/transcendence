@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div id="tournament">
-        <div id="mygame">
-            <div class="canvas_container">
-                <div id="end_game"></div>
-                <canvas id="gameCanvas" width="600" height="400"></canvas>
-                <button id="start_game_btn"  class="btn btn-outline-light" type="submit" onclick="start_play_computer()">Start</button>
-            </div>
+<div id="tournament" class="canvas_container" class="container border">
+    <div id="playerNames" class="row player-names-container d-flex align-items-center">
+        <div id="player1Name" class="col player-name d-flex justify-content-start">
+          Player 1
+        </div>
+        <div id="player2Name" class="col player-name d-flex justify-content-end">
+          Player 2
+        </div>
+      </div>
+      
+    <div class="row">
+        <div class="col">
+            <canvas id="gameCanvas" width="600" height="400"></canvas>
         </div>
     </div>
+    <div class="row">
+        <div class="col button-container">
+            <button id="start_play_computer" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="start_play_computer()">Start</button> <br>
+            <button id="restart_btn" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="start_play_computer()">Restart</button> <br>
+            <button id="quit_game" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="goBack()">Quit</button> <br>
+        </div>
+    </div>
+</div>
 {% endblock %}
