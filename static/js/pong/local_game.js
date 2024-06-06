@@ -96,7 +96,9 @@ function gameLoop1(data3) {
         displayBtn('restart_btn');
         // document.getElementById('quit_game').style.display = 'none';
         if (isIntournament) {
-            onGameCompleted();
+            setTimeout(() => {
+                onGameCompleted();
+            }, 4000);
         }
         return;
     } else if (terminate_game) {
