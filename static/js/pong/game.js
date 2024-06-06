@@ -164,7 +164,7 @@ function start_play_computer() {
         data2['comScore'] = new Audio();
     
         data2['hit'].src = "/media/sounds/wall.mp3";
-        // data2['wall'].src = "/media/sounds/wall.mp3";
+        // data2['wall'].src = "media/sounds/wall.mp3";
         data2['userScore'].src = "/media/sounds/userScore.mp3";
         data2['comScore'].src = "/media/sounds/comScore.mp3";
         // console.log('data2 is not defined')

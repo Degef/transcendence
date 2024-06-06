@@ -1,8 +1,7 @@
 let chartInstance = null;
 
 function init_profile() {
-	console.log("I am here my friend");
-	if (window.location.pathname === '/profile/') {
+	if (window.location.pathname.includes('/profile/')) {
 		const tabs = [
 			{ id: 'history-tab', section: 'history-section' },
 			{ id: 'friends-tab', section: 'friends-section' },
@@ -36,7 +35,7 @@ function showSection(activeTabId, activeSectionId) {
 }
 
 window.addEventListener('DOMContentLoaded', function (event) {
-	if (window.location.pathname === '/profile/') {
+	if (window.location.pathname.includes('/profile/')) {
 		setTimeout(init_profile, 1000);
 	}
 });
@@ -96,33 +95,9 @@ function drawChart() {
 	});
 }
 
-function update() {
-	const form = document.getElementById('profile_form');
-	const formData = new FormData(form);
-
-	fetch(form.action, {
-		method: 'POST',
-		body: formData,
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error('Network response was not ok');
-		}
-		return response.text();
-	})
-	.then(data => {
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(data, 'text/html');
-		const alertBox = doc.querySelector('.alert');
-		if (alertBox) {
-			document.body.insertAdjacentElement('afterbegin', alertBox);
-		}
-	})
-	.catch(error => {
-		console.error('Error:', error);
-	});
+async function update(back_or_forward = 1) {
+	await handleFormSubmission('profile_form', '/edit_profile/', '/profile/', back_or_forward);
 }
-
 
 function loadProfile(username) {
 	if (username)
@@ -136,3 +111,56 @@ function addFriend(name) {
 function removeFriend(name) {
 	handleRoute(`/remove_friend/${name}`, false);
 }
+
+
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
+
+function initializeDeleteProfile(deleteUrl, redirectUrl) {
+	const responseAlert = document.getElementById('responseAlert');
+	const responseMessage = document.querySelector('.response__message');
+	const csrfToken = getCookie('csrftoken');
+
+	if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+		fetch(deleteUrl, {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': csrfToken,
+				'Content-Type': 'application/json'
+			},
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				responseMessage.textContent = data.message;
+				responseAlert.classList.remove('d-none');
+				responseAlert.classList.add('show', 'alert-success');
+				setTimeout(() => {
+					window.location.href = redirectUrl;
+				}, 2000);
+			} else {
+				responseMessage.textContent = data.error;
+				responseAlert.classList.remove('d-none');
+				responseAlert.classList.add('show', 'alert-danger');
+			}
+		})
+		.catch(error => {
+			responseMessage.textContent = 'An error occurred while trying to delete your account.';
+			responseAlert.classList.remove('d-none');
+			responseAlert.classList.add('show', 'alert-danger');
+		});
+	}
+}
+

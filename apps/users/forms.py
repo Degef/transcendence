@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Profile, user_things
 
 class UserUpdateForm(forms.ModelForm):
-	nick = forms.CharField(
+	username = forms.CharField(
 		max_length=14,
 		label="Username",
 		widget=forms.TextInput(
@@ -28,7 +28,7 @@ class UserUpdateForm(forms.ModelForm):
 	)
 	password = forms.CharField(
 		max_length=24,
-		required=False,
+		label="Password",
 		widget=forms.PasswordInput(
 			attrs={
 				"class": "input-field password",
@@ -39,7 +39,7 @@ class UserUpdateForm(forms.ModelForm):
 	)
 	class Meta:
 		model = User
-		fields = ['nick', 'email', 'password']
+		fields = ['username', 'email', 'password']
 
 
 class CustomAuthenticationForm(AuthenticationForm):

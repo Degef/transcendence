@@ -18,6 +18,9 @@ import logging
 logger = logging.getLogger(__name__)
 from django.core.serializers import serialize
 from django_ratelimit.decorators import ratelimit
+import json
+from django.contrib.auth.password_validation import validate_password, ValidationError
+from django.urls import reverse
 
 load_dotenv()
 
@@ -104,36 +107,29 @@ def get_win_rate(total_wins, total_losses):
 
 @login_required
 def profile(request, user=''):
-	is_own_profile = True
-	if user == '':
-		user = request.user.username
-
-	if user != request.user.username:
-		is_own_profile = False
-
-	userr = User.objects.filter(username=user).first()
-	if userr is None:
+	user_to_view = request.user if user == '' else User.objects.filter(username=user).first()
+	
+	if user_to_view is None:
 		messages.error(request, f'User {user} does not exist')
 		return redirect('home')
 
-	userid = userr.id
-	games = Game.objects.filter(Q(player1=userid) | Q(player2=userid)).order_by('-date')
+	is_own_profile = user_to_view == request.user
+	games = Game.objects.filter(Q(player1=user_to_view) | Q(player2=user_to_view)).order_by('-date')
 	games_data = serialize('json', games)
-
-
-	total_wins = get_total_wins(userid)
-	total_losses = get_total_losses(userid)
+	
+	total_wins = get_total_wins(user_to_view.id)
+	total_losses = get_total_losses(user_to_view.id)
 	total_games = total_wins + total_losses
 	win_rate = get_win_rate(total_wins, total_losses)
-	profile_image = Profile.objects.filter(user=userid).first().image
+	profile_image = Profile.objects.filter(user=user_to_view).first().image
 
-	all_users = User.objects.all().exclude(username=user)
-	friends = userr.user_things.friends.all()
+	all_users = User.objects.all().exclude(username=user_to_view.username)
+	friends = user_to_view.user_things.friends.all()
 	non_friends = all_users.difference(friends)
-	is_online = userr.user_things.status == 'online'
+	is_online = user_to_view.user_things.status == 'online'
 
 	context = {
-		'username': user,
+		'username': user_to_view.username,
 		'total_wins': total_wins,
 		'total_losses': total_losses,
 		'total_games': total_games,
@@ -150,36 +146,61 @@ def profile(request, user=''):
 
 @login_required
 def edit_profile(request):
-	logger.debug(f'\n\n{request}\n\n')
 	user = request.user
-	
+
 	if request.method == 'POST':
 		user_form = UserUpdateForm(request.POST, instance=user)
 		profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.profile)
 
 		if user_form.is_valid() and profile_form.is_valid():
-			user_form.save()
-			profile_form.save()
-			
-			if user_form.cleaned_data.get('password'):
-				user.set_password(user_form.cleaned_data['password'])
-				update_session_auth_hash(request, user)
+			password = user_form.cleaned_data.get('password')
 
-			messages.success(request, 'Profile updated successfully')
-			return redirect('profile')
+			if password:
+				try:
+					validate_password(password, user=user)
+					user.set_password(password)
+				except ValidationError as ve:
+					password_errors = json.dumps(ve.messages)
+					logger.warning(f"Password validation errors for user {user.username}: {password_errors}")
+					return JsonResponse({'success': False, 'errors': password_errors})
+
+			try:
+				user_form.save()
+				profile_form.save()
+				if password:
+					user.save()
+					update_session_auth_hash(request, user)
+
+				logger.info(f"Profile for user {user.username} updated successfully.")
+				return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
+			except Exception as e:
+				logger.error(f"Error updating profile for user {user.username}: {e}")
+				return JsonResponse({'success': False, 'message': 'An error occurred while updating the profile. Please try again.'})
 		else:
-			messages.error(request, 'Please correct the error below.')
+			user_form_errors = json.dumps(user_form.errors)
+			logger.warning(f"User form errors for user {user.username}: {user_form_errors}")
+			return JsonResponse({'success': False, 'errors': user_form_errors})
 	else:
 		user_form = UserUpdateForm(instance=user)
 		profile_form = ProfileUpdateForm(instance=user.profile)
-	
+
 	context = {
 		'user_form': user_form,
 		'profile_form': profile_form,
 	}
 	return render(request, 'users/profile-update.html', context)
 
-
+@login_required
+def delete_profile(request):
+	if request.method == 'POST':
+		try:
+			user = request.user
+			user.delete()
+			return JsonResponse({'success': True, 'message': 'Your account has been deleted successfully.'})
+		except Exception as e:
+			return JsonResponse({'success': False, 'error': str(e)})
+	else:
+		return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
 
 def exchange_code(request):

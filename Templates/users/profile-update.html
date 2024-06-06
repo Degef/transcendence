@@ -2,34 +2,30 @@
 {% load static %}
 
 {% block content %}
-<div class="profile-update__container">
-    {% if messages %}
-    <div>
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    <section class="profile-section">
-        <h1 class="edit-title">Edit Profile</h1>
-        <form id="profile_form" method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ user_form.as_p }}
-            {{ profile_form.as_p }}
-            <button id="update" type="submit" class="submit-button">Save Changes</button>
-        </form>
-        <aside class="delete-account-section">
-            <h2 class="delete-account-title">Delete Account</h2>
-            <p class="delete-account-description">
-                If you delete your account, it will be permanently deleted. You will lose all data, including your profile, friends, chat history, and any game progress. Once deleted, your account cannot be restored.
-            </p>
-            <div class="delete-account-buttons">
-                <button class="cancel" role="button">Cancel</button>
-                <button class="delete" role="button">Delete Account</button>
-            </div>
-        </aside>
-    </section>
+<div class="alert alert-dismissible fade d-none fixed-alert" role="alert" id="responseAlert">
+	<span class="response__message"></span>
 </div>
+
+<div class="profile-update__container">
+	<section class="profile-section">
+		<h1 class="edit-title">Edit Profile</h1>
+		<form id="profile_form" method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ user_form.as_p }}
+			{{ profile_form.as_p }}
+			<button id="update" type="submit" class="submit-button">Save Changes</button>
+		</form>
+		<aside class="delete-account-section">
+			<h2 class="delete-account-title">Delete Account</h2>
+			<p class="delete-account-description">
+				If you delete your account, it will be permanently deleted. You will lose all data, including your profile, friends, chat history, and any game progress. Once deleted, your account cannot be restored.
+			</p>
+			<div class="delete-account-buttons">
+				<button class="cancel" role="button">Cancel</button>
+				<button id="delete_profile" class="delete" role="button" >Delete Account</button>
+			</div>
+		</aside>
+	</section>
+</div>
+
 {% endblock %}
