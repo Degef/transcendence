@@ -25,3 +25,17 @@ class Game(models.Model):
     def save(self, *args, **kwargs):
         self.determine_winner()
         super().save(*args, **kwargs)
+    
+class Tournament(models.Model):
+    id = models.AutoField(primary_key=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    players = models.ManyToManyField(User, through='TournamentPlayer')
+    games = models.ManyToManyField('Game', related_name='tournament_games')
+
+class TournamentPlayer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'tournament')
