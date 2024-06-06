@@ -112,41 +112,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 print(f"\n\nError accessing paddle data: {e}")
         await self.close()
 
-    # async def receive(self, text_data):
-    #     data = json.loads(text_data)
-    #     logger.debug(f"\n\nReceived data: {data}")
-    #     if (data['type'] == 'updateState'):
-    #         # logger.debug(f"\n\n Type of player {type(data['player'])}")
-    #         try:
-    #             if data['player'] == 1:
-    #                 self.game_states[self.room_group_name]['paddle1'] = data['paddle']
-    #             elif data['player'] == 2:
-    #                 self.game_states[self.room_group_name]['paddle2'] = data['paddle']
-    #         except KeyError as e:
-    #             print(f"\n\nError accessing paddle data: {e}")
-    #     elif (data['type'] == 'startGame'):
-    #         logger.debug(f"\n\nStarting game")
-    #         try:
-    #             if data['player'] == 1:
-    #                 self.game_states[self.room_group_name]['paddle1'] = data['paddle']
-    #             elif data['player'] == 2:
-    #                 self.game_states[self.room_group_name]['paddle2'] = data['paddle']
-                
-    #             logger.debug(f"\n\n{self.game_states[self.room_group_name]}")
-    #             paddle1 = self.game_states[self.room_group_name]['paddle1']
-    #             paddle2 = self.game_states[self.room_group_name]['paddle2']
-    #             if paddle1 != None and paddle2 != None:
-    #                 asyncio.create_task(self.move_ball())
-    #         except KeyError as e:
-    #             logger.debug(f"\n\nError accessing paddle data: {e}")
-    #     elif (data['type'] == 'endGame'):
-    #         try:
-    #             del self.game_states[self.room_group_name]
-    #             await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-    #         except KeyError as e:
-    #             print(f"\n\nError accessing paddle data: {e}")
-    #         self.close()
-
     async def receive(self, text_data):
         data = json.loads(text_data)
         # logger.debug(f"\n\nReceived data: {data}")
@@ -207,7 +172,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         
     async def move_ball(self):
         while True:
-            # logger.debug(f"\n\nMoving ball")
             game_state = self.game_states[self.room_group_name]
             ball = game_state['ball']
 
