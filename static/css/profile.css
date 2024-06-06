@@ -359,3 +359,15 @@ canvas {
 .offline {
     background-color: #dc3545;
 }
+
+.list-container {
+	max-height: 400px;
+	overflow-y: auto;
+}
+.search-bar {
+	position: sticky;
+	top: 0;
+	background: white;
+	z-index: 10;
+	padding: 10px 0;
+}

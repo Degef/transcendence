@@ -74,7 +74,7 @@ async function handleLogout() {
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
-	'/leaderboard/': () => handleRoute('/leaderboard/', true),
+	'/leaderboard/': () => { handleRoute('/leaderboard/', true); setTimeout(init_leaderboard, 1000); },
 	'/privacy/': () => handleRoute('/privacy/', true),
 	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 1000); },
 	'/register/': () => register(),

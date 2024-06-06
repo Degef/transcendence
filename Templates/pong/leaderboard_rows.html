@@ -1,0 +1,16 @@
+<div class="row leaderboard__row leaderboard__row--header">
+	<div class="col-1 leaderboard__cell">#</div>
+	<div class="col-3 leaderboard__cell">Player</div>
+	<div class="col-2 leaderboard__cell">Wins</div>
+	<div class="col-2 leaderboard__cell">Win Rate</div>
+	<div class="col-2 leaderboard__cell">Games Played</div>
+</div>
+{% for player in leaderboard_data %}
+<div class="row leaderboard__row">
+	<div class="col-1 leaderboard__cell">{{ forloop.counter }}</div>
+	<div class="col-3 leaderboard__cell">{{ player.username }}</div>
+	<div class="col-2 leaderboard__cell">{{ player.total_wins }}</div>
+	<div class="col-2 leaderboard__cell">{{ player.win_rate|floatformat:2 }}%</div>
+	<div class="col-2 leaderboard__cell">{{ player.games_played }}</div>
+</div>
+{% endfor %}

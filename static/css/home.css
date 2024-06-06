@@ -52,6 +52,7 @@
 	text-align: center;
 	letter-spacing: -1.58px;
 	font-family: Space Grotesk, sans-serif;
+	color: var(--text-color);
 }
 
 @media (max-width: 991px) {
@@ -59,19 +60,6 @@
 		font-size: 40px;
 		margin-top: 40px;
 	}
-}
-
-.play-button-wrapper {
-	display: flex;
-	justify-content: center;
-	margin: 32px 0;
-}
-
-.play-button {
-	border-radius: 24px;
-	background-color: var(--button-primary-color);
-	padding: 12px 20px;
-	font-family: Space Grotesk, sans-serif;
 }
 
 .details-section {
