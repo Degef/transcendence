@@ -195,9 +195,6 @@ def give_challenged_response(request, response):
     user_thing.save()
     return JsonResponse({'success': True})
 
-def pre_tourn(request):
-    return render(request, 'pong/pre_tourn.html')
-
 def offline_tourn(request):
     return render(request, 'pong/offline_tourn.html')
 

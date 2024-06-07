@@ -90,8 +90,7 @@ const routeHandlers = {
 	'/play_online/': () => handleRoute('/play_online/', true),
 	'/game_computer/': () => handleRoute('/game_computer/', true),
 	'/local_game/': () => handleRoute('/local_game/', true),
-	'/pre_tourn/': name => handleRoute('/pre_tourn/', false),
-	'/offline_tourn/': name => handleRoute('/offline_tourn/', false),
+	'/offline_tourn/': name => handleRoute('/offline_tourn/', true),
 	'/four_players/': () => setupTournament(4),
 	'/eight_players/':  () => setupTournament(8),
 };
@@ -118,7 +117,6 @@ function handleButtonClick(event) {
 		start_play_online: () => handleRoute('/play_online/', true),
 		local_game: routeHandlers['/local_game/'],
 		chatLink: routeHandlers['/chat/'],
-		pre_tourn: routeHandlers['/pre_tourn/'],
 		offline_tourn:routeHandlers['/offline_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],

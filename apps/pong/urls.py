@@ -15,7 +15,6 @@ urlpatterns = [
     path('is_challenged/', views.is_challenged, name='is_challenged'),
     path('give_challenged_response/<str:response>/', views.give_challenged_response, name='give_challenged_response'),
     path('check_challenge_response/', views.check_challenge_response, name='check_challenge_response'),
-    path('pre_tourn/', views.pre_tourn, name='pre_tournament'),
     path('offline_tourn/', views.offline_tourn, name='pre_offline_tournament'),
     path('off_tour_bracket/', views.off_tour_bracket, name='offline_tournament_bracket'),
 ]
