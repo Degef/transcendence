@@ -121,9 +121,15 @@
 .score-input {
     width: 28%;
     /* margin-top: 2px; */
+    background: transparent;
+    border: none;
+    color: inherit;
+    pointer-events: none;
     align-self: center;
     align-items: center;
     height: 50%;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
   }
 
 
@@ -278,4 +284,18 @@
 
 .round.round-two .round-details {
     margin-bottom: 26px;
+}
+
+
+.round-one .matchup,
+.round-two .matchup {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column for the teams */
+  margin-left: 28%;
+}
+
+
+.round-one .matchup .team,
+.round-two .matchup .team {
+  max-width: 200px;
 }

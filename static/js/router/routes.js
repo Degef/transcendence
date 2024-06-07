@@ -94,6 +94,7 @@ const routeHandlers = {
 	'/offline_tourn/': name => handleRoute('/offline_tourn/', false),
 	'/four_players/': () => setupTournament(4),
 	'/eight_players/':  () => setupTournament(8),
+	'/online_tourn/':  () => fourPlayers(),
 };
 
 function handleButtonClick(event) {
@@ -122,6 +123,7 @@ function handleButtonClick(event) {
 		offline_tourn:routeHandlers['/offline_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],
+		online_tourn:routeHandlers['/online_tourn/'],
 	};
 
 	event.preventDefault();
