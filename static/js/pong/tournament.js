@@ -372,6 +372,7 @@ function onGameCompleted() {
     }
     // Restore the original body content
     mainSection.style.display = 'block';
+    updateURL('/offline_tourn/');
 
     const player1_score = getScoresDisplay('p1');
     const player2_score = getScoresDisplay('p2');
@@ -428,6 +429,7 @@ async function startMatch(player1, player2, matchElement) {
 
         // Append the tournament section before the footer
         mainContainer.appendChild(tournamentSection);
+        updateURL('/local_game/');
     } catch (error) {
         console.error('Error fetching local game page:', error);
     }
