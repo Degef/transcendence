@@ -35,7 +35,10 @@ function fourPlayers() {
     
     socket.onmessage = function(e) {
         let data = JSON.parse(e.data);
-        console.log('Data:', data);
+        // console.log('Data:', data);
+        if (data.type === 'join_msg') {
+            console.log(data.message);
+        }
     
         if (data.type === 'html_content') {
             const parser = new DOMParser();
@@ -43,6 +46,10 @@ function fourPlayers() {
             
             // Extract the new content to replace the details-section
             const newContent = parsedHtml.getElementById('bracket');
+            // console.log( "[ " , data.html, " ]");
+            // document.open();
+            // document.write(data.html);
+            // document.close();
             if (newContent) {
                 const detailsSection = document.querySelector('.details-section');
                 if (detailsSection) {
@@ -75,6 +82,7 @@ function fourPlayers() {
 
     socket.onclose = function(event) {
         console.log('WebSocket connection closed:', event);
+        // history.back();
     };
     
     // Send messages to the server

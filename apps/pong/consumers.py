@@ -328,48 +328,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.fetch_and_add_player_to_tournament()
     
 
-    # async def fetch_and_add_player_to_tournament(self):
-    #     if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
-    #         self.players_waiting.append(self.user_id)
-    #         self.list_players.append(self.user_id)
-    #         tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
-
-    #         await self.send_join_message(f"the last player is joining {self.username}")
-
-    #         tourn_players = []
-    #         for user_id in self.players_waiting[:4]:
-    #             user = await sync_to_async(User.objects.get)(id=user_id)
-    #             profile_img = await sync_to_async(lambda: user.profile.image.url)()
-    #             tourn_players.append({
-    #                 'username':user.username,
-    #                 'profile_img':profile_img
-    #                 })
-    #             user.tournament = tournament
-    #             await sync_to_async(user.save)()
-    #         player1 = tourn_players[0];
-    #         player2 = tourn_players[1];
-    #         player3 = tourn_players[2];
-    #         player4 = tourn_players[3];
-    #         tourplayer =  {'p1' : player1, 'p2' : player2, 'p3':player3, 'p4':player4}
-
-    #         html_content = await sync_to_async(render_to_string)('pong/online_tourn.html', {'players_list': tourn_players})
-    #         await self.broadcast_html_content(html_content)
-    #         await self.create_match_rooms(tourn_players)
-
-    #         del self.players_waiting[:4]
-    #         del self.list_players[:4]
-    #     elif self.user_id not in self.list_players:
-    #         print(self.list_players)
-    #         await self.send_join_message(f"adding the player {self.username}")
-    #         self.list_players.append(self.user_id)
-    #         self.players_waiting.append(self.user_id)
-    #         print(self.list_players)
-
-            
-
     async def fetch_and_add_player_to_tournament(self):
-        if len(self.players_waiting) >= 3 and (self.user_id not in [player['id'] for player in self.list_players]):
+        if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
             self.players_waiting.append(self.user_id)
+            self.list_players.append(self.user_id)
             tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
 
             await self.send_join_message(f"the last player is joining {self.username}")
@@ -379,36 +341,37 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 user = await sync_to_async(User.objects.get)(id=user_id)
                 profile_img = await sync_to_async(lambda: user.profile.image.url)()
                 tourn_players.append({
-                    'id': user_id,  # Store user ID
-                    'username': user.username,
-                    'profile_img': profile_img,
-                    'match_room': None  # Initialize match room to None
-                })
+                    'username':user.username,
+                    'profile_img':profile_img
+                    })
                 user.tournament = tournament
                 await sync_to_async(user.save)()
+            player1 = tourn_players[0];
+            player2 = tourn_players[1];
+            player3 = tourn_players[2];
+            player4 = tourn_players[3];
+            tourplayer =  {'p1' : player1, 'p2' : player2, 'p3':player3, 'p4':player4}
 
-            self.list_players.extend(tourn_players)
-            player1, player2, player3, player4 = tourn_players[0], tourn_players[1], tourn_players[2], tourn_players[3]
-            tourplayer = {'p1': player1, 'p2': player2, 'p3': player3, 'p4': player4}
-
-            html_content = await sync_to_async(render_to_string)('pong/online_tourn.html', {'players_list': tourplayer})
+            html_content = await sync_to_async(render_to_string)('pong/online_tourn.html', {'players_list': tourn_players})
             await self.broadcast_html_content(html_content)
-            await self.create_match_rooms(tourn_players)
+
+            # await self.create_match_rooms(tourn_players)
 
             del self.players_waiting[:4]
-
-        elif self.user_id not in [player['id'] for player in self.list_players]:
+            del self.list_players[:4]
+        elif self.user_id not in self.list_players:
             print(self.list_players)
             await self.send_join_message(f"adding the player {self.username}")
-            self.list_players.append({'id': self.user_id, 'username': self.username, 'match_room': None})
+            self.list_players.append(self.user_id)
             self.players_waiting.append(self.user_id)
             print(self.list_players)
+
 
     async def get_players_waiting_count(self):
         return await sync_to_async(TournamentPlayer.objects.filter(tournament__isnull=True).count)()
 
     async def start_tournament(self, tournament):
-        # Implement tournament start logic here
+        # Implement tournament start logic here start tournament here
         pass
 
     async def send_waiting_message(self):
@@ -416,9 +379,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': newm
         }))
+        
     async def send_join_message(self, playername):
         newm = 'joinmsg - ' + playername
         await self.send(text_data=json.dumps({
+            'type': 'join_msg',
             'message': newm
         }))
 
@@ -445,6 +410,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 "html": html_content
             }
         )
+
 
     async def html_message(self, event):
         html_content = event["html"]
@@ -497,9 +463,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             if player['match_room'] and player['match_room'] == match_room_name:  # Ensure 'match_room' exists and compare
                 players_in_room.append(player['username'])
         print("Players in room:", players_in_room)
+        await asyncio.sleep(10)
         html_content = await sync_to_async(render_to_string)('pong/play_online.html', {'players_list': players_in_room})
         await self.broadcast_html_content(html_content)
-
 
 
     async def match_room_ready(self, match_room_name):
