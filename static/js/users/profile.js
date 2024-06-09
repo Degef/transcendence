@@ -5,7 +5,8 @@ function init_profile() {
 		const tabs = [
 			{ id: 'history-tab', section: 'history-section' },
 			{ id: 'friends-tab', section: 'friends-section' },
-			{ id: 'stats-tab', section: 'stats-section' }
+			{ id: 'stats-tab', section: 'stats-section' },
+			{ id: 'requests-tab', section: 'requests-section' }
 		];
 
 		tabs.forEach(tab => {
@@ -18,10 +19,9 @@ function init_profile() {
 		});
 	}
 }
-
 function showSection(activeTabId, activeSectionId) {
-	const sections = ['history-section', 'friends-section', 'stats-section'];
-	const tabs = ['history-tab', 'friends-tab', 'stats-tab'];
+	const sections = ['history-section', 'friends-section', 'stats-section', 'requests-section'];
+	const tabs = ['history-tab', 'friends-tab', 'stats-tab', 'requests-tab'];
 	
 	sections.forEach(section => document.getElementById(section).classList.add('d-none'));
 	tabs.forEach(tab => document.getElementById(tab).classList.remove('active'));

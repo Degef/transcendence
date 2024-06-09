@@ -42,10 +42,6 @@ class MessageModel(Model):
         return str(self.id)
 
     def characters(self):
-        """
-        Function to count body characters.
-        :return: body's char number
-        """
         return len(self.body)
 
     def notify_ws_clients(self):
@@ -58,19 +54,13 @@ class MessageModel(Model):
         }
 
         channel_layer = get_channel_layer()
-        print("user.id {}".format(self.user.id))
-        print("user.id {}".format(self.recipient.id))
 
         async_to_sync(channel_layer.group_send)("{}".format(self.user.id), notification)
         async_to_sync(channel_layer.group_send)("{}".format(self.recipient.id), notification)
 
     def save(self, *args, **kwargs):
-        """
-        Trims white spaces, saves the message and notifies the recipient via WS
-        if the message is new.
-        """
         new = self.id
-        self.body = self.body.strip()  # Trimming whitespaces from the body
+        self.body = self.body.strip()
         if is_blocked(self.user, self.recipient):
             return
         super(MessageModel, self).save(*args, **kwargs)

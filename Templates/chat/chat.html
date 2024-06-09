@@ -1,3 +1,4 @@
+<!-- template/chat.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -17,7 +18,7 @@
 							<div class="contact-details d-flex align-items-center position-relative">
 								<div class="position-relative">
 									<img src="{{ friend.image.url }}" alt="{{ friend.user.username }}" class="contact-profile-image me-2">
-									<span class="chat__status-indicator {% if friend.status %}chat__online{% else %}chat__offline{% endif %}"></span>
+									<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}chat__online{% else %}chat__offline{% endif %}"></span>
 								</div>
 								<div class="contact-info">
 									<div class="contact-name">{{ friend.user.username }}</div>
@@ -39,7 +40,7 @@
 				
 		</aside>
 		<section class="chat-window col-lg-9 col-md-12">
-			<div class="chat-header">Select user to chat</span></div>
+			<div class="chat-header">Select user to chat</div>
 			<div class="chat">
 				<div class="messages" id="messages">
 				</div>

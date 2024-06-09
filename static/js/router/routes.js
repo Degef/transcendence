@@ -46,7 +46,7 @@ function updateBody(htmlContent) {
 }
 
 async function handleRoute(path, pushState = true) {
-	// console.log(path);
+	console.log(path);
 	try {
 		const response = await fetch(path, {
 			method: 'GET',

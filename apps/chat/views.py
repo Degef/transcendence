@@ -1,8 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render
-from apps.users.models import user_things, Profile
+from apps.users.models import Profile, Friendship
 from django.http import JsonResponse
 from .models import is_blocked, BlockModel
+from django.db.models import Q
 import json
 
 from django.views.decorators.csrf import csrf_exempt
@@ -54,20 +56,27 @@ def block_unblock(request):
 			return JsonResponse({'Success': 'User is successfully unblocked'}, status=200)
 
 
+@login_required
 def chat(request):
-	profile_image = request.user.profile.image.url
-	username = request.user.username
+    profile_image = request.user.profile.image.url
+    username = request.user.username
 
-	user_things_instance = user_things.objects.get(user=request.user)
-	
-	friend_usernames = user_things_instance.friends.all()
-	friend_profiles = Profile.objects.filter(user__in=friend_usernames)
+    accepted_friendships = Friendship.objects.filter(
+        Q(from_user=request.user, status=Friendship.ACCEPTED) |
+        Q(to_user=request.user, status=Friendship.ACCEPTED)
+    )
 
-	context = {
-		'profile_image': profile_image,
-		'username': username,
-		'title': 'chat',
-		'friends': friend_profiles
-	}
+    # Get the profiles of the friends
+    friend_profiles = Profile.objects.filter(
+        Q(user__in=accepted_friendships.values('from_user')) |
+        Q(user__in=accepted_friendships.values('to_user'))
+    ).exclude(user=request.user)
 
-	return render(request, 'chat.html', context)
+    context = {
+        'profile_image': profile_image,
+        'username': username,
+        'title': 'chat',
+        'friends': friend_profiles
+    }
+
+    return render(request, 'chat.html', context)
