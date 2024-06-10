@@ -1,14 +1,16 @@
 let chartInstance = null;
 
 function init_profile() {
+	const user_getting_viewed = document.getElementById('profile_name').innerText;
 	if (window.location.pathname.includes('/profile/')) {
 		const tabs = [
 			{ id: 'history-tab', section: 'history-section' },
 			{ id: 'friends-tab', section: 'friends-section' },
-			{ id: 'stats-tab', section: 'stats-section' },
-			{ id: 'requests-tab', section: 'requests-section' }
+			{ id: 'stats-tab', section: 'stats-section' }
 		];
-
+		if (user_getting_viewed === window.location.pathname.split('/')[2]) {
+			tabs.push({ id: 'requests-tab', section: 'requests-section' });
+		}
 		tabs.forEach(tab => {
 			const tabElement = document.getElementById(tab.id);
 			if (tabElement) {
@@ -19,15 +21,33 @@ function init_profile() {
 		});
 	}
 }
+
 function showSection(activeTabId, activeSectionId) {
 	const sections = ['history-section', 'friends-section', 'stats-section', 'requests-section'];
 	const tabs = ['history-tab', 'friends-tab', 'stats-tab', 'requests-tab'];
 	
-	sections.forEach(section => document.getElementById(section).classList.add('d-none'));
-	tabs.forEach(tab => document.getElementById(tab).classList.remove('active'));
+	sections.forEach(section => {
+		const sectionElement = document.getElementById(section);
+		if (sectionElement) {
+			sectionElement.classList.add('d-none');
+		}
+	});
+	tabs.forEach(tab => {
+		const tabElement = document.getElementById(tab);
+		if (tabElement) {
+			tabElement.classList.remove('active');
+		}
+	});
 
-	document.getElementById(activeSectionId).classList.remove('d-none');
-	document.getElementById(activeTabId).classList.add('active');
+	const activeSectionElement = document.getElementById(activeSectionId);
+	const activeTabElement = document.getElementById(activeTabId);
+
+	if (activeSectionElement) {
+		activeSectionElement.classList.remove('d-none');
+	}
+	if (activeTabElement) {
+		activeTabElement.classList.add('active');
+	}
 
 	if (activeTabId === 'stats-tab') {
 		drawChart();
@@ -100,16 +120,35 @@ async function update(back_or_forward = 1) {
 }
 
 function loadProfile(username) {
-	if (username)
-		handleRoute('/profile/' + username);
+	if (username) {
+		handleRoute('/profile/' + username, true);
+		setTimeout(init_profile, 1000);
+	}
 }
 
 function addFriend(name) {
-	handleRoute(`/add_friend/${name}`, false);
+	handleRoute(`/send_friend_request/${name}`, false);
+	setTimeout(init_profile, 1000);
 }
 
 function removeFriend(name) {
 	handleRoute(`/remove_friend/${name}`, false);
+	setTimeout(init_profile, 1000);
+}
+
+function acceptRequest(name) {
+	handleRoute(`/accept_friend_request/${name}`, false);
+	setTimeout(init_profile, 1000);
+}
+
+function cancelRequest(name) {
+	handleRoute(`/cancel_friend_request/${name}`, false);
+	setTimeout(init_profile, 1000);
+}
+
+function declineRequest(name) {
+	handleRoute(`/decline_friend_request/${name}`, false);
+	setTimeout(init_profile, 1000);
 }
 
 

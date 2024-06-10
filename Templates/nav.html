@@ -12,7 +12,7 @@
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav ms-auto">
 				{% if user.is_authenticated %}
-					<li class="nav-item me-2"><a title="profile" id="profile" class="nav-link" href="#">Profile</a></li>
+					<li class="nav-item me-2"><a title="profile" id="profile" class="nav-link" href="#" onclick="loadProfile('{{ request.user.username }}'); return false;">Profile</a></li>
 					<li class="nav-item me-2"><a class="nav-link" href="#">Tournaments</a></li>
 					<li class="nav-item me-2"><a title="leaderboard" id="leaderboard" class="nav-link" href="#">Leaderboard</a></li>
 					<li class="nav-item me-2"><a title="Chat" id="chatLink" class="nav-link" href="#">Chat</a></li>

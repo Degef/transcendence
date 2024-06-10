@@ -54,7 +54,7 @@
 .footer__developed {
     text-align: center;
     padding: 10px;
-    color: var(--text-color);
+    color: var(--text-color-primary);
     background-color: var(--card-accent-color);
 }
 

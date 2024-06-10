@@ -28,7 +28,7 @@
 
 .section__description {
     font-size: 1rem;
-    color: #8f9ecc;
+    color: var(--text-accent-color);
 }
 
 .section__content {
@@ -70,7 +70,7 @@
     border: none;
     border-radius: 24px;
     padding: 10px 20px;
-    color: var(--text-color);
+    color: var(--text-color-primary);
     cursor: pointer;
     font-size: 1rem;
 }
@@ -86,7 +86,7 @@
 }
 
 .section__cards .card {
-    background-color: #1d253f;
+    background-color: var(--card-accent-color);
     border: 1px solid #303d69;
     border-radius: 8px;
     max-width: 300px;
@@ -97,13 +97,13 @@
 }
 
 .card__icon {
-	color: var(--text-color);
+	color: var(--text-color-primary);
     margin-bottom: 10px;
 }
 
 .card__title {
     margin-bottom: 10px;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 }
 
 .card__text {
@@ -145,7 +145,7 @@
 
 .step__text {
     font-size: 1rem;
-    color: #8f9ecc;
+    color: var(--text-accent-color);
 }
 
 @media (max-width: 768px) {

@@ -1,20 +1,15 @@
 :root {
-    --background-color: #1A1F33;
-    --card-accent-color: #111937;
-    --text-color: #fff;
-    --text-accent-color: #8f9ecc;
-    --button-primary-color: #0d36c9;
-    --hover-color: #1c1c24;
-    --message-received-color: #292b38;
-    --message-sent-color: #1730b5;
-    --input-background-color: #26263b;
-    --input-text-color: white;
-    --button-background-color: #00f;
-    --button-text-color: #fff;
-    --other-button-background-color: #26263b;
-    --other-button-text-color: #fff;
-    --create-account-button-background-color: #0f0f17;
-    --create-account-button-text-color: #fff;
+	--background-color: #1A1F33;
+	--card-accent-color: #24253D;
+	--text-color-primary: #FFFFFF;
+	--text-accent-color: #A6B1E1;
+	--button-primary-color: #5865F2;
+	--hover-color: #2D2F4F;
+	--message-received-color: #2F313F;
+	--message-sent-color: #1D40B7;
+	--input-background-color: #2E3048;
+	--other-button-background-color: #313359;
+	--create-account-button-background-color: #2B2C3D;
 }
 
 html, body {
@@ -23,7 +18,7 @@ html, body {
 	display: flex;
 	flex-direction: column;
 	background-color: var(--background-color);
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-family: Arial, sans-serif;
 	overflow-y: auto;
 	height: 100%;

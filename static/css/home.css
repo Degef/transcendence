@@ -17,7 +17,7 @@
 .card-container {
 	display: flex;
 	flex-direction: column;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-weight: 700;
 	justify-content: center;
 	padding: 16px;
@@ -52,7 +52,7 @@
 	text-align: center;
 	letter-spacing: -1.58px;
 	font-family: Space Grotesk, sans-serif;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 }
 
 @media (max-width: 991px) {
@@ -84,13 +84,13 @@
 
 .subtitle {
 	font-family: Space Grotesk, sans-serif;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-weight: 700;
 }
 
 .details-desc {
 	margin-top: 4px;
-	color: #8fa1cc;
+	color: var(--text-accent-color);
 	font-weight: 400;
 	line-height: 150%;
 }
@@ -100,7 +100,7 @@
 	border-radius: 24px;
 	background-color: var(--button-primary-color);
 	padding: 6px 16px;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-weight: 500;
 	cursor: pointer;
 }
@@ -109,7 +109,7 @@ button {
 	background-color: var(--button-primary-color);
 	border: none;
 	border-radius: 12px;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-weight: 700;
 	letter-spacing: 0.21px;
 	line-height: 150%;

@@ -46,7 +46,6 @@ function updateBody(htmlContent) {
 }
 
 async function handleRoute(path, pushState = true) {
-	console.log(path);
 	try {
 		const response = await fetch(path, {
 			method: 'GET',
@@ -82,7 +81,6 @@ const routeHandlers = {
 	'/login/': () => login(),
 	'/logout/': () => { handleLogout(); handleRoute('/logout/', false); },
 	'/req_login/': () => handleRoute('/login/', true),
-	'/profile/': () => { handleRoute('/profile/', true); setTimeout(init_profile, 1000); },
 	'/friends/': () => handleRoute('/friends/', true),
 	'/edit_profile/': () => handleRoute('/edit_profile/', true),
 	'/delete_profile/': () => initializeDeleteProfile('/delete_profile/', '/'),
@@ -96,7 +94,6 @@ const routeHandlers = {
 };
 
 function handleButtonClick(event) {
-	console.log(event.target.id);
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],
@@ -106,7 +103,6 @@ function handleButtonClick(event) {
 		register: routeHandlers['/register/'],
 		req_login: routeHandlers['/req_login/'],
 		login: routeHandlers['/login/'],
-		profile: routeHandlers['/profile/'],
 		edit_profile: routeHandlers['/edit_profile/'],
 		delete_profile: routeHandlers['/delete_profile/'],
 		update: routeHandlers['/update'],
@@ -122,11 +118,13 @@ function handleButtonClick(event) {
 		eight_players:routeHandlers['/eight_players/'],
 	};
 
-	event.preventDefault();
+	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
+
+	if (!isFileInput) {
+		event.preventDefault();
+	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-	// console.log(buttonId);
-	// console.log(handler);
 
 	if (handler) {
 		if (window.game_in_progress) {
@@ -146,7 +144,16 @@ window.addEventListener('beforeunload', () => {
 
 window.onpopstate = event => {
 	const path = event.state ? event.state.path : '/';
-	(routeHandlers[path] || routeHandlers['/'])(false);
+	handleRoute(path, true) || routeHandlers['/'](false);
+	if (path === '/chat/') {
+		setTimeout(initializeChat, 1000);
+	}
+	else if (path === '/leaderboard/') {
+		setTimeout(init_leaderboard, 1000);
+	}
+	else if (path.includes('/profile/')) {
+		setTimeout(init_profile, 1000);
+	}
 };
 
 function loginWith42() {

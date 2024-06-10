@@ -9,7 +9,7 @@
 				<img loading="lazy" src="{{ profile_image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
 				<span class="status-indicator position-absolute {% if is_online %} online {% else %} offline {% endif %}"></span>
 			</div>
-			<h2 class="profile-name">{{ username }}</h2>
+			<h2 class="profile-name" id="profile_name">{{ username }}</h2>
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
 				{% if is_own_profile %}
 					<button class="btn btn-outline-light profile-action-edit" id="edit_profile">Edit</button>
@@ -17,9 +17,12 @@
 					{% if are_friends %}
 						<button class="btn btn-danger rounded-pill profile-action-remove-friend" onclick="removeFriend('{{username}}')">Remove Friend</button>
 					{% elif sent_request %}
-						<button class="btn btn-secondary rounded-pill profile-action-request-sent" disabled>Request Sent</button>
+						<button class="btn btn-secondary rounded-pill profile-action-cancel-request" onclick="cancelRequest('{{username}}')">Cancel Request</button>
 					{% elif received_request %}
-						<button class="btn btn-success rounded-pill profile-action-accept-friend" onclick="location.href='{% url 'accept_friend_request' username %}'">Accept Friend</button>
+						<button class="btn btn-success rounded-pill profile-action-accept-friend" onclick="acceptRequest('{{username}}')">Accept Request</button>
+						<button class="btn btn-warning rounded-pill profile-action-decline-friend" onclick="declineRequest('{{username}}')">Decline Request</button>
+					{% else %}
+						<button class="btn btn-success rounded-pill profile-action-add-friend" onclick="addFriend('{{username}}')">Add Friend</button>
 					{% endif %}
 					<button class="btn btn-primary profile-action-play">Play</button>
 				{% endif %}
@@ -29,7 +32,7 @@
 
 	<section class="stats-section my-4">
 		<div class="row stats-container">
-			<div class="col-md-4 stats-column">
+			<div class="col-md-3 stats-column">
 				<div class="stats-item text-center py-3">
 					<div class="stats-content">
 						<span class="stats-number">{{ total_games }}</span>
@@ -37,7 +40,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4 stats-column">
+			<div class="col-md-3 stats-column">
 				<div class="stats-item text-center py-3">
 					<div class="stats-content">
 						<span class="stats-number">{{ total_wins }}</span>
@@ -45,11 +48,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4 stats-column">
+			<div class="col-md-3 stats-column">
 				<div class="stats-item text-center py-3">
 					<div class="stats-content">
 						<span class="stats-number">{{ total_losses }}</span>
 						<p class="stats-label">Losses</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">{{ friends|length }}</span>
+						<p class="stats-label">Friends</p>
 					</div>
 				</div>
 			</div>
@@ -82,15 +93,15 @@
 					<div class="history-details">
 						{% if match.winner.username == username %}
 							{% if match.player1.username == username %}
-								<span class="history-title">You won against {{ match.player2.username }}</span>
+								<span class="history-title">Won against {{ match.player2.username }}</span>
 							{% else %}
-								<span class="history-title">You won against {{ match.player1.username }}</span>
+								<span class="history-title">Won against {{ match.player1.username }}</span>
 							{% endif %}
 						{% else %}
 							{% if match.player1.username == username %}
-								<span class="history-title">You lost to {{ match.player2.username }}</span>
+								<span class="history-title">Lost to {{ match.player2.username }}</span>
 							{% else %}
-								<span class="history-title">You lost to {{ match.player1.username }}</span>
+								<span class="history-title">Lost to {{ match.player1.username }}</span>
 							{% endif %}
 						{% endif %}
 						<time class="history-time">{{ match.date }}</time>
@@ -166,8 +177,8 @@
 				</div>
 			{% endif %}
 			{% for requester in received_requests %}
-				<div class="request-item d-flex justify-content-between align-items-center py-2">
-					<div class="d-flex align-items-center gap-3 col-6">
+				<div class="friend-item d-flex justify-content-between align-items-center py-2">
+					<div class="d-flex align-items-center gap-3 col-9">
 						<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;">
 							<img loading="lazy" src="{{ requester.profile.image.url }}" alt="Requester's profile image" class="request-image rounded-circle" />
 						</a>
@@ -175,9 +186,12 @@
 							<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;" class="request-name">{{ requester.username }}</a>
 						</div>
 					</div>
+					<div class="d-flex justify-content-between align-items-center py-2 gap-5">
+						<button class="btn btn-success rounded-pill" onclick="acceptRequest('{{requester.username}}')">Accept</button>
+						<button class="btn btn-warning rounded-pill" onclick="declineRequest('{{requester.username}}')">Decline</button>
+					</div>
 					<div>
-						<button class="btn btn-success rounded-pill" onclick="location.href='{% url 'accept_friend_request' requester.username %}'">Accept</button>
-						<button class="btn btn-danger rounded-pill" onclick="location.href='{% url 'reject_friend_request' requester.username %}'">Reject</button>
+						<p>{{ friend.date_joined|date:"d/m/y" }}</p>
 					</div>
 				</div>
 			{% endfor %}

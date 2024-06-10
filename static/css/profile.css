@@ -8,7 +8,7 @@
 
 .profile-header {
 	margin-top: 36px;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-weight: 700;
 	max-width: 928px;
 }
@@ -23,7 +23,7 @@
 	width: 128px;
 	aspect-ratio: 1;
 	object-fit: cover;
-	border: 5px solid var(--text-color);
+	border: 5px solid var(--text-color-primary);
 }
 
 .profile-name {
@@ -47,7 +47,7 @@
 	padding: 10px 16px;
 	border-radius: 24px;
 	background-color: var(--message-received-color);
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	border: none;
 }
 
@@ -55,13 +55,13 @@
 	padding: 10px 16px;
 	border-radius: 24px;
 	background-color: var(--button-primary-color);
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	border: none;
 }
 
 .stats-section {
 	width: 100%;
-	max-width: 960px;
+	max-width: 1200px;
 	padding: 12px 16px;
 }
 
@@ -73,7 +73,7 @@
 
 .stats-column {
 	flex: 1;
-	min-width: calc(33.33% - 20px);
+	min-width: calc(25% - 20px);
 	margin-bottom: 20px;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .stats-number {
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-size: 24px;
 	font-weight: 700;
 	font-family: Space Grotesk, sans-serif;
@@ -138,23 +138,26 @@
 }
 
 .highlighted-stats.active {
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	border-bottom: 3px solid #007bff;
 }
 
 .history-section,
+.requests-section,
 .friends-section {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	background-color: var(--background-color);
 	width: 100%;
-	max-width: 960px;
+	max-width: 1200px;
 	gap: 20px;
 	padding: 8px 16px;
 	line-height: 150%;
 	overflow-y: scroll;
 	scrollbar-width: none;
+	border: 1px solid var(--text-accent-color);
+	border-radius: 12px;
 }
 
 .history-section::-webkit-scrollbar,
@@ -164,11 +167,14 @@
 
 .history-item,
 .friend-item {
+	background-color: var(--card-accent-color);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	/* padding-right: 80px; */
+	padding: 20px;
+	padding-bottom: 0;
 	gap: 16px;
+	border-radius: 12px;
 }
 
 .history-image,
@@ -189,7 +195,7 @@
 
 .history-title,
 .friend-name {
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-size: 16px;
 	font-weight: 500;
 	font-family: Space Grotesk, sans-serif;
@@ -202,7 +208,7 @@
 }
 
 .history-score {
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	font-size: 16px;
 	font-weight: 400;
 	font-family: Space Grotesk, sans-serif;
@@ -265,7 +271,7 @@
 .controls select {
 	background-color: var(--button-primary-color);
 	border: none;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	padding: 10px 20px;
 	text-align: center;
 	text-decoration: none;
@@ -296,7 +302,7 @@ canvas {
 }
 
 /* .profile-image {
-	border: 5px solid var(--text-color);
+	border: 5px solid var(--text-color-primary);
 } */
 
 .profile-actions .btn {

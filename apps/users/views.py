@@ -160,7 +160,7 @@ def profile(request, user=''):
 		'sent_request': sent_request,
 		'received_request': received_request,
 		'are_friends': are_friends,
-		'received_requests': received_requests,
+		'received_requests': pending_requests,
 	}
 	return render(request, 'profile.html', context)
 
@@ -204,8 +204,21 @@ def remove_friend(request, username):
         status=Friendship.ACCEPTED
     ).delete()
     messages.success(request, f'Removed {username} from friends')
-    return redirect('profile', user=username)
+    return redirect('profile', user=request.user.username)
 
+@login_required
+def cancel_friend_request(request, username):
+	to_user = get_object_or_404(User, username=username)
+	Friendship.objects.filter(from_user=request.user, to_user=to_user, status=Friendship.REQUESTED).delete()
+	messages.success(request, f'Friend request to {username} cancelled')
+	return redirect('profile', user=username)
+
+@login_required
+def decline_friend_request(request, username):
+	from_user = get_object_or_404(User, username=username)
+	Friendship.objects.filter(from_user=from_user, to_user=request.user, status=Friendship.REQUESTED).delete()
+	messages.success(request, f'Friend request from {username} declined')
+	return redirect('profile', user=request.user)
 
 
 @login_required

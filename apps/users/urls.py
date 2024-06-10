@@ -5,10 +5,11 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
 	path('register/', views.register, name='register'),
 	path('get_ipaddress/', views.get_ipaddress, name='get_ipaddress'),
-	path('profile/', views.profile, name='profile'),
 	path('profile/<str:user>', views.profile, name='profile'),
     path('send_friend_request/<str:username>/', views.send_friend_request, name='send_friend_request'),
     path('accept_friend_request/<str:username>/', views.accept_friend_request, name='accept_friend_request'),
+    path('decline_friend_request/<str:username>/', views.decline_friend_request, name='decline_friend_request'),
+    path('cancel_friend_request/<str:username>/', views.cancel_friend_request, name='cancel_friend_request'),
     path('remove_friend/<str:username>/', views.remove_friend, name='remove_friend'),
 	path('edit_profile/', views.edit_profile, name='edit_profile'),
 	path('delete_profile/', views.delete_profile, name='delete_profile'),

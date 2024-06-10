@@ -16,7 +16,7 @@
 
 .nav-link {
 	font-size: 16px;
-	color: var(--text-color);
+	color: var(--text-color-primary);
 }
 
 .nav-link:hover {
@@ -25,7 +25,7 @@
 }
 
 .navbar-dark .navbar-nav .nav-link.btn {
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	background-color: var(--button-primary-color);
 	border-radius: 20px;
 	font-weight: 700;
@@ -33,7 +33,6 @@
 }
 
 .navbar-dark .navbar-nav .nav-link.btn:hover {
-	background-color: var(--card-accent-color);
-	color: var(--text-color);
+	color: var(--text-color-primary);
 	transition: background-color 0.3s ease-in-out;
 }
