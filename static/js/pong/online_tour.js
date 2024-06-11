@@ -17,6 +17,95 @@ function playerMove(moveData) {
     }
 }
 
+function display_game(event) {
+    const mainContainer = document.getElementById('main-container');
+    mainSection = document.querySelector('.main-section');
+    const parser = new DOMParser();
+    const parsedHtml = parser.parseFromString(event.html, 'text/html');
+    tournamentSection = parsedHtml.getElementById('tournament');
+    // console.log(tournamentSection);
+
+    mainSection.style.display = 'none';
+    mainContainer.appendChild(tournamentSection);
+}
+
+function start_play_onl_tour(event, socket) {
+    if (game_in_progress) {
+        return;
+    }
+    if (challengeInterval != null) {
+        clearInterval(challengeInterval);
+        challengeInterval = null;
+    }
+    game_in_progress = true;
+
+    data['socket'] = socket;
+    data['hit'] = new Audio();
+    data['wall'] = new Audio();
+    data['userScore'] = new Audio();
+    data['comScore'] = new Audio();
+
+    data['hit'].src = "/media/sounds/hit.mp3";
+    data['wall'].src = "/media/sounds/wall.mp3";
+    data['userScore'].src = "/media/sounds/userScore.mp3";
+    data['comScore'].src = "/media/sounds/comScore.mp3";
+    
+    console.log('even [' , event);
+
+    const rec = JSON.parse(event.data);
+    console.log(rec);
+    if (rec['type'] == 'playerId') {
+        data['playerId'] = rec['playerId'];
+        document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
+        document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
+    } else if (rec['type'] == 'gameState') {
+        // console.log("Received game state")
+        data['gameState'] = rec['gameState'];
+        setPlayer(rec);
+        // draw(rec['gameState']);
+    } else if (rec['type'] == 'gameEnd') {
+        console.log(rec)
+        data['endGame'] = true;
+        data['playerId'] = null;
+        data['player'] = null;
+        document.getElementById('end_game').innerHTML = rec['message'];
+        // const message = {
+        //     'type': 'endGame',
+        //     'playerId': data['playerId'],
+        // };
+        // data['socket'].send(JSON.stringify(message));
+        return ;
+        // start_challenge_checking();
+    }
+
+    // socket.onclose = function () {
+    //     console.log('WebSocket connection closed');
+    //     data['endGame'] = true;
+    //     data['playerId'] = null;
+    //     game_in_progress = false;
+    // }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'w' || e.key === 'ArrowUp' ) {
+            data.paddle.speedY = - data.paddle_speed;
+        } else if (e.key === 's' || e.key === 'ArrowDown') {
+            data.paddle.speedY = data.paddle_speed;
+        }
+    });
+    
+    window.addEventListener('keyup', (e) => {
+        if ((e.key === 'w' || e.key === 's') ) {
+            data.paddle.speedY = 0;
+        }
+        
+        if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+            data.paddle.speedY = 0;
+        }
+    });
+}
+
+
+
 
 function displayMatchInvitation(matchRoom, opponent, socket) {
     // Create modal elements
@@ -90,6 +179,7 @@ function fourPlayers() {
             const parser = new DOMParser();
             const parsedHtml = parser.parseFromString(data.html, 'text/html');
             
+            
             // Extract the new content to replace the details-section
             const newContent = parsedHtml.getElementById('bracket');
             // console.log( "[ " , data.html, " ]");
@@ -118,9 +208,13 @@ function fourPlayers() {
             displayMatchInvitation(data.match_room, data.opponent, socket);
         }
         if (data.type === 'load_game') {
-            console.log('Load_Game Data:', data);
+            // console.log('Load_Game Data:', data);
+            display_game(data);
         }
-        if (data.type === 'waiting_message') {
+        if (data.type === 'gameState') {
+            start_play_onl_tour(e, socket)
+        }
+        if (data.type === 'waiting_for_opponent') {
             console.log('Waiting_Message Data:', data);
         }
         if (data.type === 'match_result') {

@@ -383,7 +383,7 @@ function start_play_online() {
 
     socket.onmessage = function (event) {
         const rec = JSON.parse(event.data);
-        // console.log(rec);
+        console.log(rec);
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
             document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
