@@ -8,7 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.pong.urls')),
     path('', include('apps.users.urls')),
-    path('chat/', include('apps.chat.urls')),
+    path('', include('apps.chat.urls')),
 ]
 
 if settings.DEBUG:

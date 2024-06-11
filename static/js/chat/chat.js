@@ -6,7 +6,7 @@ let profileimage = '';
 let socket = null;
 
 const api = {
-	fetchCurrentUser: () => fetch('get_current_user/').then(response => response.json()),
+	fetchCurrentUser: () => fetch('/get_current_user/').then(response => response.json()),
 	fetchUserProfile: username => fetch(`api/user/${username}/`).then(response => response.json()),
 	fetchMessages: recipient => fetch(`api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`api/message/${id}/`).then(response => response.json()),
@@ -45,7 +45,7 @@ const utils = {
 };
 
 function initializeChat() {
-	getCurrentUser().then(() => setupWebSocket());
+	getCurrentUser().then(() => setupWebSocket()).catch(utils.logError);
 
 	const chatForm = document.querySelector('.input-wrapper');
 	if (chatForm) {

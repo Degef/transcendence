@@ -1,14 +1,17 @@
 let chartInstance = null;
 
 function init_profile() {
-	const user_getting_viewed = document.getElementById('profile_name').innerText;
+	const user_getting_viewed = document.getElementById('profile_name');
+	if (!user_getting_viewed) {
+		return ;
+	}
 	if (window.location.pathname.includes('/profile/')) {
 		const tabs = [
 			{ id: 'history-tab', section: 'history-section' },
 			{ id: 'friends-tab', section: 'friends-section' },
 			{ id: 'stats-tab', section: 'stats-section' }
 		];
-		if (user_getting_viewed === window.location.pathname.split('/')[2]) {
+		if (user_getting_viewed.innerText === window.location.pathname.split('/')[2]) {
 			tabs.push({ id: 'requests-tab', section: 'requests-section' });
 		}
 		tabs.forEach(tab => {

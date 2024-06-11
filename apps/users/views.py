@@ -107,6 +107,7 @@ def get_win_rate(total_wins, total_losses):
 
 @login_required
 def profile(request, user=''):
+	logger.debug(f"\n\n\n${request.META['HTTP_USER_AGENT']}\n\n\n")
 	user_to_view = request.user if user == '' else get_object_or_404(User, username=user)
 	is_own_profile = user_to_view == request.user
 	games = Game.objects.filter(Q(player1=user_to_view) | Q(player2=user_to_view)).order_by('-date')
