@@ -15,8 +15,6 @@
 html, body {
 	margin: 0;
 	padding: 0;
-	display: flex;
-	flex-direction: column;
 	background-color: var(--background-color);
 	color: var(--text-color-primary);
 	font-family: Arial, sans-serif;
@@ -24,41 +22,54 @@ html, body {
 	height: 100%;
 }
 
-body {
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
-}
-
-main {
-	flex: 1;
-}
-
-header, footer {
-	flex-shrink: 0;
-}
-
-#main-container {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
 ::-webkit-scrollbar {
 	display: none;
 }
 
+
+/* ======================================== */
+/*               Navbar Styles              */
+/* ======================================== */
 #nav-header {
-	position: sticky;
-	top: 0;
-	z-index: 1000;
-	width: 100%;
 	background-color: var(--background-color);
 }
 
-@media (max-width: 991px) {
-	#main-container {
-		padding: 0 8px;
-	}
+.navbar-brand img {
+	margin-right: 8px;
+}
+
+.nav-link {
+	color: var(--text-color-primary);
+}
+
+.nav-link:hover {
+	color: var(--button-primary-color);
+	transition: color 0.3s ease-in-out;
+}
+
+.nav-link.btn {
+	color: var(--text-color-primary) !important;
+	background-color: var(--button-primary-color) !important;
+	border-radius: 20px;
+	font-weight: 700;
+}
+
+
+/* ======================================== */
+/*               Footer Styles              */
+/* ======================================== */
+.nav-link__footer {
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	color: var(--text-accent-color);
+	font-weight: 400;
+	text-align: center;
+	line-height: 150%;
+	padding: 0 20px;
+	text-decoration: none;
+}
+
+.nav-link__footer:hover {
+	color: var(--text-color-primary);
+	transition: color 0.3s ease-in-out;
 }

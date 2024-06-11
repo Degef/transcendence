@@ -2,109 +2,131 @@
 
 {% load static %}
 
-
 {% block content %}
-
-<div class="main-container">
-	<section class="section section--about">
-		<div class="section__wrapper">
-			<header class="section__header">
-				<h2 class="section__title">About PongBuddies</h2>
-				<p class="section__description">We're a team of game makers and players who make it easy for anyone to play their favorite games with friends, family, or coworkers, no matter where they are.</p>
-			</header>
-			<div class="section__content">
-				<div class="section__image-container">
-					<img src="/media/about/about.png" alt="Game illustration" class="section__image">
-				</div>
-				<div class="section__text-container">
-					<h3 class="section__title">Game on</h3>
-					<p class="section__text">Our platform hosts online tournaments and leagues, so you can compete against others and track your progress over time. Whether you're a casual player or a seasoned pro, there's always someone to challenge.</p>
-					<div class="section__button-container">
-						<button class="button button--start">
-							<span>Start playing</span>
-						</button>
-					</div>
+<div class="container py-5">
+	<section class="mb-5">
+		<div>
+			<h2 class="mb-3">About PongBuddies</h2>
+			<p class="about-section__description">We're a team of game makers and players who make it easy for anyone to play their favorite game with friends, family, or coworkers, no matter where they are.</p>
+		</div>
+		<div class="row align-items-center">
+			<div class="col-md-6">
+				<img src="/media/about/about.png" alt="Game illustration" class="img-fluid">
+			</div>
+			<div class="col-md-6 mt-3">
+				<h3>Game on</h3>
+				<p>Our platform hosts online tournaments and leagues, so you can compete against others and track your progress over time. Whether you're a casual player or a seasoned pro, there's always someone to challenge.</p>
+				<div>
+					<button id="home" class="about-button">
+						<span>Start playing</span>
+					</button>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<section class="section section--why">
-		<div class="section__wrapper">
-			<header class="section__header">
-				<h2 class="section__title">Why Play with Us?</h2>
-			</header>
-			<div class="section__cards">
-				<article class="card">
-					<div class="card__icon">
-						<i class="fas fa-users"></i>
-					</div>
-					<h3 class="card__title">Meet new people</h3>
-					<p class="card__text">Join our global community of players online. Find opponents matching your skill and play style, or team up with friends for doubles.</p>
-				</article>
-				<article class="card">
-					<div class="card__icon">
-						<i class="fas fa-trophy"></i>
-					</div>
-					<h3 class="card__title">Compete for glory</h3>
-					<p class="card__text">Battle your way to the top ranks and earn bragging rights. Our platform supports many games and formats to showcase your skills.</p>
-				</article>
-				<article class="card">
-					<div class="card__icon">
-						<i class="fa-solid fa-calendar-check"></i>
-					</div>
-					<h3 class="card__title">Never miss a match</h3>
-					<p class="card__text">Our scheduling tools make it easy to set up matches and tournaments. We'll even send you reminders, so you never miss out on the action.</p>
-				</article>
-				<article class="card">
-					<div class="card__icon">
-						<i class="fa-solid fa-circle-info"></i>
-					</div>
-					<h3 class="card__title">Get help when you need it</h3>
-					<p class="card__text">Have questions or need help troubleshooting? Our 24/7 support team is here to assist you. We also provide guides to help you improve.</p>
-				</article>
-			</div>
+	<section class="mb-5">
+		<div class="text-center mb-4">
+			<h2>Why Play with Us?</h2>
 		</div>
+		<div class="row text-center">
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="text-light mb-3">
+							<i class="fas fa-users"></i>
+						</div>
+						<h5 class="text-light mb-3">Meet new people</h5>
+						<p class="about-card-text">Join our global community of players online. Find opponents matching your skill and play style, or team up with friends for doubles.</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="text-light mb-3">
+							<i class="fas fa-trophy"></i>
+						</div>
+						<h5 class="text-light mb-3">Compete for glory</h5>
+						<p class="about-card-text">Battle your way to the top ranks and earn bragging rights. Our platform supports many games and formats to showcase your skills.</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="text-light mb-3">
+							<i class="fas fa-calendar-check"></i>
+						</div>
+						<h5 class="text-light mb-3">Never miss a match</h5>
+						<p class="about-card-text">Our scheduling tools make it easy to set up matches and tournaments. We'll even send you reminders, so you never miss out on the action.</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="text-light mb-3">
+							<i class="fas fa-info-circle"></i>
+						</div>
+						<h5 class="text-light mb-3">Get help when fast</h5>
+						<p class="about-card-text">Have questions or need help troubleshooting? Our 24/7 support team is here to assist you. We also provide guides to help you improve.</p>
+					</div>
+				</div>
+			</div>
+		</div>		
 	</section>
 
-	<section class="section section--getting-started">
-		<div class="section__wrapper">
-			<header class="section__header">
-				<h2 class="section__title">Getting Started</h2>
-			</header>
-			<div class="section__steps">
-				<article class="step">
-					<div class="step__image-container">
-						<img src="/media/about/image1.png" alt="Sign up" class="step__image">
+	<section class="mb-5">
+		<div class="text-center mb-4">
+			<h2>Getting Started</h2>
+		</div>
+		<div class="row text-center">
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="mb-3">
+							<img src="/media/about/image1.png" alt="Sign up" class="img-fluid">
+						</div>
+						<h5 class="text-light mb-3 text-light">1. Sign up</h5>
+						<p class="about-card-text">Create an account and fill out your profile. This helps us match you with opponents who share your interests and skill level.</p>
 					</div>
-					<h3 class="step__title">1. Sign up</h3>
-					<p class="step__text">Create an account and fill out your profile. This helps us match you with opponents who share your interests and skill level.</p>
-				</article>
-				<article class="step">
-					<div class="step__image-container">
-						<img src="/media/about/image2.png" alt="Choose your game" class="step__image">
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="mb-3">
+							<img src="/media/about/image2.png" alt="Choose your game" class="img-fluid">
+						</div>
+						<h5 class="text-light mb-3">2. Choose your game</h5>
+						<p class="about-card-text">Whether you're into classics like chess and poker, or prefer modern favorites like Among Us and Fortnite, we've got you covered.</p>
 					</div>
-					<h3 class="step__title">2. Choose your game</h3>
-					<p class="step__text">Whether you're into classics like chess and poker, or prefer modern favorites like Among Us and Fortnite, we've got you covered.</p>
-				</article>
-				<article class="step">
-					<div class="step__image-container">
-						<img src="/media/about/image3.png" alt="Find a match" class="step__image">
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="mb-3">
+							<img src="/media/about/image3.png" alt="Find a match" class="img-fluid">
+						</div>
+						<h5 class="text-light mb-3">3. Find a match</h5>
+						<p class="about-card-text">Browse our list of open games and tournaments, or create your own. You can also use our search feature to find specific players or events.</p>
 					</div>
-					<h3 class="step__title">3. Find a match</h3>
-					<p class="step__text">Browse our list of open games and tournaments, or create your own. You can also use our search feature to find specific players or events.</p>
-				</article>
-				<article class="step">
-					<div class="step__image-container">
-						<img src="/media/about/image4.png" alt="Start playing" class="step__image">
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center">
+				<div class="about-card h-100">
+					<div class="card-body">
+						<div class="mb-3">
+							<img src="/media/about/image4.png" alt="Start playing" class="img-fluid">
+						</div>
+						<h5 class="text-light mb-3">4. Start playing</h5>
+						<p class="about-card-text">Once you've found a match, it's time to play! Use our chat and video features to communicate with your opponent, and don't forget to have fun.</p>
 					</div>
-					<h3 class="step__title">4. Start playing</h3>
-					<p class="step__text">Once you've found a match, it's time to play! Use our chat and video features to communicate with your opponent, and don't forget to have fun.</p>
-				</article>
+				</div>
 			</div>
 		</div>
 	</section>
 </div>
-
-
 {% endblock %}
