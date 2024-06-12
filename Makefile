@@ -20,6 +20,9 @@ clean: stop
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down -v --remove-orphans
 	-docker volume prune -f
 	-docker network prune -f
+	
+rm-dangling:
+	docker rmi $(docker images -f dangling=true -q)
 
 stop:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env stop

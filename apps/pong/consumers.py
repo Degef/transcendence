@@ -485,6 +485,7 @@ from collections import deque
 from .models import Tournament, TournamentPlayer
 from collections import defaultdict
 
+
 class TournamentConsumer(AsyncWebsocketConsumer):
     players_waiting = deque()
     list_players = []
@@ -503,6 +504,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         self.user_id = await sync_to_async(self.get_user_id)()
         self.username = self.scope["user"].username
         self.room_group_name = 'test'
+        self.player_id = str(uuid.uuid4())
 
         self.player_channels[self.username] = self.channel_name  # Store channel name
 
@@ -511,6 +513,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id}))
 
 
     def get_user_id(self):
@@ -548,6 +551,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
                     paddle1 = self.game_states[room_group_name]['paddle1']
                     paddle2 = self.game_states[room_group_name]['paddle2']
+                    logger.debug(f"\n\nPaddles-1- {paddle1}")
+                    logger.debug(f"\n\nPaddles-2- {paddle}")
                     if paddle1 is not None and paddle2 is not None:
                         asyncio.create_task(self.move_ball())
                 elif data['type'] == 'endGame':
@@ -681,6 +686,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         if not match_room or not player:
             logging.error(f"Invalid data received: match_room={match_room}, player={player}")
             return
+        logging.error(f"Invalid data received: match_room={match_room}, player={player}")
 
         # Initialize the set if it doesn't exist
         if match_room not in self.confirmed_players:
@@ -696,7 +702,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         # Check if both players have confirmed for the match room
         if len(players) == 2:
             await self.send_load_game_message(match_room, players)
-            await self.start_game_logic(match_room, players)
+            # await self.start_game_logic(match_room, players)
         else:
             # One player has confirmed, wait for the other player
             await self.send_waiting_message(match_room, self.channel_name)
@@ -916,4 +922,3 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             game_state['collision']['wall'] = False
             await asyncio.sleep(0.01)
             
-

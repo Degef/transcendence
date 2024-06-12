@@ -349,6 +349,7 @@ function setPlayer(rec) {
             'paddle': data['paddle'],
             'player': data['player'],
         };
+        
         data['socket'].send(JSON.stringify(message));
         main_loop();
     }
