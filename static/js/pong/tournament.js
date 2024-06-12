@@ -18,15 +18,15 @@ function setupTournament(playerCount) {
     currentPlayerIndex = 0;
     totalPlayers = playerCount;
     var tournElementtmp = document.getElementsByClassName("details-section");
-	document.getElementById('off_tourn_hero').style.display = 'none';
+    document.getElementById('off_tourn_hero').style.display = 'none';
     const tournElement = tournElementtmp[0];
     tournElement.innerHTML = `
         <div class="center-container">
             <div id="playerFormContainer" class="input-group mb-3 square-box">
-                <h2">Enter Player Names <br></h2>
+                <h2 style="font-weight: bold;">Enter Player Names <br></h2>
                 <form id="playerForm">
-                    <div id="playerInputs">
-                        <label for="playerName">Player 1:</label>
+                    <div id="playerInputs" style="display: flex; align-items: center;">
+                        <label for="playerName" style="margin-right: 10px;">Player 1:</label>
                         <input type="text" id="playerName" name="playerName" required>
                     </div>
                     <button type="button" id="submitPlayer">Next</button>
@@ -37,23 +37,23 @@ function setupTournament(playerCount) {
     const playerFormContainer = document.getElementById('playerFormContainer');
     playerFormContainer.style.display = 'block';
     document.getElementById('submitPlayer').addEventListener('click', submitPlayerName);
+    attachEventListner();
+}
+
+function attachEventListner() {
     document.getElementById('playerName').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
+            document.getElementById("submitPlayer").click();
             event.preventDefault();
         }
     });
-
+    document.getElementById('playerName').focus();
 }
 
-
-
-
 function submitPlayerName(event) {
-    if (event.type === 'click' || (event.type === 'keypress' && event.key === 'Enter')) {
-        event.preventDefault();
+    if (event.type === 'click') {
         const playerNameInput = document.getElementById('playerName');
         const playerName = playerNameInput.value.trim();
-        playerNameInput.style.display = 'block';
 
         if (playerName && (!players.includes(playerName)) && !(playerName.length > 10)) {
             players.push(playerName);
@@ -64,6 +64,7 @@ function submitPlayerName(event) {
                     <label for="playerName">Player ${currentPlayerIndex + 1}:</label>
                     <input type="text" id="playerName" name="playerName" required>
                 `;
+                attachEventListner();
             } else {
                 myplayers = shuffleArray(players);
                 organizeTournament(myplayers);
@@ -71,12 +72,16 @@ function submitPlayerName(event) {
         } else if (players.includes(playerName)) {
             alert('Player name taken.');
         } else if (playerName.length > 10) {
-            alert('Player name too  long.');
+            alert('Player name too long.');
         } else {
             alert('Player name cannot be empty.');
         }
     }
 }
+
+
+
+
 
 function getCookie(name) {
     let cookieValue = null;
