@@ -18,6 +18,7 @@ function setupTournament(playerCount) {
     currentPlayerIndex = 0;
     totalPlayers = playerCount;
     var tournElementtmp = document.getElementsByClassName("details-section");
+	document.getElementById('off_tourn_hero').style.display = 'none';
     const tournElement = tournElementtmp[0];
     tournElement.innerHTML = `
         <div class="center-container">

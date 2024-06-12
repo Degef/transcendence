@@ -279,3 +279,17 @@
 .round.round-two .round-details {
     margin-bottom: 26px;
 }
+
+.glass-effect {
+	background: rgba(142, 14, 14, 0.2);
+	border-radius: 10px;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	box-shadow: 0 4px 6px rgba(164, 16, 16, 0.1);
+}
+.modal-header {
+	border-bottom: none;
+}
+.modal-footer {
+	border-top: none;
+}

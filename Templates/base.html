@@ -27,7 +27,7 @@
 		<title>PongBuddies</title>
 	</head>
 	<body class="d-flex flex-column min-vh-100">
-		<header id="nav-header" class="sticky-top mb-2">
+		<header id="nav-header" class="sticky-top mb-2 mt-3">
 			<nav class="navbar navbar-expand-lg navbar-dark">
 				<div class="container-xxl">
 					<a class="navbar-brand" href="#" id="home">
@@ -40,8 +40,8 @@
 					<div class="collapse navbar-collapse" id="navbarNav">
 						<ul class="navbar-nav ms-auto">
 							{% if user.is_authenticated %}
+								<li class="nav-item"><a class="nav-link" href="#" id="home">Play</a></li>
 								<li class="nav-item"><a title="profile" id="profile" class="nav-link" href="#" onclick="loadProfile('{{ request.user.username }}'); return false;">Profile</a></li>
-								<li class="nav-item"><a class="nav-link" href="#">Tournaments</a></li>
 								<li class="nav-item"><a title="leaderboard" id="leaderboard" class="nav-link" href="#">Leaderboard</a></li>
 								<li class="nav-item"><a title="Chat" id="chatLink" class="nav-link" href="#">Chat</a></li>
 								<li class="nav-item"><a title="about" id="about" class="nav-link" href="#">About</a></li>
@@ -74,15 +74,15 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-		<script src="{% static 'js/router/routes.js' %}"></script>
-		<script src="{% static 'js/users/auth.js' %}"></script>
-		<script src="{% static 'js/users/profile.js' %}"></script>
-		<script src="{% static 'js/pong/game.js' %}"></script>
-		<script src="{% static 'js/pong/challenge.js'%}"></script>
-		<script src="{% static 'js/pong/local_game.js'%}"></script>
-		<script src="{% static 'js/chat/chat.js' %}"></script>
-		<script src="{% static 'js/pong/leaderboard.js' %}"></script>
-		<script src="{% static 'js/pong/tournament.js' %}"></script>
-		<script src="{% static 'js/pong/mobile.js' %}"></script>
+		<script defer src="{% static 'js/router/routes.js' %}"></script>
+		<script defer src="{% static 'js/users/auth.js' %}"></script>
+		<script defer src="{% static 'js/users/profile.js' %}"></script>
+		<script defer src="{% static 'js/pong/game.js' %}"></script>
+		<script defer src="{% static 'js/pong/challenge.js'%}"></script>
+		<script defer src="{% static 'js/pong/local_game.js'%}"></script>
+		<script defer src="{% static 'js/chat/chat.js' %}"></script>
+		<script defer src="{% static 'js/pong/leaderboard.js' %}"></script>
+		<script defer src="{% static 'js/pong/tournament.js' %}"></script>
+		<script defer src="{% static 'js/pong/mobile.js' %}"></script>
 	</body>
 </html>

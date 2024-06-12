@@ -20,7 +20,7 @@
 	padding: 20px;
 	box-sizing: border-box;
 	flex: 1;
-	min-height: 100px !important;
+	min-height: 100% !important;
 }
 
 .about-card-text {

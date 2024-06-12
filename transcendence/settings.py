@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'daphne',
 	'channels',
     'django_ratelimit',
+	'mobiledetect',
 	'rest_framework',
     'apps.pong.apps.PongConfig',
     'apps.users.apps.UsersConfig',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
+	'mobiledetect.middleware.DetectMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

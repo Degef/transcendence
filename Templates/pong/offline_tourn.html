@@ -2,43 +2,69 @@
 
 {% load static %}
 
-{% block content%}
-<div class="container__home container">
-	<section class="main-section">
-		<article class="card-container mb-4">
-			<div class="card position-relative text-center">
-				<img loading="lazy" src="/media/images/tourn.png" alt="Play Pong game" class="card-img">
-				<div class="card-body play-section">
-					<h3 class="card-title play-title">You will play offline Trounament</h3>
-					<div class="play-button-wrapper">
-						<!-- <button class="btn btn-primary play-button" id="play_online">Play Online</button> -->
-					</div>
-				</div>
-			</div>
-		</article>
+{% block content %}
 
-		<article class="details-section">
-			<div class="row">
-				<div class="col-md-4 mb-3">
-					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
-						<div class="details-title">
-							<h4 class="subtitle">Four Players</h4>
-							<p class="details-desc">Play offline tournament with 4 Players on the same device</p>
+<section class="container my-5 main-section">
+	<div class="d-flex justify-content-center">
+		<div class="w-100 max-w-960">
+			<div class="text-center" id="off_tourn_hero">
+				<div class="card text-white position-relative overflow-hidden">
+					<img src="/media/images/tournament.png" class="card-img" alt="Play in a tournament image" />
+					<div class="card-img-overlay d-flex flex-column justify-content-center align-items-center p-5">
+						<div class="w-100 text-center mb-3">
+							<h2 class="display-4">Play in a tournament</h2>
+							<p class="lead">Join a 4 or 8 person offline tournament, win matches to advance and claim the top spot</p>
 						</div>
-						<button class="btn btn-primary custom-button" id="four_players" >4 Players</button>
-					</div>
-				</div>
-				<div class="col-md-4 mb-3">
-					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
-						<div class="details-title">
-							<h4 class="subtitle">Eight Players</h4>
-							<p class="details-desc">Play offline tournament with 8 Players on the same device</p>
+						<div class="d-flex justify-content-center gap-2">
+							<button class="about-button" id="four_players">4-person</button>
+							<button class="about-button btn-secondary" id="eight_players">8-person</button>
 						</div>
-						<button class="btn btn-primary custom-button" id="eight_players" >8 Players</button>
 					</div>
 				</div>
 			</div>
-		</article>
-	</section>
-</div>
-{% endblock %}
+			<section class="my-5 details-section">
+				<div class="text-center text-white">
+					<h2 class="display-5">How it works</h2>
+					<p class="lead">Join a 4 or 8 person tournament, win matches to advance and claim the top spot</p>
+				</div>
+				<div class="row mt-4 d-flex align-items-center justify-content-center gap-4">
+					<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center" style="height: 200px;">
+						<div class="card about-card text-white flex-fill p-3" >
+							<div class="d-flex flex-column align-items-center text-center">
+								<div class="text-light mb-3">
+									<i class="fa-solid fa-crown"></i>
+								</div>
+								<div class="fw-bold">Winning is everything</div>
+								<p class="mt-2 about-card-text">Rack up the wins to advance to the next round and claim the top spot</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center" style="height: 200px;">
+						<div class="card about-card text-white flex-fill p-3">
+							<div class="d-flex flex-column align-items-center text-center">
+								<div class="text-light mb-3">
+									<i class="fas fa-users"></i>
+								</div>
+								<div class="fw-bold">Compete with friends</div>
+								<p class="mt-2 about-card-text">Invite friends to join your offline tournament and compete against other</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center" style="height: 200px;">
+						<div class="card about-card text-white flex-fill p-3" >
+							<div class="d-flex flex-column align-items-center text-center">
+								<div class="text-light mb-3">
+									<i class="fa-solid fa-gift"></i>
+								</div>
+								<div class="fw-bold">Claim your prize</div>
+								<p class="mt-2 about-card-text">Winners receive a prize. Prizes vary by tournament! So keep playing</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</section>
+
+{% endblock%}

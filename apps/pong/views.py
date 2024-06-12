@@ -19,20 +19,13 @@ from apps.users.views import get_total_wins, get_total_losses, get_win_rate
 
 logger = logging.getLogger(__name__)
 
-def is_mobile(request):
-	MOBILE_AGENT_RE=re.compile(r".*(iphone|mobile|androidtouch|iPad|Android)",re.IGNORECASE)
-	logger.debug(f'\n\n\n{request.META["HTTP_USER_AGENT"]}\n\n\n')
-	return MOBILE_AGENT_RE.match(request.META['HTTP_USER_AGENT'])
-
 
 def home(request):
-	# logger.debug("\n\nHello World\n\n")
 	if request.user.is_authenticated:
 		with transaction.atomic():
 			user_thing = request.user.user_things
 			user_thing.status = "online"
 			user_thing.save()
-			# logger.debug(f'\n\n{user_thing.status}\n\n')
 
 	context = {
 		'games': Game.objects.all()
@@ -55,24 +48,24 @@ class FaviconView(View):
 
 @login_required
 def play_online(request):
-	if_mobile = is_mobile(request)
+	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
 	context = {"if_mobile": "true" if if_mobile else "false"}
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
 	return render(request, 'pong/play_online.html')
 
 def game_computer(request):
-	if_mobile = is_mobile(request)
+	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
 	context = {"if_mobile": "true" if if_mobile else "false"}
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
 	return render(request, 'pong/game_computer.html')
 
 def local_game(request):
-	if_mobile = is_mobile(request)
-	context = {"if_mobile": "true" if if_mobile else "false"}
-	if (if_mobile):
-		return render(request, 'pong/mobile.html', context)
+	# if_mobile = request.device['is_mobile'] or request.device['is_tablet']
+	# context = {"if_mobile": "true" if if_mobile else "false"}
+	# if (if_mobile):
+	# 	return render(request, 'pong/mobile.html', context)
 	player1 = 'Player1'
 	player2 = 'Player2'
 	if request.method == 'POST':
