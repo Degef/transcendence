@@ -310,6 +310,20 @@ function getMousePos2(canvas) {
     }
 }
 
+function removeWaitLoad() {
+    const canvasContainer = document.querySelector('.canvas_container');
+
+    // Find the wait_load div
+    const waitLoadDiv = canvasContainer.querySelector('#wait_load');
+
+    // Check if wait_load div exists before removing it
+    if (waitLoadDiv) {
+        // Remove the wait_load div
+        canvasContainer.removeChild(waitLoadDiv);
+        document.getElementById('end_game').innerHTML = "";
+    }
+}
+
 function setPlayer(rec) {
     if (data['player'] == null) {
         if (rec['gameState']['player1'] == data['playerId']) {
@@ -318,18 +332,7 @@ function setPlayer(rec) {
             data['player'] = 2;
         }
 
-        // console.log("Player Number   " +  data.player)
-        const canvasContainer = document.querySelector('.canvas_container');
-
-        // Find the wait_load div
-        const waitLoadDiv = canvasContainer.querySelector('#wait_load');
-
-        // Check if wait_load div exists before removing it
-        if (waitLoadDiv) {
-            // Remove the wait_load div
-            canvasContainer.removeChild(waitLoadDiv);
-            document.getElementById('end_game').innerHTML = "";
-        }
+        removeWaitLoad();
 
         data['canvas'] = document.getElementById('gameCanvas');
         data['ctx'] = data['canvas'].getContext('2d');
@@ -384,7 +387,7 @@ function start_play_online() {
 
     socket.onmessage = function (event) {
         const rec = JSON.parse(event.data);
-        console.log(rec);
+            console.log(rec);
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
             document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"

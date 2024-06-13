@@ -140,9 +140,9 @@ function handleButtonClick(event) {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-	document.body.addEventListener('click', handleButtonClick);
-});
+// document.addEventListener('DOMContentLoaded', () => {
+// 	document.body.addEventListener('click', handleButtonClick);
+// });
 
 window.addEventListener('beforeunload', () => {
 	navigator.sendBeacon('/unload/');
@@ -156,3 +156,45 @@ window.onpopstate = event => {
 function loginWith42() {
 	handleRoute(`http://${config.ipaddress}:8000/exchange_code?code=${code}`);
 }
+
+function addEventListenersToElements(elements) {
+	elements.forEach(element => {
+	  if (!element.hasAttribute('data-listener-added')) {
+		element.addEventListener('click', handleButtonClick);
+		element.setAttribute('data-listener-added', 'true');
+	  }
+	});
+}
+  
+  
+  
+// add eventListner to any link and any any button every time the page updated
+document.addEventListener('DOMContentLoaded', () => {
+	const initialElements = document.querySelectorAll('button, a');
+	addEventListenersToElements(initialElements);
+  /** Setup a MutationObserver to monitor the DOM for changes then Iterate over each mutation
+   *  1. Check if new nodes were added, Iterate over the added nodes, Check if the node is a button or a link
+   * Add event listener to the node, or 2. Check if the node is an element, Find nested buttons and links
+   * Add event listeners to nested elements **/
+	const observer = new MutationObserver(mutations => {
+	  mutations.forEach(mutation => {
+		if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+		  mutation.addedNodes.forEach(node => {
+			if (node.nodeName === 'BUTTON' || node.nodeName === 'A') {
+			  addEventListenersToElements([node]);
+			} else if (node.nodeType === Node.ELEMENT_NODE) {
+			  const nestedElements = node.querySelectorAll('button, a');
+			  if (nestedElements.length > 0) {
+				addEventListenersToElements(nestedElements);
+			  }
+			}
+		  });
+		}
+	  });
+	});
+  
+	observer.observe(document.body, { childList: true, subtree: true });
+});
+  
+  
+  
