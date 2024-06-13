@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Game
+from .models import Game, Challenge
 from django.contrib.auth.models import User
 from apps.users.models import user_things
 from django.views.decorators.csrf import csrf_exempt
@@ -62,10 +62,10 @@ def game_computer(request):
 	return render(request, 'pong/game_computer.html')
 
 def local_game(request):
-	# if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	# context = {"if_mobile": "true" if if_mobile else "false"}
-	# if (if_mobile):
-	# 	return render(request, 'pong/mobile.html', context)
+	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
+	context = {"if_mobile": "true" if if_mobile else "false"}
+	if (if_mobile):
+		return render(request, 'pong/mobile.html', context)
 	player1 = 'Player1'
 	player2 = 'Player2'
 	if request.method == 'POST':
@@ -156,54 +156,6 @@ def unload(request):
 			user_thing.save()
 			# logger.debug(f'\n\n{user_thing.status}\n\n')
 	return JsonResponse({'success': False})
-
-
-def challengeUser(request, username):
-	logger.debug(f'\n\n{username}\n\n')
-	challenged = User.objects.get(username=username)
-	challenged_thing = challenged.user_things
-	challenged_thing.is_challenged = True
-	challenged_thing.challenger = request.user.username
-	challenged_thing.save()
-
-	challenging = request.user.user_things
-	challenging.challenged_user = username
-	challenging.save()
-	
-	return JsonResponse({'success': True})
-
-def is_challenged(request):
-	if (request.user.is_authenticated == False):
-		return JsonResponse({'success': False})
-	user_thing = request.user.user_things
-	if user_thing.is_challenged:
-		user_thing.is_challenged = False
-		chall = user_thing.challenger
-		user_thing.challenger = "None"
-		user_thing.save()
-		return JsonResponse({'success': True, 'challenged': True, 'challenger': chall })
-	else:
-		return JsonResponse({'success': True, 'challenged': False})
-
-def check_challenge_response(request):
-	challenged_user = User.objects.get(username=request.user.user_things.challenged_user)
-	things = challenged_user.user_things
-	response = things.challenge_response
-	if (response == 'accept' or response == 'decline'):
-		logger.debug(f'\n\n{response}\n\n')
-		things.challenge_response = 'None'
-		things.save()
-		things2 = request.user.user_things
-		things2.challenged_user = 'None'
-		things2.save()
-		logger.debug(f'\n\n{things.challenge_response}\n\n')
-	return JsonResponse({'response': response})    
-
-def give_challenged_response(request, response):
-	user_thing = request.user.user_things
-	user_thing.challenge_response = response
-	user_thing.save()
-	return JsonResponse({'success': True})
 
 def offline_tourn(request):
 	return render(request, 'pong/offline_tourn.html')

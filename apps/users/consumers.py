@@ -41,8 +41,9 @@ class StatusConsumer(AsyncWebsocketConsumer):
 	@database_sync_to_async
 	def update_status(self, status):
 		try:
-			user_thing = user_things.objects.get(user=self.user)
-			user_thing.status = status
-			user_thing.save()
+			with transaction.atomic():
+				user_thing = user_things.objects.get(user=self.user)
+				user_thing.status = status
+				user_thing.save()
 		except user_things.DoesNotExist:
 			pass

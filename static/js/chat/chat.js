@@ -16,7 +16,7 @@ const api = {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(message)
 	}),
-	blockUser: username => fetch('block_unblock/', {
+	blockUser: username => fetch('/block_unblock/', {
 		method: "POST",
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'username': username })
@@ -24,7 +24,7 @@ const api = {
 		if (!response.ok) return response.json().then(data => { throw new Error(data.Error); });
 		return response.json();
 	}),
-	unblockUser: username => fetch('block_unblock/', {
+	unblockUser: username => fetch('/block_unblock/', {
 		method: "DELETE",
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'username': username })
@@ -32,6 +32,20 @@ const api = {
 		if (!response.ok) return response.json().then(data => { throw new Error(data.Error); });
 		return response.json();
 	})
+};
+
+
+const responseMessageDiv = document.querySelector('.response__message');
+const responseAlert = document.getElementById('responseAlert');
+
+const showAlert = (message, type) => {
+	responseMessageDiv.innerHTML = message;
+	responseAlert.classList.remove('d-none', 'alert-success', 'alert-danger', 'show');
+	responseAlert.classList.add(`alert-${type}`, 'show');
+	setTimeout(() => {
+		responseAlert.classList.remove('show');
+		setTimeout(() => responseAlert.classList.add('d-none'), 500);
+	}, 5000);
 };
 
 const utils = {
@@ -164,15 +178,15 @@ function viewUserProfile(username) {
 
 function blockUser(username) {
 	api.blockUser(username)
-		.then(data => console.log(data.Success))
-		.catch(handleBlockUserError);
+		.then(data => showAlert(data.Success, 'success'))
+		.catch(error => showAlert(error.message, 'danger'));
 	document.getElementById('dropdownMenu').classList.remove('show');
 }
 
 function unblockUser(username) {
 	api.unblockUser(username)
-		.then(data => console.log(data.Success))
-		.catch(handleBlockUserError);
+		.then(data => showAlert(data.Success, 'success'))
+		.catch(error => showAlert(error.message, 'danger'));
 	document.getElementById('dropdownMenu').classList.remove('show');
 }
 
@@ -185,7 +199,7 @@ function handleBlockUserError(error) {
 		'Invalid request data': 'Invalid request data',
 		'Invalid request method': 'Invalid request method',
 	};
-	console.error(messages[errorMessage] || 'An unknown error occurred');
+	// console.error(messages[errorMessage] || 'An unknown error occurred');
 }
 
 function drawMessage(message) {

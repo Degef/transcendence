@@ -1,155 +1,88 @@
-var challengeInterval = null;
-var challengeInterval2 = null;
+let challengeSocket = null;
+let sessionKeyChall = '';
+let currentUserChall = '';
+let profileimageChall = '';
 
-function check_challenge_response(check_response_count) {
-    fetch('/check_challenge_response/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        if (response.status === 200) {
-            response.json().then(data => {
-                // console.log(data)
-                if (data.response === 'accept') {
-                    clearInterval(challengeInterval2)
-                    clearInterval(challengeInterval)
-                    challengeInterval = null;
-                    console.log('Challenge accepted')
-                    play_online();
-                    setTimeout(start_play_online, 2000);
-                } else if (data.response === 'decline'){
-                    console.log('Challenge declined')
-                    clearInterval(challengeInterval2)
-                    start_challenge_checking();
-                } else if (check_response_count > 15) {
-                    console.log('No response, challenge expired')
-                    clearInterval(challengeInterval2)
-                    start_challenge_checking();
-                }
-                else {
-                    console.log('Waiting for response...')
-                }
-            })
-        } else {console.log('Failed to check response')}
-    }).catch(error => {
-        console.error('Error:', error);
-    });
+function getCurrentUser() {
+	return fetch('/get_current_user/').then(response => response.json())
+		.then(data => {
+			console.log('Current user:', data.currentUser);
+			currentUserChall = data.currentUser;
+			profileimageChall = data.currentUserImage;
+			sessionKeyChall = data.sessionKey;
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
 }
 
-function challengeUser(username) {
-    fetch(`/challengeUser/${username}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        if (response.status === 200) {
-            response.json().then(data => {
-                console.log(data)
-                if (data.success) {
-                    console.log('Challenge sent')
-                    let check_response_count = 0;
-                    challengeInterval2 = setInterval(function(){
-                        check_challenge_response(check_response_count);
-                        check_response_count++;                        
-                    }, 1000);
-                } else {
-                    console.log('Failed to send challenge')
-                }
-            })
-        } else {console.log('Failed to send challenge')}
-    }).catch(error => {
+function initializeChallengeSocket() {
+    challengeSocket = new WebSocket(`ws://${window.location.host}/ws/challenge/`);
+	getCurrentUser();
+
+    challengeSocket.onopen = function () {
+        console.log('Challenge socket opened');
+    };
+
+    challengeSocket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+		console.log('Challenge socket message:', data);
+		let challenger = data.message.split(' ')[0];
+		let challenged = data.message.split(' ')[3];
+		if (challenger == currentUserChall) {
+			console.log('You challenged', challenged);
+		}
+		else {
+			// console.log(challenger, 'challenged you');
+			customConfirm(challenger + " is challenging you to pong game rightnow " + '. Do you accept?');
+		}
+    };
+
+    challengeSocket.onclose = function () {
+        console.log('Challenge socket closed');
+    };
+
+    challengeSocket.onerror = function (error) {
         console.error('Error:', error);
-    }
-    );
+    };
 }
 
-function give_challenged_response(response) {
-    if (response === 'accept') {
-        play_online();
-        setTimeout(start_play_online, 2000);
-    } else {
-        start_challenge_checking();
-    }
-    fetch(`/give_challenged_response/${response}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        if (response.status === 200) {
-            response.json().then(data => {
-                console.log(data)
-                if (data.success) {
-                    console.log('Challenge response sent')
-                } else {
-                    console.log('Failed to send challenge response')
-                }
-            })
-        } else {console.log('Failed to send challenge response')}
-    }).catch(error => {
-        console.error('Error:', error);
-    }
-    );
-}
-
-function customConfirm(message, onAccept, onDecline) {
-    var modal = document.getElementById('custom-confirm');
-    var messageElement = document.getElementById('challenge-message');
-    var acceptButton = document.getElementById('accept-button');
-    var declineButton = document.getElementById('decline-button');
+function customConfirm(message) {
+    const modal = document.getElementById('custom-confirm');
+    const messageElement = document.getElementById('challenge-message');
+    const acceptButton = document.getElementById('accept-button');
+    const declineButton = document.getElementById('decline-button');
   
     messageElement.innerText = message;
   
     acceptButton.onclick = function() {
-      modal.style.display = "none";
-      onAccept();
-    }
+        modal.style.display = "none";
+        // onAccept();
+    };
   
     declineButton.onclick = function() {
-      modal.style.display = "none";
-      onDecline();
-    }
-  
+        modal.style.display = "none";
+        // onDecline();
+    };
+
     modal.style.display = "block";
-  }
+}
 
-function is_challenged() {
-    fetch('/is_challenged/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        if (response.status === 200) {
-            response.json().then(data => {
-                if (data.success && data.challenged) {
-                    console.log('Challenged')
-                    clearInterval(challengeInterval)
-                    challengeInterval = null;
-                    // confirm('You have been challenged by ' + data.challenger + '. Do you accept?') ? give_challenged_response("accept") : give_challenged_response("decline")
-                    customConfirm(data.challenger + " is challenging you to pong game rightnow " + '. Do you accept?', function() {
-                        give_challenged_response("accept");
-                      }, function() {
-                        give_challenged_response("decline");
-                      });
-                }
-                // else {
-                //     console.log('Not challenged')
-                // }
-            })
-        } else {console.log('Failed to check if challenged')}
-    }).catch(error => {
-        console.error('Error:', error);
+function challengeUser(username) {
+    if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
+        challengeSocket.send(JSON.stringify({ action: 'send_challenge', username: username }));
+    } else {
+        console.error('Challenge socket is not open');
     }
-    );
 }
 
-function start_challenge_checking() {
-    challengeInterval = setInterval(function(){
-        is_challenged();
-    }, 3000);
+function respondChallenge(challengeId, response) {
+    if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
+        challengeSocket.send(JSON.stringify({ action: 'respond_challenge', challenge_id: challengeId, response: response }));
+        console.log('Response sent for challenge:', challengeId, 'with response:', response);
+    } else {
+        console.error('Challenge socket is not open');
+    }
 }
 
-// start_challenge_checking();
+initializeChallengeSocket();
