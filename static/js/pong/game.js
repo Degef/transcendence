@@ -12,7 +12,7 @@ var data = {
 var data2 = null;
 var game_in_progress = false;
 var terminate_game = false;
-let intervalId;
+var intervalId = null;
 
 // draw a rectangle, will be used to draw paddles
 function drawRect(ctx, x, y, w, h, color){
@@ -279,6 +279,7 @@ function main_loop () {
 
     data.paddle.y += data.paddle.speedY;
     // Keep paddles within the canvas
+
     data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
     draw();
 
@@ -289,14 +290,27 @@ function main_loop () {
         'player': data['player'],
     };
     if (data['endGame']) {
+        console.log("This is exiting from endgame\n\n")
         data['endGame'] = false;
         game_in_progress = false;
         return
     }
     if (terminate_game) {
-        terminate_game = false;
-        game_in_progress = false;
-        data['socket'].close();
+        console.log("Exiting from terminate game\n\n")
+        // This condition is handling when user presses any button while game is in progress
+        // First we need to stop the game task created in the server, that is what endGame1 will do
+        // Then we wait 1 second to make sure the task is stopped and then we close the socket
+        mes = {
+            'type': 'endGame1',
+            'playerId': data['playerId'],
+        }
+        data['socket'].send(JSON.stringify(mes));
+
+        // wait one second
+        setTimeout(function() {
+            terminate_game = false;
+            data['socket'].close();
+        }, 1000);
         return;
     }
     data['socket'].send(JSON.stringify(message));
@@ -318,15 +332,10 @@ function setPlayer(rec) {
             data['player'] = 2;
         }
 
-        // console.log("Player Number   " +  data.player)
         const canvasContainer = document.querySelector('.canvas_container');
+        const waitLoadDiv = canvasContainer.querySelector('#wait_load'); // Find the wait_load div
 
-        // Find the wait_load div
-        const waitLoadDiv = canvasContainer.querySelector('#wait_load');
-
-        // Check if wait_load div exists before removing it
-        if (waitLoadDiv) {
-            // Remove the wait_load div
+        if (waitLoadDiv) { // Remove the wait_load div if it exists
             canvasContainer.removeChild(waitLoadDiv);
             document.getElementById('end_game').innerHTML = "";
         }
@@ -350,6 +359,7 @@ function setPlayer(rec) {
             'player': data['player'],
         };
         data['socket'].send(JSON.stringify(message));
+        console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
         main_loop();
     }
 }
@@ -357,10 +367,6 @@ function setPlayer(rec) {
 function start_play_online() {
     if (game_in_progress) {
         return;
-    }
-    if (challengeInterval != null) {
-        clearInterval(challengeInterval);
-        challengeInterval = null;
     }
     game_in_progress = true;
 
@@ -399,20 +405,19 @@ function start_play_online() {
             data['playerId'] = null;
             data['player'] = null;
             document.getElementById('end_game').innerHTML = rec['message'];
-            // const message = {
-            //     'type': 'endGame',
-            //     'playerId': data['playerId'],
-            // };
-            // data['socket'].send(JSON.stringify(message));
+            const message = {
+                'type': 'endGame',
+                'playerId': data['playerId'],
+            };
+            data['socket'].send(JSON.stringify(message));
             data.socket.close();
-            // start_challenge_checking();
         }
     }
 
     socket.onclose = function () {
         console.log('WebSocket connection closed');
-        data['endGame'] = true;
         data['playerId'] = null;
+        data['player'] = null;
         game_in_progress = false;
     }
 

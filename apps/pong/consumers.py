@@ -52,7 +52,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		logger.debug(" \n\n WebSocket connection established\n\n")
-		# logger.debug(self.waiting_queue)
+		# logger.debug(f"\n\nUser: {self.waiting_queue}")
 		self.room_name = 'game_room'
 		self.player_id = str(uuid.uuid4())
 
@@ -89,7 +89,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		# Remove the user from the waiting queue or ongoing game
-		logger.debug(" \n\n Disconnected  WebSocket connection closed")
+		logger.debug(f"\n\n {self.player_id} Disconnected  WebSocket connection closed")
 		if self in self.waiting_queue:
 			self.waiting_queue.remove(self)
 		else:
@@ -107,7 +107,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 						'message': f'{name} has left the game.'
 					}
 				)
-				await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+				# await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 			except KeyError as e:
 				print(f"\n\nError accessing paddle data: {e}")
 		await self.close()
@@ -137,7 +137,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 				paddle2 = self.game_states[room_group_name]['paddle2']
 				if paddle1 is not None and paddle2 is not None:
 					asyncio.create_task(self.move_ball())
+			elif data['type'] == 'endGame1':
+				self.game_states[room_group_name]['end'] = True
+				
 			elif data['type'] == 'endGame':
+				# self.game_states[room_group_name]['end'] = True
 				del self.game_states[room_group_name]
 				await self.channel_layer.group_discard(room_group_name, self.channel_name)
 				await self.close()
@@ -173,6 +177,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def move_ball(self):
 		while True:
 			game_state = self.game_states[self.room_group_name]
+
+			if game_state['end']:
+				return
+
 			ball = game_state['ball']
 
 			# Update the ball position
