@@ -12,6 +12,7 @@ var data = {
 var data2 = null;
 var game_in_progress = false;
 var terminate_game = false;
+let userName;
 let intervalId;
 
 // draw a rectangle, will be used to draw paddles
@@ -287,6 +288,7 @@ function main_loop () {
         'playerId': data['playerId'],
         'paddle': data['paddle'],
         'player': data['player'],
+        'sender': userName
     };
     if (data['endGame']) {
         data['endGame'] = false;
@@ -351,12 +353,67 @@ function setPlayer(rec) {
             'playerId': data['playerId'],
             'paddle': data['paddle'],
             'player': data['player'],
+            'sender': userName,
         };
         
         data['socket'].send(JSON.stringify(message));
         main_loop();
     }
 }
+
+
+
+
+
+
+
+
+function handlePlayerId(rec) {
+    console.log(rec);
+    data['playerId'] = rec['playerId'];
+    userName = rec['sender'];
+    document.getElementById('end_game').innerHTML = "<p>Waiting for other player to join</p>";
+    document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>";
+}
+
+function handleGameState(rec) {
+    console.log(rec);
+    data['gameState'] = rec['gameState'];
+    setPlayer(rec);
+    // draw(rec['gameState']);
+}
+
+function handleGameEnd(rec) {
+    console.log(rec);
+    data['endGame'] = true;
+    data['playerId'] = null;
+    data['player'] = null;
+    document.getElementById('end_game').innerHTML = rec['message'];
+    data.socket.close();
+    // start_challenge_checking();
+}
+
+function resetGameState() {
+    data['endGame'] = true;
+    data['playerId'] = null;
+    game_in_progress = false;
+}
+
+function handleKeyDown(e) {
+    if (e.key === 'w' || e.key === 'ArrowUp') {
+        data.paddle.speedY = -data.paddle_speed;
+    } else if (e.key === 's' || e.key === 'ArrowDown') {
+        data.paddle.speedY = data.paddle_speed;
+    }
+}
+
+function handleKeyUp(e) {
+    if ((e.key === 'w' || e.key === 's') || (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        data.paddle.speedY = 0;
+    }
+}
+
+
 
 function start_play_online() {
     if (game_in_progress) {
@@ -387,55 +444,36 @@ function start_play_online() {
 
     socket.onmessage = function (event) {
         const rec = JSON.parse(event.data);
-            console.log(rec);
-        if (rec['type'] == 'playerId') {
-            data['playerId'] = rec['playerId'];
-            document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
-            document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
-        } else if (rec['type'] == 'gameState') {
-            // console.log("Received game state")
-            data['gameState'] = rec['gameState'];
-            setPlayer(rec);
-            // draw(rec['gameState']);
-        } else if (rec['type'] == 'gameEnd') {
-            console.log(rec)
-            data['endGame'] = true;
-            data['playerId'] = null;
-            data['player'] = null;
-            document.getElementById('end_game').innerHTML = rec['message'];
-            // const message = {
-            //     'type': 'endGame',
-            //     'playerId': data['playerId'],
-            // };
-            // data['socket'].send(JSON.stringify(message));
-            data.socket.close();
-            // start_challenge_checking();
+        // Handle incoming messages from the WebSocket server
+        if (rec['type'] === 'playerId') {
+            handlePlayerId(rec);
+        } else if (rec['type'] === 'gameState') {
+            handleGameState(rec);
+        } else if (rec['type'] === 'gameEnd') {
+            handleGameEnd(rec);
         }
     }
 
-    socket.onclose = function () {
-        console.log('WebSocket connection closed');
-        data['endGame'] = true;
-        data['playerId'] = null;
-        game_in_progress = false;
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'w' || e.key === 'ArrowUp' ) {
-            data.paddle.speedY = - data.paddle_speed;
-        } else if (e.key === 's' || e.key === 'ArrowDown') {
-            data.paddle.speedY = data.paddle_speed;
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            console.log(`WebSocket connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        } else {
+            console.error('WebSocket connection died unexpectedly.');
         }
-    });
+        resetGameState();
+    }
     
-    window.addEventListener('keyup', (e) => {
-        if ((e.key === 'w' || e.key === 's') ) {
-            data.paddle.speedY = 0;
-        }
-        
-        if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-            data.paddle.speedY = 0;
-        }
+    window.addEventListener('beforeunload', function() {
+        console.log("Closing WebSocket before page unload");
+        socket.close();
     });
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 }
 
+console.log("Registering beforeunload event listener");
+window.addEventListener('beforeunload', function(event) {
+    console.log("Closing WebSocket before page unload (global)");
+    sendEndGameMessage();
+    data.socket.close();
+});

@@ -14,39 +14,6 @@ from django.template.loader import render_to_string
 import datetime
 
 logger = logging.getLogger(__name__)
-# class MyConsumer(AsyncWebsocketConsumer):
-
-#     async def connect(self):
-#         # Called when a new websocket connection is established
-#         await self.accept()
-#         user = self.scope['user']
-#         if user.is_authenticated:
-#             await self.update_user_status(user, 'online')
-#         else:
-#             await self.update_user_status(user, 'offline')
-
-#     async def disconnect(self, code):
-#         # Called when a websocket is disconnected
-#         user = self.scope['user']
-#         if user.is_authenticated:
-#             await self.update_user_status(user, 'offline')
-
-#     async def receive(self, text_data):
-#         # Called when a message is received from the websocket
-#         data = json.loads(text_data)
-#         if data['type'] == 'update_status':
-#             user = self.scope['user']
-#             if user.is_authenticated:
-#                 logger.debug(f"\n\nUpdating status of {user.username} to online {data}")
-#                 await self.update_user_status(user, "online")
-#             else:
-#                 logger.debug(f"\n\nUser {user.username} is not authenticated \n\n {data}")
-#                 await self.update_user_status(user, "offline")
-#     @database_sync_to_async
-#     def update_user_status(self, user, status):
-#         user_things.objects.filter(pk=user.pk).update(status=status)
-
-
 
 class PongConsumer(AsyncWebsocketConsumer):
     waiting_queue = []
@@ -59,9 +26,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         # logger.debug(self.waiting_queue)
         self.room_name = 'game_room'
         self.player_id = str(uuid.uuid4())
+        self.username = self.scope['user'].username
 
         await self.accept()
-        await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id}))
+        await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "sender": self.username, 'len': len(self.waiting_queue)}))
         # Check if there are any waiting users
         if len(self.waiting_queue) > 0:
             # Match the user with the first user in the queue
@@ -85,36 +53,40 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'score2': 0,
                 'end': False,
                 'paddle1': None,
-                'paddle2': None
+                'paddle2': None,
+                'sender': self.username
             }
             await self.send_game_state()
         else:
             self.waiting_queue.append(self)
 
     async def disconnect(self, close_code):
-        # Remove the user from the waiting queue or ongoing game
-        logger.debug(" \n\n Disconnected  WebSocket connection closed")
         if self in self.waiting_queue:
             self.waiting_queue.remove(self)
         else:
-            # Get the game state for the current room
             try:
                 game_state = self.game_states[self.room_group_name]
-
                 del self.game_states[self.room_group_name]
-                name = self.scope['user'].username
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         'type': 'game_end_message',
-                        'message': f'{name} has left the game.'
+                        'message': f'{self.username} has left the game.',
+                        'sender': "server"
                     }
                 )
+
                 await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
             except KeyError as e:
-                print(f"\n\nError accessing paddle data: {e}")
+                print(f"Error: {e}")
+
         await self.close()
+
+    async def close(self):
+        # Perform any necessary cleanup before closing the connection
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        await super().close()
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -142,7 +114,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if paddle1 is not None and paddle2 is not None:
                     asyncio.create_task(self.move_ball())
             elif data['type'] == 'endGame':
-                del self.game_states[room_group_name]
+                if room_group_name in self.game_states:
+                    del self.game_states[room_group_name]
                 await self.channel_layer.group_discard(room_group_name, self.channel_name)
                 await self.close()
         except KeyError as e:
@@ -206,18 +179,19 @@ class PongConsumer(AsyncWebsocketConsumer):
                 else:
                     game_state['score1'] += 1
                     
-                if game_state['score1'] == 10 or game_state['score2'] == 10:
+                if game_state['score1'] == 3 or game_state['score2'] == 3:
                     await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
                     await self.send_game_state()
-                    winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
+                    winner = game_state['p1_name'] if game_state['score1'] == 3 else game_state['p2_name']
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
                             'type': 'game_end_message',
-                            'message': f'{winner} won the game.'
+                            'message': f'{winner} won the game.',
+                            'sender': "server"
                         }
                     )
-                    await self.notify_tournament_consumer(winner, game_state['p1_name'], game_state['p2_name'])
+                    # await self.notify_tournament_consumer(winner, game_state['p1_name'], game_state['p2_name'])
                     game_state['end'] = True
                     return
                 ball['velocityY'] = 0
@@ -274,9 +248,11 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def game_end_message(self, event):
         # Handle the game end message received by other players
         message = event['message']
+        sender = event['sender']
         await self.send(text_data=json.dumps({
             'type': 'gameEnd',
-            'message': message
+            'message': message,
+            'sender': sender
         }))
 
 
@@ -895,7 +871,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 else:
                     game_state['score1'] += 1
                     
-                if game_state['score1'] == 10 or game_state['score2'] == 10:
+                if game_state['score1'] == 3 or game_state['score2'] == 3:
                     await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
                     await self.send_game_state(self.match_room, game_state)
                     winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
@@ -903,7 +879,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                         self.room_group_name,
                         {
                             'type': 'game_end_message',
-                            'message': f'{winner} won the game.'
+                            'message': f'{winner} won the game.',
+                            'sender': 'server'
                         }
                     )
                     await self.notify_tournament_consumer(winner, game_state['p1_name'], game_state['p2_name'])
