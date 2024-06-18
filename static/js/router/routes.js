@@ -2,13 +2,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
 
 const config = {
-	ipaddress: '',
+	ip: '',
 	client_id: '',
 	redirectUri: '',
 	secret: '',
 };
 
-if (!config.ipaddress) {
+if (!config.ip) {
 	getIPAddress();
 }
 
@@ -21,15 +21,18 @@ async function getIPAddress() {
 			loginWith42();
 		}
 	} catch (error) {
-		console.error('Error fetching IP address:', error);
+		showAlert('Unknown error occurred', 'danger');
 	}
 }
 
 function authorize42Intra() {
-	const { client_id, redirectUri } = config;
-	const state = Math.random().toString(36).substring(7);
-	const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirectUri}&state=${state}&response_type=code`;
-	window.location.href = authUrl;
+    const clientId = config.client_id;
+    const redirectUri = config.redirectUri;
+    const authorizationEndpoint = 'https://api.intra.42.fr/oauth/authorize';
+
+    const state = Math.random().toString(36).substring(7);
+    const authUrl = `${authorizationEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&response_type=code`;
+    window.location.href = authUrl;
 }
 
 function updateURL(url) {
@@ -136,26 +139,44 @@ function handleButtonClick(event) {
 
 document.addEventListener('DOMContentLoaded', () => {
 	document.body.addEventListener('click', handleButtonClick);
+	const path = window.location.pathname;
+    intializeJsOnPathChange(path);
 });
 
-window.addEventListener('beforeunload', () => {
-	navigator.sendBeacon('/unload/');
-});
+function intializeJsOnPathChange(path) {
+	if (path === '/chat/') {
+		waitForElement('.chat__container', initializeChat);
+	} else if (path === '/leaderboard/') {
+		waitForElement('.leaderboard', init_leaderboard);
+	} else if (path.includes('/profile/')) {
+		waitForElement('.profile-container__', init_profile);
+	}
+}
 
 window.onpopstate = event => {
 	const path = event.state ? event.state.path : '/';
 	handleRoute(path, true) || routeHandlers['/'](false);
-	if (path === '/chat/') {
-		setTimeout(initializeChat, 1000);
-	}
-	else if (path === '/leaderboard/') {
-		setTimeout(init_leaderboard, 1000);
-	}
-	else if (path.includes('/profile/')) {
-		setTimeout(init_profile, 1000);
-	}
+	intializeJsOnPathChange(path);
 };
 
+function waitForElement(selector, callback) {
+	requestAnimationFrame(() => {
+		const element = document.querySelector(selector);
+		if (element) {
+			callback();
+		} else {
+			const observer = new MutationObserver((mutations, obs) => {
+				if (document.querySelector(selector)) {
+					callback();
+					obs.disconnect();
+				}
+			});
+			observer.observe(document.body, { childList: true, subtree: true });
+		}
+	});
+}
+
+
 function loginWith42() {
-	handleRoute(`http://${config.ipaddress}:8000/exchange_code?code=${code}`);
+	handleRoute(`http://${config.ip}:8000/exchange_code?code=${code}`);
 }

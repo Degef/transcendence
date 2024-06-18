@@ -40,7 +40,7 @@
 					<div class="collapse navbar-collapse" id="navbarNav">
 						<ul class="navbar-nav ms-auto">
 							{% if user.is_authenticated %}
-								<li class="nav-item"><a class="nav-link" href="#" id="home">Play</a></li>
+								<li class="nav-item"><a class="nav-link" href="#" id="home">Home</a></li>
 								<li class="nav-item"><a title="profile" id="profile" class="nav-link" href="#" onclick="loadProfile('{{ request.user.username }}'); return false;">Profile</a></li>
 								<li class="nav-item"><a title="leaderboard" id="leaderboard" class="nav-link" href="#">Leaderboard</a></li>
 								<li class="nav-item"><a title="Chat" id="chatLink" class="nav-link" href="#">Chat</a></li>
@@ -57,7 +57,19 @@
 			</nav>
 		</header>
 
+		<div class="alert alert-dismissible fade d-none fixed-alert" role="alert" id="responseAlert">
+			<span class="response__message"></span>
+		</div>
 		<main id="main-container" class="container flex-grow-1 d-flex flex-column align-items-center p-0 p-md-2">
+			<div id="custom-confirm" class="modal">
+				<div class="modal-content">
+					<p id="challenge-message" class="text-large">you have been challenged by Degef</p>
+					<div>
+						<button id="decline-button" class="btn btn-outline-light btn-lg mb-3">Decline</button>
+						<button id="accept-button" class="btn btn-outline-light btn-lg mb-3">Accept</button>
+					</div>
+				</div>
+			</div>
 			{% block content %} {% endblock %}
 		</main>
 

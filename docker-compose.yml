@@ -5,10 +5,9 @@ services:
   web:
     build: .
     container_name: django
-    ports:
-      - '8000:8000'
     volumes:
       - ./:/app
+      - ./static/:/app/static
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}
@@ -38,6 +37,17 @@ services:
     container_name: redis
     ports:
       - '6379:6379'
+
+  nginx:
+    build: ./nginx/
+    container_name: nginx
+    ports:
+      - '443:443'
+    depends_on:
+      - web
+    volumes:
+      - ./static/:/app/static
+      - ./media/:/app/media
 
 volumes:
   pg_data:

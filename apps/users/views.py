@@ -21,21 +21,30 @@ from django_ratelimit.decorators import ratelimit
 import json
 from django.contrib.auth.password_validation import validate_password, ValidationError
 from django.urls import reverse
+from django.db import transaction
 
 load_dotenv()
 
 def get_ipaddress(request):
-	ip  = os.environ.get('IP_ADDRESS')
+	IP  = os.getenv('IP_ADDRESS')
+	CLIENT_ID = os.getenv('UID_42')
+	SECRET = os.getenv('SECRET_42')
+
+	if not IP or not CLIENT_ID or not SECRET:
+		return JsonResponse({'error': 'Missing environment configuration'})
+	
 	data = {
-		'ip': ip,
-		'client_id': os.environ.get('UID_42'),
-		'redirect_uri': 'http://' + ip + ':8000',
-		'secret': os.environ.get('SECRET_42'),
+		'ip': IP,
+		'client_id': CLIENT_ID,
+		'redirectUri': f'https://{IP}',
+		'secret': SECRET,
 	}
 	return JsonResponse(data)
 
+
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login(request):
+	logger.debug(f"\n\n\n${request}\n\n\n")
 	if request.method == 'POST':
 		form = CustomAuthenticationForm(request, data=request.POST)
 		if form.is_valid():
@@ -57,6 +66,10 @@ def login(request):
 	return render(request, 'login.html', {'form': form})
 
 def logout(request):
+	with transaction.atomic():
+		user_thing = request.user.user_things
+		user_thing.status = 'offline'
+		user_thing.save()
 	auth_logout(request)
 	return render(request, 'landing.html')
 
@@ -283,12 +296,12 @@ def delete_profile(request):
 
 def exchange_code(request):
 	code = request.GET.get('code')
-	ip  = os.environ.get('IP_ADDRESS')
+	IP  = os.getenv('IP_ADDRESS')
 
 	token_url = 'https://api.intra.42.fr/oauth/token'
-	client_id = os.environ.get('UID_42')
-	client_secret = os.environ.get('SECRET_42')
-	redirect_uri = 'http://' + ip + ':8000'
+	client_id = os.getenv('UID_42')
+	client_secret = os.getenv('SECRET_42')
+	redirect_uri = 'https://' + IP
 	grant_type = 'authorization_code'
 
 	# Request parameters
@@ -296,12 +309,12 @@ def exchange_code(request):
 		'client_id': client_id,
 		'client_secret': client_secret,
 		'code': code,
-		'redirect_uri': redirect_uri,
+		'redirect_uri': f'https://{IP}',
 		'grant_type': grant_type,
 	}
-	context = { 'games': Game.objects.all()}
 	# # Exchange code for access token using POST request
 	token_response = requests.post(token_url, data=params).json()
+	logger.info(f"\n\n\nToken received: {token_response}\n\n\n")
 	# print("Token received")
 	# print(token_response)
 	if 'access_token' in token_response:
@@ -317,17 +330,18 @@ def exchange_code(request):
 		existing_user = User.objects.filter(username=user_name).first()
 
 		if existing_user:
-			login(request, existing_user)
+			auth_login(request, existing_user)
 			return redirect('home')
 
 		img_url = user_response['image']['versions']['small']
 		# Create a new user
 		user = User.objects.create(username=user_name, email=user_email)
+		logger.info(f"\n\n\nNew user {user_name} created successfully.\n\n\n")
 		img_temp = NamedTemporaryFile(delete=True)
 		img_temp.write(requests.get(img_url).content)
 		img_temp.flush()
 		login(request, user)
-		text = render(request, 'pong/home.html', context)
+		text = render(request, 'pong/home.html')
 		existing_profile = Profile.objects.filter(user=user).first()
 		existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
 		return text

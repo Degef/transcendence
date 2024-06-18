@@ -35,10 +35,10 @@ const api = {
 };
 
 
-const responseMessageDiv = document.querySelector('.response__message');
-const responseAlert = document.getElementById('responseAlert');
 
 const showAlert = (message, type) => {
+	const responseMessageDiv = document.querySelector('.response__message');
+	const responseAlert = document.getElementById('responseAlert');
 	responseMessageDiv.innerHTML = message;
 	responseAlert.classList.remove('d-none', 'alert-success', 'alert-danger', 'show');
 	responseAlert.classList.add(`alert-${type}`, 'show');
@@ -106,7 +106,7 @@ function handleChatInputKeydown(event, chatForm) {
 function setupWebSocket() {
 	if (socket && socket.readyState === WebSocket.OPEN) socket.close();
 
-	socket = new WebSocket(`ws://${window.location.host}/ws?session_key=${sessionKey}/`);
+	socket = new WebSocket(`wss://${window.location.host}/ws?session_key=${sessionKey}/`);
 	socket.onopen = () => console.log('WebSocket connection established');
 	socket.onmessage = event => {
 		getMessageById(event.data);
@@ -168,7 +168,7 @@ function showDropdownMenu(target, username) {
 	document.getElementById('view-profile').onclick = () => viewUserProfile(username);
 	document.getElementById('block-user').onclick = () => blockUser(username);
 	document.getElementById('unblock-user').onclick = () => unblockUser(username);
-	document.getElementById('invite-to-game').onclick = () => inviteToGame(username);
+	document.getElementById('invite-to-game').onclick = () => challengeUser(username);
 }
 
 function viewUserProfile(username) {
@@ -304,9 +304,3 @@ function fetchUserProfileAndSetRecipient(userName) {
 		.then(userProfile => setCurrentRecipient(userProfile))
 		.catch(utils.logError);
 }
-
-window.addEventListener('DOMContentLoaded', function (event) {
-	if (window.location.pathname === '/chat/') {
-		setTimeout(initializeChat, 1000);
-	}
-});

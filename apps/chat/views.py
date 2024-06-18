@@ -10,6 +10,8 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 
 def get_current_user(request):
+	if not request.user.is_authenticated:
+		return JsonResponse({'Error': 'User is not authenticated'})
 	sessionKey = request.session.session_key
 	currentUser = request.user.username
 	currentUserImage = request.user.profile.image.url

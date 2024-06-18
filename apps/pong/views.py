@@ -22,25 +22,9 @@ logger = logging.getLogger(__name__)
 
 def home(request):
 	if request.user.is_authenticated:
-		with transaction.atomic():
-			user_thing = request.user.user_things
-			user_thing.status = "online"
-			user_thing.save()
-
-	context = {
-		'games': Game.objects.all()
-	}
-	if request.user.is_authenticated:
-		users = User.objects.exclude(username=request.user.username)
-
-		context = {
-			'games': Game.objects.all(),
-			'users':users,
-		}
-		return render(request, 'home.html', context)
+		return render(request, 'pong/home.html')
 	else:
-		context = { 'games': Game.objects.all()}
-		return render(request, 'pong/landing.html', context)
+		return render(request, 'pong/landing.html')
 
 class FaviconView(View):
 	def get(self, request, *args, **kwargs):
@@ -145,17 +129,6 @@ def leaderboard(request):
 	}
 	
 	return render(request, 'pong/leaderboard.html', context)
-
-@csrf_exempt
-def unload(request):
-	# logger.debug("\n\nBye World\n\n")
-	if request.user.is_authenticated:
-		with transaction.atomic():
-			user_thing = request.user.user_things
-			user_thing.status = "offline"
-			user_thing.save()
-			# logger.debug(f'\n\n{user_thing.status}\n\n')
-	return JsonResponse({'success': False})
 
 def offline_tourn(request):
 	return render(request, 'pong/offline_tourn.html')

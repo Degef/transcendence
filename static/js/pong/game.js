@@ -370,7 +370,7 @@ function start_play_online() {
     }
     game_in_progress = true;
 
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
+    const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
     data['hit'] = new Audio();

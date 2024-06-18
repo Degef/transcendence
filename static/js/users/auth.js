@@ -1,6 +1,7 @@
 let statusSocket = null;
 
 async function handleFormSubmission(formId, url, successRoute, back_or_forward = 1) {
+	const csrfToken = getCookie('csrftoken');
 	const form = document.getElementById(formId);
 	if (!form) {
 		handleRoute(url, true);
@@ -9,6 +10,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 	const formData = new FormData(form);
 	const responseMessageDiv = document.querySelector('.response__message');
 	const responseAlert = document.getElementById('responseAlert');
+	console.log(formData);
 
 	const showAlert = (message, type) => {
 		responseMessageDiv.innerHTML = message;
@@ -23,11 +25,15 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 	try {
 		const response = await fetch(url, {
 			method: 'POST',
+			headers: {
+				'X-CSRFToken': csrfToken,
+			},
 			body: formData,
 		});
 
 		if (response.headers.get('Content-Type')?.includes('application/json')) {
 			const jsonResponse = await response.json();
+			console.log(jsonResponse);
 			if (!jsonResponse.success) {
 				const errors = JSON.parse(jsonResponse.errors);
 				let firstError = Object.entries(errors)[0][1][0].message;
@@ -37,9 +43,6 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			} else {
 				form.reset();
 				showAlert(jsonResponse.message, 'success');
-				if (url === '/login/' && jsonResponse.success) {
-					setUpStatusWebSocket();
-				}
 				setTimeout(() => { handleRoute(successRoute, true); }, 2000);
 			}
 		} else {
@@ -61,10 +64,11 @@ async function register(back_or_forward = 1) {
 
 async function login(back_or_forward = 1) {
 	await handleFormSubmission('login-form', '/login/', '/', back_or_forward);
+	initializeChallengeSocket();
 }
 
 function setUpStatusWebSocket() {
-	statusSocket = new WebSocket('ws://' + window.location.host + '/ws/status/');
+	statusSocket = new WebSocket('wss://' + window.location.host + '/ws/status/');
 
 	statusSocket.onopen = function(e) {
 		console.log('WebSocket connection established');
