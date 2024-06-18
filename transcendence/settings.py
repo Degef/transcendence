@@ -19,7 +19,15 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', os.environ.get('IP_ADDRESS'), "*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('IP_ADDRESS'), "*"]
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + os.environ.get('IP_ADDRESS')]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost",
+    "https://127.0.0.1",
+    "https://" + os.environ.get('IP_ADDRESS'),
+]
 
 # Application definition
 

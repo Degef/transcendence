@@ -37,12 +37,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
-                'type': 'recieve_group_message',
+                'type': 'recieve_group_message_chat',
                 'message': message
             }
         )
 
-    async def recieve_group_message(self, event):
+    async def recieve_group_message_chat(self, event):
         message = event['message']
 
         await self.send(

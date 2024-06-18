@@ -203,8 +203,6 @@
 		<canvas id="gamesChart" width="400" height="200"></canvas>
 	</section>
 	<script id="gamesData" type="application/json">{{ games2|safe }}</script>
-	<script>
-		const user_id = {{ user.id }};
-	</script>
+	<script id="userID" type="application/json">{{ user.id|safe }}</script>
 </section>
 {% endblock %}

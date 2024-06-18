@@ -5,44 +5,11 @@ import logging
 import asyncio
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
-from apps.pong.models import Game, Challenge, create_challenge
+from apps.pong.models import Game, Challenge, create_challenge, accept_challenge, decline_challenge, user_has_pending_challenge
 from asgiref.sync import sync_to_async
 import math
 
 logger = logging.getLogger(__name__)
-# class MyConsumer(AsyncWebsocketConsumer):
-
-#     async def connect(self):
-#         # Called when a new websocket connection is established
-#         await self.accept()
-#         user = self.scope['user']
-#         if user.is_authenticated:
-#             await self.update_user_status(user, 'online')
-#         else:
-#             await self.update_user_status(user, 'offline')
-
-#     async def disconnect(self, code):
-#         # Called when a websocket is disconnected
-#         user = self.scope['user']
-#         if user.is_authenticated:
-#             await self.update_user_status(user, 'offline')
-
-#     async def receive(self, text_data):
-#         # Called when a message is received from the websocket
-#         data = json.loads(text_data)
-#         if data['type'] == 'update_status':
-#             user = self.scope['user']
-#             if user.is_authenticated:
-#                 logger.debug(f"\n\nUpdating status of {user.username} to online {data}")
-#                 await self.update_user_status(user, "online")
-#             else:
-#                 logger.debug(f"\n\nUser {user.username} is not authenticated \n\n {data}")
-#                 await self.update_user_status(user, "offline")
-#     @database_sync_to_async
-#     def update_user_status(self, user, status):
-#         user_things.objects.filter(pk=user.pk).update(status=status)
-
-
 
 class PongConsumer(AsyncWebsocketConsumer):
 	waiting_queue = []
@@ -301,17 +268,34 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 
 		if action == 'send_challenge':
 			await self.send_challenge(username)
+		elif action == 'respond_challenge':
+			await self.respond_challenge(username, data.get('response'))
 
 	async def send_challenge(self, username):
 		try:
 			challengee = await sync_to_async(User.objects.get)(username=username)
+			check_pending_challenge = await sync_to_async(user_has_pending_challenge)(challengee.username)
+			if check_pending_challenge is True:
+				await self.send(text_data=json.dumps({'error': f'{challengee} is in another challenge'}))
+				return
 			challenge = await sync_to_async(create_challenge)(self.user, challengee)
-			if challenge:
-				await self.channel_layer.group_add(f"user_{challengee.id}", self.channel_name)
-			else:
-				await self.send(text_data=json.dumps({'error': 'Challenge already exists'}))
 		except User.DoesNotExist:
 			await self.send(text_data=json.dumps({'error': 'User does not exist'}))
+
+	async def respond_challenge(self, username, response):
+		try:
+			logger.debug(f"\n\nResponding to challenge from {username} with {response}")
+			challenger = await sync_to_async(User.objects.get)(username=username)
+			challenge = await sync_to_async(Challenge.objects.get)(challenger=challenger, challengee=self.user)
+			if response == 'accept':
+				await sync_to_async(accept_challenge)(self.user, challenger)
+			elif response == 'decline':
+				await sync_to_async(decline_challenge)(self.user, challenger)
+
+		except User.DoesNotExist:
+			await self.send(text_data=json.dumps({'error': 'User does not exist from god knows where'}))
+		except Challenge.DoesNotExist:
+			await self.send(text_data=json.dumps({'error': 'Challenge does not exist'}))
 
 	async def challenge_message(self, event):
 		message = event['message']

@@ -57,19 +57,28 @@ function showSection(activeTabId, activeSectionId) {
 	}
 }
 
-window.addEventListener('DOMContentLoaded', function (event) {
-	if (window.location.pathname.includes('/profile/')) {
-		setTimeout(init_profile, 1000);
-	}
-});
 
 function drawChart() {
 	const ctx = document.getElementById('gamesChart').getContext('2d');
 	const gamesData = JSON.parse(document.getElementById('gamesData').textContent);
+	const user_id = document.getElementById('userID').textContent;
 
 	const labels = gamesData.map(game => new Date(game.fields.date).toLocaleDateString());
-	const wins = gamesData.map(game => (game.fields.winner === user_id ? 1 : 0));
-	const losses = gamesData.map(game => (game.fields.winner !== user_id ? 1 : 0));
+
+	let accumulatedWins = 0;
+	let accumulatedLosses = 0;
+	const wins = [];
+	const losses = [];
+
+	gamesData.forEach(game => {
+		if (game.fields.winner == user_id) {
+			accumulatedWins++;
+		} else {
+			accumulatedLosses++;
+		}
+		wins.push(accumulatedWins);
+		losses.push(accumulatedLosses);
+	});
 
 	if (chartInstance) {
 		chartInstance.destroy();
@@ -81,19 +90,21 @@ function drawChart() {
 			labels: labels,
 			datasets: [
 				{
-					label: 'Wins',
+					label: 'Accumulated Wins',
 					data: wins,
 					borderColor: 'rgba(75, 192, 192, 1)',
 					backgroundColor: 'rgba(75, 192, 192, 0.2)',
 					fill: false,
+					stepped: true,
 					tension: 0.1
 				},
 				{
-					label: 'Losses',
+					label: 'Accumulated Losses',
 					data: losses,
 					borderColor: 'rgba(255, 99, 132, 1)',
 					backgroundColor: 'rgba(255, 99, 132, 0.2)',
 					fill: false,
+					stepped: true,
 					tension: 0.1
 				}
 			]
@@ -109,7 +120,7 @@ function drawChart() {
 				y: {
 					title: {
 						display: true,
-						text: 'Rate'
+						text: 'Cumulative Count'
 					},
 					beginAtZero: true
 				}
@@ -117,6 +128,7 @@ function drawChart() {
 		}
 	});
 }
+
 
 async function update(back_or_forward = 1) {
 	await handleFormSubmission('profile_form', '/edit_profile/', '/profile/', back_or_forward);

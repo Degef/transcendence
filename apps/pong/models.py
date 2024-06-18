@@ -1,9 +1,11 @@
 from django.db.models import (Model, TextField, DateTimeField, ForeignKey,
-							CASCADE, IntegerField, CharField)
+							CASCADE, IntegerField, CharField, Q)
 from django.contrib.auth.models import User
 
 from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async, async_to_sync
+from django.core.exceptions import ObjectDoesNotExist
+import json
 
 # Create your models here.
 class Game(Model):
@@ -51,10 +53,10 @@ class Challenge(Model):
 	def __str__(self):
 		return f'{self.challenger} challenged {self.challengee}'
 
-	def notify_clients(self):
+	def notify_clients(self, message):
 		notification = {
 			'type': 'receive_group_message',
-			'message': f'{self.challenger} is challenging {self.challengee}',
+			'message': message,
 		}
 
 		channel_layer = get_channel_layer()
@@ -67,10 +69,52 @@ class Challenge(Model):
 		verbose_name = 'Challenge'
 		verbose_name_plural = 'Challenges'
 
+
+def user_has_pending_challenge(username):
+	try:
+		user = User.objects.get(username=username)
+	except ObjectDoesNotExist:
+		return False
+
+	return Challenge.objects.filter(
+		(Q(challengee=user) | Q(challenger=user)) & 
+		(Q(status=Challenge.PENDING) | Q(status=Challenge.ACCEPTED))
+	).exists()
+
+
 def create_challenge(challenger, challengee):
-	if Challenge.objects.filter(challenger=challenger, challengee=challengee).exists()\
-		or Challenge.objects.filter(challenger=challengee, challengee=challenger).exists():
-		return None
 	challenge = Challenge.objects.create(challenger=challenger, challengee=challengee)
-	challenge.notify_clients()
+	message = {
+		'type': 'challenge_created',
+		'challenger': challenger.username,
+		'challengee': challengee.username,
+	}
+	challenge.notify_clients(json.dumps(message))
 	return challenge
+
+def accept_challenge(challengee, challenger):
+	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
+	if challenge:
+		challenge.status = Challenge.ACCEPTED
+		message = {
+			'type': 'challenge_accepted',
+			'challenger': challenger.username,
+			'challengee': challengee.username,
+		}
+		challenge.notify_clients(json.dumps(message))
+		challenge.save()
+		return challenge
+	return None
+
+def decline_challenge(challengee, challenger):
+	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
+	if challenge:
+		message = {
+			'type': 'challenge_declined',
+			'challenger': challenger.username,
+			'challengee': challengee.username,
+		}
+		challenge.notify_clients(json.dumps(message))
+		challenge.delete()
+		return challenge
+	return None
