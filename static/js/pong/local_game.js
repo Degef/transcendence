@@ -6,7 +6,7 @@ var isIntournament = false;
 
 const player1Element = document.getElementById('player1Name');
 const player2Element = document.getElementById('player2Name');
-const player1_name = player1Element ? player1Element.textContent.trim() : 'Player1';
+const player1_name  = player1Element ? player1Element.textContent.trim() : 'Player1';
 const player2_name = player2Element ? player2Element.textContent.trim() : 'Player2';
 
 function getTextContentById(id) {
@@ -82,6 +82,7 @@ function render1(data3) {
 
 function gameLoop1(data3) {
     if (data3['player1'].score == 5 || data3['player2'].score == 5) {
+        winner = data3['player1'].score == 5 ? getTextContentById('player1Name') : getTextContentById('player2Name');
         clearInterval(intervalId);
         if (data3['player1'].score == 5) {
             drawText2(data3['ctx'], getTextContentById('player1Name') + " Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
@@ -96,9 +97,10 @@ function gameLoop1(data3) {
         displayBtn('restart_btn');
         // document.getElementById('quit_game').style.display = 'none';
         if (isIntournament) {
+            // displayWinnerModal(winner,  getTextContentById('player1Name'));
             setTimeout(() => {
                 onGameCompleted();
-            }, 4000);
+            }, 400);
         }
         return;
     } else if (terminate_game) {
@@ -122,10 +124,10 @@ function start_local_game() {
     if (game_in_progress) {
         return;
     }
-    if (challengeInterval != null) {
-        clearInterval(challengeInterval);
-        challengeInterval = null;
-    }
+    // if (challengeInterval != null) {
+    //     clearInterval(challengeInterval);
+    //     challengeInterval = null;
+    // }
     game_in_progress = true;
     
     if (data3 == null) {

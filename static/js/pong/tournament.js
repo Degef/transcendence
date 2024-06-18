@@ -1,8 +1,188 @@
 let players = [];
 let currentPlayerIndex = 0;
 let totalPlayers = 0;
-
 let tournamentSection, mainSection, player1, player2, matchElement;
+
+function getBtnContainer(buttonId, label, clickHandler, ...params) {
+    // Create button element
+    let buttonContainer = document.createElement('div');
+    buttonContainer.className = 'row justify-content-center';
+
+    let colContainer = document.createElement('div');
+    colContainer.className = 'col button-container justify-content-center';
+
+    let btn = document.createElement('button');
+    btn.id = buttonId;
+    btn.className = 'btn btn-outline-light mt-3 btn-custom';
+    btn.type = 'submit';
+    btn.textContent = label;
+
+    if (typeof clickHandler === 'function') {
+        if (params.length > 0) {
+            // Call clickHandler with params if provided
+            btn.addEventListener('click', function(event) {
+                clickHandler.apply(null, params);
+            });
+        } else {
+            // Call clickHandler without params
+            btn.addEventListener('click', clickHandler);
+        }
+    }
+    colContainer.appendChild(btn);
+    buttonContainer.appendChild(colContainer);
+    return buttonContainer;
+}
+
+function removeBtnContainer(buttonContainer) {
+    // Ensure buttonContainer is a valid element
+    if (!(buttonContainer instanceof Element)) {
+        console.error('Invalid parameter. Expected an Element.');
+        return;
+    }
+    buttonContainer.remove();
+}
+
+
+const startTrounBtn = getBtnContainer('startTour', 'Start Tournament', startFirstMatch, null);
+let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
+
+var winnerModal = function getWinnerModal(winner, looser) {
+    modalHtml = ` 
+        <center> 
+            <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content justify-content-center">
+                        <div class="modal-header justify-content-center">
+                            <h4 class="modal-title" id="myModalLabel">Winner</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card-body text-center"> 
+                                <img src="https://img.icons8.com/?size=100&id=VUt5dWfcfFzt&format=png&color=000000">
+                                <h4>CONGRATULATIONS!</h4>
+                                <p>The winner of this game is ${winner}</p> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    </center> 
+    `;
+    return modalHtml;
+
+} 
+
+var matchModal = function getMatchModal(player1, player2) {
+    modalHtml = ` 
+        <center> 
+            <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content justify-content-center">
+                        <div class="modal-header justify-content-center">
+                            <h4 class="modal-title" id="myModalLabel">Upcoming Match</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card-body text-center"> 
+                                <img src="/media/images/matchm.png">
+                                <h4>The match between</h4>
+                                <div class="d-flex justify-content-center">
+                                    <div class="box box-1">
+                                        <div class="p-2 text-white">${player1}</div>
+                                    </div>
+                                    <div class="vsbox">
+                                        <img src="/media/images/vss.png" alt="VS Icon">
+                                    </div>
+                                    <div class="box box-2">
+                                        <div class="p-2 text-white">${player2} </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    </center> 
+    `;
+    return modalHtml;
+} 
+
+function appendToContainer(toBeAppended, classname) {
+    const container = document.querySelector(`.${classname}`);
+    if (container) {
+        container.appendChild(toBeAppended);
+    } else {
+        console.error(`Element with class "${classname}" not found.`);
+    }
+}
+
+
+function displayWinnerModal(winner, loser) {
+    let modalContainer = document.getElementById('modal-container');
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'modal-container';
+        document.body.appendChild(modalContainer);
+    }
+
+    // Insert the modal HTML into the container
+    modalContainer.innerHTML = winnerModal(winner, loser);
+    const myModal = new bootstrap.Modal('#m-result-modal');
+    const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+    modal.show();
+    // setTimeout(() => {
+    //     myModal.hide();
+    // }, 10000);
+    function hideModalOnClickOutsideTwo(event) {
+        console.log(event);
+        if (!modalContainer.contains(event.target)) {
+            myModal.hide();
+            document.removeEventListener('click', hideModalOnClickOutsideTwo);
+        }
+    }
+
+    // Add event listener to hide modal on click outside
+    document.addEventListener('click', hideModalOnClickOutsideTwo);
+
+    // Optional: Add event listener to prevent hiding modal if clicked inside
+    modalContainer.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+}
+
+
+
+function displayMatchModal(player1, player2) {
+  
+    let modalContainer = document.getElementById('modal-container');
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'modal-container';
+        document.body.appendChild(modalContainer);
+    }
+
+    // Insert the modal HTML into the container
+    modalContainer.innerHTML = matchModal(player1, player2);
+    const myModal = new bootstrap.Modal('#m-result-modal');
+    const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+    modal.show();
+    // Function to hide modal
+    // setTimeout(() => {
+    //     myModal.hide();
+    // }, 10000);
+    function hideModalOnClickOutside(event) {
+        if (!modalContainer.contains(event.target)) {
+            modal.hide();
+            document.removeEventListener('click', hideModalOnClickOutside);
+        }
+    }
+
+    // Add event listener to hide modal on click outside
+    document.addEventListener('click', hideModalOnClickOutside);
+
+    // Optional: Add event listener to prevent hiding modal if clicked inside
+    modalContainer.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+}
 
 
 function shuffleArray(array) {
@@ -23,10 +203,10 @@ function setupTournament(playerCount) {
     tournElement.innerHTML = `
         <div class="center-container">
             <div id="playerFormContainer" class="input-group mb-3 square-box">
-                <h2 style="font-weight: bold;">Enter Player Names <br></h2>
+                <h2">Enter Player Names <br></h2>
                 <form id="playerForm">
-                    <div id="playerInputs" style="display: flex; align-items: center;">
-                        <label for="playerName" style="margin-right: 10px;">Player 1:</label>
+                    <div id="playerInputs">
+                        <label for="playerName">Player 1:</label>
                         <input type="text" id="playerName" name="playerName" required>
                     </div>
                     <button type="button" id="submitPlayer">Next</button>
@@ -126,7 +306,7 @@ async function organizeTournament(players) {
         
         const tournElement = tournElementtmp[0];
         tournElement.innerHTML = parsedjson.tournament_bracket;
-        startFirstMatch();
+        appendToContainer(startTrounBtn, 'my-5.details-section');
     } catch (error) {
         console.error('Error fetching tournament bracket:', error);
     }
@@ -141,6 +321,7 @@ function startFirstMatch() {
         player1 = matchElement.querySelector('.team-top').innerText;
         player2 = matchElement.querySelector('.team-bottom').innerText;
         const matchId = matchElement.getAttribute('.matchup');
+        removeBtnContainer(startTrounBtn);
         startMatch(player1, player2, matchElement);
     }
 }
@@ -156,9 +337,12 @@ function updateScores(matchElement, player1_score, player2_score) {
     if (!matchElement.closest('.champion')) {
         // Proceed with updating the next round and starting the next match
         updateNextRound(matchElement);
-        setTimeout(() => {
-            startNextMatch(matchElement);
-        }, 10000);
+        nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
+        appendToContainer(nextGameBtn, 'my-5.details-section');
+        
+        // setTimeout(() => {
+        //     startNextMatch(matchElement);
+        // }, 10000);
     } else {
         console.log("This is the final game. The tournament is complete.");
         // Additional actions when the tournament is complete can be added here
@@ -185,6 +369,7 @@ function startNextMatch(currentMatchElement) {
     if (matchElement) {
         player1 = matchElement.querySelector('.team-top').innerText.trim();
         player2 = matchElement.querySelector('.team-bottom').innerText.trim();
+        removeBtnContainer(nextGameBtn);
         startMatch(player1, player2, matchElement);
     }
 }
@@ -373,32 +558,31 @@ function updateNextMatchup(winner, loser) {
 }
 
 function onGameCompleted() {
+    const player1_score = getScoresDisplay('p1');
+    const player2_score = getScoresDisplay('p2');
+    const winner = player1_score > player2_score ? player1 : player2;
+    displayWinnerModal(winner, player2);
     if (tournamentSection && tournamentSection.parentNode) {
         tournamentSection.parentNode.removeChild(tournamentSection);
     }
     // Restore the original body content
     mainSection.style.display = 'block';
 
-    const player1_score = getScoresDisplay('p1');
-    const player2_score = getScoresDisplay('p2');
     // const player1_score = p1score; // Example score
     // const player2_score = p2score; // Example score
 
-    const winner = player1_score > player2_score ? player1 : player2;
     isIntournament = false;
     updateScores(matchElement, player1_score, player2_score);
 }
 
 
 async function startMatch(player1, player2, matchElement) {
+    // displayMatchModal(player1, player2);
     mainSection = document.querySelector('.main-section');
     const mainContainer = document.getElementById('main-container');
-    setTimeout(() => {
-        mainSection.style.display = 'none';
-    }, 1000);
+    mainSection.style.display = 'none';
     
-    // Wait for 10 seconds before hiding the content of the whole page
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // await new Promise(resolve => setTimeout(resolve, 1000));
     const csrftoken = getCookie('csrftoken');
 
     try {
@@ -434,6 +618,7 @@ async function startMatch(player1, player2, matchElement) {
 
         // Append the tournament section before the footer
         mainContainer.appendChild(tournamentSection);
+        displayMatchModal(player1, player2);
     } catch (error) {
         console.error('Error fetching local game page:', error);
     }

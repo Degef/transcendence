@@ -157,9 +157,11 @@ def unload(request):
 			# logger.debug(f'\n\n{user_thing.status}\n\n')
 	return JsonResponse({'success': False})
 
+@login_required
 def offline_tourn(request):
 	return render(request, 'pong/offline_tourn.html')
 
+@login_required
 def off_tour_bracket(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
