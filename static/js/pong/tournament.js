@@ -84,11 +84,11 @@ var matchModal = function getMatchModal(player1, player2) {
                             <div class="card-body text-center"> 
                                 <img src="/media/images/matchm.png">
                                 <h4>The match between</h4>
-                                <div class="d-flex justify-content-center">
+                                <div class="d-flex justify-content-center matchbox">
                                     <div class="box box-1">
                                         <div class="p-2 text-white">${player1}</div>
                                     </div>
-                                    <div class="vsbox">
+                                    <div class="vsbox justify-content-center">
                                         <img src="/media/images/vss.png" alt="VS Icon">
                                     </div>
                                     <div class="box box-2">
