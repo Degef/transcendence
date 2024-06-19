@@ -10,7 +10,6 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 	const formData = new FormData(form);
 	const responseMessageDiv = document.querySelector('.response__message');
 	const responseAlert = document.getElementById('responseAlert');
-	console.log(formData);
 
 	const showAlert = (message, type) => {
 		responseMessageDiv.innerHTML = message;
@@ -30,7 +29,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			},
 			body: formData,
 		});
-
+		console.log(response.status);		
 		if (response.headers.get('Content-Type')?.includes('application/json')) {
 			const jsonResponse = await response.json();
 			console.log(jsonResponse);

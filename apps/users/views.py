@@ -44,7 +44,6 @@ def get_ipaddress(request):
 
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login(request):
-	logger.debug(f"\n\n\n${request}\n\n\n")
 	if request.method == 'POST':
 		form = CustomAuthenticationForm(request, data=request.POST)
 		if form.is_valid():
@@ -53,8 +52,6 @@ def login(request):
 			user = authenticate(username=username, password=password)
 			if user is not None:
 				auth_login(request, user)
-				logger.info(f"User {username} logged in successfully.")
-				# messages.success(request, 'You are now logged in.')
 				return JsonResponse({'success': True, 'message': 'You are now logged in.'})
 			else:
 				return JsonResponse({'success': False, 'message': 'Invalid username or password.'})

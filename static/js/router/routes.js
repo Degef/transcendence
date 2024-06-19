@@ -97,6 +97,7 @@ const routeHandlers = {
 };
 
 function handleButtonClick(event) {
+	console.log(event.target.id)
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],

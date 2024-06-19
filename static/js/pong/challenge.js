@@ -66,7 +66,7 @@ async function initializeChallengeSocket() {
 	await getCurrentUserr();
 
 	if (sessionKeyChall) {
-		const challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/`);
+		challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/`);
 		handleChallengeSocketEvents(challengeSocket);
 		setUpStatusWebSocket();
 	}
