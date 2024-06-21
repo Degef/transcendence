@@ -219,7 +219,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 					
 				if game_state['score1'] == 10 or game_state['score2'] == 10:
 					await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
-					await sync_to_async(delete_challenge)(self.challenger, self.challengee)
+					if (self.challengee != '' and self.challenger != ''):
+						await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 					await self.send_game_state()
 					winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
 					await self.channel_layer.group_send(

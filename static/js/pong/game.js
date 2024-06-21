@@ -302,7 +302,7 @@ function main_loop () {
                 challenger_username = '';
                 loadProfile(username);
             } else {
-                handleRoute('/');
+                // handleRoute('/');
             }
         }, 5000);
         return
@@ -322,6 +322,13 @@ function main_loop () {
         setTimeout(function() {
             terminate_game = false;
             data['socket'].close();
+            if (type === 'challenge') {
+                challenged_username = '';
+                challenger_username = '';
+                loadProfile(username);
+            } else {
+                handleRoute('/');
+            }
         }, 1000);
         return;
     }
@@ -528,7 +535,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
                 challenger_username = '';
                 loadProfile(username);
             } else {
-                handleRoute('/');
+                // handleRoute('/');
             }
         }, 5000);
     }
