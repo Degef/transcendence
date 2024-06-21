@@ -29,10 +29,12 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			},
 			body: formData,
 		});
-		console.log(response.status);		
+		if (response.status === 403) {
+			handleRoute('/limit/', false);
+			return ;
+		}
 		if (response.headers.get('Content-Type')?.includes('application/json')) {
 			const jsonResponse = await response.json();
-			console.log(jsonResponse);
 			if (!jsonResponse.success) {
 				const errors = JSON.parse(jsonResponse.errors);
 				let firstError = Object.entries(errors)[0][1][0].message;
@@ -46,7 +48,6 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			}
 		} else {
 			const htmlContent = await response.text();
-			console.log(htmlContent);
 			updateBody(htmlContent);
 			if (back_or_forward !== 0) updateURL(url);
 		}
@@ -64,22 +65,4 @@ async function register(back_or_forward = 1) {
 async function login(back_or_forward = 1) {
 	await handleFormSubmission('login-form', '/login/', '/', back_or_forward);
 	initializeChallengeSocket();
-}
-
-function setUpStatusWebSocket() {
-	statusSocket = new WebSocket('wss://' + window.location.host + '/ws/status/');
-
-	statusSocket.onopen = function(e) {
-		console.log('WebSocket connection established');
-		statusSocket.send(JSON.stringify({ 'status': 'online' }));
-	};
-
-	statusSocket.onclose = function(e) {
-		console.log('WebSocket connection closed');
-	};
-
-	statusSocket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		console.log(data.message);
-	};
 }

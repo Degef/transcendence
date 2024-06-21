@@ -21,18 +21,18 @@ async function getCurrentUserr() {
 	}
 }
 
-function handleChallengeSocketEvents(socket) {
-	socket.onmessage = function (event) {
+function handleChallengeSocketEvents(challsocket) {
+	challsocket.onmessage = function (event) {
 		const data = JSON.parse(event.data);
-		console.log(data);
+		if (data.id) {
+			return;
+		}
 		if (data.error) {
 			showAlert(data.error, 'danger');
 			return;
 		}
-		const message_json = JSON.parse(data.message);
-		console.info(currentUserChall);
+		const message_json = data;
 		challenger = message_json.challenger;
-		console.info(challenger);
 		if (message_json.type === 'challenge_created') {
 			if (message_json.challenger === currentUserChall) {
 				showAlert('Challenge sent successfully', 'success');
@@ -53,13 +53,21 @@ function handleChallengeSocketEvents(socket) {
 		}
 	};
 
-	socket.onclose = function () {
+	challsocket.onclose = function () {
+		cleanupWebSocket(challsocket);
 		showAlert('Connection to challenge socket closed, please refresh the page and try again', 'danger');
 	};
 
-	socket.onerror = function (error) {
+	challsocket.onerror = function (error) {
 		showAlert('Failed to connect to challenge socket, please refresh the page and try again', 'danger');
 	};
+}
+
+function cleanupWebSocket(challsocket) {
+	challsocket.onopen = null;
+	challsocket.onmessage = null;
+	challsocket.onerror = null;
+	challsocket.onclose = null;
 }
 
 async function initializeChallengeSocket() {
@@ -68,54 +76,52 @@ async function initializeChallengeSocket() {
 	if (sessionKeyChall) {
 		challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/`);
 		handleChallengeSocketEvents(challengeSocket);
-		setUpStatusWebSocket();
 	}
 }
 
-
 function customConfirm(message, onAccept, onDecline) {
-    const modal = document.getElementById('custom-confirm');
-    const messageElement = document.getElementById('challenge-message');
-    const acceptButton = document.getElementById('accept-button');
-    const declineButton = document.getElementById('decline-button');
-  
-    messageElement.innerText = message;
-  
-    acceptButton.onclick = function() {
-        modal.style.display = "none";
-        onAccept(challenger, 'accept');
-    };
-  
-    declineButton.onclick = function() {
-        modal.style.display = "none";
-        onDecline(challenger, 'decline');
-    };
+	const modal = document.getElementById('custom-confirm');
+	const messageElement = document.getElementById('challenge-message');
+	const acceptButton = document.getElementById('accept-button');
+	const declineButton = document.getElementById('decline-button');
 
-    modal.style.display = "block";
+	messageElement.innerText = message;
+
+	acceptButton.onclick = function() {
+		modal.style.display = "none";
+		onAccept(challenger, 'accept');
+	};
+
+	declineButton.onclick = function() {
+		modal.style.display = "none";
+		onDecline(challenger, 'decline');
+	};
+
+	modal.style.display = "block";
 }
 
 function challengeUser(username) {
 	if (!username) {
 		showAlert('Invalid way to challenge', 'danger');
-		return ;
+		return;
 	}
 	if (username == currentUserChall) {
 		showAlert('You cannot challenge yourself', 'danger');
-		return ;
+		return;
 	}
-    if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
-        challengeSocket.send(JSON.stringify({ action: 'send_challenge', username: username }));
-    } else {
-        showAlert('Failed to initiate challenge, please refresh the page and try again', 'danger');
-    }
+	if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
+		challengeSocket.send(JSON.stringify({ action: 'send_challenge', username: username }));
+	} else {
+		showAlert('Failed to initiate challenge, please refresh the page and try again', 'danger');
+	}
 }
 
 function respondChallenge(username, response) {
-    if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
-        challengeSocket.send(JSON.stringify({ action: 'respond_challenge', username: username, response: response }));
-    } else {
-        showAlert('Failed to respond to challenge, please refresh the page and try again', 'danger');
-    }
+	if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
+		challengeSocket.send(JSON.stringify({ action: 'respond_challenge', username: username, response: response }));
+	} else {
+		showAlert('Failed to respond to challenge, please refresh the page and try again', 'danger');
+	}
 }
 
 initializeChallengeSocket();

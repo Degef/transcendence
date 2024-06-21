@@ -3,7 +3,7 @@ let miniImage = '';
 let sessionKey = '';
 let currentUser = '';
 let profileimage = '';
-let socket = null;
+let chatsocket = null;
 
 const api = {
 	fetchCurrentUser: () => fetch('/get_current_user/').then(response => response.json()),
@@ -11,11 +11,6 @@ const api = {
 	fetchMessages: recipient => fetch(`/api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`/api/message/${id}/`).then(response => response.json()),
 	fetchUserProfilePage: username => handleRoute(`/profile/${username}`, true),
-	sendMessage: message => fetch('/api/message/', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(message)
-	}),
 	blockUser: username => fetch('/block_unblock/', {
 		method: "POST",
 		headers: { 'Content-Type': 'application/json' },
@@ -33,8 +28,6 @@ const api = {
 		return response.json();
 	})
 };
-
-
 
 const showAlert = (message, type) => {
 	const responseMessageDiv = document.querySelector('.response__message');
@@ -87,14 +80,11 @@ function handleChatFormSubmit(event, chatInput, chatForm) {
 	const sanitizedInput = utils.sanitizeInput(chatInput.value);
 	if (sanitizedInput.length > 0) {
 		const message = { recipient: currentRecipient, body: sanitizedInput, user: currentUser };
-		api.sendMessage(message)
-			.then(() => {
-				chatInput.value = '';
-				// drawMessage(message);
-			})
-			.catch(utils.logError);
+		chatsocket.send(JSON.stringify(message));
+		chatInput.value = '';
 	}
 }
+
 
 function handleChatInputKeydown(event, chatForm) {
 	if (event.key === 'Enter') {
@@ -104,16 +94,14 @@ function handleChatInputKeydown(event, chatForm) {
 }
 
 function setupWebSocket() {
-	if (socket && socket.readyState === WebSocket.OPEN) socket.close();
+	if (chatsocket && chatsocket.readyState === WebSocket.OPEN) chatsocket.close();
 
-	socket = new WebSocket(`wss://${window.location.host}/ws?session_key=${sessionKey}/`);
-	socket.onopen = () => console.log('WebSocket connection established');
-	socket.onmessage = event => {
+	chatsocket = new WebSocket(`wss://${window.location.host}/ws/chat/`);
+	chatsocket.onmessage = event => {
 		getMessageById(event.data);
-		console.log('Message received:', event.data);
 	};
-	socket.onerror = event => console.error('WebSocket error:', event);
-	socket.onclose = () => console.log('WebSocket connection closed');
+	chatsocket.onerror = event => console.error('WebSocket error:', event);
+	chatsocket.onclose = () => cleanupWebSocket(chatsocket);
 }
 
 function handleUserSelection() {
@@ -208,9 +196,9 @@ function drawMessage(message) {
 	const miniProfileImage = isSent ? profileimage : miniImage;
 
 	const messageItem = `
-		<div class="message-container ${position}">
+		<div class="message-container ${position} d-flex align-items-center">
 			${!isSent ? `<img src="${miniProfileImage}" class="message-avatar" alt="" />` : ''}
-			<div class="message-content">
+			<div class="message-content d-flex flex-column">
 				<div class="message-author">${message.user}</div>
 				<div class="message-text">${message.body}</div>
 			</div>
@@ -237,7 +225,12 @@ function getConversation(recipient) {
 }
 
 function getMessageById(message) {
-	const id = JSON.parse(message).message;
+	if (JSON.parse(message).error) {
+		showAlert(JSON.parse(message).error, 'danger');
+		return;
+	}
+	const id = JSON.parse(message).message.id;
+	if (!id) return;
 	const messageList = document.querySelector('.chat');
 
 	api.fetchMessageById(id)
@@ -263,7 +256,6 @@ function setCurrentRecipient(userData) {
 }
 
 function setupSearchFunctionality() {
-	console.info("Setting up search functionality");
 	const userList = document.getElementById("user-listt");
 	const searchInput = document.querySelector(".search-input");
 
@@ -288,7 +280,7 @@ function setupSearchFunctionality() {
 			listItem.classList.add("list-group-item");
 			listItem.innerHTML = `<div class="contact-details">
 									<img src="" alt="${userName}" class="contact-profile-image">
-									<div class="contact-info">
+									<div class="contact-info d-flex flex-column justify-content-center">
 										<div class="contact-name">${userName}</div>
 									</div>
 									<i class="fas fa-ellipsis-v contact-action" data-username="${userName}"></i>

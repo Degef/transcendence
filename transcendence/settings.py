@@ -155,11 +155,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL  = 'login'
 
-CHANNEL_LAYERS = { 
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }   
+
+CACHE_HOST = os.environ.get('CACHE_HOST')
+CACHE_PORT = os.environ.get('CACHE_PORT', '6379')
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(CACHE_HOST, int(CACHE_PORT))],
+        },
+    },
 }
+
 
 # Configure the root logger to capture prints
 logging.basicConfig(level=logging.DEBUG)
@@ -176,3 +184,10 @@ CACHES = {
 }
 
 RATELIMIT_CACHE = 'default'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_SSL_REDIRECT = True
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

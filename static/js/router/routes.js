@@ -64,14 +64,6 @@ async function handleRoute(path, pushState = true) {
 	}
 }
 
-async function handleLogout() {
-	if (statusSocket) {
-		statusSocket.send(JSON.stringify({ 'status': 'offline' }));
-		statusSocket.close();
-		statusSocket = null;
-	}
-}
-
 
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
@@ -82,7 +74,7 @@ const routeHandlers = {
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
 	'/login/': () => login(),
-	'/logout/': () => { handleLogout(); handleRoute('/logout/', false); },
+	'/logout/': () => { handleRoute('/logout/', false); },
 	'/req_login/': () => handleRoute('/login/', true),
 	'/friends/': () => handleRoute('/friends/', true),
 	'/edit_profile/': () => handleRoute('/edit_profile/', true),
@@ -97,7 +89,6 @@ const routeHandlers = {
 };
 
 function handleButtonClick(event) {
-	console.log(event.target.id)
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],

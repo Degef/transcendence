@@ -3,28 +3,28 @@
 
 {% block content %}
 
-<div class="chat__container">
-	<div class="chat-layout">
+<div class="chat__container justify-content-center w-100">
+	<div class="d-flex flex-row gap-3">
 		<aside class="sidebar col-lg-3 col-md-12">
-			<div class="search-bar">
+			<div class="search-bar d-flex align-items-center d-none d-lg-flex">
 				<i class="fas fa-search search-icon"></i>
 				<input type="text" class="search-input" placeholder="Search">
 			</div>
 			
-			<div class="contacts px-3">
+			<div class="contacts d-flex flex-column px-sm-0 px-md-3">
 				<ul class="user-list list-group" id="user-listt">
 					{% for friend in friends %}
-						<a id="user-list-link" href="" class="list-group-item d-flex justify-content-between align-items-center">
+						<a id="user-list-link" href="" class="list-group-item d-flex justify-content-between align-items-center mb-1">
 							<div class="contact-details d-flex align-items-center position-relative">
 								<div class="position-relative">
 									<img src="{{ friend.image.url }}" alt="{{ friend.user.username }}" class="contact-profile-image me-2">
-									<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}chat__online{% else %}chat__offline{% endif %}"></span>
+									<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}bg-success{% else %}bg-danger{% endif %}"></span>
 								</div>
-								<div class="contact-info">
+								<div class="contact-info d-flex flex-column justify-content-center d-none d-lg-flex">
 									<div class="contact-name">{{ friend.user.username }}</div>
 								</div>
 							</div>
-							<i class="fa-solid fa-sliders contact-action" data-username="{{ friend.user.username }}"></i>
+							<i class="fa-solid fa-sliders contact-action d-none d-md-flex" data-username="{{ friend.user.username }}"></i>
 						</a>
 					{% endfor %}
 				</ul>
@@ -39,16 +39,16 @@
 			</div>
 				
 		</aside>
-		<section class="chat-window col-lg-9 col-md-12">
+		<section class="chat-window col-lg-9 col-md-12 d-flex flex-column w-75">
 			<div class="chat-header">Select user to chat</div>
 			<div class="chat">
 				<div class="messages" id="messages">
 				</div>
 			</div>
-			<div class="input-container">
-				<div class="input-wrapper">
+			<div class="input-container d-flex justify-content-center">
+				<div class="input-wrapper d-flex position-relative">
 					<input style="background-color: #292b38; color: white;" type="text" class="form-control message-input" id="chat-input" placeholder="Type a message...">
-					<button class="btn send-button" id="btn-send"><i class="fas fa-paper-plane"></i></button>
+					<button class="btn send-button position-absolute d-flex align-items-center justify-content-center" id="btn-send"><i class="fas fa-paper-plane"></i></button>
 				</div>
 			</div>
 		</section>

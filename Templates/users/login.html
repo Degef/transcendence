@@ -4,39 +4,39 @@
 
 {% block content %}
 
-<div class="login-container">
-	<section class="login-form-wrapper">
-		<h1 class="login-title">
-			<span class="login-welcome-text">Welcome to PongBuddies</span>
+<div class="login-container d-flex flex-column justify-content-center w-100 justify-content-center align-items-center">
+	<section class="login-form-wrapper d-flex flex-column w-100">
+		<h1 class="login-title d-flex justify-content-center text-center">
+			<span class="login-welcome-text text-center">Welcome to PongBuddies</span>
 		</h1>
-		<form id="login-form" class="form" method="post" action="{% url 'login' %}">
+		<form id="login-form" class="form d-flex flex-column" method="post" action="{% url 'login' %}">
 			{% csrf_token %}
-			<div class="form-group">
-				<div class="form-group__wrapper">
-					<div class="form-group__box">
+			<div class="form-group d-flex flex-column justify-content-center">
+				<div class="d-flex flex-column justify-content-center">
+					<div class="d-flex flex-column text-center align-items-start">
 						<label for="emailInput" class="visually-hidden">User name</label>
 						<input type="email" id="emailInput" name="username" placeholder="User name" class="form-group__input" aria-label="User name">
 					</div>
 				</div>
 			</div>
 			<div class="form-group">
-				<div class="form-group__wrapper">
-					<div class="form-group__box">
+				<div class="d-flex flex-column justify-content-center">
+					<div class="form-group__box d-flex flex-column text-center align-items-start">
 						<label for="passwordInput" class="visually-hidden">Password</label>
 						<input type="password" id="passwordInput" name="password" placeholder="Password" class="form-group__input" aria-label="Password">
 					</div>
 				</div>
 			</div>
-			<div class="form-group__button-wrapper">
+			<div class="form-group__button-wrapper d-flex flex-column justify-content-center align-items-center">
 				<button id="login" type="submit" class="form-group__button">Log in</button>
 			</div>
 		</form>
-		<div class="login-or-text">or</div>
+		<div class="login-or-text d-flex text-center">or</div>
 		<div class="login-continue-button-wrapper">
 			<button type="button" class="login-other-button" id="loginWith42">Continue with 42</button>
 		</div>
-		<div class="login-new-user-text">New to PongBuddies?</div>
-		<div class="login-create-account-wrapper">
+		<div class="login-new-user-text d-flex text-center">New to PongBuddies?</div>
+		<div class="login-create-account-wrapper d-flex flex-column justify-content-center align-items-center">
 			<button id="req_register" type="button" class="login-create-account-button">Create an account</button>
 		</div>
 	</section>

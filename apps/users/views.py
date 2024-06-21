@@ -62,6 +62,9 @@ def login(request):
 		form = CustomAuthenticationForm()
 	return render(request, 'login.html', {'form': form})
 
+def limit(request):
+	return render(request, '403.html')
+
 def logout(request):
 	with transaction.atomic():
 		user_thing = request.user.user_things

@@ -7,7 +7,7 @@
 		<article class="profile-details">
 			<div class="profile-image-container position-relative">
 				<img loading="lazy" src="{{ profile_image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
-				<span class="status-indicator position-absolute {% if is_online %} online {% else %} offline {% endif %}"></span>
+				<span class="status-indicator position-absolute {% if is_online %} bg-success {% else %} bg-danger {% endif %}"></span>
 			</div>
 			<h2 class="profile-name" id="profile_name">{{ username }}</h2>
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">

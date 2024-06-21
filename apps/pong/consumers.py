@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from apps.pong.models import Game, Challenge, create_challenge, accept_challenge, decline_challenge, user_has_pending_challenge
 from asgiref.sync import sync_to_async
 import math
+from apps.users.models import user_things
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -240,30 +242,34 @@ class PongConsumer(AsyncWebsocketConsumer):
 		}))
 
 
-
 class ChallengeConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
+		logger.debug(" \n\n WebSocket connection established to challenge consumer \n\n")
 		user_id = await sync_to_async(self.get_user_id)()
 		self.user = self.scope['user']
-		self.group_name = "{}".format(user_id)
-
+		await self.update_status('online')
+		self.group_name = str(user_id)
+		
+		
 		await self.channel_layer.group_add(
 			self.group_name,
 			self.channel_name
 		)
-
+		
 		await self.accept()
 
 	def get_user_id(self):
 		return self.scope["session"]["_auth_user_id"]
 
 	async def disconnect(self, close_code):
+		await self.update_status('offline')
 		await self.channel_layer.group_discard(
 			self.group_name,
 			self.channel_name
 		)
 
 	async def receive(self, text_data):
+		logger.debug(" \n\n Received message from challenge consumer \n\n")
 		data = json.loads(text_data)
 		username = data.get('username')
 		action = data.get('action')
@@ -276,33 +282,57 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 	async def send_challenge(self, username):
 		try:
 			challengee = await sync_to_async(User.objects.get)(username=username)
-			check_pending_challenge = await sync_to_async(user_has_pending_challenge)(challengee.username)
-			if check_pending_challenge is True:
-				await self.send(text_data=json.dumps({'error': f'{challengee} is in another challenge'}))
+			if await sync_to_async(user_has_pending_challenge)(challengee.username):
+				await self.send_error(f'{challengee} is in another challenge')
 				return
+
 			challenge = await sync_to_async(create_challenge)(self.user, challengee)
+			await self.notify_users(challenge, 'challenge_created')
+
 		except User.DoesNotExist:
-			await self.send(text_data=json.dumps({'error': 'User does not exist'}))
+			await self.send_error('User does not exist')
 
 	async def respond_challenge(self, username, response):
 		try:
-			logger.debug(f"\n\nResponding to challenge from {username} with {response}")
 			challenger = await sync_to_async(User.objects.get)(username=username)
 			challenge = await sync_to_async(Challenge.objects.get)(challenger=challenger, challengee=self.user)
+
 			if response == 'accept':
 				await sync_to_async(accept_challenge)(self.user, challenger)
+				await self.notify_users(challenge, 'challenge_accepted')
 			elif response == 'decline':
 				await sync_to_async(decline_challenge)(self.user, challenger)
+				await self.notify_users(challenge, 'challenge_declined')
 
 		except User.DoesNotExist:
-			await self.send(text_data=json.dumps({'error': 'User does not exist from god knows where'}))
+			await self.send_error('User does not exist')
 		except Challenge.DoesNotExist:
-			await self.send(text_data=json.dumps({'error': 'Challenge does not exist'}))
+			await self.send_error('Challenge does not exist')
 
-	async def challenge_message(self, event):
-		message = event['message']
-		await self.send(text_data=json.dumps({'message': message}))
+	async def notify_users(self, challenge, event_type):
+		message = {
+			'type': 'receive_group_message',
+			'message': {
+				'type': event_type,
+				'challenger': await sync_to_async(lambda: challenge.challenger.username)(),
+            	'challengee': await sync_to_async(lambda: challenge.challengee.username)(),
+			}
+		}
+		await self.channel_layer.group_send(str(challenge.challenger.id), message)
+		await self.channel_layer.group_send(str(challenge.challengee.id), message)
+
+	async def send_error(self, error_message):
+		await self.send(text_data=json.dumps({'error': error_message}))
 
 	async def receive_group_message(self, event):
-		message = event['message']
-		await self.send(text_data=json.dumps({'message': message}))
+		await self.send(text_data=json.dumps(event['message']))
+
+	@database_sync_to_async
+	def update_status(self, status):
+		try:
+			with transaction.atomic():
+				user_thing = user_things.objects.get(user=self.user)
+				user_thing.status = status
+				user_thing.save()
+		except user_things.DoesNotExist:
+			pass
