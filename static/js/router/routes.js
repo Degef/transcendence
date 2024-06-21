@@ -133,6 +133,11 @@ function handleButtonClick(event) {
 	if (handler) {
 		if (window.game_in_progress) {
 			window.terminate_game = true;
+			if (window.data.playerId != null && window.data.waiting_to_play == true) {
+				// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
+				window.data['socket'].close()
+				terminate_game = false;
+			}
 		}
 		handler();
 	}

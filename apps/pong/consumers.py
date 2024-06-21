@@ -106,6 +106,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 					asyncio.create_task(self.move_ball())
 			elif data['type'] == 'endGame1':
 				self.game_states[room_group_name]['end'] = True
+			# elif data['type'] == 'endGame2':
+			# 	await self.close()
 				
 			elif data['type'] == 'endGame':
 				# self.game_states[room_group_name]['end'] = True

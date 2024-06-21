@@ -7,6 +7,7 @@ var data = {
     'paddle': {'speedY': 0},
     'endGame': false,
     'score': { 'player1': 0, 'player2': 0 },
+    'waiting_to_play': false,
 }
 
 var data2 = null;
@@ -365,6 +366,7 @@ function setPlayer(rec) {
 }
 
 function start_play_online() {
+    data.waiting_to_play = true;
     if (game_in_progress) {
         return;
     }
@@ -396,6 +398,9 @@ function start_play_online() {
             document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
         } else if (rec['type'] == 'gameState') {
             // console.log("Received game state")
+            if (data.waiting_to_play) {
+                data.waiting_to_play = false;
+            }
             data['gameState'] = rec['gameState'];
             setPlayer(rec);
             // draw(rec['gameState']);
