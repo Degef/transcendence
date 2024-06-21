@@ -76,7 +76,7 @@ var matchModal = function getMatchModal(player1, player2) {
         <center> 
             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
-                    <div class="modal-content justify-content-center">
+                    <div class="modal-content justify-content-center" id="match-modal" >
                         <div class="modal-header justify-content-center">
                             <h4 class="modal-title" id="myModalLabel">Upcoming Match</h4>
                         </div>

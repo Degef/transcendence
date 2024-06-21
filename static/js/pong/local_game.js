@@ -22,6 +22,17 @@ function updateScoresDisplay(player1Score, player2Score) {
     p1score = player1Score;
     p2score = player2Score;
 }
+function generateRandDir() {
+    const randDir = Math.random() < 0.5;
+
+    if (randDir) {
+        // Generate a random number greater than 3
+        return Math.random() * (10 - 3) + 3;
+    } else {
+        // Generate a random number less than -3
+        return Math.random() * (10 - 3) - 10;
+    }
+}
 
 function update1(data3){
     // update the ball
@@ -152,8 +163,8 @@ function start_local_game() {
         x : data3['canvas'].width/2,
         y : data3['canvas'].height/2,
         radius : 10,
-        velocityX : 7,
-        velocityY : 0,
+        velocityX : generateRandDir(),
+        velocityY : generateRandDir(),
         speed : 7,
         color : "WHITE"
     };

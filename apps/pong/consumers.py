@@ -5,7 +5,7 @@ import logging
 import asyncio
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
-from apps.pong.models import Game, Challenge, create_challenge, accept_challenge, decline_challenge, user_has_pending_challenge
+from apps.pong.models import Game, Challenge, create_challenge, accept_challenge, decline_challenge, user_has_pending_challenge, delete_challenge
 from asgiref.sync import sync_to_async
 import math
 from apps.users.models import user_things
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class PongConsumer(AsyncWebsocketConsumer):
 	waiting_queue = []
+	challenge_queue = {}
 	game_states = {}
 	paddleWidth = 10
 	paddleHeight = 60
@@ -23,39 +24,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 		logger.debug(" \n\n WebSocket connection established\n\n")
 		# logger.debug(f"\n\nUser: {self.waiting_queue}")
 		self.room_name = 'game_room'
+		self.username = self.scope['user'].username
 		self.player_id = str(uuid.uuid4())
+		self.challengee = ''
+		self.challenger = ''
 
 		await self.accept()
 		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id}))
 		# Check if there are any waiting users
-		if len(self.waiting_queue) > 0:
-			# Match the user with the first user in the queue
-			other_user = self.waiting_queue.pop(0)
-
-			# Generate a unique room group name for the new game
-			self.room_group_name = 'game_%s' % uuid.uuid4().hex
-			other_user.room_group_name = self.room_group_name
-
-			await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-			await self.channel_layer.group_add(self.room_group_name, other_user.channel_name)
-
-			self.game_states[self.room_group_name] = {
-				'player1': other_user.player_id,
-				'player2': self.player_id,
-				'p1_name': other_user.scope['user'].username,
-				'p2_name': self.scope['user'].username,
-				'ball': {'x': 300, 'y': 200, 'velocityX': 4, 'velocityY': 0, 'radius': 10, 'speed': 4},
-				'collision': {'paddle': False, 'goal': False, 'wall': False},
-				'score1': 0,
-				'score2': 0,
-				'end': False,
-				'paddle1': None,
-				'paddle2': None
-			}
-			await self.send_game_state()
-		else:
-			self.waiting_queue.append(self)
-
+		
 	async def disconnect(self, close_code):
 		# Remove the user from the waiting queue or ongoing game
 		logger.debug(f"\n\n {self.player_id} Disconnected  WebSocket connection closed")
@@ -80,9 +57,68 @@ class PongConsumer(AsyncWebsocketConsumer):
 			except KeyError as e:
 				print(f"\n\nError accessing paddle data: {e}")
 		await self.close()
+	
+	async def getInitGameInfo(self, other_user):
+		startInfo = {
+			'player1': other_user.player_id,
+			'player2': self.player_id,
+			'p1_name': other_user.scope['user'].username,
+			'p2_name': self.scope['user'].username,
+			'ball': {'x': 300, 'y': 200, 'velocityX': 4, 'velocityY': 0, 'radius': 10, 'speed': 4},
+			'collision': {'paddle': False, 'goal': False, 'wall': False},
+			'score1': 0,
+			'score2': 0,
+			'end': False,
+			'paddle1': None,
+			'paddle2': None
+		}
+		return startInfo
+	
+	async def startGameNow(self, other_user):
+		# Generate a unique room group name for the new game
+		self.room_group_name = 'game_%s' % uuid.uuid4().hex
+		other_user.room_group_name = self.room_group_name
+
+		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+		await self.channel_layer.group_add(self.room_group_name, other_user.channel_name)
+
+		self.game_states[self.room_group_name] = await self.getInitGameInfo(other_user)
+		await self.send_game_state()
+
+	async def handleChallenge(self, data):
+		challengee = data['challengee']
+		challenger = data['challenger']
+		self.challengee = challengee
+		self.challenger = challenger
+		if (self.username == challengee and challenger in self.challenge_queue):
+			other_user = self.challenge_queue.pop(challenger)
+			await self.startGameNow(other_user)
+		elif (self.username == challenger and challengee in self.challenge_queue):
+			other_user = self.challenge_queue.pop(challengee)
+			await self.startGameNow(other_user)
+		elif (self.username == challenger):
+			self.challenge_queue[challenger] = self
+		else:
+			self.challenge_queue[challengee] = self
+
+	async def handleDefaultGame(self, data):
+		if len(self.waiting_queue) > 0:
+			# Match the user with the first user in the queue
+			other_user = self.waiting_queue.pop(0)
+			await self.startGameNow(other_user)
+		else:
+			self.waiting_queue.append(self)
 
 	async def receive(self, text_data):
 		data = json.loads(text_data)
+		gametype = data['type']
+		logger.debug(f"\n\nReceived data: {data}")
+		if (gametype == 'challenge'):
+			await self.handleChallenge(data)
+			return
+		if (gametype == 'defaultGame'):
+			await self.handleDefaultGame(data)
+			return 
 		# logger.debug(f"\n\nReceived data: {data}")
 		room_group_name = getattr(self, 'room_group_name', None)
 		if not room_group_name:
@@ -183,6 +219,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 					
 				if game_state['score1'] == 10 or game_state['score2'] == 10:
 					await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
+					await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 					await self.send_game_state()
 					winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
 					await self.channel_layer.group_send(

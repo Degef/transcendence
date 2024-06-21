@@ -75,6 +75,17 @@ def user_has_pending_challenge(username):
 def create_challenge(challenger, challengee):
 	return Challenge.objects.create(challenger=challenger, challengee=challengee)
 
+def delete_challenge(challengerUsername, challengeeUsername):
+
+	challengee = User.objects.get(username=challengeeUsername)
+	challenger = User.objects.get(username=challengerUsername)
+
+	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
+	if challenge:
+		challenge.delete()
+		return challenge
+	return None
+
 def accept_challenge(challengee, challenger):
 	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
 	if challenge:

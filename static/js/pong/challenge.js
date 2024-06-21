@@ -3,6 +3,46 @@ let sessionKeyChall = null;
 let currentUserChall = '';
 let profileimageChall = '';
 let challenger = '';
+let challenged_username = '';
+let challenger_username = '';
+
+
+var decline_modal =  function getDeclineModal(message) {
+	declineModal = `
+		<div id="custom-decline" class="modal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<p id="decline-msg" class="text-large">${message}</p>
+					</div>
+					<div class="modal-footer">
+						<button id="decline-close-button" class="btn btn-outline-light btn-lg mb-3" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	`;
+	return declineModal;
+}
+
+function showDeclinedModal(message) {
+	const modalHTML = decline_modal(message);
+	$(modalHTML).appendTo('body');
+
+	// if (typeof $ !== 'undefined') {
+	// 	$('#custom-decline').modal('show');
+	// }
+	$('#custom-decline').modal('show');
+
+    const declineButton = document.getElementById('decline-close-button');
+    function hideModal(event) {
+        event.preventDefault();
+        console.log(event);
+        $('#custom-decline').modal('hide');
+        declineButton.removeEventListener('click', hideModal);
+    }
+	declineButton.addEventListener('click', hideModal);
+}
 
 async function getCurrentUserr() {
 	try {
@@ -33,7 +73,12 @@ function handleChallengeSocketEvents(challsocket) {
 		}
 		const message_json = data;
 		challenger = message_json.challenger;
+		challenger_username = challenger;
+		challenged_username = message_json.challengee
+		console.log('challengee', challenged_username);
+		console.log('challenger', challenger_username);
 		if (message_json.type === 'challenge_created') {
+			username = currentUserChall;
 			if (message_json.challenger === currentUserChall) {
 				showAlert('Challenge sent successfully', 'success');
 			} else {
@@ -42,12 +87,17 @@ function handleChallengeSocketEvents(challsocket) {
 		} else if (message_json.type === 'challenge_accepted') {
 			if (message_json.challenger === currentUserChall) {
 				showAlert(message_json.challengee + ' accepted your challenge', 'success');
+				handleRoute('/play_online/')
 			} else {
 				showAlert('Starting game with ' + message_json.challenger, 'success');
+				handleRoute('/play_online/')
 			}
 		} else if (message_json.type === 'challenge_declined') {
 			if (message_json.challenger === currentUserChall) {
 				showAlert(message_json.challengee + ' declined your challenge', 'danger');
+				// customDeclineMsg(message_json.challengee + " declined your challenge!!!");
+				showDeclinedModal(message_json.challengee + " declined your challenge!!!");
+				// showDeclinedModal();
 				return;
 			}
 		}
@@ -98,6 +148,20 @@ function customConfirm(message, onAccept, onDecline) {
 	};
 
 	modal.style.display = "block";
+}
+function customDeclineMsg(message) {
+    const modal = document.getElementById('custom-decline');
+    const messageElement = document.getElementById('decline-msg');
+	console.log(messageElement);
+    const closeBtn = document.getElementById('decline-close-button');
+  
+    messageElement.innerText = message;
+  
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    };
+
+    modal.style.display = "block";
 }
 
 function challengeUser(username) {

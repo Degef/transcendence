@@ -14,6 +14,8 @@ var data2 = null;
 var game_in_progress = false;
 var terminate_game = false;
 var intervalId = null;
+var type = "defaultGame";
+let username = fetch('/get_current_user/').then(response => response.json());
 
 // draw a rectangle, will be used to draw paddles
 function drawRect(ctx, x, y, w, h, color){
@@ -50,8 +52,8 @@ function getMousePos(canvas, user) {
 function resetBall(data2){
     data2['ball'].x = data2['canvas'].width/2;
     data2['ball'].y = data2['canvas'].height/2;
-    data2['ball'].velocityX = 7;
-    data2['ball'].velocityY = 0;
+    data2['ball'].velocityX = generateRandDir();
+    data2['ball'].velocityY = generateRandDir();
     data2['ball'].speed = 7;
 }
 
@@ -294,6 +296,15 @@ function main_loop () {
         console.log("This is exiting from endgame\n\n")
         data['endGame'] = false;
         game_in_progress = false;
+        setTimeout(() => {
+            if (type === 'challenge') {
+                challenged_username = '';
+                challenger_username = '';
+                loadProfile(username);
+            } else {
+                handleRoute('/');
+            }
+        }, 5000);
         return
     }
     if (terminate_game) {
@@ -365,7 +376,85 @@ function setPlayer(rec) {
     }
 }
 
-function start_play_online() {
+// function start_play_online() {
+//     data.waiting_to_play = true;
+// function start_play_online() {
+//     if (game_in_progress) {
+//         return;
+//     }
+//     game_in_progress = true;
+
+//     const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
+
+//     data['socket'] = socket;
+//     data['hit'] = new Audio();
+//     data['wall'] = new Audio();
+//     data['userScore'] = new Audio();
+//     data['comScore'] = new Audio();
+
+//     data['hit'].src = "/media/sounds/hit.mp3";
+//     data['wall'].src = "/media/sounds/wall.mp3";
+//     data['userScore'].src = "/media/sounds/userScore.mp3";
+//     data['comScore'].src = "/media/sounds/comScore.mp3";
+
+//     socket.onopen = function () {
+//         console.log('WebSocket connection established');
+//     }
+
+//     socket.onmessage = function (event) {
+//         const rec = JSON.parse(event.data);
+//         // console.log(rec);
+//         if (rec['type'] == 'playerId') {
+//             data['playerId'] = rec['playerId'];
+//             document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
+//             document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
+//         } else if (rec['type'] == 'gameState') {
+//             // console.log("Received game state")
+//             data['gameState'] = rec['gameState'];
+//             setPlayer(rec);
+//             // draw(rec['gameState']);
+//         } else if (rec['type'] == 'gameEnd') {
+//             console.log(rec)
+//             data['endGame'] = true;
+//             data['playerId'] = null;
+//             data['player'] = null;
+//             document.getElementById('end_game').innerHTML = rec['message'];
+//             const message = {
+//                 'type': 'endGame',
+//                 'playerId': data['playerId'],
+//             };
+//             data['socket'].send(JSON.stringify(message));
+//             data.socket.close();
+//         }
+//     }
+
+//     socket.onclose = function () {
+//         console.log('WebSocket connection closed');
+//         data['playerId'] = null;
+//         data['player'] = null;
+//         game_in_progress = false;
+//     }
+
+//     window.addEventListener('keydown', (e) => {
+//         if (e.key === 'w' || e.key === 'ArrowUp' ) {
+//             data.paddle.speedY = - data.paddle_speed;
+//         } else if (e.key === 's' || e.key === 'ArrowDown') {
+//             data.paddle.speedY = data.paddle_speed;
+//         }
+//     });
+    
+//     window.addEventListener('keyup', (e) => {
+//         if ((e.key === 'w' || e.key === 's') ) {
+//             data.paddle.speedY = 0;
+//         }
+        
+//         if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+//             data.paddle.speedY = 0;
+//         }
+//     });
+// }
+
+function start_play_online_challenge(challenged_username, challenger_username, username) {
     data.waiting_to_play = true;
     if (game_in_progress) {
         return;
@@ -388,14 +477,23 @@ function start_play_online() {
     socket.onopen = function () {
         console.log('WebSocket connection established');
     }
+    type = (challenged_username === '' || challenger_username === '') ? "defaultGame"  : "challenge";
 
     socket.onmessage = function (event) {
         const rec = JSON.parse(event.data);
         // console.log(rec);
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
+            console.log()
             document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
             document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
+            const message = {
+                'type': type,
+                'challengee': challenged_username,
+                'challenger': challenger_username,
+            };
+            console.log(message);
+            data['socket'].send(JSON.stringify(message));
         } else if (rec['type'] == 'gameState') {
             // console.log("Received game state")
             if (data.waiting_to_play) {
@@ -424,6 +522,15 @@ function start_play_online() {
         data['playerId'] = null;
         data['player'] = null;
         game_in_progress = false;
+        setTimeout(() => {
+            if (type === 'challenge') {
+                challenged_username = '';
+                challenger_username = '';
+                loadProfile(username);
+            } else {
+                handleRoute('/');
+            }
+        }, 5000);
     }
 
     window.addEventListener('keydown', (e) => {
@@ -444,4 +551,3 @@ function start_play_online() {
         }
     });
 }
-
