@@ -86,6 +86,7 @@ const routeHandlers = {
 	'/offline_tourn/': name => handleRoute('/offline_tourn/', true),
 	'/four_players/': () => setupTournament(4),
 	'/eight_players/':  () => setupTournament(8),
+	'/online_tourn/': () => fourPlayers(),
 };
 
 function handleButtonClick(event) {
@@ -109,6 +110,7 @@ function handleButtonClick(event) {
 		local_game: routeHandlers['/local_game/'],
 		chatLink: routeHandlers['/chat/'],
 		offline_tourn:routeHandlers['/offline_tourn/'],
+		online_tourn:routeHandlers['/online_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],
 	};
@@ -120,6 +122,7 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
+	console.log(buttonId);
 
 	if (handler) {
 		if (window.game_in_progress) {

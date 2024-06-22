@@ -10,6 +10,11 @@ from asgiref.sync import sync_to_async
 import math
 from apps.users.models import user_things
 from django.db import transaction
+from collections import deque
+from apps.pong.models import Tournament, TournamentPlayer
+from django.template.loader import render_to_string
+import datetime
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -88,13 +93,20 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def handleChallenge(self, data):
 		challengee = data['challengee']
 		challenger = data['challenger']
+		gametype = data['type']
 		self.challengee = challengee
 		self.challenger = challenger
 		if (self.username == challengee and challenger in self.challenge_queue):
 			other_user = self.challenge_queue.pop(challenger)
+			if (gametype == 'tournament'):
+				self.challengee = ''
+				self.challenger = ''
 			await self.startGameNow(other_user)
 		elif (self.username == challenger and challengee in self.challenge_queue):
 			other_user = self.challenge_queue.pop(challengee)
+			if (gametype == 'tournament'):
+				self.challengee = ''
+				self.challenger = ''
 			await self.startGameNow(other_user)
 		elif (self.username == challenger):
 			self.challenge_queue[challenger] = self
@@ -113,7 +125,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		data = json.loads(text_data)
 		gametype = data['type']
 		logger.debug(f"\n\nReceived data: {data}")
-		if (gametype == 'challenge'):
+		if (gametype == 'challenge' or gametype == 'tournament'):
 			await self.handleChallenge(data)
 			return
 		if (gametype == 'defaultGame'):
@@ -353,7 +365,7 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 			'message': {
 				'type': event_type,
 				'challenger': await sync_to_async(lambda: challenge.challenger.username)(),
-            	'challengee': await sync_to_async(lambda: challenge.challengee.username)(),
+				'challengee': await sync_to_async(lambda: challenge.challengee.username)(),
 			}
 		}
 		await self.channel_layer.group_send(str(challenge.challenger.id), message)
@@ -374,3 +386,269 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 				user_thing.save()
 		except user_things.DoesNotExist:
 			pass
+
+
+
+
+
+class TournamentConsumer(AsyncWebsocketConsumer):
+	players_waiting = deque()
+	list_players = []
+	# confirmed_players = defaultdict(set)
+	confirmed_players = {}
+	player_names_dict = {}
+	player_channels = {}
+	confirmed_channels = {}
+	game_states = {}
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		# self.confirmed_players = defaultdict(set)
+
+	async def connect(self):
+		self.user_id = await sync_to_async(self.get_user_id)()
+		self.username = self.scope["user"].username
+		self.room_group_name = 'test'
+		self.player_id = str(uuid.uuid4())
+
+		self.player_channels[self.username] = self.channel_name  # Store channel name
+
+		await self.channel_layer.group_add(
+			self.room_group_name,
+			self.channel_name
+		)
+		await self.accept()
+		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id}))
+
+
+	def get_user_id(self):
+		return self.scope["session"]["_auth_user_id"]
+
+	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard(
+			self.room_group_name,
+			self.channel_name
+		)
+		if self.user_id in self.list_players:
+			self.list_players.remove(self.user_id)
+			self.players_waiting.remove(self.user_id)
+
+	async def receive(self, text_data):
+		data = json.loads(text_data)
+		room_group_name = getattr(self, 'room_group_name', None)
+		if data['type'] == 'join_tournament':
+			await self.fetch_and_add_player_to_tournament()
+		elif data['type'] == 'confirm_match_join':
+			await self.handle_confirm_match_join(data)
+		elif data[type] == 'update_tournament':
+			await self.update_tournament(data)
+	  
+		# await self.fetch_and_add_player_to_tournament()
+
+	async def fetch_and_add_player_to_tournament(self):
+		if len(self.players_waiting) >= 3 and (self.user_id not in self.list_players):
+			self.players_waiting.append(self.user_id)
+			self.list_players.append(self.user_id)
+			tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
+
+			await self.send_join_message(f"The last player is joining {self.username}")
+
+			tourn_players = []
+			for user_id in list(self.players_waiting)[:4]:
+				user = await sync_to_async(User.objects.get)(id=user_id)
+				profile_img = await sync_to_async(lambda: user.profile.image.url)()
+				tourn_players.append({
+					'username': user.username,
+					'profile_img': profile_img
+				})
+				user.tournament = tournament
+				await sync_to_async(user.save)()
+
+			html_content = await sync_to_async(render_to_string)('pong/online_tour_bracket.html', {'players_list': tourn_players})
+			await self.broadcast_html_content(html_content)
+			# del self.players_waiting[:4]
+			# del self.list_players[:4]
+			for _ in range(4):
+				self.players_waiting.popleft()
+				self.list_players.pop(0)
+
+			await asyncio.sleep(10)
+			await self.create_match_rooms(tourn_players)
+
+		elif self.user_id not in self.list_players:
+			await self.send_join_message(f"Adding the player {self.username}")
+			self.list_players.append(self.user_id)
+			self.players_waiting.append(self.user_id)
+
+	async def send_join_message(self, playername):
+		newm = 'joinmsg - ' + playername
+		await self.send(text_data=json.dumps({
+			'type': 'join_msg',
+			'message': newm
+		}))
+
+	async def broadcast_html_content(self, html_content):
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				"type": "html_message",
+				"html": html_content
+			}
+		)
+
+	async def html_message(self, event):
+		html_content = event["html"]
+		await self.send(text_data=json.dumps({
+			"type": "html_content",
+			"html": html_content
+		}))
+
+	async def create_match_rooms(self, tourn_players):
+		match1 = f"match_{tourn_players[0]['username']}_vs_{tourn_players[1]['username']}"
+		match2 = f"match_{tourn_players[2]['username']}_vs_{tourn_players[3]['username']}"
+
+		await self.send_match_room_invitation(match1, [tourn_players[0], tourn_players[1]])
+		await self.send_match_room_invitation(match2, [tourn_players[2], tourn_players[3]])
+
+	async def send_match_room_invitation(self, match_room_name, players):
+		for player in players:
+			player_channel_name = self.player_channels.get(player['username'])
+			if player_channel_name:
+				logging.info(f"Adding player {player['username']} to match room {match_room_name}")
+				await self.channel_layer.group_add(
+					match_room_name,
+					player_channel_name  # Use the correct channel name for each player
+				)
+
+		logging.info(f"Sending match invitation to room {match_room_name} for players: {[p['username'] for p in players]}")
+		await self.channel_layer.group_send(
+			match_room_name,
+			{
+				'type': 'match_invitation',
+				'match_room': match_room_name,
+				'players': [p['username'] for p in players]
+			}
+		)
+
+
+	async def match_invitation(self, event):
+		match_room = event['match_room']
+		players = event['players']
+		
+		logging.info(f"Match invitation received in room {match_room} for players: {players}")
+
+		for player in players:
+			if self.username == player:
+				opponent = [p for p in players if p != self.username][0]
+				logging.info(f"Sending match invitation to {self.username} with opponent {opponent}")
+				await self.send(text_data=json.dumps({
+					'type': 'match_invitation',
+					'match_room': match_room,
+					'player': self.username,
+					'opponent': opponent,
+					'players': players
+				}))
+
+
+
+	async def send_online_html_to_match_players(self, match_room_name, players):
+		html_content = await sync_to_async(render_to_string)('pong/online_game.html', {'players_list': players})
+		await self.channel_layer.group_send(
+			match_room_name,
+			{
+				"type": "html_message",
+				"html": html_content
+			}
+		)
+
+	async def handle_confirm_match_join(self, data):
+		match_room = data.get('match_room')
+		player = self.username
+
+		if not match_room or not player:
+			logging.error(f"Invalid data received: match_room={match_room}, player={player}")
+			return
+		logging.error(f"Invalid data received: match_room={match_room}, player={player}")
+
+		# Initialize the set if it doesn't exist
+		if match_room not in self.confirmed_players:
+			self.confirmed_players[match_room] = set()
+
+		# Add the player to the set of confirmed players for the match room
+		self.confirmed_players[match_room].add(player)
+		self.confirmed_channels[match_room] = self.channel_name  # Track the confirmed player's channel
+
+		# Get the players in the match room
+		players = self.confirmed_players.get(match_room, set())
+
+		# Check if both players have confirmed for the match room
+		if len(players) == 2:
+			await self.send_load_game_message(match_room, players)
+			# await self.start_game_logic(match_room, players)
+		else:
+			# One player has confirmed, wait for the other player
+			await self.send_waiting_message(match_room, self.channel_name)
+
+	async def send_load_game_message(self, match_room, players):
+		# Send message to both players to load game.html
+		html_content = await sync_to_async(render_to_string)('pong/online_game.html', {'players': players})
+		await self.channel_layer.group_send(
+			match_room,
+			{
+				'type': 'load_game',
+				'match_room': match_room,
+				'players': players,
+				'message': f"{', '.join(players)} are ready to play. Load the game.html page to start the game.",
+				'html': html_content
+			}
+		)
+		
+		logging.info(f"Starting game in match room: {match_room} with players: {players}")
+		# await self.start_game(match_room, players)
+
+	async def load_game(self, event):
+		message = event['message']
+		html_content = event['html']
+		match_room = event['match_room']
+		players = event['players']
+		
+		logging.info("Sending load_game message")
+		await self.send(text_data=json.dumps({
+			'type': 'load_game',
+			'message': message,
+			'html': html_content
+		}))
+		
+		# await asyncio.sleep(15)
+		
+		# logging.info(f"Starting game in match room: {match_room} with players: {players}")
+		# await self.start_game(match_room, players)
+		# logging.info(f"Loading game: {message}")
+
+
+	async def send_waiting_message(self, match_room, confirmed_channel):
+		await self.channel_layer.send(
+			confirmed_channel,
+			{
+				'type': 'waiting_for_opponent',
+				'message': "Waiting for your opponent to confirm."
+			}
+		)
+
+	async def waiting_for_opponent(self, event):
+		message = event['message']
+		await self.send(text_data=json.dumps({
+			'type': 'waiting_for_opponent',
+			'message': message
+		}))
+
+	async def match_room_ready(self, match_room_name, players):
+		await self.send_online_html_to_match_players(match_room_name, players)
+
+	async def match_completed(self, winner, loser):
+		# Logic to handle match completion and updating the bracket
+		pass
+
+	async def broadcast_tournament_update(self):
+		# Logic to broadcast updated tournament bracket to all players
+		pass

@@ -1,5 +1,6 @@
 from django.db.models import (Model, TextField, DateTimeField, ForeignKey,
-							CASCADE, IntegerField, CharField, Q)
+							CASCADE, IntegerField, CharField, Q, AutoField,
+							DateField, ManyToManyField)
 from django.contrib.auth.models import User
 
 from asgiref.sync import sync_to_async, async_to_sync
@@ -100,3 +101,19 @@ def decline_challenge(challengee, challenger):
 		challenge.delete()
 		return challenge
 	return None
+
+
+
+class Tournament(Model):
+    id = AutoField(primary_key=True)
+    start_date = DateField(null=True)
+    end_date = DateField(null=True)
+    players = ManyToManyField(User, through='TournamentPlayer')
+    games = ManyToManyField('Game', related_name='tournament_games')
+
+class TournamentPlayer(Model):
+    user = ForeignKey(User, on_delete=CASCADE)
+    tournament = ForeignKey(Tournament, on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'tournament')
