@@ -18,6 +18,16 @@ var type = "defaultGame";
 let username = fetch('/get_current_user/').then(response => response.json());
 
 // draw a rectangle, will be used to draw paddles
+
+function resetChallengeStatus() {
+    if (type === 'challenge') {
+        challenged_username = '';
+        challenger_username = '';
+        loadProfile(username);
+    }
+}
+
+
 function drawRect(ctx, x, y, w, h, color){
     ctx.fillStyle = color;
     ctx.fillRect(x, y, w, h);
@@ -52,8 +62,10 @@ function getMousePos(canvas, user) {
 function resetBall(data2){
     data2['ball'].x = data2['canvas'].width/2;
     data2['ball'].y = data2['canvas'].height/2;
-    data2['ball'].velocityX = generateRandDir();
-    data2['ball'].velocityY = generateRandDir();
+    // data2['ball'].velocityX = generateRandDir();
+    // data2['ball'].velocityY = generateRandDir();
+    data2['ball'].velocityX = 7;
+    data2['ball'].velocityY = 0;
     data2['ball'].speed = 7;
 }
 
@@ -170,9 +182,6 @@ function displayBtn(id) {
 
 
 function start_play_computer() {
-    // document.getElementById('start_play_computer').style.display = 'none';
-    // document.getElementById('restart_btn').style.display = 'none';
-    // document.getElementById('quit_game').style.display = 'block';
     hideBtn('start_play_computer');
     hideBtn('restart_btn');
     displayBtn('quit_game');

@@ -163,8 +163,10 @@ function start_local_game() {
         x : data3['canvas'].width/2,
         y : data3['canvas'].height/2,
         radius : 10,
-        velocityX : generateRandDir(),
-        velocityY : generateRandDir(),
+        // velocityX : generateRandDir(),
+        // velocityY : generateRandDir(),
+        velocityX : 7,
+        velocityY : 0,
         speed : 7,
         color : "WHITE"
     };
