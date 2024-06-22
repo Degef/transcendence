@@ -89,6 +89,7 @@ const routeHandlers = {
 };
 
 function handleButtonClick(event) {
+	console.log(event.target.id);
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],
@@ -111,6 +112,7 @@ function handleButtonClick(event) {
 		offline_tourn:routeHandlers['/offline_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],
+		mode_toggle: toggleTheme,
 	};
 
 	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
@@ -171,6 +173,17 @@ function waitForElement(selector, callback) {
 			observer.observe(document.body, { childList: true, subtree: true });
 		}
 	});
+}
+
+function toggleTheme() {
+	const toggleButton = document.querySelector('#mode_toggle');
+	const isLightMode = document.body.classList.toggle('light-mode');
+
+	if (isLightMode) {
+		toggleButton.innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+	} else {
+		toggleButton.innerHTML = '<i class="fa-solid fa-lightbulb nav-link mt-1" id="mode_toggle"></i>';
+	}
 }
 
 
