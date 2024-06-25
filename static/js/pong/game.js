@@ -185,7 +185,7 @@ function start_play_computer() {
     hideBtn('start_play_computer');
     hideBtn('restart_btn');
     displayBtn('quit_game');
-
+    
     if (game_in_progress) {
         return;
     }

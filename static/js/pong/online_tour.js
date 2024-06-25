@@ -109,6 +109,74 @@ function start_play_onl_tour(event, socket) {
 
 
 
+// Function to find the correct matchup
+function findMatchup(challenger, challenged, matchups) {
+  for (var i = 0; i < matchups.length; i++) {
+    var teams = matchups[i].querySelectorAll('.team');
+    
+    if (teams.length == 2) {
+      var teamTopPlayer = teams[0].querySelector('.player-name').innerText.trim();
+      var teamBottomPlayer = teams[1].querySelector('.player-name').innerText.trim();
+      
+      if ((teamTopPlayer == challenger && teamBottomPlayer == challenged) || 
+          (teamTopPlayer == challenged && teamBottomPlayer == challenger)) {
+        return matchups[i];
+      }
+    }
+  }
+  
+  return null; // No matchup found
+}
+
+
+async function loadTrounametGame(player1,  player2) {
+    mainSection = document.querySelector('.main-section');
+    const mainContainer = document.getElementById('main-container');
+    mainSection.style.display = 'none';
+    
+    // await new Promise(resolve => setTimeout(resolve, 1000));
+    const csrftoken = getCookie('csrftoken');
+
+    try {
+        // Make a request to the backend to get the local game page
+        const response = await fetch('/play_online/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ player1, player2})
+        });
+        const html = await response.text();
+        isIntournament = true;
+
+        // Replace the entire body content with the fetched content
+        const parser = new DOMParser();
+        const parsedHtml = parser.parseFromString(html, 'text/html');
+
+        // Select the tournament section from the parsed HTML content
+        tournamentSection = parsedHtml.getElementById('tournament');
+        // Select and remove the buttons from the parsed HTML content
+        const restartButton = parsedHtml.getElementById('restart_btn');
+        const quitButton = parsedHtml.getElementById('quit_game');
+
+        if (restartButton && restartButton.parentNode) {
+            restartButton.parentNode.removeChild(restartButton);
+        }
+
+        if (quitButton && quitButton.parentNode) {
+            quitButton.parentNode.removeChild(quitButton);
+        }
+
+        // Append the tournament section before the footer
+        mainContainer.appendChild(tournamentSection);
+        displayMatchModal(player1, player2);
+    } catch (error) {
+        console.error('Error fetching local game page:', error);
+    }
+}
+
+
 function displayMatchInvitation(matchRoom, opponent, socket, players) {
     console.log("match_room: ", matchRoom);
     // Create modal elements
@@ -136,6 +204,15 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
 
     challenger_username = players[0];
 	challenged_username = players[1];
+    // Get all matchups
+    var matchups = document.querySelectorAll('#bracket .matchup');
+    var matchupElement = findMatchup(challenger_username, challenged_username, matchups);
+    if (matchupElement) {
+        console.log('Matchup found:', matchupElement);
+      } else {
+        console.log('No matchup found for the given players.');
+      }
+      
 
     const confirmButton = document.createElement('button');
     confirmButton.textContent = 'Join Game';
@@ -143,7 +220,9 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
         console.log('click join Game');
         isTypeTrounament = true;
         document.body.removeChild(modal);
-        handleRoute('/play_online/')
+        loadTrounametGame(challenger_username, challenged_username);
+        
+        // handleRoute('/play_online/');
     };
 
     modalContent.appendChild(modalMessage);
