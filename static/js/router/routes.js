@@ -140,7 +140,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.body.addEventListener('click', handleButtonClick);
 	const path = window.location.pathname;
     intializeJsOnPathChange(path);
+	setuptheme();
 });
+
+function setuptheme() {
+	console.log(localStorage.getItem('theme'));
+	if (localStorage.getItem('theme') === '' || localStorage.getItem('theme') === null || localStorage.getItem('theme') === 'dark') {
+		localStorage.setItem('theme', 'dark');
+	}
+	else if (localStorage.getItem('theme') === 'light') {
+		document.body.classList.add('light-mode');
+		document.getElementById('mode_toggle').innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+	}
+}
 
 function intializeJsOnPathChange(path) {
 	if (path === '/chat/') {
@@ -181,8 +193,10 @@ function toggleTheme() {
 
 	if (isLightMode) {
 		toggleButton.innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+		localStorage.setItem('theme', 'light');
 	} else {
 		toggleButton.innerHTML = '<i class="fa-solid fa-lightbulb nav-link mt-1" id="mode_toggle"></i>';
+		localStorage.setItem('theme', 'dark');
 	}
 }
 

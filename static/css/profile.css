@@ -353,27 +353,20 @@ canvas {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    border: 2px solid #fff;
+    border: 1px solid #fff;
     bottom: 5px;
     right: 5px;
 }
 
-.online {
-    background-color: #28a745;
-}
-
-.offline {
-    background-color: #dc3545;
-}
 
 .list-container {
 	max-height: 400px;
 	overflow-y: auto;
 }
-.search-bar {
+/* .search-bar {
 	position: sticky;
 	top: 0;
 	background: white;
 	z-index: 10;
 	padding: 10px 0;
-}
+} */
