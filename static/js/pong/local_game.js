@@ -221,4 +221,5 @@ function goBack() {
     // terminate_game = false;
     document.getElementById('tournament').style.display = 'block';
     history.back();
+	terminate_game = false;
 }

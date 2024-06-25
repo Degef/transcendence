@@ -90,6 +90,7 @@ const routeHandlers = {
 };
 
 function handleButtonClick(event) {
+	console.log(event.target.id);
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],
@@ -113,6 +114,7 @@ function handleButtonClick(event) {
 		online_tourn:routeHandlers['/online_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],
+		mode_toggle: toggleTheme,
 	};
 
 	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
@@ -141,7 +143,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.body.addEventListener('click', handleButtonClick);
 	const path = window.location.pathname;
     intializeJsOnPathChange(path);
+	setuptheme();
 });
+
+function setuptheme() {
+	console.log(localStorage.getItem('theme'));
+	if (localStorage.getItem('theme') === '' || localStorage.getItem('theme') === null || localStorage.getItem('theme') === 'dark') {
+		localStorage.setItem('theme', 'dark');
+	}
+	else if (localStorage.getItem('theme') === 'light') {
+		document.body.classList.add('light-mode');
+		document.getElementById('mode_toggle').innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+	}
+}
 
 function intializeJsOnPathChange(path) {
 	if (path === '/chat/') {
@@ -174,6 +188,19 @@ function waitForElement(selector, callback) {
 			observer.observe(document.body, { childList: true, subtree: true });
 		}
 	});
+}
+
+function toggleTheme() {
+	const toggleButton = document.querySelector('#mode_toggle');
+	const isLightMode = document.body.classList.toggle('light-mode');
+
+	if (isLightMode) {
+		toggleButton.innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+		localStorage.setItem('theme', 'light');
+	} else {
+		toggleButton.innerHTML = '<i class="fa-solid fa-lightbulb nav-link mt-1" id="mode_toggle"></i>';
+		localStorage.setItem('theme', 'dark');
+	}
 }
 
 

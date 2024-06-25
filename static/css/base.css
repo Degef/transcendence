@@ -12,6 +12,21 @@
 	--create-account-button-background-color: #2B2C3D;
 }
 
+.light-mode {
+	--background-color: #FFFFFF;
+	--card-accent-color: #F0F0F0;
+	--text-color-primary: #1A1F33;
+	--text-accent-color: #2D2F4F;
+	--button-primary-color: #5865F2;
+	--hover-color: #E0E0E0;
+	--message-received-color: #E5E5E5;
+	--message-sent-color: #A6B1E1;
+	--input-background-color: #F5F5F5;
+	--other-button-background-color: #D0D0D0;
+	--create-account-button-background-color: #C0C0C0;
+}
+
+
 html, body {
 	margin: 0;
 	padding: 0;
@@ -40,11 +55,6 @@ html, body {
 
 .nav-link {
 	color: var(--text-color-primary);
-}
-
-.nav-link:hover {
-	color: var(--button-primary-color);
-	transition: color 0.3s ease-in-out;
 }
 
 .nav-link.btn {

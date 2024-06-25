@@ -59,7 +59,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 }
 
 async function register(back_or_forward = 1) {
-	await handleFormSubmission('registration-form', '/register/', '/login/', back_or_forward);
+	await handleFormSubmission('registration-form', '/register/', '/', back_or_forward);
 }
 
 async function login(back_or_forward = 1) {
