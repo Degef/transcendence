@@ -1,11 +1,14 @@
 from django.db.models import (Model, TextField, DateTimeField, ForeignKey,
-							CASCADE, IntegerField, CharField, Q)
+							CASCADE, IntegerField, CharField, Q, AutoField,
+							DateField, ManyToManyField)
 from django.contrib.auth.models import User
 
-from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async, async_to_sync
 from django.core.exceptions import ObjectDoesNotExist
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 class Game(Model):
@@ -53,22 +56,11 @@ class Challenge(Model):
 	def __str__(self):
 		return f'{self.challenger} challenged {self.challengee}'
 
-	def notify_clients(self, message):
-		notification = {
-			'type': 'receive_group_message',
-			'message': message,
-		}
-
-		channel_layer = get_channel_layer()
-		async_to_sync(channel_layer.group_send)("{}".format(self.challenger.id), notification)
-		async_to_sync(channel_layer.group_send)("{}".format(self.challengee.id), notification)
-
 	class Meta:
 		unique_together = ('challenger', 'challengee')
 		app_label = 'pong'
 		verbose_name = 'Challenge'
 		verbose_name_plural = 'Challenges'
-
 
 def user_has_pending_challenge(username):
 	try:
@@ -81,27 +73,24 @@ def user_has_pending_challenge(username):
 		(Q(status=Challenge.PENDING) | Q(status=Challenge.ACCEPTED))
 	).exists()
 
-
 def create_challenge(challenger, challengee):
-	challenge = Challenge.objects.create(challenger=challenger, challengee=challengee)
-	message = {
-		'type': 'challenge_created',
-		'challenger': challenger.username,
-		'challengee': challengee.username,
-	}
-	challenge.notify_clients(json.dumps(message))
-	return challenge
+	return Challenge.objects.create(challenger=challenger, challengee=challengee)
+
+def delete_challenge(challengerUsername, challengeeUsername):
+
+	challengee = User.objects.get(username=challengeeUsername)
+	challenger = User.objects.get(username=challengerUsername)
+
+	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
+	if challenge:
+		challenge.delete()
+		return challenge
+	return None
 
 def accept_challenge(challengee, challenger):
 	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
 	if challenge:
 		challenge.status = Challenge.ACCEPTED
-		message = {
-			'type': 'challenge_accepted',
-			'challenger': challenger.username,
-			'challengee': challengee.username,
-		}
-		challenge.notify_clients(json.dumps(message))
 		challenge.save()
 		return challenge
 	return None
@@ -109,12 +98,22 @@ def accept_challenge(challengee, challenger):
 def decline_challenge(challengee, challenger):
 	challenge = Challenge.objects.filter(challenger=challenger, challengee=challengee).first()
 	if challenge:
-		message = {
-			'type': 'challenge_declined',
-			'challenger': challenger.username,
-			'challengee': challengee.username,
-		}
-		challenge.notify_clients(json.dumps(message))
 		challenge.delete()
 		return challenge
 	return None
+
+
+
+class Tournament(Model):
+    id = AutoField(primary_key=True)
+    start_date = DateField(null=True)
+    end_date = DateField(null=True)
+    players = ManyToManyField(User, through='TournamentPlayer')
+    games = ManyToManyField('Game', related_name='tournament_games')
+
+class TournamentPlayer(Model):
+    user = ForeignKey(User, on_delete=CASCADE)
+    tournament = ForeignKey(Tournament, on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'tournament')

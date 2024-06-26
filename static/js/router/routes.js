@@ -64,14 +64,6 @@ async function handleRoute(path, pushState = true) {
 	}
 }
 
-async function handleLogout() {
-	if (statusSocket) {
-		statusSocket.send(JSON.stringify({ 'status': 'offline' }));
-		statusSocket.close();
-		statusSocket = null;
-	}
-}
-
 
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
@@ -82,7 +74,7 @@ const routeHandlers = {
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
 	'/login/': () => login(),
-	'/logout/': () => { handleLogout(); handleRoute('/logout/', false); },
+	'/logout/': () => { handleRoute('/logout/', false); },
 	'/req_login/': () => handleRoute('/login/', true),
 	'/friends/': () => handleRoute('/friends/', true),
 	'/edit_profile/': () => handleRoute('/edit_profile/', true),
@@ -94,10 +86,11 @@ const routeHandlers = {
 	'/offline_tourn/': name => handleRoute('/offline_tourn/', true),
 	'/four_players/': () => setupTournament(4),
 	'/eight_players/':  () => setupTournament(8),
+	'/online_tourn/': () => fourPlayers(),
 };
 
 function handleButtonClick(event) {
-	console.log(event.target.id)
+	console.log(event.target.id);
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],
@@ -118,8 +111,10 @@ function handleButtonClick(event) {
 		local_game: routeHandlers['/local_game/'],
 		chatLink: routeHandlers['/chat/'],
 		offline_tourn:routeHandlers['/offline_tourn/'],
+		online_tourn:routeHandlers['/online_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],
+		mode_toggle: toggleTheme,
 	};
 
 	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
@@ -129,6 +124,7 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
+	console.log(buttonId);
 
 	if (handler) {
 		if (window.game_in_progress) {
@@ -147,7 +143,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.body.addEventListener('click', handleButtonClick);
 	const path = window.location.pathname;
     intializeJsOnPathChange(path);
+	setuptheme();
 });
+
+function setuptheme() {
+	console.log(localStorage.getItem('theme'));
+	if (localStorage.getItem('theme') === '' || localStorage.getItem('theme') === null || localStorage.getItem('theme') === 'dark') {
+		localStorage.setItem('theme', 'dark');
+	}
+	else if (localStorage.getItem('theme') === 'light') {
+		document.body.classList.add('light-mode');
+		document.getElementById('mode_toggle').innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+	}
+}
 
 function intializeJsOnPathChange(path) {
 	if (path === '/chat/') {
@@ -180,6 +188,19 @@ function waitForElement(selector, callback) {
 			observer.observe(document.body, { childList: true, subtree: true });
 		}
 	});
+}
+
+function toggleTheme() {
+	const toggleButton = document.querySelector('#mode_toggle');
+	const isLightMode = document.body.classList.toggle('light-mode');
+
+	if (isLightMode) {
+		toggleButton.innerHTML = '<i class="fa-solid fa-moon nav-link mt-1" id="mode_toggle" style="color:black;"></i>';
+		localStorage.setItem('theme', 'light');
+	} else {
+		toggleButton.innerHTML = '<i class="fa-solid fa-lightbulb nav-link mt-1" id="mode_toggle"></i>';
+		localStorage.setItem('theme', 'dark');
+	}
 }
 
 

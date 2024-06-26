@@ -3,35 +3,30 @@
 {% load static %}
 
 {% block content %}
-<section class="hero">
-	<div class="hero-image-wrapper position-relative">
-		<img 
-			loading="lazy" 
-			src="/media/images/pong.jpeg"
-			class="hero-image img-fluid" 
-			alt="Enter the Game"
-		/>
-		<div class="hero-content position-absolute d-flex flex-column justify-content-end text-center">
+<section class="hero d-flex justify-content-center align-items-center w-100">
+	<div class="hero-image-wrapper position-relative w-100 overflow-hidden">
+		<img loading="lazy" src="/media/images/pong.jpeg" class="hero-image img-fluid position-absolute object-fit-cover w-100 h-100" alt="Enter the Game"/>
+		<div class="hero-content position-relative d-flex flex-column justify-content-end text-center">
 			<h1 class="hero-title">Enter the Game</h1>
-			<a href="#play" class="btn btn-primary hero-button" id="game_computer">Play Now</a>
+			<a href="#play" class="btn btn-primary hero-button fs-5 text-center text-decoration-none" id="game_computer">Play Now</a>
 		</div>
 	</div>
 </section>
 
-<section class="features text-center py-5">
+<section class="features d-flex flex-column align-items-center text-center py-5">
 	<h2 class="features-title">Why play pong on PongBuddies?</h2>
-	<div class="features-wrapper row mt-4">
-		<div class="feature col-lg-4 col-md-6 col-sm-12 p-3">
+	<div class="d-flex justify-content-center mt-4 flex-wrap gap-3">
+		<div class="feature d-flex flex-column align-items-center col-lg-5 col-md-8 col-sm-12 p-3">
 			<i class="fas fa-users feature-icon"></i>
 			<h3 class="feature-title">Compete with Friends</h3>
 			<p class="feature-description">Invite friends to a private game or join a public room and make new friends</p>
 		</div>
-		<div class="feature col-lg-4 col-md-6 col-sm-12 p-3">
+		<div class="feature d-flex flex-column align-items-center col-lg-5 col-md-8 col-sm-12 p-3">
 			<i class="fas fa-trophy feature-icon"></i>
 			<h3 class="feature-title">Find New Challengers</h3>
 			<p class="feature-description">Join a public game room and play against others of all skill levels</p>
 		</div>
-		<div class="feature col-lg-4 col-md-6 col-sm-12 p-3">
+		<div class="feature d-flex flex-column align-items-center col-lg-5 col-md-8 col-sm-12 p-3">
 			<i class="fa-solid fa-robot feature-icon"></i>
 			<h3 class="feature-title">Train Against Bots</h3>
 			<p class="feature-description">Improve your skills by playing against computer-controlled opponents</p>
@@ -39,9 +34,9 @@
 	</div>
 </section>
 
-<section class="cta text-center py-5">
+<section class="cta d-flex flex-column align-items-center text-center py-3">
 	<h2 class="cta-title">Ready to become a pong champion?</h2>
-	<a href="#" class="btn btn-primary cta-button mt-3" id="req_register">Sign Up</a>
+	<a href="#" class="btn btn-primary cta-button mt-3 fs-5 text-decoration-none text-center" id="req_register">Sign Up</a>
 </section>
 
 {% endblock %}

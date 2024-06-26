@@ -3,18 +3,15 @@
 {% load static %}
 
 {% block content %}
-<div class="container__home container">
-	<section class="main-section">
-		<article class="card-container mb-4">
+<div class="container__home container d-flex flex-column align-items-center w-100">
+	<section class="main-section flex-column w-100">
+		<article class="card-container d-flex flex-column justify-content-center mb-4">
 			<div class="card position-relative text-center">
-				<img loading="lazy" src="/media/images/home.png" alt="Play Pong game" class="card-img">
-				<div class="card-body play-section">
-					<h3 class="card-title play-title">Play Pong with friends</h3>
-				</div>
+				<img loading="lazy" src="/media/images/animatedhome.gif" alt="Play Pong game" class="card-img position-absolute object-fit-cover w-100 h-100">
 			</div>
 		</article>
 
-		<article class="details-section">
+		<article class="details-section d-flex flex-column justify-content-center">
 			<div class="row">
 				<div class="col-md-4 mb-3">
 					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
@@ -22,7 +19,7 @@
 							<h4 class="subtitle">Play Against Computer</h4>
 							<p class="details-desc">Sharpen your skills with a game against the computer</p>
 						</div>
-						<button class="btn btn-primary custom-button" id="game_computer">Play Against Computer</button>
+						<button class="btn btn-primary custom-button justify-content-center" id="game_computer">Play Against Computer</button>
 					</div>
 				</div>
 				<div class="col-md-4 mb-3">
@@ -31,7 +28,7 @@
 							<h4 class="subtitle">Play Local</h4>
 							<p class="details-desc">Play a game with a friend on the same device</p>
 						</div>
-						<button class="btn btn-primary custom-button" id="local_game">Play Local</button>
+						<button class="btn btn-primary custom-button justify-content-center" id="local_game">Play Against Local Player</button>
 					</div>
 				</div>
 				<div class="col-md-4 mb-3">
@@ -40,18 +37,18 @@
 							<h4 class="subtitle">Play Online</h4>
 							<p class="details-desc">Play a game with a friend on the different device</p>
 						</div>
-						<button class="btn btn-primary custom-button" id="play_online">Play Against Remote Player</button>
+						<button class="btn btn-primary custom-button justify-content-center" id="play_online">Play Against Remote Player</button>
 					</div>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row justify-content-center">
 				<div class="col-md-4 mb-3">
 					<div class="details-card p-3 h-100 d-flex flex-column justify-content-between">
 						<div class="details-title">
 							<h4 class="subtitle">Offline Tournament</h4>
 							<p class="details-desc">Play offline tournament with a friends on the same device</p>
 						</div>
-						<button class="btn btn-primary custom-button" id="offline_tourn" >Offline</button>
+						<button class="btn btn-primary custom-button justify-content-center" id="offline_tourn" >Join Offline Tournament</button>
 					</div>
 				</div>
 				<div class="col-md-4 mb-3">
@@ -60,7 +57,7 @@
 							<h4 class="subtitle">Online Tournament</h4>
 							<p class="details-desc">Join online tournament and compete with the best</p>
 						</div>
-						<button class="btn btn-primary custom-button" id="online_tourn" >Online</button>
+						<button class="btn btn-primary custom-button justify-content-center" id="online_tourn" >Join Online Tournament</button>
 					</div>
 				</div>
 			</div>

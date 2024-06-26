@@ -1,13 +1,13 @@
 version: '3.8'
 
-name: pong
+# name: pong
 
 services:
 
   web:
     build: .
     container_name: django
-    image: django
+    # image: django
     volumes:
       - ./:/app
       - ./static/:/app/static

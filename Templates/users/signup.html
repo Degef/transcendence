@@ -4,58 +4,58 @@
 
 {% block content %}
 
-<div class="signup">
-	<form id="registration-form" class="signup__form" method="post" action="{% url 'register' %}">
+<div class="signup d-flex flex-column w-100 justify-content-center align-items-center">
+	<form id="registration-form" class="signup__form d-flex flex-column w-100" method="post" action="{% url 'register' %}">
 		{% csrf_token %}
-		<div class="signup__title-container">
+		<div class="signup__title-container d-flex justify-content-center text-center">
 			<div class="signup__title-text">Create an account</div>
 		</div>
-		<div class="signup__input-group">
-			<div class="signup__input-container">
-				<div class="signup__input-box">
-					<label for="usernameInput" class="signup__input-label visually-hidden">User name</label>
-					<input type="text" id="usernameInput" name="username" placeholder="Enter your user name" class="signup__input-text" aria-label="User name" />
+		<div class="signup__input-group d-flex flex-column justify-content-center">
+			<div class="d-flex flex-column justify-content-center">
+				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
+					<label for="usernameInput" class="signup__input-label justify-content-center visually-hidden">User name</label>
+					<input type="text" id="usernameInput" name="username" placeholder="Enter your user name" class="signup__input-text" aria-label="User name" maxlength="14"/>
 				</div>
 			</div>
 		</div>
-		<div class="signup__input-group">
-			<div class="signup__input-container">
-				<div class="signup__input-box">
-					<label for="emailInput" class="signup__input-label visually-hidden">Email address</label>
+		<div class="signup__input-group d-flex flex-column justify-content-center">
+			<div class="d-flex flex-column justify-content-center">
+				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
+					<label for="emailInput" class="signup__input-label justify-content-center visually-hidden">Email address</label>
 					<input type="email" id="emailInput" name="email" placeholder="Enter your email address" class="signup__input-text" aria-label="Email address" />
 				</div>
 			</div>
 		</div>
-		<div class="signup__input-group">
-			<div class="signup__input-container">
-				<div class="signup__input-box">
-					<label for="passwordInput" class="signup__input-label visually-hidden">Password</label>
+		<div class="signup__input-group d-flex flex-column justify-content-center">
+			<div class="d-flex flex-column justify-content-center">
+				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
+					<label for="passwordInput" class="signup__input-label justify-content-center visually-hidden">Password</label>
 					<input type="password" id="passwordInput" name="password1" placeholder="Enter your password" class="signup__input-text" aria-label="Password" />
 				</div>
 			</div>
 		</div>
-		<div class="signup__input-group">
-			<div class="signup__input-container">
-				<div class="signup__input-box">
-					<label for="password2Input" class="signup__input-label visually-hidden">Confirm Password</label>
+		<div class="signup__input-group d-flex flex-column justify-content-center">
+			<div class="d-flex flex-column justify-content-center">
+				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
+					<label for="password2Input" class="signup__input-label justify-content-center visually-hidden">Confirm Password</label>
 					<input type="password" id="password2Input" name="password2" placeholder="Confirm your password" class="signup__input-text" aria-label="Confirm Password" />
 				</div>
 			</div>
 		</div>
-		<div class="signup__agreement-container">
-			<div class="signup__agreement-content">
-				<div class="signup__agreement-text">By creating an account, you agree to our Terms of Service and Privacy Policy.</div>
+		<div class="signup__agreement-container d-flex flex-column justify-content-center">
+			<div class="signup__agreement-content d-flex gap-3">
+				<div class="signup__agreement-text d-flex flex-column justify-content-center">By creating an account, you agree to our Terms of Service and Privacy Policy.</div>
 			</div>
 		</div>
-		<div class="signup__action-buttons">
-			<button type="submit" id="register" class="signup__action-button signup__create-account-btn">Create account</button>
+		<div class="signup__action-buttons d-flex flex-column justify-content-center align-items-center">
+			<button type="submit" id="register" class="signup__action-button d-flex justify-content-center align-items-center text-center w-100 signup__create-account-btn">Create account</button>
 		</div>
-		<div class="signup__action-buttons">
-			<button type="button" id="loginWith42" class="signup__action-button signup__continue-42-btn">Continue with 42</button>
+		<div class="signup__action-buttons d-flex flex-column justify-content-center align-items-center">
+			<button type="button" id="loginWith42" class="signup__action-button d-flex justify-content-center align-items-center text-center w-100 signup__continue-42-btn">Continue with 42</button>
 		</div>
-		<div class="signup__already-account">Already have an account?</div>
-		<div class="signup__login-container">
-			<button type="button" id="req_login" class="signup__action-button signup__login-btn">Login</button>
+		<div class="signup__already-account d-flex flex-column text-center">Already have an account?</div>
+		<div class="signup__login-container d-flex flex-column text-center justify-content-center">
+			<button type="button" id="req_login" class="signup__action-button d-flex justify-content-center align-items-center text-center w-100 signup__login-btn">Login</button>
 		</div>
 	</form>
 </div>

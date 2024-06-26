@@ -1,16 +1,8 @@
 
 .chat__container {
-	justify-content: center;
-	width: 100%;
 	padding: 20px 24px;
 	background-color: #121217;
 	border-radius: 12px;
-}
-
-.chat-layout {
-	gap: 20px;
-	display: flex;
-	flex-direction: row;
 }
 
 .chat {
@@ -26,17 +18,13 @@
 }
 
 .contacts {
-	display: flex;
 	flex-grow: 1;
-	flex-direction: column;
 	padding: 12px 0;
 }
 
 .search-bar {
 	border-radius: 24px;
 	background-color: #292b38;
-	display: flex;
-	align-items: center;
 	gap: 12px;
 	padding: 12px 16px;
 	margin: 0 16px;
@@ -54,29 +42,8 @@
 	width: 100%;
 }
 
-.contact {
-	background-color: #121217;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-top: 12px;
-	gap: 18px;
-	padding: 8px 17px;
-	cursor: pointer;
-	border-radius: 8px;
-	transition: background-color 0.3s;
-	overflow-y: hidden;
-	scrollbar-width: none;
-}
-
-.contact:hover {
-	background-color: var(--hover-color);
-}
-
 .contact-details {
-	display: flex;
 	gap: 16px;
-	align-items: center;
 }
 
 .contact-avatar {
@@ -84,16 +51,7 @@
 	border-radius: 50%;
 }
 
-.contact-info {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
 .chat-window {
-	display: flex;
-	flex-direction: column;
-	width: 75%;
 	background-color: var(--card-accent-color);
 	border-radius: 12px;
 	padding: 16px;
@@ -111,8 +69,6 @@
 }
 
 .message-container {
-	display: flex;
-	align-items: center;
 	gap: 12px;
 	padding: 12px;
 }
@@ -132,8 +88,6 @@
 }
 
 .message-content {
-	display: flex;
-	flex-direction: column;
 	max-width: 70%;
 	padding: 8px;
 	border-radius: 12px;
@@ -163,19 +117,15 @@
 }
 
 .input-container {
-	display: flex;
-	justify-content: center;
 	padding: 16px;
 	border-top: 1px solid var(--hover-color);
 }
 
 .input-wrapper {
-	display: flex;
 	width: 100%;
 	background-color: #292b38;
 	border-radius: 24px;
 	overflow: hidden;
-	position: relative;
 }
 
 .message-input {
@@ -202,13 +152,9 @@
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
-	position: absolute; 
 	right: 8px;
 	top: 50%;
 	transform: translateY(-50%);
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	cursor: pointer;
 }
 
@@ -300,14 +246,5 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    border: 2px solid white;
-    background-color: gray;
-}
-
-.chat__status-indicator.chat__online {
-    background-color: green;
-}
-
-.chat__status-indicator.chat__offline {
-    background-color: red;
+    border: 1px solid white;
 }

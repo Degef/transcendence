@@ -182,3 +182,17 @@ canvas {
     padding: 10px;
     border-radius: 5px;
 }
+
+
+
+
+.modal-header {
+	background-color: #ffffff;
+	color: #000000;
+}
+.modal-body {
+	text-align: center;
+}
+.modal-footer {
+	justify-content: center;
+}

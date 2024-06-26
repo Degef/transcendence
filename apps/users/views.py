@@ -36,7 +36,7 @@ def get_ipaddress(request):
 	data = {
 		'ip': IP,
 		'client_id': CLIENT_ID,
-		'redirectUri': f'https://{IP}',
+		'redirectUri': f'https://{IP}/',
 		'secret': SECRET,
 	}
 	return JsonResponse(data)
@@ -62,6 +62,9 @@ def login(request):
 		form = CustomAuthenticationForm()
 	return render(request, 'login.html', {'form': form})
 
+def limit(request):
+	return render(request, '403.html')
+
 def logout(request):
 	with transaction.atomic():
 		user_thing = request.user.user_things
@@ -75,9 +78,14 @@ def register(request):
 		form = UserRegisterForm(request.POST)
 		if form.is_valid():
 			form.save()
-			# messages.success(request, f'Your account has been created! You are now able to log in.')
-			form = AuthenticationForm()
-			context = {'messages': messages.get_messages(request), 'form': form}
+			username = form.cleaned_data.get('username')
+			password = form.cleaned_data.get('password1')
+			user = authenticate(username=username, password=password)
+			auth_login(request, user)
+			with transaction.atomic():
+				user_thing = request.user.user_things
+				user_thing.status = 'online'
+				user_thing.save()
 			return JsonResponse({'success': True, 'message': 'Your account has been created.'})
 		else:
 			errors = form.errors.as_json()
@@ -306,7 +314,7 @@ def exchange_code(request):
 		'client_id': client_id,
 		'client_secret': client_secret,
 		'code': code,
-		'redirect_uri': f'https://{IP}',
+		'redirect_uri': f'https://{IP}/',
 		'grant_type': grant_type,
 	}
 	# # Exchange code for access token using POST request

@@ -1,16 +1,30 @@
 <div class="row leaderboard__row leaderboard__row--header">
-	<div class="col-1 leaderboard__cell">#</div>
-	<div class="col-3 leaderboard__cell">Player</div>
-	<div class="col-2 leaderboard__cell">Wins</div>
-	<div class="col-2 leaderboard__cell">Win Rate</div>
-	<div class="col-2 leaderboard__cell">Games Played</div>
+	<div class="col-1 leaderboard__cell text-center">#</div>
+	<div class="col-3 leaderboard__cell text-center">Player</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-md-block">Wins</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">Win Rate</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">Games Played</div>
 </div>
+
 {% for player in leaderboard_data %}
 <div class="row leaderboard__row">
-	<div class="col-1 leaderboard__cell">{{ forloop.counter }}</div>
-	<div class="col-3 leaderboard__cell">{{ player.username }}</div>
-	<div class="col-2 leaderboard__cell">{{ player.total_wins }}</div>
-	<div class="col-2 leaderboard__cell">{{ player.win_rate|floatformat:2 }}%</div>
-	<div class="col-2 leaderboard__cell">{{ player.games_played }}</div>
+	{% if player.username == request.user.username %}
+		{% if forloop.counter == 1%}
+			<div class="col-1 leaderboard__cell text-center"><i class="fa-solid fa-crown"></i></div>
+		{% else %}
+			<div class="col-1 leaderboard__cell text-center">{{ forloop.counter }}</div>
+		{% endif %}
+		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.username }}'); return false;"><strong>{{ player.username }}</strong></div>
+	{% else %}
+		{% if forloop.counter == 1%}
+			<div class="col-1 leaderboard__cell text-center"><i class="fa-solid fa-crown"></i></div>
+		{% else %}
+			<div class="col-1 leaderboard__cell text-center">{{ forloop.counter }}</div>
+		{% endif %}
+		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.username }}'); return false;">{{ player.username }}</div>
+	{% endif %}
+	<div class="col-2 leaderboard__cell text-center d-none d-md-block">{{ player.total_wins }}</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">{{ player.win_rate|floatformat:2 }}%</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">{{ player.games_played }}</div>
 </div>
 {% endfor %}

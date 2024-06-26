@@ -351,12 +351,19 @@
 .modal-backdrop.show {
   opacity: 0.5 !important;
 }
+.modal-backdrop {
+  z-index: -1;
+}
 
 .modal:target {
   visibility: visible !important;
   opacity: 1 !important;
 }
 
+#match-modal {
+  width: 80%;
+  max-width: 900px;
+}
 
 
 .box {
@@ -408,7 +415,7 @@
   display: block;
 }
 
-@media (max-width: 1600px) {
+@media (max-width: 1000px) {
   .matchbox {
     flex-direction: column !important;
     justify-content: center !important;

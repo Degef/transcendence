@@ -7,7 +7,7 @@
 		<article class="profile-details">
 			<div class="profile-image-container position-relative">
 				<img loading="lazy" src="{{ profile_image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
-				<span class="status-indicator position-absolute {% if is_online %} online {% else %} offline {% endif %}"></span>
+				<span class="status-indicator position-absolute {% if is_online %} bg-success {% else %} bg-danger {% endif %}"></span>
 			</div>
 			<h2 class="profile-name" id="profile_name">{{ username }}</h2>
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
@@ -124,7 +124,7 @@
 				</div>
 			{% endif %}
 			{% for friend in friends %}
-				<div class="friend-item d-flex justify-content-between align-items-center py-2">
+				<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
 					<div class="d-flex align-items-center gap-3 col-6">
 						<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;">
 							<img loading="lazy" src="{{ friend.profile.image.url }}" alt="Friend's profile image" class="friend-image rounded-circle" />
@@ -141,12 +141,12 @@
 		</div>
 		{% if is_own_profile %}
 			<div id="non-friends-list" class="list-container mt-4">
-				<div class="search-bar">
+				<div class="search-bar d-flex align-items-center">
 					<i class="fas fa-search search-icon"></i>
 					<input type="text" class="search-input" placeholder="Search Players">
 				</div>
 				{% for non_friend in non_friends %}
-					<div class="friend-item d-flex justify-content-between align-items-center py-2">
+					<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
 						<div class="d-flex align-items-center gap-3 col-6">
 							<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;">
 								<img loading="lazy" src="{{ non_friend.profile.image.url }}" alt="Non-friend's profile image" class="friend-image rounded-circle" />
@@ -177,7 +177,7 @@
 				</div>
 			{% endif %}
 			{% for requester in received_requests %}
-				<div class="friend-item d-flex justify-content-between align-items-center py-2">
+				<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
 					<div class="d-flex align-items-center gap-3 col-9">
 						<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;">
 							<img loading="lazy" src="{{ requester.profile.image.url }}" alt="Requester's profile image" class="request-image rounded-circle" />

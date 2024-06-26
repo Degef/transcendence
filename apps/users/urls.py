@@ -16,4 +16,5 @@ urlpatterns = [
 	path('login/', views.login, name='login'),
 	path('logout/', views.logout, name='logout'),
 	path('exchange_code/', views.exchange_code, name='exchange_code'),
+	path('limit/', views.limit, name='limit'),
 ]
