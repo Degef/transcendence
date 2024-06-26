@@ -1,7 +1,7 @@
 
 .chat__container {
 	padding: 20px 24px;
-	background-color: #121217;
+	background-color: var(--color-button-teritiary);
 	border-radius: 12px;
 }
 
@@ -24,7 +24,7 @@
 
 .search-bar {
 	border-radius: 24px;
-	background-color: #292b38;
+	background-color: var(--color-input-background);
 	gap: 12px;
 	padding: 12px 16px;
 	margin: 0 16px;
@@ -52,18 +52,18 @@
 }
 
 .chat-window {
-	background-color: var(--card-accent-color);
+	background-color: var(--color-card-background);
 	border-radius: 12px;
 	padding: 16px;
 	margin: 0 auto;
 }
 
 .chat-header {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-size: 24px;
 	font-weight: 700;
 	padding-bottom: 16px;
-	border-bottom: 1px solid var(--text-accent-color);
+	border-bottom: 1px solid var(--color-text-accent);
 	margin-bottom: 16px;
 	text-align: center;
 }
@@ -100,9 +100,9 @@
 }
 
 .message-text {
-	background-color: var(--message-received-color);
+	background-color: var(--color-message-received);
 	border-radius: 12px;
-	color: #fff;
+	color: var(--color-text-primary);
 	padding: 12px 16px;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
@@ -113,12 +113,12 @@
 }
 
 .sent-message .message-text {
-	background-color: var(--message-sent-color);
+	background-color: var(--color-message-sent);
 }
 
 .input-container {
 	padding: 16px;
-	border-top: 1px solid var(--hover-color);
+	border-top: 1px solid var(--color-hover);
 }
 
 .input-wrapper {
@@ -139,15 +139,15 @@
 }
 
 .message-input:focus {
-	border-color: var(--button-primary-color);
+	border-color: var(--color-button-primary);
 }
 
 .message-input::placeholder {
-	color: #9ea3b8;
+	color: var(--color-text-accent);
 }
 
 .send-button {
-	background-color: var(--button-primary-color);
+	background-color: var(--color-button-primary);
 	border: none;
 	width: 32px;
 	height: 32px;
@@ -164,7 +164,7 @@
 	display: none;
 	position: absolute;
 	background-color: #292b38;
-	border: 1px solid var(--text-accent-color);
+	border: 1px solid var(--color-text-accent);
 	border-radius: 8px;
 	z-index: 1000;
 	width: 150px;
@@ -176,7 +176,7 @@
 }
 
 .dropdown-menu .list-group-item {
-	color: #fff;
+	color: var(--color-text-primary);
 	background-color: transparent;
 	border: none;
 	cursor: pointer;
@@ -184,7 +184,7 @@
 }
 
 .dropdown-menu .list-group-item:hover {
-	background-color: var(--hover-color);
+	background-color: var(--color-hover);
 }
 
 
@@ -201,12 +201,12 @@
 	border: none;
 	background-color: transparent;
 	transition: background-color 0.3s;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 .user-list .list-group-item:hover,
 .user-list .list-group-item.active {
-	background-color: var(--hover-color);
+	background-color: var(--color-hover);
 }
 
 .contact-profile-image {
@@ -220,11 +220,11 @@
 .contact-name {
 	font-size: 16px;
 	font-weight: 600;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 .contact-action {
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	cursor: pointer;
 	margin-left: auto;
 }
@@ -246,5 +246,5 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    border: 1px solid white;
+    border: 1px solid var(--color-text-primary);
 }

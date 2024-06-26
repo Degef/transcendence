@@ -5,7 +5,7 @@
 }
 
 .profile-section {
-  background-color: var(--card-accent-color);
+  background-color: var(--color-card-background);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,7 +18,7 @@
 }
 
 .edit-title {
-  color: var(--text-color-primary);
+  color: var(--color-text-primary);
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 20px;
@@ -36,7 +36,7 @@
   border-radius: 12px;
   border: 1px solid rgba(61, 71, 84, 1);
   background-color: #1c2126;
-  color: var(--text-color-primary);
+  color: var(--color-text-primary);
   padding: 15px;
   margin-top: 8px;
   font-size: 16px;
@@ -88,7 +88,7 @@
   width: 100%;
   max-width: 480px;
   background-color: #007bff;
-  color: var(--text-color-primary);
+  color: var(--color-text-primary);
   padding: 15px;
   border: none;
   border-radius: 24px;
@@ -140,7 +140,7 @@
 
 .delete-account-buttons .cancel {
   background-color: #6c757d;
-  color: var(--text-color-primary);
+  color: var(--color-text-primary);
 }
 
 .delete-account-buttons .cancel:hover {
@@ -149,7 +149,7 @@
 
 .delete-account-buttons .delete {
   background-color: #dc3545;
-  color: var(--text-color-primary);
+  color: var(--color-text-primary);
 }
 
 .delete-account-buttons .delete:hover {

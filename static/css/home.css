@@ -1,15 +1,13 @@
 .container__home {
 	padding: 20px 0;
-	max-width: 1228px;
 }
 
 .main-section {
-	max-width: 1228px;
 	padding-bottom: 35px;
 }
 
 .card-container {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	padding: 16px;
 }
@@ -35,7 +33,7 @@
 	text-align: center;
 	letter-spacing: -1.58px;
 	font-family: Space Grotesk, sans-serif;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 @media (max-width: 991px) {
@@ -52,7 +50,7 @@
 .details-card {
 	border-radius: 12px;
 	border: 1px solid rgba(48, 64, 105, 1);
-	background-color: var(--card-accent-color);
+	background-color: var(--color-card-background);
 }
 
 .details-title {
@@ -61,31 +59,31 @@
 
 .subtitle {
 	font-family: Space Grotesk, sans-serif;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 }
 
 .details-desc {
 	margin-top: 4px;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-weight: 400;
 	line-height: 150%;
 }
 
 .custom-button {
 	border-radius: 24px;
-	background-color: var(--button-primary-color);
+	background-color: var(--color-button-primary);
 	padding: 6px 16px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 500;
 	cursor: pointer;
 }
 
 button {
-	background-color: var(--button-primary-color);
+	background-color: var(--color-button-primary);
 	border: none;
 	border-radius: 12px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	letter-spacing: 0.21px;
 	line-height: 150%;

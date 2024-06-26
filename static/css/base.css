@@ -1,37 +1,37 @@
 :root {
-	--background-color: #1A1F33;
-	--card-accent-color: #24253D;
-	--text-color-primary: #FFFFFF;
-	--text-accent-color: #A6B1E1;
-	--button-primary-color: #5865F2;
-	--hover-color: #2D2F4F;
-	--message-received-color: #2F313F;
-	--message-sent-color: #1D40B7;
-	--input-background-color: #2E3048;
-	--other-button-background-color: #313359;
-	--create-account-button-background-color: #2B2C3D;
+	--color-background: #1A1F33;
+	--color-card-background: #24253D;
+	--color-text-primary: #FFFFFF;
+	--color-text-accent: #A6B1E1;
+	--color-button-primary: #5865F2;
+	--color-hover: #2D2F4F;
+	--color-message-received: #2F313F;
+	--color-message-sent: #1D40B7;
+	--color-input-background: #2E3048;
+	--color-button-secondary: #313359;
+	--color-button-teritiary: #121217;
 }
 
 .light-mode {
-	--background-color: #FFFFFF;
-	--card-accent-color: #F0F0F0;
-	--text-color-primary: #1A1F33;
-	--text-accent-color: #2D2F4F;
-	--button-primary-color: #5865F2;
-	--hover-color: #E0E0E0;
-	--message-received-color: #E5E5E5;
-	--message-sent-color: #A6B1E1;
-	--input-background-color: #F5F5F5;
-	--other-button-background-color: #D0D0D0;
-	--create-account-button-background-color: #C0C0C0;
+	--color-background: #FFFFFF;
+	--color-card-background: #F0F0F0;
+	--color-text-primary: #1A1F33;
+	--color-text-accent: #2D2F4F;
+	--color-button-primary: #5865F2;
+	--color-hover: #E0E0E0;
+	--color-message-received: #E5E5E5;
+	--color-message-sent: #A6B1E1;
+	--color-input-background: #F5F5F5;
+	--color-button-secondary: #D0D0D0;
+	--color-button-teritiary: #C0C0C0;
 }
 
 
 html, body {
 	margin: 0;
 	padding: 0;
-	background-color: var(--background-color);
-	color: var(--text-color-primary);
+	background-color: var(--color-background);
+	color: var(--color-text-primary);
 	font-family: Arial, sans-serif;
 	overflow-y: auto;
 	height: 100%;
@@ -46,7 +46,18 @@ html, body {
 /*               Navbar Styles              */
 /* ======================================== */
 #nav-header {
-	background-color: var(--background-color);
+	background-color: var(--color-background);
+}
+
+.logo {
+	color: var(--color-text-primary);
+	font-size: 28px;
+	font-weight: 700;
+}
+
+.navbar-brand {
+	color: var(--color-text-primary);
+	font-weight: 700;
 }
 
 .navbar-brand img {
@@ -54,12 +65,12 @@ html, body {
 }
 
 .nav-link {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 .nav-link.btn {
-	color: var(--text-color-primary) !important;
-	background-color: var(--button-primary-color) !important;
+	color: var(--color-text-primary) !important;
+	background-color: var(--color-button-primary) !important;
 	border-radius: 20px;
 	font-weight: 700;
 }
@@ -71,7 +82,7 @@ html, body {
 .nav-link__footer {
 	font-family: Arial, sans-serif;
 	font-size: 16px;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-weight: 400;
 	text-align: center;
 	line-height: 150%;
@@ -80,6 +91,6 @@ html, body {
 }
 
 .nav-link__footer:hover {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	transition: color 0.3s ease-in-out;
 }

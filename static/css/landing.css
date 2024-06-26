@@ -1,5 +1,4 @@
 .hero-image-wrapper {
-	max-width: 1228px;
 	min-height: 500px;
 	border-radius: 12px;
 }
@@ -19,7 +18,7 @@
 	width: 413px;
 	max-width: 100%;
 	padding: 80px 40px 40px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	transform: translate(0, 50%);
 }
 
@@ -34,6 +33,7 @@
 	letter-spacing: 2px;
 	font-family: Space Grotesk, sans-serif;
 	white-space: nowrap;
+	color: #FFFFFF;
 }
 
 @media (max-width: 991px) {
@@ -44,8 +44,8 @@
 
 .hero-button {
 	margin-top: 32px;
-	background-color: var(--button-primary-color);
-	color: var(--text-color-primary);
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
 	font-size: 16px;
 	padding: 12px 20px;
 	border-radius: 24px;
@@ -53,7 +53,7 @@
 
 .features {
 	padding: 40px 16px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 .features-title {
@@ -64,14 +64,13 @@
 
 .feature {
 	padding: 16px;
-	background-color: var(--background-color);
 	border: 1px solid rgba(51, 61, 102, 1);
 	border-radius: 8px;
 	transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
 .feature:hover {
-	background-color: #242947;
+	background-color: var(--color-hover);
 	transform: scale(1.05);
 }
 
@@ -90,14 +89,14 @@
 .feature-description {
 	margin-top: 4px;
 	font-size: 14px;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-weight: 400;
 	line-height: 150%;
 }
 
 .cta {
 	padding: 15px 40px 33px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 .cta-title {
@@ -106,8 +105,8 @@
 }
 
 .cta-button {
-	background-color: var(--button-primary-color);
-	color: var(--text-color-primary);
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
 	padding: 12px 20px;
 	border-radius: 32px;
 }

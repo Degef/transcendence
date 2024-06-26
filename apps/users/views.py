@@ -48,6 +48,8 @@ def login(request):
 		form = CustomAuthenticationForm(request, data=request.POST)
 		if form.is_valid():
 			username = form.cleaned_data.get('username')
+			if len(username) > 14:
+				return JsonResponse({'success': False, 'message': 'Username must be 14 characters or less.'})
 			password = form.cleaned_data.get('password')
 			user = authenticate(username=username, password=password)
 			if user is not None:
@@ -77,9 +79,11 @@ def register(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
 		if form.is_valid():
-			form.save()
 			username = form.cleaned_data.get('username')
+			if len(username) > 14:
+				return JsonResponse({'success': False, 'message': 'Username must be 14 characters or less.'})
 			password = form.cleaned_data.get('password1')
+			form.save()
 			user = authenticate(username=username, password=password)
 			auth_login(request, user)
 			with transaction.atomic():

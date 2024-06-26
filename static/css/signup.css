@@ -9,7 +9,7 @@
 
 .signup__title-container {
 	font-size: 22px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	letter-spacing: -0.33px;
 	padding: 20px 16px 12px;
@@ -17,7 +17,7 @@
 
 .signup__input-group {
 	font-size: 16px;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-weight: 400;
 	line-height: 150%;
 	padding: 12px 16px;
@@ -25,7 +25,7 @@
 
 .signup__input-box {
 	border-radius: 12px;
-	background-color: var(--input-background-color);
+	background-color: var(--color-input-background);
 }
 
 .signup__input-label {
@@ -37,10 +37,10 @@
 	border-radius: 12px;
 	padding: 16px;
 	width: 100%;
-	background-color: var(--input-background-color);
+	background-color: var(--color-input-background);
 	border: none;
 	outline: none;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 }
 
 .signup__agreement-container {
@@ -53,7 +53,7 @@
 
 .signup__agreement-text {
 	font-size: 16px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 400;
 	line-height: 150%;
 }
@@ -65,23 +65,23 @@
 .signup__action-button {
 	border-radius: 12px;
 	padding: 10px 16px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	font-family: Lexend, sans-serif;
 	line-height: 150%;
 }
 
 .signup__create-account-btn {
-	background-color: var(--button-primary-color);
+	background-color: var(--color-button-primary);
 }
 
 .signup__continue-42-btn {
-	background-color: var(--input-background-color);
+	background-color: var(--color-input-background);
 }
 
 .signup__already-account {
 	font-size: 14px;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-weight: 400;
 	line-height: 150%;
 	padding: 4px 16px 12px;
@@ -90,7 +90,7 @@
 .signup__login-container {
 	margin-bottom: 18px;
 	font-size: 14px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	letter-spacing: 0.21px;
 	line-height: 150%;
@@ -98,11 +98,11 @@
 }
 
 .signup__login-btn {
-	background-color: var(--create-account-button-background-color);
+	background-color: var(--color-button-teritiary);
 	border: none;
 	border-radius: 12px;
 	padding: 12px 16px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	cursor: pointer;
 }

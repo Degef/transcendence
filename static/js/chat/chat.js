@@ -123,6 +123,7 @@ function handleUserItemClick(event, userItem, userItems) {
 	userItems.forEach(child => child.classList.remove('active'));
 	userItem.classList.add('active');
 	const username = userItem.querySelector('.contact-name').innerText.trim();
+	document.getElementById('chat-input').disabled = false;
 
 	api.fetchUserProfile(username)
 		.then(userProfile => setCurrentRecipient(userProfile))
@@ -278,12 +279,15 @@ function setupSearchFunctionality() {
 		filteredUserNames.forEach(userName => {
 			const listItem = document.createElement("a");
 			listItem.classList.add("list-group-item");
-			listItem.innerHTML = `<div class="contact-details">
-									<img src="" alt="${userName}" class="contact-profile-image">
-									<div class="contact-info d-flex flex-column justify-content-center">
+			listItem.innerHTML = `<div class="contact-details d-flex align-items-center position-relative">
+									<div class="position-relative">
+										<img src="/media/default.png" alt="${userName} profile picture" class="contact-profile-image me-2">
+										<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}bg-success{% else %}bg-danger{% endif %}"></span>
+									</div>
+									<div class="contact-info d-flex flex-column justify-content-center d-none d-lg-flex">
 										<div class="contact-name">${userName}</div>
 									</div>
-									<i class="fas fa-ellipsis-v contact-action" data-username="${userName}"></i>
+									<i class="fa-solid fa-sliders contact-action d-none d-md-flex" data-username="${userName}"></i>
 								</div>`;
 			listItem.addEventListener("click", () => fetchUserProfileAndSetRecipient(userName));
 			userList.appendChild(listItem);

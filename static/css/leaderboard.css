@@ -1,11 +1,11 @@
 .leaderboard {
-	background-color: var(--card-accent-color);
+	background-color: var(--color-card-background);
 	border-radius: 12px;
 	padding: 20px;
 }
 
 .leaderboard__header {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	letter-spacing: -0.8px;
 	font-family: Arial, sans-serif;
 }
@@ -17,32 +17,32 @@
 
 .leaderboard__tabs .nav-link {
 	font-family: Arial, sans-serif;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	margin-right: 10px;
 }
 
 .leaderboard__tabs .nav-link.active {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	border-bottom: 2px solid rgba(229, 232, 235, 1);
 }
 
 .leaderboard__container {
 	border-radius: 8px;
 	border: 1px solid rgba(54, 74, 99, 1);
-	background-color: var(--background-color);
+	background-color: var(--color-background);
 	margin-top: 24px;
 }
 
 .leaderboard__row--header {
-	background-color: var(--card-accent-color);
-	color: var(--text-color-primary);
+	background-color: var(--color-card-background);
+	color: var(--color-text-primary);
 	font-weight: 500;
 	border-bottom: 1px solid rgba(54, 74, 99, 1);
 }
 
 .leaderboard__row {
 	margin: 0 3px 0 3px;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-family: Arial, sans-serif;
 	border-bottom: 1px solid rgba(54, 74, 99, 1);
 }

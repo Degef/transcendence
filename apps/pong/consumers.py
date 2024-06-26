@@ -306,7 +306,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 class ChallengeConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
-		logger.debug(" \n\n WebSocket connection established to challenge consumer \n\n")
 		user_id = await sync_to_async(self.get_user_id)()
 		self.user = self.scope['user']
 		await self.update_status('online')
@@ -344,6 +343,13 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 	async def send_challenge(self, username):
 		try:
 			challengee = await sync_to_async(User.objects.get)(username=username)
+			if challengee == self.user:
+				await self.send_error('You cannot challenge yourself')
+				return
+			if_online_checker = await sync_to_async(user_things.objects.get)(user=challengee)
+			if if_online_checker.status == 'offline':
+				await self.send_error(f'{challengee} is offline')
+				return
 			if await sync_to_async(user_has_pending_challenge)(challengee.username):
 				await self.send_error(f'{challengee} is in another challenge')
 				return

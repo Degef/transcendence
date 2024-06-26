@@ -2,13 +2,13 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: var(--background-color);
+	background-color: var(--color-background);
 	padding-bottom: 40px;
 }
 
 .profile-header {
 	margin-top: 36px;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-weight: 700;
 	max-width: 928px;
 }
@@ -23,7 +23,7 @@
 	width: 128px;
 	aspect-ratio: 1;
 	object-fit: cover;
-	border: 5px solid var(--text-color-primary);
+	border: 5px solid var(--color-text-primary);
 }
 
 .profile-name {
@@ -46,16 +46,16 @@
 .profile-action-edit {
 	padding: 10px 16px;
 	border-radius: 24px;
-	background-color: var(--message-received-color);
-	color: var(--text-color-primary);
+	background-color: var(--color-message-received);
+	color: var(--color-text-primary);
 	border: none;
 }
 
 .profile-action-play {
 	padding: 10px 16px;
 	border-radius: 24px;
-	background-color: var(--button-primary-color);
-	color: var(--text-color-primary);
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
 	border: none;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .stats-number {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-size: 24px;
 	font-weight: 700;
 	font-family: Space Grotesk, sans-serif;
@@ -108,7 +108,7 @@
 }
 
 .stats-label {
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	margin-top: 8px;
 	font-size: 14px;
 	font-family: Space Grotesk, sans-serif;
@@ -120,10 +120,10 @@
 	align-items: center;
 	gap: 20px;
 	padding: 1px 20px;
-	border-bottom: 1px solid var(--card-accent-color);
+	border-bottom: 1px solid var(--color-card-background);
 	font-size: 14px;
 	font-weight: 700;
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	white-space: nowrap;
 	text-align: center;
 	letter-spacing: 0.21px;
@@ -138,7 +138,7 @@
 }
 
 .highlighted-stats.active {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	border-bottom: 3px solid #007bff;
 }
 
@@ -148,7 +148,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	background-color: var(--background-color);
+	background-color: var(--color-background);
 	width: 100%;
 	max-width: 1200px;
 	gap: 20px;
@@ -156,7 +156,7 @@
 	line-height: 150%;
 	overflow-y: scroll;
 	scrollbar-width: none;
-	border: 1px solid var(--text-accent-color);
+	border: 1px solid var(--color-text-accent);
 	border-radius: 12px;
 }
 
@@ -167,7 +167,7 @@
 
 .history-item,
 .friend-item {
-	background-color: var(--card-accent-color);
+	background-color: var(--color-card-background);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -195,20 +195,20 @@
 
 .history-title,
 .friend-name {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-size: 16px;
 	font-weight: 500;
 	font-family: Space Grotesk, sans-serif;
 }
 
 .history-time {
-	color: var(--text-accent-color);
+	color: var(--color-text-accent);
 	font-size: 14px;
 	font-family: Space Grotesk, sans-serif;
 }
 
 .history-score {
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	font-size: 16px;
 	font-weight: 400;
 	font-family: Space Grotesk, sans-serif;
@@ -269,9 +269,9 @@
 
 .controls button,
 .controls select {
-	background-color: var(--button-primary-color);
+	background-color: var(--color-button-primary);
 	border: none;
-	color: var(--text-color-primary);
+	color: var(--color-text-primary);
 	padding: 10px 20px;
 	text-align: center;
 	text-decoration: none;
@@ -284,7 +284,7 @@
 
 .controls button:hover,
 .controls select:hover {
-	background-color: var(--hover-color);
+	background-color: var(--color-hover);
 }
 
 .controls select {
@@ -296,13 +296,13 @@
 canvas {
 	width: 100%;
 	height: 400px;
-	background: var(--card-accent-color);
-	border: 1px solid var(--hover-color);
+	background: var(--color-card-background);
+	border: 1px solid var(--color-hover);
 	border-radius: 8px;
 }
 
 /* .profile-image {
-	border: 5px solid var(--text-color-primary);
+	border: 5px solid var(--color-text-primary);
 } */
 
 .profile-actions .btn {
@@ -363,10 +363,3 @@ canvas {
 	max-height: 400px;
 	overflow-y: auto;
 }
-/* .search-bar {
-	position: sticky;
-	top: 0;
-	background: white;
-	z-index: 10;
-	padding: 10px 0;
-} */

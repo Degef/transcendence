@@ -267,9 +267,9 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
         console.log('click join Game');
         isTypeTrounament = true;
         document.body.removeChild(modal);
-        loadTrounametGame(challenger_username, challenged_username);
+        // loadTrounametGame(challenger_username, challenged_username);
         
-        // handleRoute('/play_online/');
+        handleRoute('/play_online/');
     };
 
     modalContent.appendChild(modalMessage);
