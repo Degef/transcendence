@@ -84,16 +84,20 @@ function collision(b, p){
 function updateGame(data2){
     // update the ball
     data2['ball'].x += data2['ball'].velocityX;
-    data2['ball'].y += data2['ball'].velocityY;
+    if (data2['ball'].y + data2['ball'].radius < data2['canvas'].height && data2['ball'].y - data2['ball'].radius > 0) {
+        data2['ball'].y += data2['ball'].velocityY;
+    } else if (data2['ball'].y - data2['ball'].radius <= 0) {
+        data2['ball'].velocityY = -data2['ball'].velocityY;
+        data2['ball'].y += data2['ball'].velocityY;
+    } 
+    else {
+        data2['ball'].velocityY = -data2['ball'].velocityY;
+        data2['ball'].y += data2['ball'].velocityY;
+    }
 
     // simple AI to control com paddle
     let computerLevel = 0.1;
     data2['com'].y += (data2['ball'].y - (data2['com'].y + data2['com'].height/2)) * computerLevel;
-
-    if(data2['ball'].y + data2['ball'].radius > data2['canvas'].height || data2['ball'].y - data2['ball'].radius < 0){
-        data2['ball'].velocityY = -data2['ball'].velocityY;
-        // data2['wall'].play();
-    }
 
     let player = (data2['ball'].x < data2['canvas'].width/2) ? data2['user'] : data2['com'];
 
@@ -372,7 +376,7 @@ function start_play_online() {
     }
     game_in_progress = true;
 
-    const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
+    const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
     data['hit'] = new Audio();

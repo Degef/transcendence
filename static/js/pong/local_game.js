@@ -26,7 +26,16 @@ function updateScoresDisplay(player1Score, player2Score) {
 function update1(data3){
     // update the ball
     data3['ball'].x += data3['ball'].velocityX;
-    data3['ball'].y += data3['ball'].velocityY;
+    if (data3['ball'].y + data3['ball'].radius < data3['canvas'].height && data3['ball'].y - data3['ball'].radius > 0) {
+        data3['ball'].y += data3['ball'].velocityY;
+    } else if (data3['ball'].y - data3['ball'].radius <= 0) {
+        data3['ball'].velocityY = -data3['ball'].velocityY;
+        data3['ball'].y += data3['ball'].velocityY;
+    } 
+    else {
+        data3['ball'].velocityY = -data3['ball'].velocityY;
+        data3['ball'].y += data3['ball'].velocityY;
+    }
 
     //update paddle
     data3['player1'].y += data3['player1'].speedY;
@@ -35,15 +44,6 @@ function update1(data3){
     // Keep paddles within the canvas
     data3['player1'].y = Math.max(0, Math.min(data3['canvas'].height - data3['player1'].height, data3['player1'].y));
     data3['player2'].y = Math.max(0, Math.min(data3['canvas'].height - data3['player2'].height, data3['player2'].y));
-
-    // simple AI to control com paddle
-    // let computerLevel = 0.1;
-    // data3['com'].y += (data3['ball'].y - (data3['com'].y + data3['com'].height/2)) * computerLevel;
-
-    if(data3['ball'].y + data3['ball'].radius > data3['canvas'].height || data3['ball'].y - data3['ball'].radius < 0){
-        data3['ball'].velocityY = -data3['ball'].velocityY;
-        // data3['wall'].play();
-    }
 
     let player = (data3['ball'].x < data3['canvas'].width/2) ? data3['player1'] : data3['player2'];
 
