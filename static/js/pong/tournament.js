@@ -337,6 +337,8 @@ function updateScores(matchElement, player1_score, player2_score) {
     if (!matchElement.closest('.champion')) {
         // Proceed with updating the next round and starting the next match
         updateNextRound(matchElement);
+        if (isIntournament)
+            return;
         nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
         appendToContainer(nextGameBtn, 'my-5.details-section');
         

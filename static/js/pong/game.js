@@ -481,7 +481,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
     }
     game_in_progress = true;
 
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game/`);
+    const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
 
     data['socket'] = socket;
     data['hit'] = new Audio();
@@ -536,6 +536,9 @@ function start_play_online_challenge(challenged_username, challenger_username, u
             };
             data['socket'].send(JSON.stringify(message));
             data.socket.close();
+            if (isIntournament) {
+                onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
+            }
         }
     }
 

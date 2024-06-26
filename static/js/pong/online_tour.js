@@ -1,4 +1,50 @@
-let isTypeTrounament = false; 
+let isTypeTrounament = false;
+let match_room = null;
+let onlineTourSocket = null;
+let matchupElement = null;
+
+function onTourGameCompleted(player1, player2, score1, score2) {
+    let p1, p2, s1, s2;
+
+    if (matchupElement) {
+        var teamTop = matchupElement.querySelector('.team-top');
+        var teamBottom = matchupElement.querySelector('.team-bottom');
+        
+        if (teamTop && teamBottom) {
+            var teamTopPlayer = teamTop.querySelector('.player-name').innerText.trim();
+            var teamBottomPlayer = teamBottom.querySelector('.player-name').innerText.trim();
+        }
+        if (teamTopPlayer === player1) {
+            p1 = player1; p2 = player2; s1 = score1; s2 = score2;
+        }
+        else if (teamBottomPlayer === player1) {
+            p1 = player2; p2 = player1; s1 = score2; s2 = score1;
+        }
+    }
+    const winner = s1 > s2 ? p1 : p2;
+    displayWinnerModal(winner, p2);
+
+
+    if (tournamentSection && tournamentSection.parentNode) {
+        tournamentSection.parentNode.removeChild(tournamentSection);
+    }
+    // Restore the original body content
+    mainSection.style.display = 'block';
+    const message = {
+        'type': 'match_result',
+        'player1': p1,
+        'player2': p2,
+        'score1': s1,
+        'score2': s2,
+        'matchelement': matchupElement,
+    };
+    console.log("sending.....", message);
+    onlineTourSocket.send(JSON.stringify(message));
+    
+    // updateScores(matchElement, player1_score, player2_score);
+
+}
+
 
 function startGame() {
     if (socket && matchName) {
@@ -179,6 +225,7 @@ async function loadTrounametGame(player1,  player2) {
 
 function displayMatchInvitation(matchRoom, opponent, socket, players) {
     console.log("match_room: ", matchRoom);
+    match_room = matchRoom;
     // Create modal elements
     const modal = document.createElement('div');
     modal.id = 'match-invitation-modal';
@@ -206,7 +253,7 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
 	challenged_username = players[1];
     // Get all matchups
     var matchups = document.querySelectorAll('#bracket .matchup');
-    var matchupElement = findMatchup(challenger_username, challenged_username, matchups);
+    matchupElement = findMatchup(challenger_username, challenged_username, matchups);
     if (matchupElement) {
         console.log('Matchup found:', matchupElement);
       } else {
@@ -232,6 +279,31 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
 }
 
 
+function update_bracket(res) {
+    // updateScores(matchupElement, res.score1, res.score2);
+    // If the main section is currently displayed
+    if (mainSection.style.display === 'block') {
+        updateScores(matchupElement, res.score1, res.score2);
+        mainSection = document.querySelector('.main-section');
+        // updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
+    } else {
+        // Set an observer to update the bracket when it becomes visible
+        const observer = new MutationObserver((mutationsList, observer) => {
+            for (const mutation of mutationsList) {
+                if (mutation.attributeName === 'style' && mainSection.style.display === 'block') {
+                    // updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
+                    updateScores(matchupElement, res.score1, res.score2);
+                    observer.disconnect(); // Stop observing after updating
+                    break;
+                }
+            }
+        });
+
+        observer.observe(mainSection, { attributes: true });
+    }
+
+}
+
 
 
 
@@ -248,7 +320,7 @@ function fourPlayers() {
     //     const message = JSON.parse(event.data);
     //     console.log('Message from server:', message);
     // };
-    
+    onlineTourSocket = socket;
     socket.onmessage = function(e) {
         let res = JSON.parse(e.data);
         console.log('Data:', res);
@@ -257,7 +329,7 @@ function fourPlayers() {
             data['playerId'] = res['playerId'];
         }
     
-        if (res.type === 'html_content') {
+        else if (res.type === 'html_content') {
             const parser = new DOMParser();
             const parsedHtml = parser.parseFromString(res.html, 'text/html');
             
@@ -279,17 +351,21 @@ function fourPlayers() {
                 console.error('details-section not found in the received HTML content');
             }
         }
-        if (res.type === 'game_start') {
+        else if (res.type === 'game_start') {
             matchName = data.match_name;
             player1 = res.player1;
             player2 = res.player2;
             document.getElementById('start_game_btn').style.display = 'block';
         }
-        if (res.type === 'match_invitation') {
+        else if (res.type === 'match_invitation') {
             console.log('Match Invitation Data:', res); 
             displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
         }
-        if (res.type === 'load_game') {
+        else if (res.type === 'update_bracket') {
+            console.log('Update_bracket:', res);
+            update_bracket(res);
+        }
+        else if (res.type === 'load_game') {
             // console.log('Load_Game Data:', data);
             display_game(res);
             const message = {
@@ -301,18 +377,18 @@ function fourPlayers() {
             console.log("data:", data);
             socket.send(JSON.stringify(message))
         }
-        if (res.type === 'gameState') {
+        else if (res.type === 'gameState') {
             start_play_onl_tour(e, socket)
         }
-        if (res.type === 'waiting_for_opponent') {
+        else if (res.type === 'waiting_for_opponent') {
             console.log('Waiting_Message Data:', res);
         }
-        if (res.type === 'match_result') {
+        else if (res.type === 'match_result') {
             alert(`Match result: ${res.result.winner.username} won against ${res.result.loser.username}`);
             // Redirect back to the tournament bracket
             window.location.href = '/tournament_bracket_url';  // Replace with the actual URL
         }
-        if (res.type === 'confirmed_players_list') {
+        else if (res.type === 'confirmed_players_list') {
             console.log('Confirmed_ps:', res);
         }
     }

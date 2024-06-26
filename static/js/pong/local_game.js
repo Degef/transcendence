@@ -219,6 +219,7 @@ function start_local_game() {
 
 function goBack() {
     // terminate_game = false;
+    clearInterval(intervalId);
     document.getElementById('tournament').style.display = 'block';
     history.back();
 	terminate_game = false;

@@ -239,7 +239,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 						self.room_group_name,
 						{
 							'type': 'game_end_message',
-							'message': f'{winner} won the game.'
+							'message': f'{winner} won the game.',
+							'player1': game_state['p1_name'],
+							'player2': game_state['p2_name'],
+							'score1': game_state['score1'],
+							'score2': game_state['score2']
 						}
 					)
 					game_state['end'] = True
@@ -286,9 +290,17 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def game_end_message(self, event):
 		# Handle the game end message received by other players
 		message = event['message']
+		p1 = event['player1']
+		p2 = event['player2']
+		s1 = event['score1']
+		s2 = event['score2']
 		await self.send(text_data=json.dumps({
 			'type': 'gameEnd',
-			'message': message
+			'message': message,
+			'player1': p1,
+			'player2': p2,
+			'score1': s1,
+			'score2': s2
 		}))
 
 
@@ -440,8 +452,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			await self.fetch_and_add_player_to_tournament()
 		elif data['type'] == 'confirm_match_join':
 			await self.handle_confirm_match_join(data)
-		elif data[type] == 'update_tournament':
+		elif data['type'] == 'update_tournament':
 			await self.update_tournament(data)
+		elif data['type'] == 'match_result':
+			await self.share_match_result(data)
 	  
 		# await self.fetch_and_add_player_to_tournament()
 
@@ -618,7 +632,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'message': message,
 			'html': html_content
 		}))
-		
+	
 		# await asyncio.sleep(15)
 		
 		# logging.info(f"Starting game in match room: {match_room} with players: {players}")
@@ -652,3 +666,34 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def broadcast_tournament_update(self):
 		# Logic to broadcast updated tournament bracket to all players
 		pass
+	
+	async def share_match_result(self, data):
+
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				"type": "update_bracket",
+				"player1": data['player1'],
+				"player2": data['player2'],
+				"score1": data['score1'],
+				"score2": data['score2'],
+				"melement": data['matchelement']
+			}
+		)
+
+	async def update_bracket(self, event):
+		pl1 = event['player1']
+		pl2 = event['player2']
+		sc1 = event['score1']
+		sc2 = event['score2']
+		melement = event['melement']
+
+		await self.send(text_data=json.dumps({
+			"type": "update_bracket",
+			"player1": pl1,
+			"player2": pl2,
+			"score1": sc1,
+			"score2": sc2,
+			"melement": melement
+		}))
+
