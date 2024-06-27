@@ -536,7 +536,9 @@ function start_play_online_challenge(challenged_username, challenger_username, u
             };
             data['socket'].send(JSON.stringify(message));
             data.socket.close();
-            if (isIntournament) {
+            console.log("IsTypeTrounament:", isTypeTrounament);
+            console.log("mainSection:", mainSection);
+            if (isTypeTrounament) {
                 onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
             }
         }

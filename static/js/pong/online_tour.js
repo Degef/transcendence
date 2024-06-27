@@ -228,6 +228,7 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
     match_room = matchRoom;
     // Create modal elements
     const modal = document.createElement('div');
+    mainSection = document.querySelector('.main-section');
     modal.id = 'match-invitation-modal';
     modal.style.position = 'fixed';
     modal.style.top = '0';
@@ -267,9 +268,9 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
         console.log('click join Game');
         isTypeTrounament = true;
         document.body.removeChild(modal);
-        // loadTrounametGame(challenger_username, challenged_username);
+        loadTrounametGame(challenger_username, challenged_username);
         
-        handleRoute('/play_online/');
+        // handleRoute('/play_online/');
     };
 
     modalContent.appendChild(modalMessage);
@@ -283,6 +284,9 @@ function update_bracket(res) {
     // updateScores(matchupElement, res.score1, res.score2);
     // If the main section is currently displayed
     if (mainSection.style.display === 'block') {
+        console.log("mainSection:", mainSection);
+        var matchups = document.querySelectorAll('#bracket .matchup');
+        matchupElement = findMatchup(res.player1, res.player2, matchups);
         updateScores(matchupElement, res.score1, res.score2);
         mainSection = document.querySelector('.main-section');
         // updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
@@ -292,6 +296,8 @@ function update_bracket(res) {
             for (const mutation of mutationsList) {
                 if (mutation.attributeName === 'style' && mainSection.style.display === 'block') {
                     // updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
+                    var matchups = document.querySelectorAll('#bracket .matchup');
+                    matchupElement = findMatchup(res.player1, res.player2, matchups);
                     updateScores(matchupElement, res.score1, res.score2);
                     observer.disconnect(); // Stop observing after updating
                     break;
@@ -323,7 +329,7 @@ function fourPlayers() {
     onlineTourSocket = socket;
     socket.onmessage = function(e) {
         let res = JSON.parse(e.data);
-        console.log('Data:', res);
+        // console.log('Data:', res);
 
         if (res['type'] == 'playerId') {
             data['playerId'] = res['playerId'];
@@ -358,7 +364,7 @@ function fourPlayers() {
             document.getElementById('start_game_btn').style.display = 'block';
         }
         else if (res.type === 'match_invitation') {
-            console.log('Match Invitation Data:', res); 
+            // console.log('Match Invitation Data:', res); 
             displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
         }
         else if (res.type === 'update_bracket') {
@@ -381,7 +387,7 @@ function fourPlayers() {
             start_play_onl_tour(e, socket)
         }
         else if (res.type === 'waiting_for_opponent') {
-            console.log('Waiting_Message Data:', res);
+            // console.log('Waiting_Message Data:', res);
         }
         else if (res.type === 'match_result') {
             alert(`Match result: ${res.result.winner.username} won against ${res.result.loser.username}`);
@@ -389,7 +395,7 @@ function fourPlayers() {
             window.location.href = '/tournament_bracket_url';  // Replace with the actual URL
         }
         else if (res.type === 'confirmed_players_list') {
-            console.log('Confirmed_ps:', res);
+            // console.log('Confirmed_ps:', res);
         }
     }
     
