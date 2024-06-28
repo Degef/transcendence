@@ -132,7 +132,6 @@ function displayWinnerModal(winner, loser) {
     //     myModal.hide();
     // }, 10000);
     function hideModalOnClickOutsideTwo(event) {
-        console.log(event);
         if (!modalContainer.contains(event.target)) {
             myModal.hide();
             document.removeEventListener('click', hideModalOnClickOutsideTwo);
@@ -337,7 +336,7 @@ function updateScores(matchElement, player1_score, player2_score) {
     if (!matchElement.closest('.champion')) {
         // Proceed with updating the next round and starting the next match
         updateNextRound(matchElement);
-        if (isIntournament)
+        if (isOnlineTrounament)
             return;
         nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
         appendToContainer(nextGameBtn, 'my-5.details-section');
@@ -346,6 +345,8 @@ function updateScores(matchElement, player1_score, player2_score) {
         //     startNextMatch(matchElement);
         // }, 10000);
     } else {
+        if (isOnlineTrounament)
+            isOnlineTrounament = false;
         console.log("This is the final game. The tournament is complete.");
         // Additional actions when the tournament is complete can be added here
     }
@@ -527,6 +528,9 @@ function updateNextMatchup(winner, loser) {
         var nextMatchups = nextRound.querySelectorAll(".matchup");
         var nextMatchupIndex = Math.floor(currentMatchupIndex / 2);
         var nextMatchup = nextMatchups[nextMatchupIndex];
+        if (isOnlineTrounament) {
+            updatedMatchup = nextMatchup;    
+        }
 
         // Update the matchup with the winner and clear the loser
         if (nextMatchup) {
@@ -539,8 +543,6 @@ function updateNextMatchup(winner, loser) {
             else if (currentMatchupIndex === nextMatchupIndex + 1) {
                 updateMatchCell(nextTeamBottom, winnerName, winnerImg, winnerScore);
             }
-            // var newScoreInputs = nextMatchup.querySelectorAll(".score-input");
-            // createEventListners(newScoreInputs);
         }
     }
     else {
@@ -548,6 +550,9 @@ function updateNextMatchup(winner, loser) {
         var championshipMatchup = document.querySelector(".championship.matchup");
         var championshipTeamTop = championshipMatchup.querySelector(".team-top");
         var championshipTeamBottom = championshipMatchup.querySelector(".team-bottom");
+        if (isOnlineTrounament) {
+            updatedMatchup = championshipMatchup;
+        }
 
         // Set the championship teams' content and score inputs
         if (isLeftSide) {

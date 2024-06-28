@@ -412,6 +412,7 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	players_waiting = deque()
 	list_players = []
+	nextRound_players = {}
 	# confirmed_players = defaultdict(set)
 	confirmed_players = {}
 	player_names_dict = {}
@@ -462,6 +463,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			await self.update_tournament(data)
 		elif data['type'] == 'match_result':
 			await self.share_match_result(data)
+		elif data['type'] == 'next_round_match':
+			await self.handle_nextRound_match(data)
 	  
 		# await self.fetch_and_add_player_to_tournament()
 
@@ -492,7 +495,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				self.players_waiting.popleft()
 				self.list_players.pop(0)
 
-			await asyncio.sleep(10)
+			await asyncio.sleep(2)
 			await self.create_match_rooms(tourn_players)
 
 		elif self.user_id not in self.list_players:
@@ -683,7 +686,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				"player2": data['player2'],
 				"score1": data['score1'],
 				"score2": data['score2'],
-				"melement": data['matchelement']
+				"melement": data['matchelement'],
+				"winner": data['winner']
 			}
 		)
 
@@ -692,6 +696,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		pl2 = event['player2']
 		sc1 = event['score1']
 		sc2 = event['score2']
+		winner = event['winner']
 		melement = event['melement']
 
 		await self.send(text_data=json.dumps({
@@ -700,6 +705,37 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			"player2": pl2,
 			"score1": sc1,
 			"score2": sc2,
+			"winner": winner,
 			"melement": melement
 		}))
 
+
+	async def create_nextmatch_rooms(self, nextPlayers):
+		num_players = len(nextPlayers)
+		logging.info(f"Sending match invitation to room newroom for players: {[p['username'] for p in nextPlayers]}")
+		for i in range(0, num_players, 2):
+			match = f"match_{nextPlayers[i]['username']}_vs_{nextPlayers[i + 1]['username']}"
+			await self.send_match_room_invitation(match, [nextPlayers[i], nextPlayers[i + 1]])
+
+	async def handle_nextRound_match(self, data):
+
+		if data['plcount'] == 2:
+			other_player = self.nextRound_players.pop(data['opponent'])
+			nextPlayers = []
+			# nextPlayers.append(self)
+			# nextPlayers.append(other_player)
+
+			nextPlayers.append({
+				'username': self.username,
+			})
+			nextPlayers.append({
+				'username': other_player.username,
+			})
+
+
+			await asyncio.sleep(2)
+			await self.create_nextmatch_rooms(nextPlayers)
+
+		else:
+			await self.send_join_message(f"Adding the player {self.username}")
+			self.nextRound_players[data['player']] = self

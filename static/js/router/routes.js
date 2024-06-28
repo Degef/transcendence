@@ -35,6 +35,23 @@ function authorize42Intra() {
     window.location.href = authUrl;
 }
 
+async function updateContent(htmlContent) {
+
+	const tempDiv = document.createElement('div');
+	tempDiv.innerHTML = htmlContent;
+	const newContent = tempDiv.querySelector('main').innerHTML;
+
+	if (newContent) {
+		const mainContainer = document.getElementById('main-container');
+		const range = document.createRange();
+		range.setStart(mainContainer, 1); 
+		range.setEnd(mainContainer, mainContainer.childNodes.length);
+		range.deleteContents();
+		mainContainer.insertAdjacentHTML('beforeend', newContent);
+	}
+}
+
+
 function updateURL(url) {
 	const currentPath = window.location.pathname;
 	if (currentPath !== url) {
@@ -56,6 +73,7 @@ async function handleRoute(path, pushState = true) {
 		});
 		const htmlContent = await response.text();
 		updateBody(htmlContent);
+		// updateContent(htmlContent);
 		if (pushState) {
 			updateURL(path);
 		}

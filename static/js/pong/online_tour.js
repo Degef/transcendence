@@ -1,7 +1,25 @@
-let isTypeTrounament = false;
+let isOnlineTrounament = false;
 let match_room = null;
 let onlineTourSocket = null;
 let matchupElement = null;
+let updatedMatchup = null;
+let winner = null;
+// let username = null;
+
+function getPlayerNamesFromMatchup(updatedMatchup) {
+    // Assuming updatedMatchup is a DOM element
+    let result = [];
+    const teamTopPlayerName = updatedMatchup.querySelector(".team-top .player-name").textContent.trim();
+    const teamBottomPlayerName = updatedMatchup.querySelector(".team-bottom .player-name").textContent.trim();
+    if (teamTopPlayerName.length > 0) {
+        result.push(teamTopPlayerName);
+    }
+    if (teamBottomPlayerName.length > 0) {
+        result.push(teamBottomPlayerName);
+    }
+
+    return result;
+}
 
 function onTourGameCompleted(player1, player2, score1, score2) {
     let p1, p2, s1, s2;
@@ -21,7 +39,7 @@ function onTourGameCompleted(player1, player2, score1, score2) {
             p1 = player2; p2 = player1; s1 = score2; s2 = score1;
         }
     }
-    const winner = s1 > s2 ? p1 : p2;
+    winner = s1 > s2 ? p1 : p2;
     displayWinnerModal(winner, p2);
 
 
@@ -37,9 +55,13 @@ function onTourGameCompleted(player1, player2, score1, score2) {
         'score1': s1,
         'score2': s2,
         'matchelement': matchupElement,
+        'winner': winner
     };
-    console.log("sending.....", message);
-    onlineTourSocket.send(JSON.stringify(message));
+    // console.log("sending.....", message);
+    console.log("username: ", username);
+    if (username === winner) {
+        onlineTourSocket.send(JSON.stringify(message));
+    }
     
     // updateScores(matchElement, player1_score, player2_score);
 
@@ -98,7 +120,6 @@ function start_play_onl_tour(event, socket) {
     data['userScore'].src = "/media/sounds/userScore.mp3";
     data['comScore'].src = "/media/sounds/comScore.mp3";
     
-    console.log('even [' , event);
 
     const rec = JSON.parse(event.data);
     console.log(rec);
@@ -266,7 +287,7 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
     confirmButton.textContent = 'Join Game';
     confirmButton.onclick = function() {
         console.log('click join Game');
-        isTypeTrounament = true;
+        isOnlineTrounament = true;
         document.body.removeChild(modal);
         loadTrounametGame(challenger_username, challenged_username);
         
@@ -279,6 +300,40 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
     document.body.appendChild(modal);
 }
 
+function getNextRoundMatch(res) {
+    if (!isOnlineTrounament) {
+        displayWinnerModal(winner, winner);
+        onlineTourSocket.close();
+        return ;
+    }
+    if (username !== res['winner']) {
+        return ;
+    }
+    var playernames = getPlayerNamesFromMatchup(updatedMatchup);
+    console.log(playernames);
+    if (playernames.includes(winner) && playernames.length === 2) {
+        const opponent = res['winner'] === playernames[0] ? playernames[1]: playernames[0];
+        const message = {
+            'type': 'next_round_match',
+            'player': winner,
+            'player1': playernames[0],
+            'player2': playernames[1],
+            'opponent': opponent,
+            'plcount': 2
+        };
+        onlineTourSocket.send(JSON.stringify(message));
+    }
+    if (playernames.includes(winner) && playernames.length === 1) {
+        const message = {
+            'type': 'next_round_match',
+            'player': winner,
+            'player1': playernames[0],
+            'plcount': 1
+        };
+        onlineTourSocket.send(JSON.stringify(message));
+    }
+}
+
 
 function update_bracket(res) {
     // updateScores(matchupElement, res.score1, res.score2);
@@ -289,6 +344,7 @@ function update_bracket(res) {
         matchupElement = findMatchup(res.player1, res.player2, matchups);
         updateScores(matchupElement, res.score1, res.score2);
         mainSection = document.querySelector('.main-section');
+        getNextRoundMatch(res);
         // updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
     } else {
         // Set an observer to update the bracket when it becomes visible
@@ -299,7 +355,8 @@ function update_bracket(res) {
                     var matchups = document.querySelectorAll('#bracket .matchup');
                     matchupElement = findMatchup(res.player1, res.player2, matchups);
                     updateScores(matchupElement, res.score1, res.score2);
-                    observer.disconnect(); // Stop observing after updating
+                    observer.disconnect();
+                    getNextRoundMatch(res);
                     break;
                 }
             }
@@ -364,7 +421,8 @@ function fourPlayers() {
             document.getElementById('start_game_btn').style.display = 'block';
         }
         else if (res.type === 'match_invitation') {
-            // console.log('Match Invitation Data:', res); 
+            // console.log('Match Invitation Data:', res);
+            username = res.player;
             displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
         }
         else if (res.type === 'update_bracket') {
