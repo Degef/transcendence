@@ -12,14 +12,15 @@
 }
 
 .sidebar {
-	display: flex;
-	flex-direction: column;
 	width: 25%;
+	height: 71vh;
+	overflow-y: scroll;
 }
 
 .contacts {
 	flex-grow: 1;
 	padding: 12px 0;
+	overflow-y: scroll;
 }
 
 .search-bar {

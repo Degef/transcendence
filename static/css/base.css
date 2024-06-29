@@ -50,14 +50,18 @@ html, body {
 }
 
 .logo {
-	color: var(--color-text-primary);
+	color: var(--color-text-accent);
 	font-size: 28px;
 	font-weight: 700;
 }
 
 .navbar-brand {
-	color: var(--color-text-primary);
+	color: var(--color-text-accent);
 	font-weight: 700;
+}
+
+.navbar-brand:hover {
+	color: var(--color-text-accent);
 }
 
 .navbar-brand img {
@@ -65,7 +69,12 @@ html, body {
 }
 
 .nav-link {
+	color: var(--color-text-accent);
+}
+
+.nav-link:hover {
 	color: var(--color-text-primary);
+	transition: color 0.3s ease-in-out;
 }
 
 .nav-link.btn {

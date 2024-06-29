@@ -58,6 +58,15 @@ class UserRegisterForm(UserCreationForm):
 		fields = ['username', 'email', 'password1', 'password2']
 
 class ProfileUpdateForm(forms.ModelForm):
+	image = forms.ImageField(
+		label="",
+		widget=forms.FileInput(
+			attrs={
+				"class": "current-profile-picture",
+				"placeholder": "Upload Profile Picture...",
+			}
+		),
+	)
 	class Meta:
 		model = Profile
 		fields = ['image']
