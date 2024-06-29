@@ -22,6 +22,8 @@ import json
 from django.contrib.auth.password_validation import validate_password, ValidationError
 from django.urls import reverse
 from django.db import transaction
+from django.core.paginator import Paginator
+
 
 load_dotenv()
 
@@ -129,18 +131,23 @@ def get_win_rate(total_wins, total_losses):
 
 @login_required
 def profile(request, user=''):
-	logger.debug(f"\n\n\n${request.META['HTTP_USER_AGENT']}\n\n\n")
 	user_to_view = request.user if user == '' else get_object_or_404(User, username=user)
 	is_own_profile = user_to_view == request.user
 	games = Game.objects.filter(Q(player1=user_to_view) | Q(player2=user_to_view)).order_by('-date')
+	
+	# Add pagination
+	paginator = Paginator(games, 10)  # Show 10 games per page
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	
 	games_data = serialize('json', games)
-
+	
 	total_wins = get_total_wins(user_to_view.id)
 	total_losses = get_total_losses(user_to_view.id)
 	total_games = total_wins + total_losses
 	win_rate = get_win_rate(total_wins, total_losses)
 	profile_image = Profile.objects.filter(user=user_to_view).first().image
-
+	
 	all_users = User.objects.all().exclude(username=user_to_view.username)
 	friends = User.objects.filter(
 		Q(friendship_requests_sent__to_user=user_to_view, friendship_requests_sent__status=Friendship.ACCEPTED) |
@@ -156,16 +163,16 @@ def profile(request, user=''):
 		friendship_requests_received__to_user=user_to_view, 
 		friendship_requests_received__status=Friendship.REQUESTED
 	) if is_own_profile else []
-
+	
 	is_online = user_to_view.user_things.status == 'online'
-
+	
 	sent_request = Friendship.objects.filter(from_user=request.user, to_user=user_to_view, status=Friendship.REQUESTED).exists()
 	received_request = Friendship.objects.filter(from_user=user_to_view, to_user=request.user, status=Friendship.REQUESTED).exists()
 	are_friends = Friendship.objects.filter(
 		Q(from_user=request.user, to_user=user_to_view) | Q(from_user=user_to_view, to_user=request.user),
 		status=Friendship.ACCEPTED
 	).exists()
-
+	
 	context = {
 		'username': user_to_view.username,
 		'total_wins': total_wins,
@@ -177,15 +184,16 @@ def profile(request, user=''):
 		'friends': friends,
 		'pending_requests': pending_requests,
 		'non_friends': non_friends,
-		'games': games,
+		'games': page_obj,  # Use page_obj instead of games
 		'games2': games_data,
 		'is_online': is_online,
 		'sent_request': sent_request,
 		'received_request': received_request,
 		'are_friends': are_friends,
-		'received_requests': pending_requests,
+		'received_requests': received_requests,
 	}
 	return render(request, 'profile.html', context)
+
 
 @login_required
 def send_friend_request(request, username):
@@ -255,7 +263,9 @@ def edit_profile(request):
 		if user_form.is_valid() and profile_form.is_valid():
 			password = user_form.cleaned_data.get('password')
 
-			if password:
+			logger.info(f'\n\n\nPassword: {password}\n\n\n')
+
+			if password is not None and password != '':
 				try:
 					validate_password(password, user=user)
 					user.set_password(password)

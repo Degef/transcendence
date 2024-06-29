@@ -20,3 +20,4 @@ django-ratelimit
 django_redis
 django-mobile-detect
 django-admin-interface
+Faker

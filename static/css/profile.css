@@ -1,7 +1,4 @@
 .profile-container__ {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 	background-color: var(--color-background);
 	padding-bottom: 40px;
 }
@@ -11,12 +8,6 @@
 	color: var(--color-text-primary);
 	font-weight: 700;
 	max-width: 928px;
-}
-
-.profile-details {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 }
 
 .profile-image {
@@ -84,10 +75,6 @@
 }
 
 .stats-item {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
 	padding: 12px;
 	border-radius: 8px;
 	border: 1px solid rgba(61, 64, 84, 1);
@@ -319,6 +306,7 @@ canvas {
 }
 
 .highlighted-tab > .active {
+	color: var(--color-text-primary);
 	font-weight: bold;
 	border-bottom: 3px solid #007bff;
 }
@@ -362,4 +350,24 @@ canvas {
 .list-container {
 	max-height: 400px;
 	overflow-y: auto;
+}
+
+.pagination {
+	margin: 20px 0;
+}
+
+.pagination .page-item.disabled .page-link {
+	color: #6c757d;
+}
+
+.pagination .page-item .page-link {
+	color: #007bff;
+}
+
+.pagination .page-item .page-link:hover {
+	color: #0056b3;
+}
+
+.pagination .page-item .page-link:focus {
+	box-shadow: none;
 }

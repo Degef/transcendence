@@ -108,7 +108,6 @@ const routeHandlers = {
 };
 
 function handleButtonClick(event) {
-	console.log(event.target.id);
 	const buttonFunctions = {
 		home: routeHandlers['/'],
 		about: routeHandlers['/about/'],
@@ -142,7 +141,6 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-	// console.log(buttonId);
 
 	if (handler) {
 		if (window.game_in_progress) {
@@ -166,7 +164,6 @@ function handleButtonClick(event) {
 
 
 function setuptheme() {
-	console.log(localStorage.getItem('theme'));
 	if (localStorage.getItem('theme') === '' || localStorage.getItem('theme') === null || localStorage.getItem('theme') === 'dark') {
 		localStorage.setItem('theme', 'dark');
 	}
@@ -201,7 +198,6 @@ function waitForElement(selector, callback) {
 			const observer = new MutationObserver((mutations, obs) => {
 				if (document.querySelector(selector)) {
 					callback();
-					obs.disconnect();
 				}
 			});
 			observer.observe(document.body, { childList: true, subtree: true });
@@ -237,12 +233,12 @@ function loginWith42() {
 
 function addEventListenersToElements(elements) {
 	elements.forEach(element => {
-	  if (!element.hasAttribute('data-listener-added')) {
-		element.addEventListener('click', handleButtonClick);
-		element.setAttribute('data-listener-added', 'true');
-	  }
+		if (!element.hasAttribute('data-listener-added')) {
+			element.addEventListener('click', handleButtonClick);
+			element.setAttribute('data-listener-added', 'true');
+		}
 	});
-	themebutton = document.getElementById('mode_toggle');
+	let themebutton = document.getElementById('mode_toggle');
 	themebutton.addEventListener('click', handleButtonClick);
 }
 

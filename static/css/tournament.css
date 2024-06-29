@@ -435,3 +435,7 @@
     height: 70px;
   }
 }
+
+.details-section .text-white {
+	color: var(--color-text-primary) !important;
+}

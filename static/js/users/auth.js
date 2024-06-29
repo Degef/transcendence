@@ -44,7 +44,13 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			} else {
 				form.reset();
 				showAlert(jsonResponse.message, 'success');
-				setTimeout(() => { handleRoute(successRoute, true); }, 2000);
+				setTimeout(() => {
+					if (url === '/edit_profile/') {
+						handleRoute(successRoute + formData.get('username'), true);
+					} else {
+						handleRoute(successRoute, true); 
+					}
+				}, 2000);
 			}
 		} else {
 			const htmlContent = await response.text();

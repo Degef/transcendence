@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block content %}
-<section class="profile-container__ container">
+<section class="profile-container__ container d-flex flex-column align-items-center">
 	<header class="profile-header text-center">
-		<article class="profile-details">
+		<article class="d-flex flex-column align-items-center">
 			<div class="profile-image-container position-relative">
 				<img loading="lazy" src="{{ profile_image.url }}" alt="profile picture" class="profile-image img-fluid rounded-circle" />
 				<span class="status-indicator position-absolute {% if is_online %} bg-success {% else %} bg-danger {% endif %}"></span>
@@ -33,7 +33,7 @@
 	<section class="stats-section my-4">
 		<div class="row stats-container">
 			<div class="col-md-3 stats-column">
-				<div class="stats-item text-center py-3">
+				<div class="stats-item text-center py-3 d-flex align-items-center justify-content-center text-center">
 					<div class="stats-content">
 						<span class="stats-number">{{ total_games }}</span>
 						<p class="stats-label">Games</p>
@@ -76,7 +76,7 @@
 		{% endif %}
 	</nav>
 
-	<section id="history-section" class="history-section">
+	<section id="history-section" class="history-section">		
 		{% if games|length == 0 %}
 			<div class="history-item d-flex justify-content-between align-items-center py-2">
 				<div class="d-flex align-items-center gap-3">
@@ -86,6 +86,7 @@
 				</div>
 			</div>
 		{% endif %}
+		
 		{% for match in games %}
 			<div class="history-item d-flex justify-content-between align-items-center py-2">
 				<div class="d-flex align-items-center gap-3">
@@ -110,7 +111,44 @@
 				<span class="history-score">{{ match.player1_score }} - {{ match.player2_score }}</span>
 			</div>
 		{% endfor %}
+
+		{% if games.paginator.num_pages > 1 %}
+			<nav aria-label="Page navigation example">
+				<ul class="pagination justify-content-center">
+					{% if games.has_previous %}
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page=1'); return false;" aria-label="First">
+								<span aria-hidden="true">&laquo;</span>
+							</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page={{ games.previous_page_number }}'); return false;" aria-label="Previous">
+								<span aria-hidden="true">Previous</span>
+							</a>
+						</li>
+					{% endif %}
+					
+					<li class="page-item disabled">
+						<a class="page-link" href="#" tabindex="-1">Page {{ games.number }} of {{ games.paginator.num_pages }}</a>
+					</li>
+					
+					{% if games.has_next %}
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page={{ games.next_page_number }}'); return false;" aria-label="Next">
+								<span aria-hidden="true">Next</span>
+							</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page={{ games.paginator.num_pages }}'); return false;" aria-label="Last">
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					{% endif %}
+				</ul>
+			</nav>
+		{% endif %}
 	</section>
+	
 
 	<section id="friends-section" class="friends-section d-none">
 		<div id="friends-list" class="list-container">
@@ -141,7 +179,7 @@
 		</div>
 		{% if is_own_profile %}
 			<div id="non-friends-list" class="list-container mt-4">
-				<div class="search-bar d-flex align-items-center">
+				<div class="search-bar d-flex align-items-center mb-3">
 					<i class="fas fa-search search-icon"></i>
 					<input type="text" class="search-input" placeholder="Search Players">
 				</div>
