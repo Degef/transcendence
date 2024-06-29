@@ -335,6 +335,9 @@ async function organizeTournament(players) {
         const tournElement = tournElementtmp[0];
         tournElement.innerHTML = parsedjson.tournament_bracket;
         appendToContainer(startTrounBtn, 'my-5.details-section');
+        if (players.length == 4) {
+            changeRoundStyle();
+        }
     } catch (error) {
         console.error('Error fetching tournament bracket:', error);
     }
@@ -658,4 +661,16 @@ async function startMatch(player1, player2, matchElement) {
     } catch (error) {
         console.error('Error fetching local game page:', error);
     }
+}
+
+function changeRoundStyle() {
+    const roundOneMatchup = document.querySelectorAll('.round-one .matchup');
+    console.log(roundOneMatchup);
+    
+
+    // roundOneMatchup.classList.add('flex-mode');
+    roundOneMatchup.forEach(matchup => {
+        matchup.classList.add('flex-mode');
+    });
+
 }
