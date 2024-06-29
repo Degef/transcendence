@@ -202,13 +202,16 @@ function setupTournament(playerCount) {
     tournElement.innerHTML = `
         <div class="center-container">
             <div id="playerFormContainer" class="input-group mb-3 square-box">
-                <h2">Enter Player Names <br></h2>
+                <span class="pheader" > 
+                    <h2">Enter Player Names <br></h2>
+                </span>
                 <form id="playerForm">
-                    <div id="playerInputs">
-                        <label for="playerName">Player 1:</label>
-                        <input type="text" id="playerName" name="playerName" required>
+                    <div id="playerInputs", class="p-form">
+                        <input type="text" id="playerName" class="playerName" name="playerName" placeholder="Player 1" required>
                     </div>
-                    <button type="button" id="submitPlayer">Next</button>
+                    <div class="sub-btn">
+                        <button type="button" id="submitPlayer" class="submitBtn" >Next</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -229,31 +232,57 @@ function attachEventListner() {
     document.getElementById('playerName').focus();
 }
 
+function customTrim(input) {
+    return input.replace(/^[\s'"]+|[\s'"]+$/g, '');
+}
+
+function validateInputString(input) {
+
+    const regex = /^[a-zA-Z]\S*$/;
+    
+    if (!input || input == "") {
+        alert('Player name cannot be empty.');
+        return false;
+    }
+    if (input.length > 14) {
+        alert('Player name too long.');
+        return false;
+    }
+    if (players.includes(input)) {
+        alert(`The name "${input}" is already taken. Please choose another.`);
+
+        // showAlert("The name " + input + " is already taken. Please choose another." , 'danger');
+        return false;
+    }
+    if (regex.test(input)) {
+        return true;
+    } else {
+        alert('Invalid Player Name');
+        return false;
+    }
+}
+
+
 function submitPlayerName(event) {
     if (event.type === 'click') {
         const playerNameInput = document.getElementById('playerName');
-        const playerName = playerNameInput.value.trim();
+        // const playerName = playerNameInput.value.trim();
+        const playerName = customTrim(playerNameInput.value).toLowerCase();
+        
 
-        if (playerName && (!players.includes(playerName)) && !(playerName.length > 10)) {
+        if (validateInputString(playerName)) {
             players.push(playerName);
             currentPlayerIndex++;
             
             if (currentPlayerIndex < totalPlayers) {
                 document.getElementById('playerInputs').innerHTML = `
-                    <label for="playerName">Player ${currentPlayerIndex + 1}:</label>
-                    <input type="text" id="playerName" name="playerName" required>
+                <input type="text" id="playerName" class="playerName" name="playerName" placeholder="Player ${currentPlayerIndex + 1}" required>
                 `;
                 attachEventListner();
             } else {
                 myplayers = shuffleArray(players);
                 organizeTournament(myplayers);
             }
-        } else if (players.includes(playerName)) {
-            alert('Player name taken.');
-        } else if (playerName.length > 10) {
-            alert('Player name too long.');
-        } else {
-            alert('Player name cannot be empty.');
         }
     }
 }

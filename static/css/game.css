@@ -185,7 +185,7 @@ canvas {
 }
 .player-name {
     background-color: rgb(0 0 0 / 0%);
-    color: white;
+    color: var(--color-text-primary);
     padding: 10px;
     border-radius: 5px;
 }
