@@ -37,6 +37,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			const jsonResponse = await response.json();
 			if (!jsonResponse.success) {
 				const errors = JSON.parse(jsonResponse.errors);
+				console.log(errors);
 				let firstError = Object.entries(errors)[0][1][0].message;
 				if (firstError === 'This field is required.') firstError = 'All fields are required.';
 				showAlert(firstError, 'danger');

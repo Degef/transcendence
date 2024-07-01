@@ -10,6 +10,27 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Leaderboard Model
+class Leaderboard(Model):
+	user = ForeignKey(User, on_delete=CASCADE, related_name='leaderboard_user', db_index=True)
+	wins = IntegerField(default=0)
+	losses = IntegerField(default=0)
+	win_rate = IntegerField(default=0)
+	last_updated = DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return f'{self.user}'
+
+
+	def save(self, *args, **kwargs):
+		self.win_rate = get_win_rates(self.wins, self.losses)
+		super().save(*args, **kwargs)
+
+	class Meta:
+		app_label = 'pong'
+		verbose_name = 'Leaderboard'
+		verbose_name_plural = 'Leaderboards'
+
 # Create your models here.
 class Game(Model):
 	player1 = ForeignKey(User, on_delete=CASCADE, related_name='player1')
@@ -31,15 +52,39 @@ class Game(Model):
 			# Handle a tie or any other criteria for a draw
 			self.winner = None
 
+	def update_leaderboard(self):
+		leaderboard_player1, created = Leaderboard.objects.get_or_create(user=self.player1)
+		leaderboard_player2, created = Leaderboard.objects.get_or_create(user=self.player2)
+
+		if self.winner == self.player1:
+			leaderboard_player1.wins += 1
+			leaderboard_player2.losses += 1
+		elif self.winner == self.player2:
+			leaderboard_player1.losses += 1
+			leaderboard_player2.wins += 1
+
+		leaderboard_player1.save()
+		leaderboard_player2.save()
+
 	def save(self, *args, **kwargs):
 		self.determine_winner()
 		super().save(*args, **kwargs)
+		self.update_leaderboard()
 
 	class Meta:
 		app_label = 'pong'
 		verbose_name = 'Game'
 		verbose_name_plural = 'Games'
 
+def get_win_rates(total_wins, total_losses):
+	total_games = total_wins + total_losses
+	if total_games == 0:
+		return 0
+	win_rate = (total_wins / total_games) * 100
+	return win_rate
+
+
+# Challenge Model
 class Challenge(Model):
 	PENDING = 'pending'
 	ACCEPTED = 'accepted'

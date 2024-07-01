@@ -7,7 +7,7 @@ services:
   web:
     build: .
     container_name: django
-    # image: django
+    image: django
     volumes:
       - ./:/app
       - ./static/:/app/static
@@ -66,6 +66,7 @@ services:
   nginx:
     build: ./nginx/
     container_name: nginx
+    image: nginx
     ports:
       - '443:443'
     depends_on:

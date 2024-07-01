@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login, update_session_auth_hash, a
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 from .models import Profile, Friendship
-from apps.pong.models import Game
+from apps.pong.models import Game, Leaderboard
 from dotenv import load_dotenv
 import os
 from django.http import JsonResponse
@@ -50,8 +50,6 @@ def login(request):
 		form = CustomAuthenticationForm(request, data=request.POST)
 		if form.is_valid():
 			username = form.cleaned_data.get('username')
-			if len(username) > 14:
-				return JsonResponse({'success': False, 'message': 'Username must be 14 characters or less.'})
 			password = form.cleaned_data.get('password')
 			user = authenticate(username=username, password=password)
 			if user is not None:
@@ -135,17 +133,16 @@ def profile(request, user=''):
 	is_own_profile = user_to_view == request.user
 	games = Game.objects.filter(Q(player1=user_to_view) | Q(player2=user_to_view)).order_by('-date')
 	
-	# Add pagination
-	paginator = Paginator(games, 10)  # Show 10 games per page
+	paginator = Paginator(games, 8)
 	page_number = request.GET.get('page')
 	page_obj = paginator.get_page(page_number)
 	
 	games_data = serialize('json', games)
 	
-	total_wins = get_total_wins(user_to_view.id)
-	total_losses = get_total_losses(user_to_view.id)
+	total_wins = Leaderboard.objects.get_or_create(user=user_to_view)[0].wins
+	total_losses = Leaderboard.objects.get_or_create(user=user_to_view)[0].losses
+	win_rate = Leaderboard.objects.get_or_create(user=user_to_view)[0].win_rate
 	total_games = total_wins + total_losses
-	win_rate = get_win_rate(total_wins, total_losses)
 	profile_image = Profile.objects.filter(user=user_to_view).first().image
 	
 	all_users = User.objects.all().exclude(username=user_to_view.username)
@@ -184,7 +181,7 @@ def profile(request, user=''):
 		'friends': friends,
 		'pending_requests': pending_requests,
 		'non_friends': non_friends,
-		'games': page_obj,  # Use page_obj instead of games
+		'games': page_obj,
 		'games2': games_data,
 		'is_online': is_online,
 		'sent_request': sent_request,

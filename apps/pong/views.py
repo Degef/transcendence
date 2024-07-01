@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Game, Challenge
+from .models import Game, Challenge, Leaderboard
 from django.contrib.auth.models import User
 from apps.users.models import user_things
 from django.views.decorators.csrf import csrf_exempt
@@ -75,59 +75,15 @@ def leaderboard(request):
 	one_week_ago = timezone.now() - timedelta(days=7)
 	one_month_ago = timezone.now() - timedelta(days=30)
 
-	players = User.objects.all()
-	leaderboard_data = []
-	leaderboard_weekly = []
-	leaderboard_monthly = []
-
-	for player in players:
-		total_wins = get_total_wins(player.id)
-		total_losses = get_total_losses(player.id)
-		win_rate = get_win_rate(total_wins, total_losses)
-		games_played = total_wins + total_losses
-		
-		leaderboard_data.append({
-			'username': player.username,
-			'total_wins': total_wins,
-			'win_rate': win_rate,
-			'games_played': games_played
-		})
-
-		weekly_wins = get_total_wins(player.id, since=one_week_ago)
-		weekly_losses = get_total_losses(player.id, since=one_week_ago)
-		weekly_games_played = weekly_wins + weekly_losses
-		weekly_win_rate = get_win_rate(weekly_wins, weekly_losses)
-
-		leaderboard_weekly.append({
-			'username': player.username,
-			'total_wins': weekly_wins,
-			'win_rate': weekly_win_rate,
-			'games_played': weekly_games_played
-		})
-
-		# Monthly calculations
-		monthly_wins = get_total_wins(player.id, since=one_month_ago)
-		monthly_losses = get_total_losses(player.id, since=one_month_ago)
-		monthly_games_played = monthly_wins + monthly_losses
-		monthly_win_rate = get_win_rate(monthly_wins, monthly_losses)
-
-		leaderboard_monthly.append({
-			'username': player.username,
-			'total_wins': monthly_wins,
-			'win_rate': monthly_win_rate,
-			'games_played': monthly_games_played
-		})
-
-	leaderboard_data = sorted(leaderboard_data, key=lambda x: (-x['total_wins'], -x['games_played']))[:10]
-	leaderboard_weekly = sorted(leaderboard_weekly, key=lambda x: (-x['total_wins'], -x['games_played']))[:10]
-	leaderboard_monthly = sorted(leaderboard_monthly, key=lambda x: (-x['total_wins'], -x['games_played']))[:10]
+	leaderboard_data = (Leaderboard.objects.all().order_by('-wins'))[:10]
+	leaderboard_weekly = (Leaderboard.objects.filter(last_updated__gte=one_week_ago).order_by('-wins'))[:10]
+	leaderboard_monthly = (Leaderboard.objects.filter(last_updated__gte=one_month_ago).order_by('-wins'))[:10]
 
 	context = {
 		'leaderboard_weekly': leaderboard_weekly,
 		'leaderboard_monthly': leaderboard_monthly,
 		'leaderboard_data': leaderboard_data
 	}
-	
 	return render(request, 'pong/leaderboard.html', context)
 
 def offline_tourn(request):

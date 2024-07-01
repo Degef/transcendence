@@ -181,23 +181,8 @@
 			<div id="non-friends-list" class="list-container mt-4">
 				<div class="search-bar d-flex align-items-center mb-3">
 					<i class="fas fa-search search-icon"></i>
-					<input type="text" class="search-input" placeholder="Search Players">
+					<input type="text" class="search-input" placeholder="Search Players" name="search-for-player">
 				</div>
-				{% for non_friend in non_friends %}
-					<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
-						<div class="d-flex align-items-center gap-3 col-6">
-							<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;">
-								<img loading="lazy" src="{{ non_friend.profile.image.url }}" alt="Non-friend's profile image" class="friend-image rounded-circle" />
-							</a>
-							<div class="friend-details">
-								<a href="#" onclick="loadProfile('{{ non_friend.username }}'); return false;" class="friend-name">{{ non_friend.username }}</a>
-							</div>
-						</div>
-						<div>
-							<p>{{ non_friend.date_joined|date:"d/m/y" }}</p>
-						</div>
-					</div>
-				{% endfor %}
 			</div>
 		{% endif %}
 	</section>

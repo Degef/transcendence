@@ -1,5 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
+let controller = null;
 
 const config = {
 	ip: '',
@@ -39,7 +40,8 @@ async function updateContent(htmlContent) {
 
 	const tempDiv = document.createElement('div');
 	tempDiv.innerHTML = htmlContent;
-	const newContent = tempDiv.querySelector('main').innerHTML;
+	const newContent = tempDiv.innerHTML;
+	console.log(newContent);
 
 	if (newContent) {
 		const mainContainer = document.getElementById('main-container');
@@ -67,7 +69,13 @@ function updateBody(htmlContent) {
 
 async function handleRoute(path, pushState = true) {
 	try {
+		if (controller) {
+			controller.abort();
+		}
+		controller = new AbortController();
+		const { signal } = controller;
 		const response = await fetch(path, {
+			signal: signal,
 			method: 'GET',
 			headers: { 'Content-Type': 'text/html' },
 		});
@@ -78,6 +86,10 @@ async function handleRoute(path, pushState = true) {
 			updateURL(path);
 		}
 	} catch (error) {
+		if (error.name === 'AbortError') {
+			console.log('Request aborted');
+			return;
+		}
 		console.error('Error handling route:', error);
 	}
 }

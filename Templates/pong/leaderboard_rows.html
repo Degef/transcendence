@@ -8,23 +8,23 @@
 
 {% for player in leaderboard_data %}
 <div class="row leaderboard__row">
-	{% if player.username == request.user.username %}
+	{% if player.user.username == request.user.username %}
 		{% if forloop.counter == 1%}
 			<div class="col-1 leaderboard__cell text-center"><i class="fa-solid fa-crown"></i></div>
 		{% else %}
 			<div class="col-1 leaderboard__cell text-center">{{ forloop.counter }}</div>
 		{% endif %}
-		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.username }}'); return false;"><strong>{{ player.username }}</strong></div>
+		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.user.username }}'); return false;"><strong>{{ player.user.username }}</strong></div>
 	{% else %}
 		{% if forloop.counter == 1%}
 			<div class="col-1 leaderboard__cell text-center"><i class="fa-solid fa-crown"></i></div>
 		{% else %}
 			<div class="col-1 leaderboard__cell text-center">{{ forloop.counter }}</div>
 		{% endif %}
-		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.username }}'); return false;">{{ player.username }}</div>
+		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.user.username }}'); return false;">{{ player.user.username }}</div>
 	{% endif %}
-	<div class="col-2 leaderboard__cell text-center d-none d-md-block">{{ player.total_wins }}</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-md-block">{{ player.wins }}</div>
 	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">{{ player.win_rate|floatformat:2 }}%</div>
-	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">{{ player.games_played }}</div>
+	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">{{ player.wins|add:player.losses }}</div>
 </div>
 {% endfor %}
