@@ -114,7 +114,16 @@ function appendToContainer(toBeAppended, classname) {
     }
 }
 
-
+/**
+ * Displays a winner modal with given winner and loser information.
+ * Creates a modal container if not already present in the DOM,
+ * inserts the modal HTML into it, and shows the modal using Bootstrap.
+ * Adds event listeners to hide the modal when clicked outside and prevent hiding when clicked inside.
+ * 
+ * @param {string} winner - The winner's name or information.
+ * @param {string} loser - The loser's name or information.
+ * @return {void}
+ */
 function displayWinnerModal(winner, loser) {
     let modalContainer = document.getElementById('modal-container');
     if (!modalContainer) {
@@ -128,23 +137,21 @@ function displayWinnerModal(winner, loser) {
     const myModal = new bootstrap.Modal('#m-result-modal');
     const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
     modal.show();
-    // setTimeout(() => {
-    //     myModal.hide();
-    // }, 10000);
-    function hideModalOnClickOutsideTwo(event) {
-        if (!modalContainer.contains(event.target)) {
-            myModal.hide();
-            document.removeEventListener('click', hideModalOnClickOutsideTwo);
-        }
-    }
+    setTimeout(() => {
+        myModal.hide();
+    }, 5000);
 
-    // Add event listener to hide modal on click outside
-    document.addEventListener('click', hideModalOnClickOutsideTwo);
+    // function hideModalOnClickOutsideTwo(event) {
+    //     if (!modalContainer.contains(event.target)) {
+    //         myModal.hide();
+    //         document.removeEventListener('click', hideModalOnClickOutsideTwo);
+    //     }
+    // }
 
-    // Optional: Add event listener to prevent hiding modal if clicked inside
-    modalContainer.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
+    // document.addEventListener('click', hideModalOnClickOutsideTwo);
+    // modalContainer.addEventListener('click', function(event) {
+    //     event.stopPropagation();
+    // });
 }
 
 
@@ -196,10 +203,9 @@ function setupTournament(playerCount) {
     players = [];
     currentPlayerIndex = 0;
     totalPlayers = playerCount;
-    var tournElementtmp = document.getElementsByClassName("details-section");
-    document.getElementById('off_tourn_hero').style.display = 'none';
-    const tournElement = tournElementtmp[0];
-    tournElement.innerHTML = `
+    var tournElementtmp = document.getElementById("inputPlayers");
+    // document.getElementById('off_tourn_hero').style.display = 'none';
+    tournElementtmp.innerHTML = `
         <div class="center-container">
             <div id="playerFormContainer" class="input-group mb-3 square-box">
                 <span class="pheader" > 
@@ -327,14 +333,13 @@ async function organizeTournament(players) {
         const parsedjson = await response.json();
 
         // Ensure there's a details-section element
-        const tournElementtmp = document.getElementsByClassName("details-section");
+        const tournElementtmp =  document.getElementById("inputPlayers");
         if (tournElementtmp.length === 0) {
             throw new Error('No element with class "details-section" found');
         }
         
-        const tournElement = tournElementtmp[0];
-        tournElement.innerHTML = parsedjson.tournament_bracket;
-        appendToContainer(startTrounBtn, 'my-5.details-section');
+        tournElementtmp.innerHTML = parsedjson.tournament_bracket;
+        appendToContainer(startTrounBtn, 'my-5.main-section');
         if (players.length == 4) {
             changeRoundStyle();
         }
@@ -371,14 +376,15 @@ function updateScores(matchElement, player1_score, player2_score) {
         if (isOnlineTrounament)
             return;
         nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
-        appendToContainer(nextGameBtn, 'my-5.details-section');
+        appendToContainer(nextGameBtn, 'my-5.main-section');
         
         // setTimeout(() => {
         //     startNextMatch(matchElement);
         // }, 10000);
     } else {
-        if (isOnlineTrounament)
+        if (isOnlineTrounament) {
             isOnlineTrounament = false;
+        }
         console.log("This is the final game. The tournament is complete.");
         // Additional actions when the tournament is complete can be added here
     }
@@ -600,7 +606,7 @@ function onGameCompleted() {
     const player1_score = getScoresDisplay('p1');
     const player2_score = getScoresDisplay('p2');
     const winner = player1_score > player2_score ? player1 : player2;
-    displayWinnerModal(winner, player2);
+    // displayWinnerModal(winner, player2);
     if (tournamentSection && tournamentSection.parentNode) {
         tournamentSection.parentNode.removeChild(tournamentSection);
     }

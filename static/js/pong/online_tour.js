@@ -261,6 +261,7 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
     modal.style.justifyContent = 'center';
     modal.style.alignItems = 'center';
     modal.style.zIndex = '1000';
+    modal.setAttribute('tabindex', '-1');
 
     const modalContent = document.createElement('div');
     modalContent.style.backgroundColor = 'black';
@@ -302,7 +303,7 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
 
 function getNextRoundMatch(res) {
     if (!isOnlineTrounament) {
-        displayWinnerModal(winner, winner);
+        // displayWinnerModal(winner, winner);
         onlineTourSocket.close();
         return ;
     }
@@ -370,13 +371,13 @@ function update_bracket(res) {
 
 
 
-function fourPlayers() {
+function onlineTournament(tourSize) {
 
     const socket = new WebSocket(`wss://${window.location.host}/ws/tournament/`);
 
     socket.onopen = function() {
         console.log('WebSocket connection established.');
-        sendMessage('join_tournament');
+        sendMessage('join_tournament', tourSize);
     };
     // Log messages from the server
     // socket.onmessage = function(event) {
@@ -393,13 +394,14 @@ function fourPlayers() {
         }
     
         else if (res.type === 'html_content') {
+
             const parser = new DOMParser();
             const parsedHtml = parser.parseFromString(res.html, 'text/html');
             
             
-            // Extract the new content to replace the details-section
+            // Extract the new content to replace the details-section   
             const newContent = parsedHtml.getElementById('bracket');
-            // console.log( "[ " , data.html, " ]");
+            console.log( "[ " , data.html, " ]");
             // document.open();
             // document.write(data.html);
             // document.close();
@@ -407,6 +409,9 @@ function fourPlayers() {
                 const detailsSection = document.querySelector('.details-section');
                 if (detailsSection) {
                     detailsSection.innerHTML = newContent.outerHTML;
+                    if (tourSize == 4) {
+                        changeRoundStyle();
+                    }
                 } else {
                     console.error('details-section not found in the current document');
                 }
@@ -465,8 +470,8 @@ function fourPlayers() {
     };
     
     // Send messages to the server
-    function sendMessage(type) {
-        const message = { type: type };
+    function sendMessage(type, tourSize) {
+        const message = { type: type, psize: tourSize };
         console.log("sending messgesage to server");
         console.log(type);
         socket.send(JSON.stringify(message));

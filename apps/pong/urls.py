@@ -11,5 +11,6 @@ urlpatterns = [
     path('game_computer/', views.game_computer, name='game_computer'),
     path('local_game/', views.local_game, name='local_game'),
     path('offline_tourn/', views.offline_tourn, name='pre_offline_tournament'),
+    path('online_tourn/', views.online_tourn, name='pre_offline_tournament'),
     path('off_tour_bracket/', views.off_tour_bracket, name='offline_tournament_bracket'),
 ]

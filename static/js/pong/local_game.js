@@ -109,9 +109,10 @@ function gameLoop1(data3) {
         // document.getElementById('quit_game').style.display = 'none';
         if (isIntournament) {
             // displayWinnerModal(winner,  getTextContentById('player1Name'));
+            displayWinnerModal(winner, player2);
             setTimeout(() => {
                 onGameCompleted();
-            }, 400);
+            }, 6000);
         }
         return;
     } else if (terminate_game) {

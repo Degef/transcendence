@@ -89,6 +89,9 @@ def leaderboard(request):
 def offline_tourn(request):
 	return render(request, 'pong/offline_tourn.html')
 
+def online_tourn(request):
+	return render(request, 'pong/online_tourn.html')
+
 @login_required
 def off_tour_bracket(request):
 	if request.method == 'POST':

@@ -25,6 +25,16 @@ var decline_modal =  function getDeclineModal(message) {
 	return declineModal;
 }
 
+
+/**
+ * Displays a declined modal with the provided message.
+ * Appends the modal to the body only if the modal with id 'custom-decline' is not already present,
+ * otherwise shows the existing modal.
+ * Adds an event listener to hide the modal when the close button is clicked.
+ * 
+ * @param {string} message - The message to display in the declined modal.
+ * @return {void}
+ */
 function showDeclinedModal(message) {
 	const modalHTML = decline_modal(message);
 	$(modalHTML).appendTo('body');
@@ -32,6 +42,7 @@ function showDeclinedModal(message) {
 	// if (typeof $ !== 'undefined') {
 	// 	$('#custom-decline').modal('show');
 	// }
+
 	$('#custom-decline').modal('show');
 
     const declineButton = document.getElementById('decline-close-button');

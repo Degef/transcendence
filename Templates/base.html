@@ -62,16 +62,16 @@
 		<div class="alert alert-dismissible fade d-none fixed-alert" role="alert" id="responseAlert">
 			<span class="response__message"></span>
 		</div>
-		<main id="main-container" class="container flex-grow-1 d-flex flex-column align-items-center p-0 p-md-2">
-			<div id="custom-confirm" class="modal">
-				<div class="modal-content">
-					<p id="challenge-message" class="text-large">you have been challenged by Degef</p>
-					<div>
-						<button id="decline-button" class="btn btn-outline-light btn-lg mb-3">Decline</button>
-						<button id="accept-button" class="btn btn-outline-light btn-lg mb-3">Accept</button>
-					</div>
+		<div id="custom-confirm" class="modal">
+			<div class="modal-content">
+				<p id="challenge-message" class="text-large">you have been challenged by Degef</p>
+				<div>
+					<button id="decline-button" class="btn btn-outline-light btn-lg mb-3">Decline</button>
+					<button id="accept-button" class="btn btn-outline-light btn-lg mb-3">Accept</button>
 				</div>
 			</div>
+		</div>
+		<main id="main-container" class="container flex-grow-1 d-flex flex-column align-items-center p-0 p-md-2">
 			{% block content %} {% endblock %}
 		</main>
 

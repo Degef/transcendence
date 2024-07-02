@@ -112,7 +112,7 @@ html, body {
 /* ======================================== */
 
 #main-container {
-	animation: transitionIn 0.95s;
+	animation: transitionIn 0.75s;
 }
 
 @keyframes  transitionIn {

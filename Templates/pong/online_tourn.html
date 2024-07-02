@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="container my-5 main-section">
+	<div class="d-flex justify-content-center">
+		<div class="w-100 max-w-960">
+			<div class="text-center" id="off_tourn_hero">
+				<div class="card text-white position-relative overflow-hidden">
+					<img src="/media/images/tournament.png" class="card-img" alt="Play in a tournament image" />
+					<div class="card-img-overlay d-flex flex-column justify-content-center align-items-center p-5">
+						<div class="w-100 text-center mb-3">
+							<h2 class="display-4">Play in a tournament</h2>
+							<p class="lead">Join a 4 or 8 person online tournament, win matches to advance and claim the top spot</p>
+						</div>
+						<div class="d-flex justify-content-center gap-2">
+							<button class="about-button" id="four_online_players">4-person</button>
+							<button class="about-button btn-secondary" id="eight_online_players">8-person</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<section class="my-5 details-section">
+				<div class="text-center text-white">
+					<h2 class="display-5">How it works</h2>
+					<p class="lead">Join a 4 or 8 person tournament, win matches to advance and claim the top spot</p>
+				</div>
+				<div class="row mt-4 d-flex align-items-center justify-content-center gap-4">
+					<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center" style="height: 200px;">
+						<div class="card about-card text-white flex-fill p-3" >
+							<div class="d-flex flex-column align-items-center text-center">
+								<div class="text-light mb-3">
+									<i class="fa-solid fa-crown" style="color: var(--color-text-primary) !important;"></i>
+								</div>
+								<div class="fw-bold">Winning is everything</div>
+								<p class="mt-2 about-card-text">Rack up the wins to advance to the next round and claim the top spot</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center" style="height: 200px;">
+						<div class="card about-card text-white flex-fill p-3">
+							<div class="d-flex flex-column align-items-center text-center">
+								<div class="text-light mb-3">
+									<i class="fas fa-users" style="color: var(--color-text-primary) !important;"></i>
+								</div>
+								<div class="fw-bold">Compete with friends</div>
+								<p class="mt-2 about-card-text">Invite friends to join your offline tournament and compete against other</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 mb-4 col-sm-12 d-flex align-items-center justify-content-center" style="height: 200px;">
+						<div class="card about-card text-white flex-fill p-3" >
+							<div class="d-flex flex-column align-items-center text-center">
+								<div class="text-light mb-3">
+									<i class="fa-solid fa-gift" style="color: var(--color-text-primary) !important;"></i>
+								</div>
+								<div class="fw-bold">Claim your prize</div>
+								<p class="mt-2 about-card-text">Winners receive a prize. Prizes vary by tournament! So keep playing</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</section>
+
+{% endblock%}

@@ -45,11 +45,12 @@ async function updateContent(htmlContent) {
 
 	if (newContent) {
 		const mainContainer = document.getElementById('main-container');
-		const range = document.createRange();
-		range.setStart(mainContainer, 1); 
-		range.setEnd(mainContainer, mainContainer.childNodes.length);
-		range.deleteContents();
-		mainContainer.insertAdjacentHTML('beforeend', newContent);
+		// const range = document.createRange();
+		// range.setStart(mainContainer.childNodes[1], 0);
+		// range.setEnd(mainContainer.lastChild, 0);
+		// range.deleteContents();
+		// mainContainer.insertAdjacentHTML('beforeend', newContent);
+		mainContainer.innerHTML = newContent;
 	}
 }
 
@@ -80,8 +81,8 @@ async function handleRoute(path, pushState = true) {
 			headers: { 'Content-Type': 'text/html' },
 		});
 		const htmlContent = await response.text();
-		updateBody(htmlContent);
-		// updateContent(htmlContent);
+		// updateBody(htmlContent);
+		updateContent(htmlContent);
 		if (pushState) {
 			updateURL(path);
 		}
@@ -116,7 +117,9 @@ const routeHandlers = {
 	'/offline_tourn/': name => handleRoute('/offline_tourn/', true),
 	'/four_players/': () => setupTournament(4),
 	'/eight_players/':  () => setupTournament(8),
-	'/online_tourn/': () => fourPlayers(),
+	'/online_tourn/': () => handleRoute('/online_tourn/', true),
+	'/four_online_players/': () => onlineTournament(4),
+	'/eight_online_players/':  () => onlineTournament(8),
 };
 
 function handleButtonClick(event) {
@@ -140,9 +143,11 @@ function handleButtonClick(event) {
 		local_game: routeHandlers['/local_game/'],
 		chatLink: routeHandlers['/chat/'],
 		offline_tourn:routeHandlers['/offline_tourn/'],
-		online_tourn:routeHandlers['/online_tourn/'],
 		four_players:routeHandlers['/four_players/'],
 		eight_players:routeHandlers['/eight_players/'],
+		online_tourn:routeHandlers['/online_tourn/'],
+		four_online_players:routeHandlers['/four_online_players/'],
+		eight_online_players:routeHandlers['/eight_online_players/'],
 		mode_toggle: toggleTheme,
 	};
 
@@ -153,6 +158,7 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
+	console.log(buttonId);
 
 	if (handler) {
 		if (window.game_in_progress) {
@@ -284,4 +290,3 @@ document.addEventListener('DOMContentLoaded', () => {
     intializeJsOnPathChange(path);
 	setuptheme();
 });
-  

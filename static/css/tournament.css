@@ -13,7 +13,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 60vh;
     font-family: Arial, sans-serif;
 }
 /* Custom CSS for square box */
@@ -22,7 +22,8 @@
     max-height: 500px; /* Same as width for square */
     min-width: 300px; /* Adjust as needed */
     min-height: 300px; /* Same as width for square */
-    margin-top: -800px;
+    /* margin-top: -800px; */
+    margin-top: -22rem;
     padding: 20px;
     border-radius: 10px;
     background-color: #DDEEF1;
@@ -126,6 +127,7 @@
     width: 28%;
     height: 50%;
     background-color: transparent;
+    color: var(--color-text-primary);
     border: none;
     /* margin-top: 2px; */
 }
@@ -516,6 +518,11 @@
   }
   #bracket {
     height: auto;
+  }
+  .flex-mode {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-left: auto !important;
   }
 }
 
