@@ -37,36 +37,31 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			const jsonResponse = await response.json();
 			if (!jsonResponse.success) {
 				const errors = JSON.parse(jsonResponse.errors);
-				console.log(errors);
 				let firstError = Object.entries(errors)[0][1][0].message;
 				if (firstError === 'This field is required.') firstError = 'All fields are required.';
 				showAlert(firstError, 'danger');
-				form.reset();
 			} else {
-				form.reset();
 				showAlert(jsonResponse.message, 'success');
-				setTimeout(() => {
-					if (url === '/edit_profile/') {
-						handleRoute(successRoute + formData.get('username'), true);
-					} else {
-						handleRoute(successRoute, true); 
-					}
-				}, 2000);
+				if (url === '/edit_profile/') {
+					handleRoute(successRoute + formData.get('username'), true);
+				} else {
+					handleRoute(successRoute, true); 
+				}
 			}
 		} else {
 			const htmlContent = await response.text();
-			updateBody(htmlContent);
+			updateContent(htmlContent);
 			if (back_or_forward !== 0) updateURL(url);
 		}
 	} catch (error) {
 		console.error('Error:', error);
 		showAlert('An error occurred while processing your request.', 'danger');
-		form.reset();
 	}
 }
 
 async function register(back_or_forward = 1) {
 	await handleFormSubmission('registration-form', '/register/', '/', back_or_forward);
+	initializeChallengeSocket();
 }
 
 async function login(back_or_forward = 1) {

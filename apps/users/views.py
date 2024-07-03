@@ -68,10 +68,19 @@ def login(request):
 			return JsonResponse({'success': False, 'errors': errors})
 	else:
 		form = CustomAuthenticationForm()
-	return render(request, 'login.html', {'form': form})
+	context = {
+		'form': form,
+		'template_name': 'login.html'
+	}
+	template_name = getTemplateName(request, 'login.html')
+	return render(request, template_name, context)
 
 def limit(request):
-	return render(request, '403.html')
+	context = {
+		'template_name': '403.html'
+	}
+	template_name = getTemplateName(request, '403.html')
+	return render(request, template_name, context)
 
 def logout(request):
 	with transaction.atomic():
@@ -102,7 +111,12 @@ def register(request):
 			return JsonResponse({'success': False, 'errors': errors})
 	else:
 		form = UserRegisterForm()
-	return render(request, 'signup.html', {'form': form})
+	context = {
+		'form': form,
+		'template_name': 'signup.html'
+	}
+	template_name = getTemplateName(request, 'signup.html')
+	return render(request, template_name, context)
 
 
 def get_total_wins(userid, since=None):
@@ -266,26 +280,9 @@ def edit_profile(request):
 		profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.profile)
 
 		if user_form.is_valid() and profile_form.is_valid():
-			password = user_form.cleaned_data.get('password')
-
-			logger.info(f'\n\n\nPassword: {password}\n\n\n')
-
-			if password is not None and password != '':
-				try:
-					validate_password(password, user=user)
-					user.set_password(password)
-				except ValidationError as ve:
-					password_errors = json.dumps(ve.messages)
-					logger.warning(f"Password validation errors for user {user.username}: {password_errors}")
-					return JsonResponse({'success': False, 'errors': password_errors})
-
 			try:
 				user_form.save()
 				profile_form.save()
-				if password:
-					user.save()
-					update_session_auth_hash(request, user)
-
 				logger.info(f"Profile for user {user.username} updated successfully.")
 				return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
 			except Exception as e:
@@ -302,8 +299,10 @@ def edit_profile(request):
 	context = {
 		'user_form': user_form,
 		'profile_form': profile_form,
+		'template_name': 'users/profile-update.html',
 	}
-	return render(request, 'users/profile-update.html', context)
+	template_name = getTemplateName(request, 'users/profile-update.html')
+	return render(request, template_name, context)
 
 @login_required
 def delete_profile(request):

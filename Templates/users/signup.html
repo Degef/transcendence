@@ -1,9 +1,3 @@
-{% extends 'base.html' %}
-
-{% load static %}
-
-{% block content %}
-
 <div class="signup d-flex flex-column w-100 justify-content-center align-items-center">
 	<form id="registration-form" class="signup__form d-flex flex-column w-100" method="post" action="{% url 'register' %}">
 		{% csrf_token %}
@@ -14,7 +8,7 @@
 			<div class="d-flex flex-column justify-content-center">
 				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
 					<label for="usernameInput" class="signup__input-label justify-content-center visually-hidden">User name</label>
-					<input type="text" id="usernameInput" name="username" placeholder="Enter your user name" class="signup__input-text" aria-label="User name" maxlength="14"/>
+					<input type="text" id="usernameInput" name="username" placeholder="Enter your user name" class="signup__input-text" aria-label="User name" maxlength="14" autocomplete="on"/>
 				</div>
 			</div>
 		</div>
@@ -22,7 +16,7 @@
 			<div class="d-flex flex-column justify-content-center">
 				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
 					<label for="emailInput" class="signup__input-label justify-content-center visually-hidden">Email address</label>
-					<input type="email" id="emailInput" name="email" placeholder="Enter your email address" class="signup__input-text" aria-label="Email address" />
+					<input type="email" id="emailInput" name="email" placeholder="Enter your email address" class="signup__input-text" aria-label="Email address" autocomplete="on"/>
 				</div>
 			</div>
 		</div>
@@ -30,7 +24,7 @@
 			<div class="d-flex flex-column justify-content-center">
 				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
 					<label for="passwordInput" class="signup__input-label justify-content-center visually-hidden">Password</label>
-					<input type="password" id="passwordInput" name="password1" placeholder="Enter your password" class="signup__input-text" aria-label="Password" />
+					<input type="password" id="passwordInput" name="password1" placeholder="Enter your password" class="signup__input-text" aria-label="Password" autocomplete="on"/>
 				</div>
 			</div>
 		</div>
@@ -38,7 +32,7 @@
 			<div class="d-flex flex-column justify-content-center">
 				<div class="signup__input-box d-flex flex-column justify-content-center align-items-start">
 					<label for="password2Input" class="signup__input-label justify-content-center visually-hidden">Confirm Password</label>
-					<input type="password" id="password2Input" name="password2" placeholder="Confirm your password" class="signup__input-text" aria-label="Confirm Password" />
+					<input type="password" id="password2Input" name="password2" placeholder="Confirm your password" class="signup__input-text" aria-label="Confirm Password" autocomplete="on"/>
 				</div>
 			</div>
 		</div>
@@ -59,4 +53,3 @@
 		</div>
 	</form>
 </div>
-{% endblock %}

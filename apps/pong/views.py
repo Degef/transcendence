@@ -23,9 +23,17 @@ logger = logging.getLogger(__name__)
 
 def home(request):
 	if request.user.is_authenticated:
-		return render(request, 'pong/home.html')
+		context = {
+			'template_name': 'pong/home.html'
+		}
+		template_name = getTemplateName(request, 'pong/home.html')
+		return render(request, template_name, context)
 	else:
-		return render(request, 'pong/landing.html')
+		context = {
+			'template_name': 'pong/landing.html'
+		}
+		template_name = getTemplateName(request, 'pong/landing.html')
+		return render(request, template_name, context)
 
 class FaviconView(View):
 	def get(self, request, *args, **kwargs):

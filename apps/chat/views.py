@@ -8,6 +8,7 @@ from django.db.models import Q
 import json
 
 from django.views.decorators.csrf import csrf_exempt
+from apps.users.views import getTemplateName
 
 def get_current_user(request):
 	if not request.user.is_authenticated:
@@ -60,25 +61,26 @@ def block_unblock(request):
 
 @login_required
 def chat(request):
-    profile_image = request.user.profile.image.url
-    username = request.user.username
+	profile_image = request.user.profile.image.url
+	username = request.user.username
 
-    accepted_friendships = Friendship.objects.filter(
-        Q(from_user=request.user, status=Friendship.ACCEPTED) |
-        Q(to_user=request.user, status=Friendship.ACCEPTED)
-    )
+	accepted_friendships = Friendship.objects.filter(
+		Q(from_user=request.user, status=Friendship.ACCEPTED) |
+		Q(to_user=request.user, status=Friendship.ACCEPTED)
+	)
 
-    # Get the profiles of the friends
-    friend_profiles = Profile.objects.filter(
-        Q(user__in=accepted_friendships.values('from_user')) |
-        Q(user__in=accepted_friendships.values('to_user'))
-    ).exclude(user=request.user)
+	# Get the profiles of the friends
+	friend_profiles = Profile.objects.filter(
+		Q(user__in=accepted_friendships.values('from_user')) |
+		Q(user__in=accepted_friendships.values('to_user'))
+	).exclude(user=request.user)
 
-    context = {
-        'profile_image': profile_image,
-        'username': username,
-        'title': 'chat',
-        'friends': friend_profiles
-    }
-
-    return render(request, 'chat.html', context)
+	context = {
+		'profile_image': profile_image,
+		'username': username,
+		'title': 'chat',
+		'friends': friend_profiles,
+		'template_name': 'chat/chat.html'
+	}
+	template_name = getTemplateName(request, 'chat/chat.html')
+	return render(request, template_name, context)

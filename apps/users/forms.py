@@ -26,20 +26,21 @@ class UserUpdateForm(forms.ModelForm):
 			}
 		),
 	)
-	password = forms.CharField(
-		max_length=24,
-		label="Password",
-		widget=forms.PasswordInput(
-			attrs={
-				"class": "input-field password",
-				"size": "40",
-				"placeholder": "New Password...",
-			}
-		),
-	)
+	# password = forms.CharField(
+	# 	max_length=24,
+	# 	label="Password",
+	# 	widget=forms.PasswordInput(
+	# 		attrs={
+	# 			"class": "input-field password",
+	# 			"size": "40",
+	# 			"placeholder": "New Password...",
+	# 		}
+	# 	),
+	# )
 	class Meta:
 		model = User
-		fields = ['username', 'email', 'password']
+		fields = ['username', 'email']
+		# fields = ['username', 'email', 'password']
 
 
 class CustomAuthenticationForm(AuthenticationForm):
