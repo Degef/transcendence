@@ -363,7 +363,7 @@ def exchange_code(request):
 		img_temp = NamedTemporaryFile(delete=True)
 		img_temp.write(requests.get(img_url).content)
 		img_temp.flush()
-		login(request, user)
+		auth_login(request, user)
 		text = render(request, 'pong/home.html')
 		existing_profile = Profile.objects.filter(user=user).first()
 		existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))

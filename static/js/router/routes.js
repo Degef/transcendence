@@ -243,7 +243,7 @@ function toggleTheme() {
 
 
 function loginWith42() {
-	handleRoute(`http://${config.ip}:8000/exchange_code?code=${code}`);
+	handleRoute(`https://${config.ip}/exchange_code?code=${code}`);
 }
 
 
