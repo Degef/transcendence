@@ -27,6 +27,12 @@ from django.core.paginator import Paginator
 
 load_dotenv()
 
+def getTemplateName(request, defaultpage):
+	request_type = "normal" if request.headers.get('X-Requested-With') == 'XMLHttpRequest' else "reload"
+	template_name = 'loader.html' if request_type == "reload" else defaultpage
+	return template_name
+
+
 def get_ipaddress(request):
 	IP  = os.getenv('IP_ADDRESS')
 	CLIENT_ID = os.getenv('UID_42')
@@ -188,8 +194,10 @@ def profile(request, user=''):
 		'received_request': received_request,
 		'are_friends': are_friends,
 		'received_requests': received_requests,
+		'template_name': 'profile.html'
 	}
-	return render(request, 'profile.html', context)
+	template_name = getTemplateName(request, 'profile.html')
+	return render(request, template_name, context)
 
 
 @login_required

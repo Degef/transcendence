@@ -14,10 +14,11 @@ from django.http import HttpResponse
 import json, re, logging
 
 
-from apps.users.views import get_total_wins, get_total_losses, get_win_rate
+from apps.users.views import get_total_wins, get_total_losses, get_win_rate, getTemplateName
 
 
 logger = logging.getLogger(__name__)
+
 
 
 def home(request):
@@ -33,21 +34,23 @@ class FaviconView(View):
 @login_required
 def play_online(request):
 	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	context = {"if_mobile": "true" if if_mobile else "false"}
+	context = {"if_mobile": "true" if if_mobile else "false", 'template_name': 'pong/play_online.html' }
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
-	return render(request, 'pong/play_online.html')
+	template_name = getTemplateName(request, 'pong/play_online.html')
+	return render(request, template_name, context)
 
 def game_computer(request):
 	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	context = {"if_mobile": "true" if if_mobile else "false"}
+	context = {"if_mobile": "true" if if_mobile else "false", 'template_name': 'pong/game_computer.html'}
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
-	return render(request, 'pong/game_computer.html')
+	template_name = getTemplateName(request, 'pong/game_computer.html')
+	return render(request, template_name, context)
 
 def local_game(request):
 	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	context = {"if_mobile": "true" if if_mobile else "false"}
+	context = {"if_mobile": "true" if if_mobile else "false", 'template_name': 'pong/local_game.html'}
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
 	player1 = 'Player1'
@@ -62,13 +65,22 @@ def local_game(request):
 		'player1': player1,
 		'player2': player2,
 	}
-	return render(request, 'pong/local_game.html', context)
+	template_name = getTemplateName(request, 'pong/local_game.html')
+	return render(request, template_name, context)
 
 def about(request):
-	return render(request, 'pong/about.html')
+	context = {
+		'template_name': 'pong/about.html'
+	}
+	template_name = getTemplateName(request, 'pong/about.html')
+	return render(request, template_name, context)
 
 def privacy(request):
-	return render(request, 'pong/privacy.html')
+	context = {
+		'template_name': 'pong/privacy.html'
+	}
+	template_name = getTemplateName(request, 'pong/privacy.html')
+	return render(request, template_name, context)
 
 @login_required
 def leaderboard(request):
@@ -82,15 +94,25 @@ def leaderboard(request):
 	context = {
 		'leaderboard_weekly': leaderboard_weekly,
 		'leaderboard_monthly': leaderboard_monthly,
-		'leaderboard_data': leaderboard_data
+		'leaderboard_data': leaderboard_data,
+		'template_name': 'pong/leaderboard.html'
 	}
-	return render(request, 'pong/leaderboard.html', context)
+	template_name = getTemplateName(request, 'pong/leaderboard.html')
+	return render(request, template_name, context)
 
 def offline_tourn(request):
-	return render(request, 'pong/offline_tourn.html')
+	context = {
+		'template_name': 'pong/offline_tourn.html'
+	}
+	template_name = getTemplateName(request, 'pong/offline_tourn.html')
+	return render(request, template_name, context)
 
 def online_tourn(request):
-	return render(request, 'pong/online_tourn.html')
+	context = {
+		'template_name': 'pong/online_tourn.html'
+	}
+	template_name = getTemplateName(request, 'pong/online_tourn.html')
+	return render(request, template_name, context)
 
 @login_required
 def off_tour_bracket(request):

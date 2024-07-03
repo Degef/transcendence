@@ -66,7 +66,7 @@ function updateBody(htmlContent) {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString(htmlContent, 'text/html');
 	document.body.innerHTML = doc.body.innerHTML;
-}
+} 
 
 async function handleRoute(path, pushState = true) {
 	try {
@@ -78,7 +78,7 @@ async function handleRoute(path, pushState = true) {
 		const response = await fetch(path, {
 			signal: signal,
 			method: 'GET',
-			headers: { 'Content-Type': 'text/html' },
+			headers: { 'Content-Type': 'text/html', 'X-Requested-With': 'XMLHttpRequest' },
 		});
 		const htmlContent = await response.text();
 		// updateBody(htmlContent);
