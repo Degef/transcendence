@@ -58,7 +58,7 @@ def game_computer(request):
 
 def local_game(request):
 	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	context = {"if_mobile": "true" if if_mobile else "false", 'template_name': 'pong/local_game.html'}
+	context = {"if_mobile": "true" if if_mobile else "false"}
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
 	player1 = 'Player1'
@@ -72,6 +72,7 @@ def local_game(request):
 	context = {
 		'player1': player1,
 		'player2': player2,
+		'template_name': 'pong/local_game.html'
 	}
 	template_name = getTemplateName(request, 'pong/local_game.html')
 	return render(request, template_name, context)

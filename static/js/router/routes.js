@@ -1,5 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
+var isLoggin = false;
 let controller = null;
 
 const config = {
@@ -41,7 +42,7 @@ async function updateContent(htmlContent) {
 	const tempDiv = document.createElement('div');
 	tempDiv.innerHTML = htmlContent;
 	const newContent = tempDiv.innerHTML;
-	console.log(newContent);
+	// console.log(newContent);
 
 	if (newContent) {
 		const mainContainer = document.getElementById('main-container');
@@ -63,6 +64,7 @@ function updateURL(url) {
 }
 
 function updateBody(htmlContent) {
+	console.log(htmlContent);
 	const parser = new DOMParser();
 	const doc = parser.parseFromString(htmlContent, 'text/html');
 	document.body.innerHTML = doc.body.innerHTML;
@@ -75,14 +77,22 @@ async function handleRoute(path, pushState = true) {
 		}
 		controller = new AbortController();
 		const { signal } = controller;
+		htype = 'XMLHttpRequest';
+		if ((isLoggin || path === '/logout/')) {
+			htype = 'loggin'
+		}
 		const response = await fetch(path, {
 			signal: signal,
 			method: 'GET',
-			headers: { 'Content-Type': 'text/html', 'X-Requested-With': 'XMLHttpRequest' },
+			headers: { 'Content-Type': 'text/html', 'X-Requested-With': htype },
 		});
 		const htmlContent = await response.text();
-		if (path === '/logout/' || path.includes('/update_profile/')) {
+		console.log("isLoggin: ", isLoggin);
+		console.log("Path: " , path)
+		if ((isLoggin && (path === '/')) || path === '/logout/') {
+			console.log("from here");
 			updateBody(htmlContent);
+			isLoggin = false;
 		} else {
 			updateContent(htmlContent);
 		}

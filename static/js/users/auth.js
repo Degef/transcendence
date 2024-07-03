@@ -1,5 +1,12 @@
 let statusSocket = null;
 
+
+function updateUserName(newUserName) {
+	const profileLink = document.querySelector('#profile');
+	profileLink.setAttribute('onclick', `loadProfile('${newUserName}'); return false;`);
+}
+
+
 async function handleFormSubmission(formId, url, successRoute, back_or_forward = 1) {
 	const csrfToken = getCookie('csrftoken');
 	const form = document.getElementById(formId);
@@ -10,6 +17,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 	const formData = new FormData(form);
 	const responseMessageDiv = document.querySelector('.response__message');
 	const responseAlert = document.getElementById('responseAlert');
+	const newUsername = formData.get('username');
 
 	const showAlert = (message, type) => {
 		responseMessageDiv.innerHTML = message;
@@ -29,8 +37,8 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			},
 			body: formData,
 		});
-		if (response.status === 403) {
-			handleRoute('/limit/', false);
+			if (response.status === 403) {
+				handleRoute('/limit/', false);
 			return ;
 		}
 		if (response.headers.get('Content-Type')?.includes('application/json')) {
@@ -42,7 +50,10 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 				showAlert(firstError, 'danger');
 			} else {
 				showAlert(jsonResponse.message, 'success');
+				isLoggin = true;
 				if (url === '/edit_profile/') {
+					updateUserName(newUsername)
+					isLoggin = false;
 					handleRoute(successRoute + formData.get('username'), true);
 				} else {
 					handleRoute(successRoute, true); 

@@ -30,6 +30,7 @@ load_dotenv()
 def getTemplateName(request, defaultpage):
 	request_type = "normal" if request.headers.get('X-Requested-With') == 'XMLHttpRequest' else "reload"
 	template_name = 'loader.html' if request_type == "reload" else defaultpage
+	logger.error(f"\n\n\n I am here please look at the request_type: {request_type}  the htmlpage is: {template_name}\n\n\n")
 	return template_name
 
 
@@ -88,7 +89,12 @@ def logout(request):
 		user_thing.status = 'offline'
 		user_thing.save()
 	auth_logout(request)
-	return render(request, 'landing.html')
+	context = {
+		'template_name': 'landing.html'
+	}
+	template_name = getTemplateName(request, 'landing.html')
+	return render(request, template_name, context)
+	# return render(request, 'landing.html')
 
 def register(request):
 	if request.method == 'POST':
@@ -248,13 +254,13 @@ def accept_friend_request(request, username):
 
 @login_required
 def remove_friend(request, username):
-    to_user = get_object_or_404(User, username=username)
-    Friendship.objects.filter(
-        Q(from_user=request.user, to_user=to_user) | Q(from_user=to_user, to_user=request.user),
-        status=Friendship.ACCEPTED
-    ).delete()
-    messages.success(request, f'Removed {username} from friends')
-    return redirect('profile', user=request.user.username)
+	to_user = get_object_or_404(User, username=username)
+	Friendship.objects.filter(
+		Q(from_user=request.user, to_user=to_user) | Q(from_user=to_user, to_user=request.user),
+		status=Friendship.ACCEPTED
+	).delete()
+	messages.success(request, f'Removed {username} from friends')
+	return redirect('profile', user=request.user.username)
 
 @login_required
 def cancel_friend_request(request, username):
