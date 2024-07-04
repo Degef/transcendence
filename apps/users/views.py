@@ -219,6 +219,10 @@ def profile(request, user=''):
 	template_name = getTemplateName(request, 'profile.html')
 	return render(request, template_name, context)
 
+@login_required
+def list_of_all_username_json(request):
+    users = User.objects.all().values('username')
+    return JsonResponse(list(users), safe=False)
 
 @login_required
 def send_friend_request(request, username):

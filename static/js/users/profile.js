@@ -1,4 +1,5 @@
 let chartInstance = null;
+let all_user_list = [];
 
 function init_profile() {
 	const user_getting_viewed = document.getElementById('profile_name');
@@ -129,6 +130,39 @@ function drawChart() {
 	});
 }
 
+async function get_all_users() {
+	const response = await fetch('/list_of_all_username_json/');
+	const data = await response.json();
+	all_user_list = data.map(user => user.username);
+	setTimeout(setupProfileSearchFunctionality, 1000);
+}
+
+function setupProfileSearchFunctionality() {
+	const searchForPlayer = document.getElementById('searchForPlayer');
+	const searchResults = document.getElementById('searchResults');
+
+	searchForPlayer.addEventListener('input', function() {
+		const query = this.value.toLowerCase();
+		const filteredUsers = all_user_list.filter(user => user.toLowerCase().includes(query));
+		console.log(filteredUsers);
+		displaySearchResults(filteredUsers);
+	});
+
+	function displaySearchResults(users) {
+		searchResults.innerHTML = '';
+		if (users.length === 0) {
+			searchResults.classList.add('d-none');
+			return;
+		}
+		searchResults.classList.remove('d-none');
+		users.forEach(user => {
+			const userElement = document.createElement('div');
+			userElement.className = 'user-item';
+			userElement.textContent = user;
+			searchResults.appendChild(userElement);
+		});
+	}
+}
 
 async function update(back_or_forward = 1) {
 	await handleFormSubmission('profile_form', '/edit_profile/', '/profile/', back_or_forward);
@@ -139,6 +173,7 @@ function loadProfile(username) {
 		handleRoute('/profile/' + username, true);
 		setTimeout(init_profile, 1000);
 	}
+	get_all_users();
 }
 
 function addFriend(name) {

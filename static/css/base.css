@@ -157,3 +157,26 @@ html, body {
 		transform: translateY(0);
 	}
 }
+
+#searchResults {
+    border: 1px solid var(--color-text-accent);
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--color-card-background);
+}
+
+.user-item {
+    padding: 10px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-item:last-child {
+    border-bottom: none;
+}
+
+.user-item:hover {
+    background-color: var(--color-hover);
+    cursor: pointer;
+}
