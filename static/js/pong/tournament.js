@@ -83,7 +83,6 @@ var matchModal = function getMatchModal(player1, player2) {
                         <div class="modal-body">
                             <div class="card-body text-center"> 
                                 <img src="/media/images/matchm.png">
-                                <h4>The match between</h4>
                                 <div class="d-flex justify-content-center matchbox">
                                     <div class="box box-1">
                                         <div class="p-2 text-white">${player1}</div>
@@ -680,3 +679,44 @@ function changeRoundStyle() {
     });
 
 }
+
+
+
+/**
+ * Displays the spinner overlay with a customizable message.
+ * If a message is provided, it sets the message content and appends animated dots.
+ * The spinner overlay is made visible by setting its display style to 'flex'.
+ *
+ * @param {string} message - The message to display alongside the spinner.
+ * @return {void}
+ */
+
+function showSpinner(message) {
+    const spinnerMessage = document.getElementById('spinner-message');
+    const spinnerOverlay = document.getElementById('spinner-overlay');
+    if (message) {
+      spinnerMessage.innerHTML = `
+        ${message}
+        <div class="dots">
+          <span>.</span>
+          <span>.</span>
+          <span>.</span>
+        </div>
+      `;
+    }
+    spinnerOverlay.style.display = 'flex';
+  }
+
+
+  /**
+ * Hides the spinner overlay by setting its display style to 'none'.
+ * Logs a message to the console indicating the spinner is being hidden.
+ *
+ * @return {void}
+ */
+
+  function hideSpinner() {
+    const spinnerOverlay = document.getElementById('spinner-overlay');
+    console.log("hidding the Spinner");
+    spinnerOverlay.style.display = 'none';
+  }

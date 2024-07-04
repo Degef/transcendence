@@ -71,9 +71,21 @@
 				</div>
 			</div>
 		</div>
-		<main id="main-container" class="container flex-grow-1 d-flex flex-column align-items-center p-0 p-md-2">
+		<main id="main-container" class="container flex-grow-1 d-flex flex-column align-items-center p-0 p-md-2 smooth-transition">
 			{% block content %} {% endblock %}
 		</main>
+		<div class="spinner-overlay" id="spinner-overlay" style="display: none;">
+			<div class="spinner"></div>
+			<div class="spinner-message" id="spinner-message">
+			  Waiting for other players to join
+			  <div class="dots">
+				<span>.</span>
+				<span>.</span>
+				<span>.</span>
+			  </div>
+			</div>
+		  </div>
+		
 
 		<footer class="footer py-4">
 			<nav class="d-flex justify-content-center">

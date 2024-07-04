@@ -369,6 +369,7 @@ function setPlayer(rec) {
 
         const canvasContainer = document.querySelector('.canvas_container');
         const waitLoadDiv = canvasContainer.querySelector('#wait_load'); // Find the wait_load div
+        hideSpinner();
 
         if (waitLoadDiv) { // Remove the wait_load div if it exists
             canvasContainer.removeChild(waitLoadDiv);
@@ -510,8 +511,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
         if (rec['type'] == 'playerId') {
             data['playerId'] = rec['playerId'];
             console.log()
-            document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
-            document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
+            hideBtn('start_game_btn');
+            showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
             const message = {
                 'type': type,
                 'challengee': challenged_username,

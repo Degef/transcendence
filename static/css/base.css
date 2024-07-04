@@ -111,8 +111,38 @@ html, body {
 /*               page Transition            */
 /* ======================================== */
 
-#main-container {
+/* #main-container {
 	animation: transitionIn 0.75s;
+}
+
+@keyframes  transitionIn {
+	
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+} */
+
+.container {
+	animation: transitionIn 0.95s;
+}
+
+.chat__container {
+	animation: transitionIn 0.95s;
+}
+.hero {
+	animation: transitionIn 0.95s;
+}
+.features {
+	animation: transitionIn 0.95s;
+}
+.cta {
+	animation: transitionIn 0.95s;
 }
 
 @keyframes  transitionIn {

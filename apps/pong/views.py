@@ -41,10 +41,18 @@ class FaviconView(View):
 
 @login_required
 def play_online(request):
+	player1 = 'Player1'
+	player2 = 'Player2'
 	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	context = {"if_mobile": "true" if if_mobile else "false", 'template_name': 'pong/play_online.html' }
+	context = {
+		"if_mobile": "true" if if_mobile else "false", 
+		'template_name': 'pong/play_online.html',
+		'player1': player1,
+		'player2': player2
+	}
 	if (if_mobile):
 		return render(request, 'pong/mobile.html', context)
+	
 	template_name = getTemplateName(request, 'pong/play_online.html')
 	return render(request, template_name, context)
 
@@ -57,23 +65,21 @@ def game_computer(request):
 	return render(request, template_name, context)
 
 def local_game(request):
-	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
-	context = {"if_mobile": "true" if if_mobile else "false"}
-	if (if_mobile):
-		return render(request, 'pong/mobile.html', context)
 	player1 = 'Player1'
 	player2 = 'Player2'
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		player1 = data.get('player1')
 		player2 = data.get('player2')
-	print(player1)
-	print(player2)
+	if_mobile = request.device['is_mobile'] or request.device['is_tablet']
 	context = {
+		"if_mobile": "true" if if_mobile else "false",
 		'player1': player1,
 		'player2': player2,
 		'template_name': 'pong/local_game.html'
 	}
+	if (if_mobile):
+		return render(request, 'pong/mobile.html', context)
 	template_name = getTemplateName(request, 'pong/local_game.html')
 	return render(request, template_name, context)
 
