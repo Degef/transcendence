@@ -89,7 +89,7 @@ async function handleRoute(path, pushState = true) {
 		const htmlContent = await response.text();
 		console.log("isLoggin: ", isLoggin);
 		console.log("Path: " , path)
-		if ((isLoggin && (path === '/')) || path === '/logout/' || path.includes('exchange_code')) {
+		if ((isLoggin && (path === '/')) || path === '/logout/') {
 			console.log("from here");
 			updateBody(htmlContent);
 			isLoggin = false;
