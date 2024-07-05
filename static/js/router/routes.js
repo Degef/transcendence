@@ -89,7 +89,7 @@ async function handleRoute(path, pushState = true) {
 		const htmlContent = await response.text();
 		console.log("isLoggin: ", isLoggin);
 		console.log("Path: " , path)
-		if ((isLoggin && (path === '/')) || path === '/logout/') {
+		if ((isLoggin && (path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
 			console.log("from here");
 			updateBody(htmlContent);
 			isLoggin = false;
@@ -114,6 +114,7 @@ const routeHandlers = {
 	'/about/': () => handleRoute('/about/', true),
 	'/leaderboard/': () => { handleRoute('/leaderboard/', true); setTimeout(init_leaderboard, 1000); },
 	'/privacy/': () => handleRoute('/privacy/', true),
+	'/aboutus/': () => handleRoute('/aboutus/', true),
 	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 1000); },
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
@@ -141,6 +142,7 @@ function handleButtonClick(event) {
 		about: routeHandlers['/about/'],
 		leaderboard: routeHandlers['/leaderboard/'],
 		privacy: routeHandlers['/privacy/'],
+		aboutus: routeHandlers['/aboutus/'],
 		req_register: routeHandlers['/req_register/'],
 		register: routeHandlers['/register/'],
 		req_login: routeHandlers['/req_login/'],
@@ -212,7 +214,27 @@ function intializeJsOnPathChange(path) {
 	} else if (path === '/leaderboard/') {
 		waitForElement('.leaderboard', init_leaderboard);
 	} else if (path.includes('/profile/')) {
-		waitForElement('.profile-container__', init_profile);
+		const timeoutPromise = new Promise((resolve) => {
+			setTimeout(() => {
+				init_profile();
+				resolve();
+			}, 1000);
+		});
+
+		const elementPromise = new Promise((resolve) => {
+			waitForElement('.profile-container__', () => {
+				init_profile();
+				resolve();
+			});
+		});
+
+		Promise.race([timeoutPromise, elementPromise])
+		.then(() => {
+			return ;
+		})
+		.catch((error) => {
+			console.error("Profile initialization failed:", error);
+		});
 	}
 }
 
@@ -253,6 +275,7 @@ function toggleTheme() {
 
 
 function loginWith42() {
+	isLoggin = true;
 	handleRoute(`https://${config.ip}/exchange_code?code=${code}`);
 }
 
@@ -284,24 +307,24 @@ document.addEventListener('DOMContentLoaded', () => {
    * Add event listener to the node, or 2. Check if the node is an element, Find nested buttons and links
    * Add event listeners to nested elements **/
 	const observer = new MutationObserver(mutations => {
-	  mutations.forEach(mutation => {
-		if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-		  mutation.addedNodes.forEach(node => {
-			if (node.nodeName === 'BUTTON' || node.nodeName === 'A') {
-			  addEventListenersToElements([node]);
-			} else if (node.nodeType === Node.ELEMENT_NODE) {
-			  const nestedElements = node.querySelectorAll('button, a');
-			  if (nestedElements.length > 0) {
-				addEventListenersToElements(nestedElements);
-			  }
+	  	mutations.forEach(mutation => {
+			if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+				mutation.addedNodes.forEach(node => {
+					if (node.nodeName === 'BUTTON' || node.nodeName === 'A') {
+						addEventListenersToElements([node]);
+					} else if (node.nodeType === Node.ELEMENT_NODE) {
+						const nestedElements = node.querySelectorAll('button, a');
+						if (nestedElements.length > 0) {
+							addEventListenersToElements(nestedElements);
+						}
+					}
+				});
 			}
-		  });
-		}
-	  });
+	  	});
 	});
   
 	observer.observe(document.body, { childList: true, subtree: true });
 	const path = window.location.pathname;
-    intializeJsOnPathChange(path);
+	intializeJsOnPathChange(path);
 	setuptheme();
 });

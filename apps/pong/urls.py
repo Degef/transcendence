@@ -7,6 +7,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('privacy/', views.privacy, name='privacy'),
+	path('aboutus/', views.aboutus, name='aboutus'),
     path('play_online/', views.play_online, name='play_online'),
     path('game_computer/', views.game_computer, name='game_computer'),
     path('local_game/', views.local_game, name='local_game'),

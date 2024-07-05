@@ -90,6 +90,13 @@ def about(request):
 	template_name = getTemplateName(request, 'pong/about.html')
 	return render(request, template_name, context)
 
+def aboutus(request):
+	context = {
+		'template_name': 'pong/aboutus.html'
+	}
+	template_name = getTemplateName(request, 'pong/aboutus.html')
+	return render(request, template_name, context)
+
 def privacy(request):
 	context = {
 		'template_name': 'pong/privacy.html'

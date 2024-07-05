@@ -37,8 +37,8 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			},
 			body: formData,
 		});
-			if (response.status === 403) {
-				handleRoute('/limit/', false);
+		if (!response.ok && response.status === 403) {
+			handleRoute('/limit/', false);
 			return ;
 		}
 		if (response.headers.get('Content-Type')?.includes('application/json')) {
@@ -65,7 +65,6 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			if (back_or_forward !== 0) updateURL(url);
 		}
 	} catch (error) {
-		console.error('Error:', error);
 		showAlert('An error occurred while processing your request.', 'danger');
 	}
 }

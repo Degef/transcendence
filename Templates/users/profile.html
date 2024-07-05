@@ -180,14 +180,14 @@
 					<input id="searchForPlayer" type="text" class="search-input" placeholder="Search Players" name="search-for-player">
 				</div>
 			</div>
-			<div id="searchResults" class="list-container mt-4"></div>
+			<div id="searchResults" class="list-container mt-4 d-none"></div>
 		{% endif %}
 	</section>
 
 	{% if is_own_profile %}
 	<section id="requests-section" class="requests-section d-none">
 		<div id="requests-list" class="list-container">
-			{% if received_requests|length == 0 %}
+			{% if pending_requests|length == 0 %}
 				<div class="request-item d-flex justify-content-between align-items-center py-2">
 					<div class="d-flex align-items-center gap-3">
 						<div class="request-details">
@@ -196,7 +196,7 @@
 					</div>
 				</div>
 			{% endif %}
-			{% for requester in received_requests %}
+			{% for requester in pending_requests %}
 				<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
 					<div class="d-flex align-items-center gap-3 col-9">
 						<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;">

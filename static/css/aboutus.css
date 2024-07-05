@@ -1,0 +1,110 @@
+.demo {
+	padding: 100px 0;
+}
+
+.card {
+	transition: all 0.3s ease-in-out;
+}
+
+.card-img-top {
+    position: relative;
+    min-height: 200px;
+    overflow: hidden;
+}
+
+.card-img-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.927);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+	z-index: 99;
+}
+
+.card-img-top:hover::before {
+    opacity: 1;
+}
+
+
+.card-img-top img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+
+.card-img-top:hover img {
+	transform: scale(1.1);
+}
+
+.social {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+	top: -50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+	z-index: 999;
+}
+
+.card-img-top:hover .social {
+    transform: translateY(0);
+}
+
+
+.card-img-top:hover .social {
+	display: flex;
+}
+
+.social li {
+	margin: 0 10px;
+}
+
+.social li a {
+	display: block;
+	width: 35px;
+	height: 35px;
+	line-height: 35px;
+	background: #333;
+	color: var(--color-text-primary);
+	text-align: center;
+	border-radius: 50%;
+	transition: all 0.3s ease-in-out;
+}
+
+.social li a:hover {
+	background: var(--color-text-primary);
+	color: #333;
+}
+
+.card-body-aboutus {
+	background: var(--color-text-primary);
+	transition: all 0.3s ease-in-out;
+}
+
+.card-body-aboutus:hover {
+	background: #f7f7f7;
+}
+
+.card-title {
+	font-size: 1.25rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	margin-bottom: 0.5rem;
+}
+
+.card-text {
+	font-size: 1rem;
+	color: #999;
+	margin-bottom: 0.75rem;
+}

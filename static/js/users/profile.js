@@ -23,6 +23,7 @@ function init_profile() {
 				});
 			}
 		});
+		get_all_users();
 	}
 }
 
@@ -141,11 +142,16 @@ function setupProfileSearchFunctionality() {
 	const searchForPlayer = document.getElementById('searchForPlayer');
 	const searchResults = document.getElementById('searchResults');
 
+	if (!searchForPlayer || !searchResults) {
+		return;
+	}
 	searchForPlayer.addEventListener('input', function() {
 		const query = this.value.toLowerCase();
 		const filteredUsers = all_user_list.filter(user => user.toLowerCase().includes(query));
-		console.log(filteredUsers);
 		displaySearchResults(filteredUsers);
+		if (query.length === 0) {
+			searchResults.classList.add('d-none');
+		}
 	});
 
 	function displaySearchResults(users) {
@@ -158,6 +164,9 @@ function setupProfileSearchFunctionality() {
 		users.forEach(user => {
 			const userElement = document.createElement('div');
 			userElement.className = 'user-item';
+			userElement.addEventListener('click', function() {
+				loadProfile(user);
+			});
 			userElement.textContent = user;
 			searchResults.appendChild(userElement);
 		});

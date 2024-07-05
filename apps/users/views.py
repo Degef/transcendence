@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login, update_session_auth_hash, authenticate, logout as auth_logout
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
-from .models import Profile, Friendship
+from .models import Profile, Friendship, user_things
 from apps.pong.models import Game, Leaderboard
 from dotenv import load_dotenv
 import os
@@ -180,7 +180,6 @@ def profile(request, user=''):
 		friendship_requests_sent__to_user=user_to_view, 
 		friendship_requests_sent__status=Friendship.REQUESTED
 	)
-	non_friends = all_users.difference(friends).difference(pending_requests)
 	
 	received_requests = User.objects.filter(
 		friendship_requests_received__to_user=user_to_view, 
@@ -206,7 +205,6 @@ def profile(request, user=''):
 		'profile_image': profile_image,
 		'friends': friends,
 		'pending_requests': pending_requests,
-		'non_friends': non_friends,
 		'games': page_obj,
 		'games2': games_data,
 		'is_online': is_online,
@@ -221,7 +219,7 @@ def profile(request, user=''):
 
 @login_required
 def list_of_all_username_json(request):
-    users = User.objects.all().values('username')
+    users = User.objects.all().exclude(username=request.user.username).values('username')
     return JsonResponse(list(users), safe=False)
 
 @login_required
@@ -286,7 +284,7 @@ def edit_profile(request):
 	user = request.user
 
 	if request.method == 'POST':
-		user_form = UserUpdateForm(request.POST, instance=user)
+		user_form = UserUpdateForm(request.user, request.POST, instance=user)
 		profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.profile)
 
 		if user_form.is_valid() and profile_form.is_valid():
@@ -303,7 +301,7 @@ def edit_profile(request):
 			logger.warning(f"User form errors for user {user.username}: {user_form_errors}")
 			return JsonResponse({'success': False, 'errors': user_form_errors})
 	else:
-		user_form = UserUpdateForm(instance=user)
+		user_form = UserUpdateForm(request.user, instance=request.user)
 		profile_form = ProfileUpdateForm(instance=user.profile)
 
 	context = {
@@ -360,6 +358,11 @@ def exchange_code(request):
 		existing_user = User.objects.filter(username=user_name).first()
 
 		if existing_user:
+			with transaction.atomic():
+				user_thing = user_things.objects.get(user=existing_user)
+				user_thing.status = 'online'
+				user_thing.logged_in_with_42 = True
+				user_thing.save()
 			auth_login(request, existing_user)
 			return redirect('home')
 
@@ -371,6 +374,11 @@ def exchange_code(request):
 		img_temp.write(requests.get(img_url).content)
 		img_temp.flush()
 		auth_login(request, user)
+		with transaction.atomic():
+			user_thing = user_things.objects.get(user=user)
+			user_thing.status = 'online'
+			user_thing.logged_in_with_42 = True
+			user_thing.save()
 		# text = render(request, 'pong/landing.html')
 		existing_profile = Profile.objects.filter(user=user).first()
 		existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))

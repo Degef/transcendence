@@ -26,21 +26,29 @@ class UserUpdateForm(forms.ModelForm):
 			}
 		),
 	)
-	# password = forms.CharField(
-	# 	max_length=24,
-	# 	label="Password",
-	# 	widget=forms.PasswordInput(
-	# 		attrs={
-	# 			"class": "input-field password",
-	# 			"size": "40",
-	# 			"placeholder": "New Password...",
-	# 		}
-	# 	),
-	# )
+
 	class Meta:
 		model = User
 		fields = ['username', 'email']
-		# fields = ['username', 'email', 'password']
+
+	def __init__(self, user, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.user = user
+		try:
+			user_profile = user_things.objects.filter(user=user).first()
+			if user_profile.logged_in_with_42:
+				self.fields['username'].widget.attrs['disabled'] = 'disabled'
+		except UserProfile.DoesNotExist:
+			pass
+
+	def clean_username(self):
+		try:
+			user_profile = user_things.objects.filter(user=user).first()
+			if user_profile and user_profile.logged_in_with_42:
+				return self.user.username
+		except UserProfile.DoesNotExist:
+			pass
+		return self.cleaned_data.get('username', self.user.username)
 
 
 class CustomAuthenticationForm(AuthenticationForm):
