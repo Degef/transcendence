@@ -347,9 +347,6 @@ def exchange_code(request):
 	}
 	# # Exchange code for access token using POST request
 	token_response = requests.post(token_url, data=params).json()
-	logger.info(f"\n\n\nToken received: {token_response}\n\n\n")
-	# print("Token received")
-	# print(token_response)
 	if 'access_token' in token_response:
 		access_token = token_response['access_token']
 		user_url = 'https://api.intra.42.fr/v2/me'
@@ -374,9 +371,9 @@ def exchange_code(request):
 		img_temp.write(requests.get(img_url).content)
 		img_temp.flush()
 		auth_login(request, user)
-		text = render(request, 'pong/home.html')
+		# text = render(request, 'pong/landing.html')
 		existing_profile = Profile.objects.filter(user=user).first()
 		existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
-		return text
+		return redirect('home')
 	return redirect('home')
 	# return render(request, 'pong/home.html', context)
