@@ -134,6 +134,7 @@ function start_local_game() {
     hideBtn('restart_btn');
     displayBtn('quit_game');
     if (game_in_progress) {
+        console.log("return From game_in_progres")
         return;
     }
     // if (challengeInterval != null) {
@@ -221,7 +222,8 @@ function start_local_game() {
 function goBack() {
     // terminate_game = false;
     clearInterval(intervalId);
+	// terminate_game = true;
+	game_in_progress = false;
     document.getElementById('tournament').style.display = 'block';
     history.back();
-	terminate_game = false;
 }

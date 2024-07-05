@@ -1,13 +1,13 @@
 var data = {
-    'playerId': null,
-    'player': null,
-    "paddleWidth": 10, 
-    "paddleHeight": 60,
-    'paddle_speed': 8,
-    'paddle': {'speedY': 0},
-    'endGame': false,
-    'score': { 'player1': 0, 'player2': 0 },
-    'waiting_to_play': false,
+	'playerId': null,
+	'player': null,
+	"paddleWidth": 10, 
+	"paddleHeight": 60,
+	'paddle_speed': 8,
+	'paddle': {'speedY': 0},
+	'endGame': false,
+	'score': { 'player1': 0, 'player2': 0 },
+	'waiting_to_play': false,
 }
 
 var data2 = null;
@@ -23,59 +23,59 @@ let username = fetch('/get_current_user/').then(response => response.json());
 // draw a rectangle, will be used to draw paddles
 
 function resetChallengeStatus() {
-    if (type === 'challenge') {
-        challenged_username = '';
-        challenger_username = '';
-        loadProfile(username);
-    }
+	if (type === 'challenge') {
+		challenged_username = '';
+		challenger_username = '';
+		loadProfile(username);
+	}
 }
 
 
 function drawRect(ctx, x, y, w, h, color){
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
+	ctx.fillStyle = color;
+	ctx.fillRect(x, y, w, h);
 }
 
 function drawArc(data2, x, y, r, color){
-    data2['ctx'].fillStyle = color;
-    data2['ctx'].beginPath();
-    data2['ctx'].arc(x,y,r,0,Math.PI*2,true);
-    data2['ctx'].closePath();
-    data2['ctx'].fill();
+	data2['ctx'].fillStyle = color;
+	data2['ctx'].beginPath();
+	data2['ctx'].arc(x,y,r,0,Math.PI*2,true);
+	data2['ctx'].closePath();
+	data2['ctx'].fill();
 }
 
 function drawNet(data2) {
-    data2.ctx.beginPath();
-    data2.ctx.setLineDash([5, 15]);
-    data2.ctx.moveTo(data2.canvas.width / 2, 0);
-    data2.ctx.lineTo(data2.canvas.width / 2, data2.canvas.height);
-    data2.ctx.strokeStyle = 'white';
-    data2.ctx.stroke();
+	data2.ctx.beginPath();
+	data2.ctx.setLineDash([5, 15]);
+	data2.ctx.moveTo(data2.canvas.width / 2, 0);
+	data2.ctx.lineTo(data2.canvas.width / 2, data2.canvas.height);
+	data2.ctx.strokeStyle = 'white';
+	data2.ctx.stroke();
 }
 
 // ###################################### VS Computer Game ####################################
 
 function getMousePos(canvas, user) {
-    return function(evt) {
-        let rect = canvas.getBoundingClientRect();
-        user.y = evt.clientY - rect.top - user.height/2;
-    }
+	return function(evt) {
+		let rect = canvas.getBoundingClientRect();
+		user.y = evt.clientY - rect.top - user.height/2;
+	}
 }
 
 function resetBall(data2){
-    data2['ball'].x = data2['canvas'].width/2;
-    data2['ball'].y = data2['canvas'].height/2;
-    // data2['ball'].velocityX = generateRandDir();
-    // data2['ball'].velocityY = generateRandDir();
-    data2['ball'].velocityX = 7;
-    data2['ball'].velocityY = 0;
-    data2['ball'].speed = 7;
+	data2['ball'].x = data2['canvas'].width/2;
+	data2['ball'].y = data2['canvas'].height/2;
+	// data2['ball'].velocityX = generateRandDir();
+	// data2['ball'].velocityY = generateRandDir();
+	data2['ball'].velocityX = 7;
+	data2['ball'].velocityY = 0;
+	data2['ball'].speed = 7;
 }
 
 function drawText(ctx, text, x, y){
-    ctx.fillStyle = "#FFF";
-    ctx.font = "75px sans-serif";
-    ctx.fillText(text, x, y);
+	ctx.fillStyle = "#FFF";
+	ctx.font = "75px sans-serif";
+	ctx.fillText(text, x, y);
 }
 
 function drawText2(ctx, text, x, y, color){
@@ -85,319 +85,319 @@ function drawText2(ctx, text, x, y, color){
 }
 
 function collision(b, p){
-    p.top = p.y;
-    p.bottom = p.y + p.height;
-    p.left = p.x;
-    p.right = p.x + p.width;
+	p.top = p.y;
+	p.bottom = p.y + p.height;
+	p.left = p.x;
+	p.right = p.x + p.width;
 
-    b.top = b.y - b.radius;
-    b.bottom = b.y + b.radius;
-    b.left = b.x - b.radius;
-    b.right = b.x + b.radius;
+	b.top = b.y - b.radius;
+	b.bottom = b.y + b.radius;
+	b.left = b.x - b.radius;
+	b.right = b.x + b.radius;
 
-    return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
+	return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
 }
 
 function updateGame(data2){
-    // update the ball
-    data2['ball'].x += data2['ball'].velocityX;
-    if (data2['ball'].y + data2['ball'].radius < data2['canvas'].height && data2['ball'].y - data2['ball'].radius > 0) {
-        data2['ball'].y += data2['ball'].velocityY;
-    } else if (data2['ball'].y - data2['ball'].radius <= 0) {
-        data2['ball'].velocityY = -data2['ball'].velocityY;
-        data2['ball'].y += data2['ball'].velocityY;
-    } 
-    else {
-        data2['ball'].velocityY = -data2['ball'].velocityY;
-        data2['ball'].y += data2['ball'].velocityY;
-    }
+	// update the ball
+	data2['ball'].x += data2['ball'].velocityX;
+	if (data2['ball'].y + data2['ball'].radius < data2['canvas'].height && data2['ball'].y - data2['ball'].radius > 0) {
+		data2['ball'].y += data2['ball'].velocityY;
+	} else if (data2['ball'].y - data2['ball'].radius <= 0) {
+		data2['ball'].velocityY = -data2['ball'].velocityY;
+		data2['ball'].y += data2['ball'].velocityY;
+	} 
+	else {
+		data2['ball'].velocityY = -data2['ball'].velocityY;
+		data2['ball'].y += data2['ball'].velocityY;
+	}
 
-    // simple AI to control com paddle
-    let computerLevel = 0.1;
-    data2['com'].y += (data2['ball'].y - (data2['com'].y + data2['com'].height/2)) * computerLevel;
+	// simple AI to control com paddle
+	let computerLevel = 0.1;
+	data2['com'].y += (data2['ball'].y - (data2['com'].y + data2['com'].height/2)) * computerLevel;
 
-    let player = (data2['ball'].x < data2['canvas'].width/2) ? data2['user'] : data2['com'];
+	let player = (data2['ball'].x < data2['canvas'].width/2) ? data2['user'] : data2['com'];
 
-    if(collision(data2['ball'],player)){
-        data2['hit'].play();
-        let collidePoint = (data2['ball'].y - (player.y + player.height/2));
-        collidePoint = collidePoint / (player.height/2);
-        let angleRad = (Math.PI/4) * collidePoint;
-        let direction = (data2['ball'].x < data2['canvas'].width/2) ? 1 : -1;
-        data2['ball'].velocityX = direction * data2['ball'].speed * Math.cos(angleRad);
-        data2['ball'].velocityY = data2['ball'].speed * Math.sin(angleRad);
-        data2['ball'].speed += 0.2;
-    }
+	if(collision(data2['ball'],player)){
+		data2['hit'].play();
+		let collidePoint = (data2['ball'].y - (player.y + player.height/2));
+		collidePoint = collidePoint / (player.height/2);
+		let angleRad = (Math.PI/4) * collidePoint;
+		let direction = (data2['ball'].x < data2['canvas'].width/2) ? 1 : -1;
+		data2['ball'].velocityX = direction * data2['ball'].speed * Math.cos(angleRad);
+		data2['ball'].velocityY = data2['ball'].speed * Math.sin(angleRad);
+		data2['ball'].speed += 0.2;
+	}
 
-    if (data2['ball'].x - data2['ball'].radius < 0){
-        data2['com'].score++;
-        data2['comScore'].play();
-        resetBall(data2);
-    } else if(data2['ball'].x + data2['ball'].radius > data2['canvas'].width){
-        data2['user'].score++;
-        data2['userScore'].play();
-        resetBall(data2);
-    }
-     // Keep paddles within the canvas
-     data2['user'].y = Math.max(0, Math.min(data2['canvas'].height - data2['user'].height, data2['user'].y));
+	if (data2['ball'].x - data2['ball'].radius < 0){
+		data2['com'].score++;
+		data2['comScore'].play();
+		resetBall(data2);
+	} else if(data2['ball'].x + data2['ball'].radius > data2['canvas'].width){
+		data2['user'].score++;
+		data2['userScore'].play();
+		resetBall(data2);
+	}
+	 // Keep paddles within the canvas
+	 data2['user'].y = Math.max(0, Math.min(data2['canvas'].height - data2['user'].height, data2['user'].y));
 }
 
 function render(data2) {
-    data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
-    drawText(data2['ctx'], data2['user'].score, data2['canvas'].width/4, data2['canvas'].height/5);
-    drawText(data2['ctx'], data2['com'].score, 3*data2['canvas'].width/4, data2['canvas'].height/5);
-    drawNet(data2);
-    drawRect(data2['ctx'], data2['user'].x, data2['user'].y, data2['user'].width, data2['user'].height, data2['user'].color);
-    drawRect(data2['ctx'], data2['com'].x, data2['com'].y, data2['com'].width, data2['com'].height, data2['com'].color);
-    drawArc(data2, data2['ball'].x, data2['ball'].y, data2['ball'].radius, data2['ball'].color);
+	data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
+	drawText(data2['ctx'], data2['user'].score, data2['canvas'].width/4, data2['canvas'].height/5);
+	drawText(data2['ctx'], data2['com'].score, 3*data2['canvas'].width/4, data2['canvas'].height/5);
+	drawNet(data2);
+	drawRect(data2['ctx'], data2['user'].x, data2['user'].y, data2['user'].width, data2['user'].height, data2['user'].color);
+	drawRect(data2['ctx'], data2['com'].x, data2['com'].y, data2['com'].width, data2['com'].height, data2['com'].color);
+	drawArc(data2, data2['ball'].x, data2['ball'].y, data2['ball'].radius, data2['ball'].color);
 }
 
 function gameLoop(data2) {
-    if (data2['user'].score == 5 || data2['com'].score == 5) {
-        clearInterval(intervalId);
-        if (data2['user'].score == 5) {
-            drawText2(data2['ctx'], "You Won",  data2['canvas'].width/6, data2['canvas'].height/2, "#333");
-        } else {
-            drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
-        }
-        displayBtn('restart_btn');
-        game_in_progress = false;
-        return;
-    } else if (terminate_game) {
-        clearInterval(intervalId);
-        game_in_progress = false;
-        terminate_game = false;
-        return;
-    }
-    updateGame(data2);
-    render(data2);
+	if (data2['user'].score == 5 || data2['com'].score == 5) {
+		clearInterval(intervalId);
+		if (data2['user'].score == 5) {
+			drawText2(data2['ctx'], "You Won",  data2['canvas'].width/6, data2['canvas'].height/2, "#333");
+		} else {
+			drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
+		}
+		displayBtn('restart_btn');
+		game_in_progress = false;
+		return;
+	} else if (terminate_game) {
+		clearInterval(intervalId);
+		game_in_progress = false;
+		terminate_game = false;
+		return;
+	}
+	updateGame(data2);
+	render(data2);
 }
 
 function hideBtn(id) {
-    const button = document.getElementById(id);
-    if (button) {
-        button.style.display = 'none';
-    }
+	const button = document.getElementById(id);
+	if (button) {
+		button.style.display = 'none';
+	}
 }
 
 function displayBtn(id) {
-    const button = document.getElementById(id);
-    if (button) {
-        button.style.display = 'block';
-    }
+	const button = document.getElementById(id);
+	if (button) {
+		button.style.display = 'block';
+	}
 }
 
 
 function start_play_computer() {
-    hideBtn('start_play_computer');
-    hideBtn('restart_btn');
-    displayBtn('quit_game');
-    
-    if (game_in_progress) {
-        return;
-    }
-    game_in_progress = true;
-    
-    if (data2 == null) {
-        data2 = {};
-        data2['hit'] = new Audio();
-        // data2['wall'] = new Audio();
-        data2['userScore'] = new Audio();
-        data2['comScore'] = new Audio();
-    
-        data2['hit'].src = "/media/sounds/wall.mp3";
-        // data2['wall'].src = "media/sounds/wall.mp3";
-        data2['userScore'].src = "/media/sounds/userScore.mp3";
-        data2['comScore'].src = "/media/sounds/comScore.mp3";
-        // console.log('data2 is not defined')
-    } else {
-        data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
-    }
-    data2['canvas'] = document.getElementById('gameCanvas');
-    data2['ctx'] = data2['canvas'].getContext('2d');
+	hideBtn('start_play_computer');
+	hideBtn('restart_btn');
+	displayBtn('quit_game');
+	
+	if (game_in_progress) {
+		return;
+	}
+	game_in_progress = true;
+	
+	if (data2 == null) {
+		data2 = {};
+		data2['hit'] = new Audio();
+		// data2['wall'] = new Audio();
+		data2['userScore'] = new Audio();
+		data2['comScore'] = new Audio();
+	
+		data2['hit'].src = "/media/sounds/wall.mp3";
+		// data2['wall'].src = "media/sounds/wall.mp3";
+		data2['userScore'].src = "/media/sounds/userScore.mp3";
+		data2['comScore'].src = "/media/sounds/comScore.mp3";
+		// console.log('data2 is not defined')
+	} else {
+		data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
+	}
+	data2['canvas'] = document.getElementById('gameCanvas');
+	data2['ctx'] = data2['canvas'].getContext('2d');
 
-    data2['ball'] = {
-        x : data2['canvas'].width/2,
-        y : data2['canvas'].height/2,
-        radius : 10,
-        velocityX : 7,
-        velocityY : 0,
-        speed : 7,
-        color : "WHITE"
-    };
+	data2['ball'] = {
+		x : data2['canvas'].width/2,
+		y : data2['canvas'].height/2,
+		radius : 10,
+		velocityX : 7,
+		velocityY : 0,
+		speed : 7,
+		color : "WHITE"
+	};
 
-    data2['user'] = {
-        x : 0, // left side of canvas
-        y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
-        width : 10,
-        height : 60,
-        score : 0,
-        color : "WHITE"
-    }
-    data2['com'] = {
-        x : data2['canvas'].width - 10, // - width of paddle
-        y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
-        width : 10,
-        height : 60,
-        score : 0,
-        color : "WHITE"
-    }
-    // canvas.addEventListener("mousemove", getMousePos);
-    data2['canvas'].addEventListener("mousemove", getMousePos(data2['canvas'], data2['user']));
-    intervalId = setInterval(function(){
-        gameLoop(data2);
-    }, 1000/50);
+	data2['user'] = {
+		x : 0, // left side of canvas
+		y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
+		width : 10,
+		height : 60,
+		score : 0,
+		color : "WHITE"
+	}
+	data2['com'] = {
+		x : data2['canvas'].width - 10, // - width of paddle
+		y : ( data2['canvas'].height - 100)/2, // -100 the height of paddle
+		width : 10,
+		height : 60,
+		score : 0,
+		color : "WHITE"
+	}
+	// canvas.addEventListener("mousemove", getMousePos);
+	data2['canvas'].addEventListener("mousemove", getMousePos(data2['canvas'], data2['user']));
+	intervalId = setInterval(function(){
+		gameLoop(data2);
+	}, 1000/50);
 }
 
 // ################### Online Game Logic ###################
 
 function draw() {
-    // console.log(data["gameState"])
-    if (data['gameState']['paddle1'] != null && data['gameState']['paddle2'] != null) {
-        const canvas = data['canvas'];
-        const ctx = data['ctx'];
-        const paddleWidth = data['paddleWidth'];
-        const paddleHeight = data['paddleHeight'];
-        const paddle1 = data['gameState']['paddle1'];
-        const paddle2 = data['gameState']['paddle2'];
-        const ball = data['gameState']['ball'];
+	// console.log(data["gameState"])
+	if (data['gameState']['paddle1'] != null && data['gameState']['paddle2'] != null) {
+		const canvas = data['canvas'];
+		const ctx = data['ctx'];
+		const paddleWidth = data['paddleWidth'];
+		const paddleHeight = data['paddleHeight'];
+		const paddle1 = data['gameState']['paddle1'];
+		const paddle2 = data['gameState']['paddle2'];
+		const ball = data['gameState']['ball'];
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the paddles
-        ctx.fillStyle = 'white';
-        ctx.fillRect(paddle1['x'], paddle1['y'], paddleWidth, paddleHeight);
-        ctx.fillRect(paddle2['x'], paddle2['y'], paddleWidth, paddleHeight);
+		// Draw the paddles
+		ctx.fillStyle = 'white';
+		ctx.fillRect(paddle1['x'], paddle1['y'], paddleWidth, paddleHeight);
+		ctx.fillRect(paddle2['x'], paddle2['y'], paddleWidth, paddleHeight);
 
-        // Draw the ball
-        ctx.beginPath();
-        ctx.arc(ball['x'], ball['y'], ball.radius, 0, Math.PI * 2);
-        ctx.fill();
+		// Draw the ball
+		ctx.beginPath();
+		ctx.arc(ball['x'], ball['y'], ball.radius, 0, Math.PI * 2);
+		ctx.fill();
 
-        //draw net
-        ctx.beginPath();
-        ctx.setLineDash([5, 15]);
-        ctx.moveTo(canvas.width / 2, 0);
-        ctx.lineTo(canvas.width / 2, canvas.height);
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
+		//draw net
+		ctx.beginPath();
+		ctx.setLineDash([5, 15]);
+		ctx.moveTo(canvas.width / 2, 0);
+		ctx.lineTo(canvas.width / 2, canvas.height);
+		ctx.strokeStyle = 'white';
+		ctx.stroke();
 
-        //update score
-        drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5, 'white');
-        drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5, 'white');
-    }
+		//update score
+		drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5, 'white');
+		drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5, 'white');
+	}
 }
 
 function main_loop () {
-    if (data['gameState'].collision.paddle)
-        data['hit'].play();
-    if (data['gameState'].collision.goal)
-        data['comScore'].play();
-    if (data['gameState'].collision.wall)
-        data['wall'].play();
+	if (data['gameState'].collision.paddle)
+		data['hit'].play();
+	if (data['gameState'].collision.goal)
+		data['comScore'].play();
+	if (data['gameState'].collision.wall)
+		data['wall'].play();
 
-    data.paddle.y += data.paddle.speedY;
-    // Keep paddles within the canvas
+	data.paddle.y += data.paddle.speedY;
+	// Keep paddles within the canvas
 
-    data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
-    draw();
+	data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
+	draw();
 
-    const message = {
-        'type': 'updateState',
-        'playerId': data['playerId'],
-        'paddle': data['paddle'],
-        'player': data['player'],
-    };
-    if (data['endGame']) {
-        console.log("This is exiting from endgame\n\n")
-        data['endGame'] = false;
-        game_in_progress = false;
-        setTimeout(() => {
-            if (type === 'challenge') {
-                challenged_username = '';
-                challenger_username = '';
-                loadProfile(username);
-            } else {
-                // handleRoute('/');
-            }
-        }, 5000);
-        return
-    }
-    if (terminate_game) {
-        console.log("Exiting from terminate game\n\n")
-        // This condition is handling when user presses any button while game is in progress
-        // First we need to stop the game task created in the server, that is what endGame1 will do
-        // Then we wait 1 second to make sure the task is stopped and then we close the socket
-        mes = {
-            'type': 'endGame1',
-            'playerId': data['playerId'],
-        }
-        data['socket'].send(JSON.stringify(mes));
+	const message = {
+		'type': 'updateState',
+		'playerId': data['playerId'],
+		'paddle': data['paddle'],
+		'player': data['player'],
+	};
+	if (data['endGame']) {
+		console.log("This is exiting from endgame\n\n")
+		data['endGame'] = false;
+		game_in_progress = false;
+		setTimeout(() => {
+			if (type === 'challenge') {
+				challenged_username = '';
+				challenger_username = '';
+				loadProfile(username);
+			} else {
+				// handleRoute('/');
+			}
+		}, 5000);
+		return
+	}
+	if (terminate_game) {
+		console.log("Exiting from terminate game\n\n")
+		// This condition is handling when user presses any button while game is in progress
+		// First we need to stop the game task created in the server, that is what endGame1 will do
+		// Then we wait 1 second to make sure the task is stopped and then we close the socket
+		mes = {
+			'type': 'endGame1',
+			'playerId': data['playerId'],
+		}
+		data['socket'].send(JSON.stringify(mes));
 
-        // wait one second
-        setTimeout(function() {
-            terminate_game = false;
-            data['socket'].close();
-            if (type === 'challenge') {
-                challenged_username = '';
-                challenger_username = '';
-                loadProfile(username);
-            } else {
-                handleRoute('/');
-            }
-        }, 1000);
-        return;
-    }
-    data['socket'].send(JSON.stringify(message));
-    requestAnimationFrame(main_loop);
+		// wait one second
+		setTimeout(function() {
+			terminate_game = false;
+			data['socket'].close();
+			if (type === 'challenge') {
+				challenged_username = '';
+				challenger_username = '';
+				loadProfile(username);
+			} else {
+				handleRoute('/');
+			}
+		}, 1000);
+		return;
+	}
+	data['socket'].send(JSON.stringify(message));
+	requestAnimationFrame(main_loop);
 }
 
 function getMousePos2(canvas) {
-    return function(evt) {
-        let rect = canvas.getBoundingClientRect();
-        data['paddle'].y = evt.clientY - rect.top - data['paddleHeight'] / 2;
-    }
+	return function(evt) {
+		let rect = canvas.getBoundingClientRect();
+		data['paddle'].y = evt.clientY - rect.top - data['paddleHeight'] / 2;
+	}
 }
 
 function setPlayer(rec) {
-    if (data['player'] == null) {
-        if (rec['gameState']['player1'] == data['playerId']) {
-            data['player'] = 1;
-        } else {
-            data['player'] = 2;
-        }
+	if (data['player'] == null) {
+		if (rec['gameState']['player1'] == data['playerId']) {
+			data['player'] = 1;
+		} else {
+			data['player'] = 2;
+		}
 
-        const canvasContainer = document.querySelector('.canvas_container');
-        const waitLoadDiv = canvasContainer.querySelector('#wait_load'); // Find the wait_load div
-        hideSpinner();
+		const canvasContainer = document.querySelector('.canvas_container');
+		const waitLoadDiv = canvasContainer.querySelector('#wait_load'); // Find the wait_load div
+		hideSpinner();
 
-        if (waitLoadDiv) { // Remove the wait_load div if it exists
-            canvasContainer.removeChild(waitLoadDiv);
-            document.getElementById('end_game').innerHTML = "";
-        }
+		if (waitLoadDiv) { // Remove the wait_load div if it exists
+			canvasContainer.removeChild(waitLoadDiv);
+			document.getElementById('end_game').innerHTML = "";
+		}
 
-        data['canvas'] = document.getElementById('gameCanvas');
-        data['ctx'] = data['canvas'].getContext('2d');
+		data['canvas'] = document.getElementById('gameCanvas');
+		data['ctx'] = data['canvas'].getContext('2d');
 
-        
-        if (data['player'] == 1) {
-            data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
-        } else if (data['player'] == 2) {
-            data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
-        }
+		
+		if (data['player'] == 1) {
+			data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
+		} else if (data['player'] == 2) {
+			data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
+		}
 
-        data['canvas'].addEventListener('mousemove', getMousePos2(data['canvas']));
-        
-        const message = {
-            'type': 'startGame',
-            'playerId': data['playerId'],
-            'paddle': data['paddle'],
-            'player': data['player'],
-        };
-        data['socket'].send(JSON.stringify(message));
-        console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
-        main_loop();
-    }
+		data['canvas'].addEventListener('mousemove', getMousePos2(data['canvas']));
+		
+		const message = {
+			'type': 'startGame',
+			'playerId': data['playerId'],
+			'paddle': data['paddle'],
+			'player': data['player'],
+		};
+		data['socket'].send(JSON.stringify(message));
+		console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
+		main_loop();
+	}
 }
 
 // function start_play_online() {
@@ -466,12 +466,12 @@ function setPlayer(rec) {
 //             data.paddle.speedY = data.paddle_speed;
 //         }
 //     });
-    
+	
 //     window.addEventListener('keyup', (e) => {
 //         if ((e.key === 'w' || e.key === 's') ) {
 //             data.paddle.speedY = 0;
 //         }
-        
+		
 //         if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 //             data.paddle.speedY = 0;
 //         }
@@ -479,106 +479,362 @@ function setPlayer(rec) {
 // }
 
 function start_play_online_challenge(challenged_username, challenger_username, username) {
-    data.waiting_to_play = true;
-    if (game_in_progress) {
-        return;
-    }
-    game_in_progress = true;
+	data.waiting_to_play = true;
+	if (game_in_progress) {
+		return;
+	}
+	game_in_progress = true;
 
-    const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
+	const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
 
-    data['socket'] = socket;
-    data['hit'] = new Audio();
-    data['wall'] = new Audio();
-    data['userScore'] = new Audio();
-    data['comScore'] = new Audio();
+	data['socket'] = socket;
+	data['hit'] = new Audio();
+	data['wall'] = new Audio();
+	data['userScore'] = new Audio();
+	data['comScore'] = new Audio();
 
-    data['hit'].src = "/media/sounds/hit.mp3";
-    data['wall'].src = "/media/sounds/wall.mp3";
-    data['userScore'].src = "/media/sounds/userScore.mp3";
-    data['comScore'].src = "/media/sounds/comScore.mp3";
+	data['hit'].src = "/media/sounds/hit.mp3";
+	data['wall'].src = "/media/sounds/wall.mp3";
+	data['userScore'].src = "/media/sounds/userScore.mp3";
+	data['comScore'].src = "/media/sounds/comScore.mp3";
 
-    socket.onopen = function () {
-        console.log('WebSocket connection established');
-    }
-    type = (challenged_username === '' || challenger_username === '') ? "defaultGame"  : "challenge";
-    if (isOnlineTrounament)
-        type = "tournament";
+	socket.onopen = function () {
+		console.log('WebSocket connection established');
+	}
+	type = (challenged_username === '' || challenger_username === '') ? "defaultGame"  : "challenge";
+	if (isOnlineTrounament)
+		type = "tournament";
 
-    socket.onmessage = function (event) {
-        const rec = JSON.parse(event.data);
-        // console.log(rec);
-        if (rec['type'] == 'playerId') {
-            data['playerId'] = rec['playerId'];
-            console.log()
-            hideBtn('start_game_btn');
-            showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
-            const message = {
-                'type': type,
-                'challengee': challenged_username,
-                'challenger': challenger_username,
-            };
-            console.log(message);
-            data['socket'].send(JSON.stringify(message));
-        } else if (rec['type'] == 'gameState') {
-            // console.log("Received game state")
-            if (data.waiting_to_play) {
-                data.waiting_to_play = false;
-            }
-            data['gameState'] = rec['gameState'];
-            setPlayer(rec);
-            // draw(rec['gameState']);
-        } else if (rec['type'] == 'gameEnd') {
-            console.log(rec)
-            data['endGame'] = true;
-            data['playerId'] = null;
-            data['player'] = null;
-            document.getElementById('end_game').innerHTML = rec['message'];
-            const message = {
-                'type': 'endGame',
-                'playerId': data['playerId'],
-            };
-            data['socket'].send(JSON.stringify(message));
-            data.socket.close();
-            console.log("IsTypeTrounament:", isOnlineTrounament);
-            console.log("mainSection:", mainSection);
-            if (isOnlineTrounament) {
-                onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
-            }
-        }
-    }
+	socket.onmessage = function (event) {
+		const rec = JSON.parse(event.data);
+		// console.log(rec);
+		if (rec['type'] == 'playerId') {
+			data['playerId'] = rec['playerId'];
+			console.log()
+			hideBtn('start_game_btn');
+			showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
+			const message = {
+				'type': type,
+				'challengee': challenged_username,
+				'challenger': challenger_username,
+			};
+			console.log(message);
+			data['socket'].send(JSON.stringify(message));
+		} else if (rec['type'] == 'gameState') {
+			// console.log("Received game state")
+			if (data.waiting_to_play) {
+				data.waiting_to_play = false;
+			}
+			data['gameState'] = rec['gameState'];
+			setPlayer(rec);
+			// draw(rec['gameState']);
+		} else if (rec['type'] == 'gameEnd') {
+			console.log(rec)
+			data['endGame'] = true;
+			data['playerId'] = null;
+			data['player'] = null;
+			document.getElementById('end_game').innerHTML = rec['message'];
+			const message = {
+				'type': 'endGame',
+				'playerId': data['playerId'],
+			};
+			data['socket'].send(JSON.stringify(message));
+			data.socket.close();
+			console.log("IsTypeTrounament:", isOnlineTrounament);
+			console.log("mainSection:", mainSection);
+			if (isOnlineTrounament) {
+				onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
+			}
+		}
+	}
 
-    socket.onclose = function () {
-        console.log('WebSocket connection closed');
-        data['playerId'] = null;
-        data['player'] = null;
-        game_in_progress = false;
-        setTimeout(() => {
-            if (type === 'challenge') {
-                challenged_username = '';
-                challenger_username = '';
-                loadProfile(username);
-            } else {
-                // handleRoute('/');
-            }
-        }, 5000);
-    }
+	socket.onclose = function () {
+		console.log('WebSocket connection closed');
+		data['playerId'] = null;
+		data['player'] = null;
+		game_in_progress = false;
+		setTimeout(() => {
+			if (type === 'challenge') {
+				challenged_username = '';
+				challenger_username = '';
+				loadProfile(username);
+			} else {
+				// handleRoute('/');
+			}
+		}, 5000);
+	}
 
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'w' || e.key === 'ArrowUp' ) {
-            data.paddle.speedY = - data.paddle_speed;
-        } else if (e.key === 's' || e.key === 'ArrowDown') {
-            data.paddle.speedY = data.paddle_speed;
-        }
-    });
-    
-    window.addEventListener('keyup', (e) => {
-        if ((e.key === 'w' || e.key === 's') ) {
-            data.paddle.speedY = 0;
-        }
-        
-        if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-            data.paddle.speedY = 0;
-        }
-    });
+	window.addEventListener('keydown', (e) => {
+		if (e.key === 'w' || e.key === 'ArrowUp' ) {
+			data.paddle.speedY = - data.paddle_speed;
+		} else if (e.key === 's' || e.key === 'ArrowDown') {
+			data.paddle.speedY = data.paddle_speed;
+		}
+	});
+	
+	window.addEventListener('keyup', (e) => {
+		if ((e.key === 'w' || e.key === 's') ) {
+			data.paddle.speedY = 0;
+		}
+		
+		if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+			data.paddle.speedY = 0;
+		}
+	});
+}
+
+
+
+// function cutomizePlayerName() {
+//     const customizeDialog = document.getElementById('customizeDialog');
+//     const customizeForm = document.getElementById('customizeForm');
+//     const player1NameDiv = document.getElementById('player1Name');
+//     const player2NameDiv = document.getElementById('player2Name');
+
+//     // Show dialog on load
+//     customizeDialog.style.display = 'flex';
+
+  
+//     customizeDialog.style.display = 'none';
+//     customizeForm.style.display = 'flex';
+
+//     // Handle form submission
+//     document.getElementById('saveButton').addEventListener('click', (event) => {
+//         event.preventDefault();
+//         console.log("I AM UPDATING")
+//         const player1Name = document.getElementById('player1Input').value;
+//         const player2Name = document.getElementById('player2Input').value;
+
+//         // Validation checks
+//             // Validation checks
+//         if (isInputInvalid(player1Name, player2Name)) {
+//             return;
+//         }
+//         player1NameDiv.textContent = player1Name;
+//         player2NameDiv.textContent = player2Name;
+
+//         customizeForm.style.display = 'none';
+//     });
+
+//     const player1Input = document.getElementById('player1Input');
+//     const player2Input = document.getElementById('player2Input');
+
+//     player1Input.addEventListener('input', () => validateInput(player1Input, player2Input));
+//     player2Input.addEventListener('input', () => validateInput(player2Input, player1Input));
+
+//     function validateInput(currentInput, otherInput) {
+//         const currentName = currentInput.value.trim().toLowerCase();
+//         const otherName = otherInput.value.trim().toLowerCase();
+	
+//         if (isNameEmpty(currentName)) {
+//           updateFeedback(currentInput, true);
+//           return;
+//         }
+	
+//         if (currentName && otherName && currentName === otherName) {
+//           updateFeedback(currentInput, true);
+//           displayErrorMessage(currentInput, otherInput);
+//         } else {
+//           updateFeedback(currentInput, false);
+//           hideNotification(currentInput);
+//         }
+//     }
+
+//     function updateFeedback(input, isInvalid) {
+//         const feedback = input.nextElementSibling;
+//         if (isInvalid) {
+//             feedback.textContent = '✘';
+//             feedback.classList.remove('valid');
+//             feedback.classList.add('invalid');
+//             showNotification(input);
+//         } else {
+//             feedback.textContent = '✔';
+//             feedback.classList.remove('invalid');
+//             feedback.classList.add('valid');
+//             hideNotification(input);
+//         }
+//     }
+
+//     function isInputInvalid(name1, name2) {
+//         return !name1 || !name2 || name1 === name2;
+//     }
+
+//     function isNameEmpty(name) {
+//         return !name || name.length > 14;
+//     }
+//     function displayErrorMessage(currentInput, otherInput) {
+//         const currentName = currentInput.value.trim().toLowerCase();
+//         const otherName = otherInput.value.trim().toLowerCase();
+	
+//         if (!currentName) {
+//           showNotification(currentInput, 'Player name cannot be empty');
+//         } else if (currentName === otherName) {
+//           showNotification(currentInput, 'Player names must be different');
+//         }
+//     }
+
+//     function showNotification(input, message) {
+//         let notification = input.nextElementSibling; // Get the notification box
+//         if (!notification || notification.className !== 'notification') {
+//           // Create new notification if it doesn't exist
+//           notification = document.createElement('div');
+//           notification.className = 'notification';
+//           input.parentNode.insertBefore(notification, input.nextElementSibling);
+//         }
+//         notification.textContent = message || 'Error';
+//     }
+	
+//     function hideNotification(input) {
+//         const notification = input.nextElementSibling; // Get the notification box
+//         if (notification && notification.className === 'notification') {
+//             notification.parentNode.removeChild(notification);
+//         }
+//     }
+// }
+
+
+function isNameEmpty(name) {
+	return !name;
+}
+
+function isNameToolong(name) {
+	return name.length > 14;
+}
+
+function containsSpaces(name) {
+	return /\s/.test(name);
+}
+
+function startOrEndsWithQuote(name) {
+	return name.startsWith("'") || name.endsWith("'");
+}
+
+function containsInvalidQuote(name) {
+	return name.includes('"') || /''/.test(name);
+}
+
+function isValidName(name) {
+	return (isNameEmpty(name) || containsSpaces(name) || startOrEndsWithQuote(name) || containsInvalidQuote(name) || isNameToolong(name));
+}
+
+function isSame(name1, name2) {
+	return name1 === name2;
+
+}
+
+
+function cutomizePlayerName() {
+	const customizeDialog = document.getElementById('customizeDialog');
+	const customizeForm = document.getElementById('customizeForm');
+	const player1NameDiv = document.getElementById('player1Name');
+	const player2NameDiv = document.getElementById('player2Name');
+  
+	customizeDialog.style.display = 'flex';
+	customizeDialog.style.display = 'none';
+	customizeForm.style.display = 'flex';
+  
+	document.getElementById('saveButton').addEventListener('click', (event) => {
+		event.preventDefault();
+		const player1Name = document.getElementById('player1Input').value;
+		const player2Name = document.getElementById('player2Input').value;
+
+		if (isValidName(player1Name) || isValidName(player2Name) || isSame(player1Name, player2Name)) {
+			return;
+		}
+		player1NameDiv.textContent = player1Name;
+		player2NameDiv.textContent = player2Name;
+
+		customizeForm.style.display = 'none';
+	});
+  
+	const player1Input = document.getElementById('player1Input');
+	const player2Input = document.getElementById('player2Input');
+  
+	player1Input.addEventListener('input', () => validateInput(player1Input, player2Input));
+	player2Input.addEventListener('input', () => validateInput(player2Input, player1Input));
+  
+	function validateInput(currentInput, otherInput) {
+		const currentName = currentInput.value.trim().toLowerCase();
+		const otherName = otherInput.value.trim().toLowerCase();
+
+		if (isNameEmpty(currentName)) {
+			updateFeedback(currentInput, true);
+			showNotification(currentInput, "Player name can't be empty");
+			return;
+		}
+		else if (isNameToolong(currentName)) {
+			updateFeedback(currentInput, true);
+			showNotification(currentInput, "Player Name too long");
+			return;
+		}
+		else if (currentName && otherName && currentName === otherName) {
+			updateFeedback(currentInput, true);
+			showNotification(currentInput, 'Player names must be different');
+			return ;
+			// displayErrorMessage(currentInput, otherInput);
+		}
+		else if (containsSpaces(currentName) || startOrEndsWithQuote(currentName) || startOrEndsWithQuote(currentName)) {
+			updateFeedback(currentInput, true);
+			showNotification(currentInput, 'Invalid Player Name');
+			return ;
+		} else {
+			updateFeedback(currentInput, false);
+		}
+		hideNotification(currentInput);
+		// hideNotification(otherInput);
+	}
+  
+	function updateFeedback(input, isInvalid) {
+	  const feedback = input.nextElementSibling;
+	  if (isInvalid) {
+		feedback.textContent = '✘';
+		feedback.classList.remove('valid');
+		feedback.classList.add('invalid');
+	  } else {
+		feedback.textContent = '✔';
+		feedback.classList.remove('invalid');
+		feedback.classList.add('valid');
+		hideNotification(input);
+	  }
+	}
+	
+	function showNotification(input, message) {
+		let notification = input.nextElementSibling; // Get the notification box
+		// Check if notification exists and update its content
+		if (notification && notification.classList.contains('notification')) {
+			notification.textContent = message || 'Error';
+		} else {
+			// Create new notification if it doesn't exist
+			notification = document.createElement('div');
+			notification.className = 'notification';
+			notification.textContent = message || 'Error';
+			console.log(notification);
+			input.parentNode.insertBefore(notification, input.nextElementSibling);
+		}
+	}
+	
+	function hideNotification(input) {
+		const notification = input.nextElementSibling; // Get the notification box
+		if (notification && notification.classList.contains('notification')) {
+			notification.parentNode.removeChild(notification);
+		}
+	}
+
+	function displayErrorMessage(currentInput, otherInput) {
+		const currentName = currentInput.value.trim().toLowerCase();
+		const otherName = otherInput.value.trim().toLowerCase();
+		 if (currentName === otherName) {
+			showNotification(currentInput, 'Player names must be different');
+		} else if (currentName.length > 14) {
+			showNotification(currentInput, 'Player names too long');
+		}
+	}
+  
+}
+
+
+
+function hidePnameForm() {
+	const customizeDialog = document.getElementById('customizeDialog');
+	customizeDialog.style.display = 'none';
 }

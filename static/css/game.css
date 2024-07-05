@@ -8,8 +8,8 @@
 	border-radius: 35px;
 	width: 90%;
 	/* height: calc(100vh - 100px); */
-    min-height: 650px;
-    max-height: 800px;
+	min-height: 650px;
+	max-height: 800px;
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
@@ -36,13 +36,19 @@
 	height: 400px;
 } */
 
+.game-canva-local {
+	width: 100%;
+	height: 100%;
+	max-width: 800px;
+	max-height: 700px;
+}
 
 
 canvas {
 	width: 100%;
 	height: 100%;
 	max-width: 600px;
-    max-height: 400px;
+	max-height: 400px;
 }
 
 .canvas_container {
@@ -167,25 +173,25 @@ canvas {
 
 
 #playerNames {
-    color: #DDEEF1;
+	color: #DDEEF1;
 }
 
 
 .player-names-container {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    max-width: 500px;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	max-width: 500px;
 	/* margin-bottom: 10px; */
 	margin-bottom: 0.1em;
 	font-family: monospace, Monaco;
-    font-weight: 900;
+	font-weight: 900;
 }
 .player-name {
-    background-color: rgb(0 0 0 / 0%);
-    color: var(--color-text-primary);
-    padding: 10px;
-    border-radius: 5px;
+	background-color: rgb(0 0 0 / 0%);
+	color: var(--color-text-primary);
+	padding: 10px;
+	border-radius: 5px;
 }
 
 
@@ -282,3 +288,77 @@ canvas {
 	  opacity: 0;
 	}
   }
+
+
+
+.customize-dialog,
+.customize-form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* ensure it's on top */
+}
+
+.dialog-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#custom-form {
+	background-color: var(--color-card-background);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+
+.input-container {
+	position: relative;
+  }
+  
+  .input-container .form-control {
+	padding-right: 30px; /* space for the feedback icon */
+  }
+  
+  .feedback {
+	position: absolute;
+	right: 30px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.2em;
+	pointer-events: none; /* make sure it doesn't interfere with input */
+  }
+
+  .feedback.invalid {
+	color: red;
+  }
+  
+  .feedback.valid {
+	color: green;
+  }
+
+  .notification {
+	position: absolute;
+	top: 16px;
+    right: 24px;
+    background-color: rgba(255, 0, 0, 0.5);
+	color: white;
+	padding: 5px;
+	font-size: 12px;
+	border-radius: 3px;
+	display: block;
+	z-index: 1000;
+  }
+  
+  
+  
+  .invalid {
+	color: red; /* Example: Additional style for invalid feedback */
+  }
+  

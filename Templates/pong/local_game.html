@@ -9,7 +9,7 @@
 	</div>
 	<div class="row">
 		<div class="col">
-			<canvas id="gameCanvas" width="600" height="400"></canvas>
+			<canvas id="gameCanvas" class="game-canva-local" width="750" height="440"></canvas>
 		</div>
 	</div>
 	<div class="row">
@@ -19,4 +19,29 @@
 			<button id="quit_game" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="goBack()">Quit</button> <br>
 		</div>
 	</div>
+	<div id="customizeDialog" class="customize-dialog">
+		<div class="dialog-content">
+		  <p>Do you want to customize the player names?</p>
+		  <button id="yesButton" class="btn btn-primary">Yes</button>
+		  <button id="noButton" class="btn btn-secondary">No</button>
+		</div>
+	</div>
+	<div id="customizeForm" class="customize-form" style="display: none;">
+		<div id="custom-form" class="mb-3 square-box">
+			<span class="pheader" > 
+				<h2">Customize Player's Name <br></h2>
+			</span>
+		  <form id="playerNamesForm">
+			<div class="p-form input-container">
+				<input type="text" id="player1Input" class="playerName" name="player1Input" maxlength="14" placeholder="Player1" required>
+				<span id="player1Feedback" class="feedback"></span>
+			</div>
+			<div class="p-form input-container">
+				<input type="text" id="player2Input" class="playerName" name="player2Input" maxlength="14" placeholder="Player2" required>
+				<span id="player2Feedback" class="feedback"></span>
+			</div>
+			<div id="saveButton" class="btn btn-primary">Save</div>
+		  </form>
+		</div>
+	  </div>
 </div>

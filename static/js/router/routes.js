@@ -164,6 +164,8 @@ function handleButtonClick(event) {
 		four_online_players:routeHandlers['/four_online_players/'],
 		eight_online_players:routeHandlers['/eight_online_players/'],
 		mode_toggle: toggleTheme,
+		yesButton: cutomizePlayerName,
+		noButton: hidePnameForm,
 	};
 
 	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
