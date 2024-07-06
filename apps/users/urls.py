@@ -18,4 +18,5 @@ urlpatterns = [
 	path('exchange_code/', views.exchange_code, name='exchange_code'),
 	path('limit/', views.limit, name='limit'),
 	path('list_of_all_username_json/', views.list_of_all_username_json, name='list_of_all_username_json'),
+	path('anonymize_user/', views.anonymize_user, name='anonymize_user'),
 ]

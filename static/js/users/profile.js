@@ -262,3 +262,8 @@ function initializeDeleteProfile(deleteUrl, redirectUrl) {
 	}
 }
 
+function anonymize() {
+	isLoggin = true;
+	handleRoute('/anonymize_user/', false);
+	setTimeout(() => handleRoute('/', true), 500);
+}

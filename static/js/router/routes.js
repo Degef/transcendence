@@ -64,7 +64,6 @@ function updateURL(url) {
 }
 
 function updateBody(htmlContent) {
-	console.log(htmlContent);
 	const parser = new DOMParser();
 	const doc = parser.parseFromString(htmlContent, 'text/html');
 	document.body.innerHTML = doc.body.innerHTML;
@@ -87,11 +86,9 @@ async function handleRoute(path, pushState = true) {
 			headers: { 'Content-Type': 'text/html', 'X-Requested-With': htype },
 		});
 		const htmlContent = await response.text();
-		console.log("isLoggin: ", isLoggin);
-		console.log("Path: " , path)
 		if ((isLoggin && (path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
-			console.log("from here");
 			updateBody(htmlContent);
+			console.log(htmlContent);
 			isLoggin = false;
 		} else {
 			updateContent(htmlContent);
@@ -166,6 +163,8 @@ function handleButtonClick(event) {
 		mode_toggle: toggleTheme,
 		yesButton: cutomizePlayerName,
 		noButton: hidePnameForm,
+		zoomin: zoomIn,
+		zoomout: zoomOut,
 	};
 
 	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
@@ -175,7 +174,6 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-	console.log(buttonId);
 
 	if (handler) {
 		if (window.game_in_progress) {
@@ -201,6 +199,11 @@ function handleButtonClick(event) {
 
 
 function setuptheme() {
+	let Page = document.documentElement;
+	let savedZoom = localStorage.getItem('zoom');
+	if (savedZoom) {
+		Page.style.setProperty('--page-zoom', savedZoom);
+	}
 	if (localStorage.getItem('theme') === '' || localStorage.getItem('theme') === null || localStorage.getItem('theme') === 'dark') {
 		localStorage.setItem('theme', 'dark');
 	}
@@ -330,3 +333,27 @@ document.addEventListener('DOMContentLoaded', () => {
 	intializeJsOnPathChange(path);
 	setuptheme();
 });
+
+function zoomIn() {
+	let Page = document.documentElement;
+	let zoom = parseFloat(Page.style.getPropertyValue('--page-zoom')) || 100;
+	zoom = zoom + 10;
+	if (zoom > 160) {
+		return;
+	}
+	Page.style.setProperty('--page-zoom', zoom + '%');
+	localStorage.setItem('zoom', zoom + '%');
+	return false;
+}
+
+function zoomOut() {
+	let Page = document.documentElement;
+	let zoom = parseFloat(Page.style.getPropertyValue('--page-zoom')) || 100;
+	zoom = zoom - 10;
+	if (zoom < 70) {
+		return;
+	}
+	Page.style.setProperty('--page-zoom', zoom + '%');
+	localStorage.setItem('zoom', zoom + '%');
+	return false;
+}

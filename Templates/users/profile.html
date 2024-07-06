@@ -9,6 +9,7 @@
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
 				{% if is_own_profile %}
 					<button class="btn btn-outline-light profile-action-edit" id="edit_profile">Edit</button>
+					<button class="btn btn-outline-danger rounded-pill" id="anon_profile" onclick="anonymize()">Anonymize</button>
 				{% else %}
 					{% if are_friends %}
 						<button class="btn btn-danger rounded-pill profile-action-remove-friend" onclick="removeFriend('{{username}}')">Remove Friend</button>
@@ -200,7 +201,7 @@
 				<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
 					<div class="d-flex align-items-center gap-3 col-9">
 						<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;">
-							<img loading="lazy" src="{{ requester.profile.image.url }}" alt="Requester's profile image" class="request-image rounded-circle" />
+							<img loading="lazy" src="{{ requester.profile.image.url }}" alt="{{requester.username}}'s profile image" class="request-image rounded-circle" />
 						</a>
 						<div class="request-details">
 							<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;" class="request-name">{{ requester.username }}</a>

@@ -23,6 +23,8 @@ from django.contrib.auth.password_validation import validate_password, Validatio
 from django.urls import reverse
 from django.db import transaction
 from django.core.paginator import Paginator
+from faker import Faker
+import requests
 
 
 load_dotenv()
@@ -194,6 +196,8 @@ def profile(request, user=''):
 		Q(from_user=request.user, to_user=user_to_view) | Q(from_user=user_to_view, to_user=request.user),
 		status=Friendship.ACCEPTED
 	).exists()
+
+	is_anonymous = user_to_view.user_things.is_anonymous 
 	
 	context = {
 		'username': user_to_view.username,
@@ -212,10 +216,38 @@ def profile(request, user=''):
 		'received_request': received_request,
 		'are_friends': are_friends,
 		'received_requests': received_requests,
+		'is_anonymous': is_anonymous,
 		'template_name': 'profile.html'
 	}
 	template_name = getTemplateName(request, 'profile.html')
 	return render(request, template_name, context)
+
+@login_required
+def anonymize_user(request):
+	user = request.user
+	faker = Faker()
+	user.username = faker.user_name()
+	exists = User.objects.filter(username=user.username).exists()
+	while exists:
+		user.username = faker.user_name()
+		exists = User.objects.filter(username=user.username).exists()
+	user.email = faker.email()
+	user.save()
+
+	try:
+		profile = Profile.objects.get(user=user)
+		profile_picture_url = 'https://picsum.photos/200'
+		response = requests.get(profile_picture_url)
+		img_temp = NamedTemporaryFile(delete=True)
+		img_temp.write(response.content)
+		img_temp.flush()
+
+		profile.image.save(f"{user.username}_profile_image.jpg", File(img_temp), save=True)
+	except Profile.DoesNotExist:
+		pass
+	
+	return redirect('home')
+
 
 @login_required
 def list_of_all_username_json(request):

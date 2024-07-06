@@ -12,6 +12,7 @@ class UserUpdateForm(forms.ModelForm):
 				"class": "input-field",
 				"size": "40",
 				"placeholder": "New Username...",
+				"autocomplete": "on",
 			}
 		),
 	)
@@ -23,6 +24,7 @@ class UserUpdateForm(forms.ModelForm):
 				"class": "input-field",
 				"size": "40",
 				"placeholder": "New Email...",
+				"autocomplete": "on",
 			}
 		),
 	)

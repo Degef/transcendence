@@ -47,6 +47,7 @@ class user_things(models.Model):
 	status = models.CharField(max_length=10, default='offline')
 	nick = models.CharField(max_length=100, null=True)
 	logged_in_with_42 = models.BooleanField(default=False)
+	is_anonymous = models.BooleanField(default=False)
 	last_activity = models.DateTimeField(null=True, blank=True)
 
 	def __str__(self):

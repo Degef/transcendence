@@ -10,6 +10,7 @@
 	--color-input-background: #2E3048;
 	--color-button-secondary: #313359;
 	--color-button-teritiary: #121217;
+	--page-zoom: 100%;
 }
 
 .light-mode {
@@ -179,4 +180,67 @@ html, body {
 .user-item:hover {
     background-color: var(--color-hover);
     cursor: pointer;
+}
+
+
+.back-to-top {
+	background-color: var(--color-button-primary);
+	position: fixed;
+	width: 3rem;
+	height: 3rem;
+	right: 1.875rem;
+	bottom: 1.875rem;
+	z-index: 9999;
+}
+
+.back-to-top i {
+	color: var(--color-text-primary);
+	font-size: 1rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.zoom-controls {
+	position: fixed;
+	bottom: 10px;
+	left: 10px;
+	z-index: 1000;
+	background-color: var(--color-card-background);
+	padding: 10px 15px;
+}
+
+.zoom-button {
+	width: 40px;
+	height: 40px;
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.zoom-text {
+	flex-grow: 1;
+	color: var(--color-text-primary);
+	font-weight: bold;
+}
+
+.zoom-controls p {
+	margin: 0;
+	font-size: 18px;
+	user-select: none;
+}
+
+.zoom-controls p[role="button"] {
+	cursor: pointer;
+	line-height: 40px;
+}
+
+.zoom-controls p[role="button"]:hover {
+	text-decoration: underline;
+}
+
+body > *:not(.zoom-controls):not(script) {
+    zoom: var(--page-zoom);
 }
