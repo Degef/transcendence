@@ -134,7 +134,6 @@ function start_local_game() {
     hideBtn('restart_btn');
     displayBtn('quit_game');
     if (game_in_progress) {
-        console.log("return From game_in_progres")
         return;
     }
     // if (challengeInterval != null) {
@@ -213,9 +212,17 @@ function start_local_game() {
             data3['player2'].speedY = 0;
         }
     });
-    intervalId = setInterval(function(){
-        gameLoop1(data3);
-    }, 1000/50);
+    startCountdown() 
+    hideBtn('quit_game');
+    setTimeout (() => {
+        intervalId = setInterval(function(){
+            gameLoop1(data3);
+        }, 1000/50);
+        displayBtn('quit_game');
+    }, 5000);
+    // intervalId = setInterval(function(){
+    //     gameLoop1(data3);
+    // }, 1000/50);
 }
 
 

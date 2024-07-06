@@ -306,7 +306,7 @@ canvas {
 }
 
 .dialog-content {
-  background: white;
+  background: var(--color-card-background);
   padding: 20px;
   border-radius: 8px;
   text-align: center;
@@ -362,3 +362,16 @@ canvas {
 	color: red; /* Example: Additional style for invalid feedback */
   }
   
+
+
+  #countdown {
+	position: absolute;
+	left: 50%;
+	top: 30%;
+	display: inline-block;
+	transform: translate(-50%, -50%);
+	transition: 1s;
+	font-size: 0vw;
+	opacity: 50%;
+	color: var(--color-text-primary); 
+  }

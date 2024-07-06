@@ -348,7 +348,10 @@ function main_loop () {
 		}, 1000);
 		return;
 	}
-	data['socket'].send(JSON.stringify(message));
+	// data['socket'].send(JSON.stringify(message));
+	if (data['socket'].readyState === WebSocket.OPEN) {
+		data['socket'].send(JSON.stringify(message));
+	}
 	requestAnimationFrame(main_loop);
 }
 
@@ -369,12 +372,12 @@ function setPlayer(rec) {
 
 		const canvasContainer = document.querySelector('.canvas_container');
 		const waitLoadDiv = canvasContainer.querySelector('#wait_load'); // Find the wait_load div
-		hideSpinner();
 
 		if (waitLoadDiv) { // Remove the wait_load div if it exists
 			canvasContainer.removeChild(waitLoadDiv);
 			document.getElementById('end_game').innerHTML = "";
 		}
+		startCountdown();
 
 		data['canvas'] = document.getElementById('gameCanvas');
 		data['ctx'] = data['canvas'].getContext('2d');
@@ -394,9 +397,11 @@ function setPlayer(rec) {
 			'paddle': data['paddle'],
 			'player': data['player'],
 		};
-		data['socket'].send(JSON.stringify(message));
-		console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
-		main_loop();
+		setTimeout(() => {
+			data['socket'].send(JSON.stringify(message));
+			console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
+			main_loop();
+		}, 5000);
 	}
 }
 
@@ -510,7 +515,6 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		// console.log(rec);
 		if (rec['type'] == 'playerId') {
 			data['playerId'] = rec['playerId'];
-			console.log()
 			hideBtn('start_game_btn');
 			showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
 			const message = {
@@ -518,10 +522,11 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'challengee': challenged_username,
 				'challenger': challenger_username,
 			};
-			console.log(message);
 			data['socket'].send(JSON.stringify(message));
+		} else if (rec['type'] === 'pnames') {
+			hideSpinner();
+			changePlayerNames(rec.p1_name, rec.p2_name);
 		} else if (rec['type'] == 'gameState') {
-			// console.log("Received game state")
 			if (data.waiting_to_play) {
 				data.waiting_to_play = false;
 			}
@@ -529,7 +534,6 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			setPlayer(rec);
 			// draw(rec['gameState']);
 		} else if (rec['type'] == 'gameEnd') {
-			console.log(rec)
 			data['endGame'] = true;
 			data['playerId'] = null;
 			data['player'] = null;
@@ -545,6 +549,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			if (isOnlineTrounament) {
 				onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
 			}
+		} else if (rec['type'] === 'noPlayerFound') {
+			hideSpinner();
 		}
 	}
 
@@ -564,6 +570,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		}, 5000);
 	}
 
+
 	window.addEventListener('keydown', (e) => {
 		if (e.key === 'w' || e.key === 'ArrowUp' ) {
 			data.paddle.speedY = - data.paddle_speed;
@@ -581,123 +588,46 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			data.paddle.speedY = 0;
 		}
 	});
+
+
 }
 
+function cleanup() {
+	if (data.socket) {
+		game_in_progress = false;
+		data.socket.onclose = null; // Prevent onclose from being called again
+		console.log("Websocket Closed because of popstate");
+		mes = {
+			'type': 'endGame1',
+			'playerId': data.playerId,
+		}
+		data.socket.send(JSON.stringify(mes));
+		if (data.socket.readyState === WebSocket.OPEN) {
+			hideSpinner();
+			setTimeout(function() {
+				terminate_game = false;
+				data.socket.close();
+			}, 1000);
+			return;
+		}
+	}
+	game_in_progress = false;
+	data.playerId = null;
+	data.player = null;
+}
 
-
-// function cutomizePlayerName() {
-//     const customizeDialog = document.getElementById('customizeDialog');
-//     const customizeForm = document.getElementById('customizeForm');
-//     const player1NameDiv = document.getElementById('player1Name');
-//     const player2NameDiv = document.getElementById('player2Name');
-
-//     // Show dialog on load
-//     customizeDialog.style.display = 'flex';
-
-  
-//     customizeDialog.style.display = 'none';
-//     customizeForm.style.display = 'flex';
-
-//     // Handle form submission
-//     document.getElementById('saveButton').addEventListener('click', (event) => {
-//         event.preventDefault();
-//         console.log("I AM UPDATING")
-//         const player1Name = document.getElementById('player1Input').value;
-//         const player2Name = document.getElementById('player2Input').value;
-
-//         // Validation checks
-//             // Validation checks
-//         if (isInputInvalid(player1Name, player2Name)) {
-//             return;
-//         }
-//         player1NameDiv.textContent = player1Name;
-//         player2NameDiv.textContent = player2Name;
-
-//         customizeForm.style.display = 'none';
-//     });
-
-//     const player1Input = document.getElementById('player1Input');
-//     const player2Input = document.getElementById('player2Input');
-
-//     player1Input.addEventListener('input', () => validateInput(player1Input, player2Input));
-//     player2Input.addEventListener('input', () => validateInput(player2Input, player1Input));
-
-//     function validateInput(currentInput, otherInput) {
-//         const currentName = currentInput.value.trim().toLowerCase();
-//         const otherName = otherInput.value.trim().toLowerCase();
-	
-//         if (isNameEmpty(currentName)) {
-//           updateFeedback(currentInput, true);
-//           return;
-//         }
-	
-//         if (currentName && otherName && currentName === otherName) {
-//           updateFeedback(currentInput, true);
-//           displayErrorMessage(currentInput, otherInput);
-//         } else {
-//           updateFeedback(currentInput, false);
-//           hideNotification(currentInput);
-//         }
-//     }
-
-//     function updateFeedback(input, isInvalid) {
-//         const feedback = input.nextElementSibling;
-//         if (isInvalid) {
-//             feedback.textContent = '✘';
-//             feedback.classList.remove('valid');
-//             feedback.classList.add('invalid');
-//             showNotification(input);
-//         } else {
-//             feedback.textContent = '✔';
-//             feedback.classList.remove('invalid');
-//             feedback.classList.add('valid');
-//             hideNotification(input);
-//         }
-//     }
-
-//     function isInputInvalid(name1, name2) {
-//         return !name1 || !name2 || name1 === name2;
-//     }
-
-//     function isNameEmpty(name) {
-//         return !name || name.length > 14;
-//     }
-//     function displayErrorMessage(currentInput, otherInput) {
-//         const currentName = currentInput.value.trim().toLowerCase();
-//         const otherName = otherInput.value.trim().toLowerCase();
-	
-//         if (!currentName) {
-//           showNotification(currentInput, 'Player name cannot be empty');
-//         } else if (currentName === otherName) {
-//           showNotification(currentInput, 'Player names must be different');
-//         }
-//     }
-
-//     function showNotification(input, message) {
-//         let notification = input.nextElementSibling; // Get the notification box
-//         if (!notification || notification.className !== 'notification') {
-//           // Create new notification if it doesn't exist
-//           notification = document.createElement('div');
-//           notification.className = 'notification';
-//           input.parentNode.insertBefore(notification, input.nextElementSibling);
-//         }
-//         notification.textContent = message || 'Error';
-//     }
-	
-//     function hideNotification(input) {
-//         const notification = input.nextElementSibling; // Get the notification box
-//         if (notification && notification.className === 'notification') {
-//             notification.parentNode.removeChild(notification);
-//         }
-//     }
-// }
-
+// Handle back/forward navigation
+window.addEventListener('popstate', () => {
+	if (game_in_progress) {
+		cleanup();
+	}
+});
 
 function isNameEmpty(name) {
 	return !name;
 }
 
-function isNameToolong(name) {
+function isNameTooLong(name) {
 	return name.length > 14;
 }
 
@@ -709,18 +639,25 @@ function startOrEndsWithQuote(name) {
 	return name.startsWith("'") || name.endsWith("'");
 }
 
-function containsInvalidQuote(name) {
-	return name.includes('"') || /''/.test(name);
+function containsInvalidQuotes(name) {
+	return /["]/.test(name) || /''/.test(name) || /^'|'$/.test(name) || /'"/.test(name) || /"'/.test(name);
 }
 
 function isValidName(name) {
-	return (isNameEmpty(name) || containsSpaces(name) || startOrEndsWithQuote(name) || containsInvalidQuote(name) || isNameToolong(name));
+	return !isNameEmpty(name) && !containsSpaces(name) && !startOrEndsWithQuote(name) && !containsInvalidQuotes(name) && !isNameTooLong(name);
 }
 
 function isSame(name1, name2) {
 	return name1 === name2;
-
 }
+
+function changePlayerNames(player1, player2) {
+	const player1NameDiv = document.getElementById('player1Name');
+	const player2NameDiv = document.getElementById('player2Name');
+	player1NameDiv.textContent = player1;
+	player2NameDiv.textContent = player2;
+}
+
 
 
 function cutomizePlayerName() {
@@ -738,7 +675,7 @@ function cutomizePlayerName() {
 		const player1Name = document.getElementById('player1Input').value;
 		const player2Name = document.getElementById('player2Input').value;
 
-		if (isValidName(player1Name) || isValidName(player2Name) || isSame(player1Name, player2Name)) {
+		if (!isValidName(player1Name) || !isValidName(player2Name) || isSame(player1Name, player2Name)) {
 			return;
 		}
 		player1NameDiv.textContent = player1Name;
@@ -757,84 +694,108 @@ function cutomizePlayerName() {
 		const currentName = currentInput.value.trim().toLowerCase();
 		const otherName = otherInput.value.trim().toLowerCase();
 
+		let message = '';
+		let isInvalid = false;
+
 		if (isNameEmpty(currentName)) {
-			updateFeedback(currentInput, true);
-			showNotification(currentInput, "Player name can't be empty");
-			return;
+			message = "Player name can't be empty";
+			isInvalid = true;
+		} else if (containsSpaces(currentName) || startOrEndsWithQuote(currentName) || containsInvalidQuotes(currentName)) {
+			message = "Invalid Player Name";
+			isInvalid = true;
+		} else if (isNameTooLong(currentName)) {
+			message = "Player name too long";
+			isInvalid = true;
+		} else if (currentName && otherName && isSame(currentName, otherName)) {
+			message = 'Player names must be different';
+			isInvalid = true;
+		} 
+		updateFeedback(currentInput, isInvalid, message);
+		if (isValidName(otherName) &&  !isSame(otherName, currentName)) {
+			updateFeedback(otherInput, false, "");
 		}
-		else if (isNameToolong(currentName)) {
-			updateFeedback(currentInput, true);
-			showNotification(currentInput, "Player Name too long");
-			return;
-		}
-		else if (currentName && otherName && currentName === otherName) {
-			updateFeedback(currentInput, true);
-			showNotification(currentInput, 'Player names must be different');
-			return ;
-			// displayErrorMessage(currentInput, otherInput);
-		}
-		else if (containsSpaces(currentName) || startOrEndsWithQuote(currentName) || startOrEndsWithQuote(currentName)) {
-			updateFeedback(currentInput, true);
-			showNotification(currentInput, 'Invalid Player Name');
-			return ;
-		} else {
-			updateFeedback(currentInput, false);
-		}
-		hideNotification(currentInput);
-		// hideNotification(otherInput);
 	}
   
-	function updateFeedback(input, isInvalid) {
-	  const feedback = input.nextElementSibling;
-	  if (isInvalid) {
-		feedback.textContent = '✘';
-		feedback.classList.remove('valid');
-		feedback.classList.add('invalid');
-	  } else {
-		feedback.textContent = '✔';
-		feedback.classList.remove('invalid');
-		feedback.classList.add('valid');
-		hideNotification(input);
-	  }
+	function updateFeedback(input, isInvalid, message) {
+		const feedback = input.nextElementSibling;
+		if (isInvalid) {
+			feedback.textContent = '✘';
+			feedback.classList.remove('valid');
+			feedback.classList.add('invalid');
+			showNotification(input, message);
+		} else {
+			feedback.textContent = '✔';
+			feedback.classList.remove('invalid');
+			feedback.classList.add('valid');
+			hideNotification(input);
+		}
 	}
 	
 	function showNotification(input, message) {
-		let notification = input.nextElementSibling; // Get the notification box
-		// Check if notification exists and update its content
+		let notification = input.nextElementSibling.nextElementSibling; // Get the notification box
 		if (notification && notification.classList.contains('notification')) {
 			notification.textContent = message || 'Error';
 		} else {
-			// Create new notification if it doesn't exist
 			notification = document.createElement('div');
 			notification.className = 'notification';
 			notification.textContent = message || 'Error';
-			console.log(notification);
-			input.parentNode.insertBefore(notification, input.nextElementSibling);
+			input.parentNode.insertBefore(notification, input.nextElementSibling.nextElementSibling);
 		}
 	}
 	
 	function hideNotification(input) {
-		const notification = input.nextElementSibling; // Get the notification box
+		const notification = input.nextElementSibling.nextElementSibling; // Get the notification box
 		if (notification && notification.classList.contains('notification')) {
-			notification.parentNode.removeChild(notification);
+			notification.textContent = ''; // Clear the notification message
 		}
 	}
-
-	function displayErrorMessage(currentInput, otherInput) {
-		const currentName = currentInput.value.trim().toLowerCase();
-		const otherName = otherInput.value.trim().toLowerCase();
-		 if (currentName === otherName) {
-			showNotification(currentInput, 'Player names must be different');
-		} else if (currentName.length > 14) {
-			showNotification(currentInput, 'Player names too long');
-		}
-	}
-  
 }
-
-
 
 function hidePnameForm() {
 	const customizeDialog = document.getElementById('customizeDialog');
 	customizeDialog.style.display = 'none';
+}
+
+
+function startCountdown() {
+	var counter = 3;
+  
+	var timer = setInterval(function () {
+	  var countdownElement = document.getElementById('countdown');
+	  if (countdownElement) {
+		countdownElement.remove();
+	  }
+  
+	  var countdown = document.createElement('span');
+	  countdown.id = 'countdown';
+	  countdown.textContent = (counter === 0 ? "START" : counter);
+
+	  if (counter === 0) {
+		setTimeout(function () {
+			countdown.style.transition = "opacity 1s ease-out";
+			countdown.style.opacity = 0;
+			setTimeout(function () {
+				countdown.remove();
+			}, 1000); // Wait for transition to complete before removing
+		}, 2000); // Wait 2 seconds before starting the fade-out
+	}
+  
+	  var container = document.querySelector('.container');
+	  if (container) {
+		container.appendChild(countdown);
+	  }
+  
+	  setTimeout(function () {
+		if (counter > -1) {
+		  countdown.style.fontSize = "40vw";
+		  countdown.style.opacity = 0;
+		} else {
+		  countdown.style.fontSize = "10vw";
+		  countdown.style.opacity = 0.7;
+		}
+	  }, 20);
+  
+	  counter--;
+	  if (counter === -1) clearInterval(timer);
+	}, 1000);
 }

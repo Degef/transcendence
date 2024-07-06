@@ -662,6 +662,8 @@ async function startMatch(player1, player2, matchElement) {
 
         // Append the tournament section before the footer
         mainContainer.appendChild(tournamentSection);
+        const customizeDialog = document.getElementById('customizeDialog');
+        customizeDialog.style.display = 'none';
         displayMatchModal(player1, player2);
     } catch (error) {
         console.error('Error fetching local game page:', error);

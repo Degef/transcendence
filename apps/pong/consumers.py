@@ -46,18 +46,23 @@ class PongConsumer(AsyncWebsocketConsumer):
 		else:
 			# Get the game state for the current room
 			try:
-				game_state = self.game_states[self.room_group_name]
+				if hasattr(self, 'room_group_name') and self.room_group_name in self.game_states:
+					game_state = self.game_states[self.room_group_name]
 
-				del self.game_states[self.room_group_name]
-				name = self.scope['user'].username
+					del self.game_states[self.room_group_name]
+					name = self.scope['user'].username
 
-				await self.channel_layer.group_send(
-					self.room_group_name,
-					{
-						'type': 'game_end_message',
-						'message': f'{name} has left the game.'
-					}
-				)
+					await self.channel_layer.group_send(
+						self.room_group_name,
+						{
+							'type': 'game_end_message',
+							'message': f'{name} has left the game.',
+							'player1': game_state['p1_name'],
+							'player2': game_state['p2_name'],
+							'score1': game_state['score1'],
+							'score2': game_state['score2']
+						}
+					)
 				# await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 			except KeyError as e:
 				print(f"\n\nError accessing paddle data: {e}")
@@ -88,7 +93,28 @@ class PongConsumer(AsyncWebsocketConsumer):
 		await self.channel_layer.group_add(self.room_group_name, other_user.channel_name)
 
 		self.game_states[self.room_group_name] = await self.getInitGameInfo(other_user)
+		await self.send_pnames(other_user);
+		await asyncio.sleep(1)
 		await self.send_game_state()
+
+	
+	async def send_pnames(self, other_user):
+		await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'pnames',
+				'p1_name': other_user.scope['user'].username,
+				'p2_name': self.scope['user'].username,
+			}
+		)
+		logger.error("\n\n\nSent player names\n\n\n")
+
+	async def pnames(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'pnames',
+			'p1_name': event['p1_name'],
+			'p2_name': event['p2_name'],
+		}))
 
 	async def handleChallenge(self, data):
 		challengee = data['challengee']
@@ -114,12 +140,30 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self.challenge_queue[challengee] = self
 
 	async def handleDefaultGame(self, data):
-		if len(self.waiting_queue) > 0:
-			# Match the user with the first user in the queue
+		is_self_not_in_waiting_queue = self not in self.waiting_queue
+		logger.error(f'\n\n\n\n Self not in waiting_queue: {is_self_not_in_waiting_queue} \n\n\n\n')
+		if len(self.waiting_queue) > 0  and (self not in self.waiting_queue):
 			other_user = self.waiting_queue.pop(0)
+			logger.error(f'\n\n\n\n Found_Other_player: {other_user.username} vs {self.username} \n\n\n\n')
 			await self.startGameNow(other_user)
-		else:
+
+		elif self not in self.waiting_queue:
+			# self.waiting_queue.append(self)
 			self.waiting_queue.append(self)
+			waiting_players = [user.username for user in self.waiting_queue]
+			logger.error(f'\n\n\n\n Waiting Players: {", ".join(waiting_players)} \n\n\n\n')
+			# await asyncio.sleep(15)
+			# if self in self.waiting_queue:
+			# 	self.waiting_queue.remove(self)
+			# 	await self.send_no_player_found()
+
+	async def send_no_player_found(self):
+		message = {
+			'type': 'noPlayerFound',
+			'message': 'No player found to play with.'
+		}
+		await self.send(text_data=json.dumps(message))
+		await self.close()
 
 	async def receive(self, text_data):
 		data = json.loads(text_data)
@@ -195,65 +239,66 @@ class PongConsumer(AsyncWebsocketConsumer):
 		
 	async def move_ball(self):
 		while True:
-			game_state = self.game_states[self.room_group_name]
+			if hasattr(self, 'room_group_name') and self.room_group_name in self.game_states:
+				game_state = self.game_states[self.room_group_name]
 
-			if game_state['end']:
-				return
-
-			ball = game_state['ball']
-
-			# Update the ball position
-			ball['x'] += ball['velocityX']
-			ball['y'] += ball['velocityY']
-
-			# Check if the ball has hit the top or bottom wall
-			if ball['y'] - ball['radius'] < 0 or ball['y'] + ball['radius'] >= 400:
-				game_state['collision']['wall'] = True
-				ball['velocityY'] *= -1
-
-			paddle = game_state['paddle1'] if ball['x'] < 300 else game_state['paddle2']
-			if await self.collision(ball, paddle):
-				game_state['collision']['paddle'] = True
-				collidePoint = (ball['y'] - (paddle['y'] + self.paddleHeight / 2))
-				normalizedCollidePoint = collidePoint / (self.paddleHeight / 2)
-				angleRad = normalizedCollidePoint * (3.14 / 4)
-				dir = 1 if ball['x'] < 300 else -1
-				ball['velocityX'] = dir * ball['speed'] * math.cos(angleRad)
-				ball['velocityY'] = ball['speed'] * math.sin(angleRad)
-				ball['speed'] += 0.1
-			# Check if the ball has hit the left or right wall
-			if ball['x'] + ball['radius'] <= 0 or ball['x'] - ball['radius'] >= 600:
-				game_state['collision']['goal'] = True
-				if ball['x'] <= 0:
-					game_state['score2'] += 1
-				else:
-					game_state['score1'] += 1
-					
-				if game_state['score1'] == 10 or game_state['score2'] == 10:
-					await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
-					if (self.challengee != '' and self.challenger != ''):
-						await sync_to_async(delete_challenge)(self.challenger, self.challengee)
-					await self.send_game_state()
-					winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
-					await self.channel_layer.group_send(
-						self.room_group_name,
-						{
-							'type': 'game_end_message',
-							'message': f'{winner} won the game.',
-							'player1': game_state['p1_name'],
-							'player2': game_state['p2_name'],
-							'score1': game_state['score1'],
-							'score2': game_state['score2']
-						}
-					)
-					game_state['end'] = True
+				if game_state['end']:
 					return
-				ball['velocityY'] = 0
-				ball['velocityX'] = 4 if ball['x'] < 300 else -4
-				ball['x'] = 300
-				ball['y'] = 200
-				# ball['velocityX'] *= -1
-				ball['speed'] = 4
+
+				ball = game_state['ball']
+
+				# Update the ball position
+				ball['x'] += ball['velocityX']
+				ball['y'] += ball['velocityY']
+
+				# Check if the ball has hit the top or bottom wall
+				if ball['y'] - ball['radius'] < 0 or ball['y'] + ball['radius'] >= 400:
+					game_state['collision']['wall'] = True
+					ball['velocityY'] *= -1
+
+				paddle = game_state['paddle1'] if ball['x'] < 300 else game_state['paddle2']
+				if await self.collision(ball, paddle):
+					game_state['collision']['paddle'] = True
+					collidePoint = (ball['y'] - (paddle['y'] + self.paddleHeight / 2))
+					normalizedCollidePoint = collidePoint / (self.paddleHeight / 2)
+					angleRad = normalizedCollidePoint * (3.14 / 4)
+					dir = 1 if ball['x'] < 300 else -1
+					ball['velocityX'] = dir * ball['speed'] * math.cos(angleRad)
+					ball['velocityY'] = ball['speed'] * math.sin(angleRad)
+					ball['speed'] += 0.1
+				# Check if the ball has hit the left or right wall
+				if ball['x'] + ball['radius'] <= 0 or ball['x'] - ball['radius'] >= 600:
+					game_state['collision']['goal'] = True
+					if ball['x'] <= 0:
+						game_state['score2'] += 1
+					else:
+						game_state['score1'] += 1
+						
+					if game_state['score1'] == 10 or game_state['score2'] == 10:
+						await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
+						if (self.challengee != '' and self.challenger != ''):
+							await sync_to_async(delete_challenge)(self.challenger, self.challengee)
+						await self.send_game_state()
+						winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
+						await self.channel_layer.group_send(
+							self.room_group_name,
+							{
+								'type': 'game_end_message',
+								'message': f'{winner} won the game.',
+								'player1': game_state['p1_name'],
+								'player2': game_state['p2_name'],
+								'score1': game_state['score1'],
+								'score2': game_state['score2']
+							}
+						)
+						game_state['end'] = True
+						return
+					ball['velocityY'] = 0
+					ball['velocityX'] = 4 if ball['x'] < 300 else -4
+					ball['x'] = 300
+					ball['y'] = 200
+					# ball['velocityX'] *= -1
+					ball['speed'] = 4
 			
 			await self.send_game_state()
 			game_state['collision']['paddle'] = False
@@ -262,15 +307,16 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await asyncio.sleep(0.01)
 
 	async def send_game_state(self):
-		game_state = self.game_states[self.room_group_name]
+		if hasattr(self, 'room_group_name') and self.room_group_name in self.game_states:
+			game_state = self.game_states[self.room_group_name]
 
-		await self.channel_layer.group_send(
-			self.room_group_name,
-			{
-				'type': 'game_state_message',
-				'game_state': game_state,
-			}
-		)
+			await self.channel_layer.group_send(
+				self.room_group_name,
+				{
+					'type': 'game_state_message',
+					'game_state': game_state,
+				}
+			)
 
 	async def game_state_message(self, event):
 		# Receive the game state from the message payload
