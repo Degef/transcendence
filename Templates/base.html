@@ -41,6 +41,15 @@
 					<div class="collapse navbar-collapse" id="navbarNav">
 						<ul class="navbar-nav ms-auto">
 							{% if user.is_authenticated %}
+								<li class="nav-item me-4" id="notifications">
+									<button type="button" class="btn btn-primary position-relative theme-button-primary" role="button">
+										<i class="fa-solid fa-bell theme-icon"></i>
+										<span class="position-absolute top-0 translate-middle badge rounded-pill theme-badge">
+											0
+										</span>
+									</button>
+									<div id="notifications-list" class="position-absolute mt-2 w-100 bg-light border rounded shadow-sm d-none"></div>
+								</li>
 								<li class="nav-item"><a class="nav-link" href="#" id="home" role="link">Home</a></li>
 								<li class="nav-item"><a title="profile" id="profile" role="link" class="nav-link" href="#" onclick="loadProfile('{{ request.user.username }}'); return false;">Profile</a></li>
 								<li class="nav-item"><a title="leaderboard" id="leaderboard" role="link" class="nav-link" href="#">Leaderboard</a></li>
@@ -129,5 +138,6 @@
 		<script defer src="{% static 'js/pong/tournament.js' %}"></script>
 		<script defer src="{% static 'js/pong/online_tour.js' %}"></script>
 		<script defer src="{% static 'js/pong/mobile.js' %}"></script>
+		<script defer src="{% static 'js/pong/notifications.js' %}"></script>
 	</body>
 </html>

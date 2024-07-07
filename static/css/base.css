@@ -244,3 +244,30 @@ html, body {
 body > *:not(.zoom-controls):not(script) {
     zoom: var(--page-zoom);
 }
+
+.theme-button-primary {
+	background-color: var(--color-background) !important;
+	color: var(--color-text-primary) !important;
+	border: none !important;
+}
+
+.theme-icon {
+	font-size: 1.5rem;
+}
+
+.theme-badge {
+	background-color: var(--color-button-primary) !important;
+	color: var(--color-text-primary) !important;
+}
+
+#notifications-list {
+	max-width: 300px;
+	max-height: 400px;
+	overflow-y: auto;
+	z-index: 1000;
+}
+
+.list-group-item {
+	background-color: var(--color-card-background);
+	color: var(--color-text-primary);
+}
