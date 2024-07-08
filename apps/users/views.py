@@ -246,6 +246,11 @@ def anonymize_user(request):
 	except Profile.DoesNotExist:
 		pass
 	
+	update_attribute = user_things.objects.get(user=user)
+	with transaction.atomic():
+		update_attribute.is_anonymous = True
+		update_attribute.save()
+	
 	return redirect('home')
 
 

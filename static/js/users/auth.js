@@ -72,9 +72,11 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 async function register(back_or_forward = 1) {
 	await handleFormSubmission('registration-form', '/register/', '/', back_or_forward);
 	initializeChallengeSocket();
+	initializeChatSocket();
 }
 
 async function login(back_or_forward = 1) {
 	await handleFormSubmission('login-form', '/login/', '/', back_or_forward);
 	initializeChallengeSocket();
+	initializeChatSocket();
 }

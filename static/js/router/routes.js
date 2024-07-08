@@ -88,7 +88,6 @@ async function handleRoute(path, pushState = true) {
 		const htmlContent = await response.text();
 		if ((isLoggin && (path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
 			updateBody(htmlContent);
-			console.log(htmlContent);
 			isLoggin = false;
 		} else {
 			updateContent(htmlContent);
@@ -241,6 +240,7 @@ function intializeJsOnPathChange(path) {
 			console.error("Profile initialization failed:", error);
 		});
 	}
+	waitForElement('.theme-badge', initializeNotifications);
 }
 
 window.onpopstate = event => {

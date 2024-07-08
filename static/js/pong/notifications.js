@@ -2,23 +2,42 @@ const notificationsList = [
 	
 ];
 
-const notificationButton = document.getElementById('notifications');
-const notificationsContainer = document.getElementById('notifications-list');
+let notificationIconBadge;
+let notificationButton;
+let notificationsContainer;
 
-notificationButton.addEventListener('click', () => {
-	notificationsContainer.classList.toggle('d-none');
-	notificationsContainer.innerHTML = '';
-	const listGroup = document.createElement('div');
-	listGroup.className = 'list-group';
-	
-	for (let i = notificationsList.length - 1; i >= 0; i--) {
-		const notification = notificationsList[i];
-		const listItem = document.createElement('a');
-		listItem.href = "#";
-		listItem.className = 'list-group-item list-group-item-action';
-		listItem.textContent = notification;
-		listGroup.appendChild(listItem);
+
+function addToNotificationsList(notification) {
+	if (!notificationIconBadge) {
+		return ;
 	}
-	
-	notificationsContainer.appendChild(listGroup);
-});
+	notificationsList.push(notification);
+	notificationIconBadge.textContent = notificationsList.length;
+}
+
+
+function initializeNotifications() {
+	notificationIconBadge = document.getElementById('notificationBadge');
+	notificationButton = document.getElementById('notifications');
+	notificationsContainer = document.getElementById('notifications-list');
+
+	if (notificationButton) {
+		notificationButton.addEventListener('click', () => {
+			notificationsContainer.classList.toggle('d-none');
+			notificationsContainer.innerHTML = '';
+			const listGroup = document.createElement('div');
+			listGroup.className = 'list-group';
+			
+			for (let i = notificationsList.length - 1; i >= 0; i--) {
+				const notification = notificationsList[i];
+				const listItem = document.createElement('a');
+				listItem.href = "#";
+				listItem.className = 'list-group-item list-group-item-action';
+				listItem.textContent = notification;
+				listGroup.appendChild(listItem);
+			}
+			
+			notificationsContainer.appendChild(listGroup);
+		});
+	}	
+}

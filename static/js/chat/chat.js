@@ -6,7 +6,6 @@ let profileimage = '';
 let chatsocket = null;
 
 const api = {
-	fetchCurrentUser: () => fetch('/get_current_user/').then(response => response.json()),
 	fetchUserProfile: username => fetch(`/api/user/${username}/`).then(response => response.json()),
 	fetchMessages: recipient => fetch(`/api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`/api/message/${id}/`).then(response => response.json()),
@@ -51,8 +50,25 @@ const utils = {
 	logError: error => console.error('Error:', error),
 };
 
+
+async function getCurrentUser() {
+	try {
+		const response = await fetch('/get_current_user/');
+		const data = await response.json();
+		if (data.error) {
+			showAlert(data.error, 'danger');
+			return;
+		}
+		currentUser = data.currentUser;
+		profileimage = data.currentUserImage;
+		sessionKey = data.sessionKey;
+
+	} catch (error) {
+		showAlert('Unknown error occurred', 'danger');
+	}
+}
+
 function initializeChat() {
-	getCurrentUser().then(() => setupWebSocket()).catch(utils.logError);
 
 	const chatForm = document.querySelector('.input-wrapper');
 	if (chatForm) {
@@ -65,14 +81,38 @@ function initializeChat() {
 	setupSearchFunctionality();
 }
 
-function getCurrentUser() {
-	return api.fetchCurrentUser()
-		.then(data => {
-			currentUser = data.currentUser;
-			profileimage = data.currentUserImage;
-			sessionKey = data.sessionKey;
-		})
-		.catch(utils.logError);
+async function initializeChatSocket() {
+	await getCurrentUser();
+	
+	if (sessionKey) {
+		if (chatsocket && chatsocket.readyState === WebSocket.OPEN) chatsocket.close();
+	
+		chatsocket = new WebSocket(`wss://${window.location.host}/ws/chat/`);
+		handleChatSocketEvents(chatsocket);
+	}
+
+	const chatForm = document.querySelector('.input-wrapper');
+	if (chatForm) {
+		const chatInput = document.querySelector('.message-input');
+		chatForm.addEventListener('submit', event => handleChatFormSubmit(event, chatInput, chatForm));
+		chatInput.addEventListener('keydown', event => handleChatInputKeydown(event, chatForm));
+	}
+
+	handleUserSelection();
+	setupSearchFunctionality();
+}
+
+function handleChatSocketEvents(chatsocket) {
+	chatsocket.onopen = () => console.log('chat WebSocket open');
+	chatsocket.onmessage = event => {
+		const notification = prepareToNotification(event.data);
+		console.log(notification);
+		if (notification)
+			addToNotificationsList('New message ' + notification);
+		getMessageById(event.data);
+	};
+	chatsocket.onerror = event => console.error('WebSocket error:', event);
+	chatsocket.onclose = () => cleanupWebSocket(chatsocket);
 }
 
 function handleChatFormSubmit(event, chatInput, chatForm) {
@@ -93,11 +133,24 @@ function handleChatInputKeydown(event, chatForm) {
 	}
 }
 
+function prepareToNotification(message) {
+	const notification = JSON.parse(message);
+	const notificationMessage = notification.message;
+	const sender = notificationMessage.user;
+	if (sender === currentUser) return null;
+	return `from ${sender}`
+}
+
 function setupWebSocket() {
 	if (chatsocket && chatsocket.readyState === WebSocket.OPEN) chatsocket.close();
 
 	chatsocket = new WebSocket(`wss://${window.location.host}/ws/chat/`);
+	chatsocket.onopen = () => console.log('chat WebSocket open');
 	chatsocket.onmessage = event => {
+		console.log(event.data);
+		const notification = prepareToNotification(event.data);
+		if (notification)
+			addToNotificationsList('New message ' + notification);
 		getMessageById(event.data);
 	};
 	chatsocket.onerror = event => console.error('WebSocket error:', event);
@@ -207,6 +260,7 @@ function drawMessage(message) {
 		</div>`;
 
 	const messageList = document.querySelector('.chat');
+	if (!messageList) return;
 	messageList.innerHTML += messageItem;
 	messageList.scrollTop = messageList.scrollHeight;
 }
@@ -239,6 +293,7 @@ function getMessageById(message) {
 			if (data.user === currentRecipient || (data.recipient === currentRecipient && data.user === currentUser)) {
 				drawMessage(data);
 			}
+			if (!messageList) return;
 			messageList.scrollTop = messageList.scrollHeight;
 		})
 		.catch(utils.logError);
@@ -300,3 +355,5 @@ function fetchUserProfileAndSetRecipient(userName) {
 		.then(userProfile => setCurrentRecipient(userProfile))
 		.catch(utils.logError);
 }
+
+initializeChatSocket();

@@ -246,7 +246,8 @@ function initializeDeleteProfile(deleteUrl, redirectUrl) {
 				responseAlert.classList.remove('d-none');
 				responseAlert.classList.add('show', 'alert-success');
 				setTimeout(() => {
-					window.location.href = redirectUrl;
+					isLoggin = true;
+					handleRoute(redirectUrl, true);
 				}, 2000);
 			} else {
 				responseMessage.textContent = data.error;

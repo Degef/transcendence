@@ -8,8 +8,12 @@
 			<h2 class="profile-name" id="profile_name">{{ username }}</h2>
 			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
 				{% if is_own_profile %}
-					<button class="btn btn-outline-light profile-action-edit" id="edit_profile">Edit</button>
-					<button class="btn btn-outline-danger rounded-pill" id="anon_profile" onclick="anonymize()">Anonymize</button>
+					{% if is_anonymous == False %}
+						<button class="btn btn-outline-light profile-action-edit" id="edit_profile">Edit</button>
+						<button class="btn btn-outline-danger rounded-pill" id="anon_profile" onclick="anonymize()">Anonymize</button>
+					{% else %}
+						<button class="btn btn-outline-light profile-action-edit" id="edit_profile">Edit</button>
+					{% endif %}
 				{% else %}
 					{% if are_friends %}
 						<button class="btn btn-danger rounded-pill profile-action-remove-friend" onclick="removeFriend('{{username}}')">Remove Friend</button>

@@ -41,10 +41,10 @@
 					<div class="collapse navbar-collapse" id="navbarNav">
 						<ul class="navbar-nav ms-auto">
 							{% if user.is_authenticated %}
-								<li class="nav-item me-4" id="notifications">
+								<li class="nav-item me-4 d-none d-lg-block" id="notifications">
 									<button type="button" class="btn btn-primary position-relative theme-button-primary" role="button">
 										<i class="fa-solid fa-bell theme-icon"></i>
-										<span class="position-absolute top-0 translate-middle badge rounded-pill theme-badge">
+										<span class="position-absolute top-0 translate-middle badge rounded-pill theme-badge" id="notificationBadge">
 											0
 										</span>
 									</button>
