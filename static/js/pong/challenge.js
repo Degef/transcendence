@@ -7,6 +7,13 @@ let challenged_username = '';
 let challenger_username = '';
 
 
+/**
+ * Generates the HTML for a decline modal with the provided message.
+ * Constructs a modal with a specified message and returns it as a string.
+ * 
+ * @param {string} message - The message to display in the decline modal.
+ * @return {string} - The HTML string for the decline modal.
+ */
 var decline_modal =  function getDeclineModal(message) {
 	declineModal = `
 		<div id="custom-decline" class="modal" tabindex="-1">
@@ -36,24 +43,25 @@ var decline_modal =  function getDeclineModal(message) {
  * @return {void}
  */
 function showDeclinedModal(message) {
-	const modalHTML = decline_modal(message);
-	$(modalHTML).appendTo('body');
 
-	// if (typeof $ !== 'undefined') {
-	// 	$('#custom-decline').modal('show');
-	// }
-
-	$('#custom-decline').modal('show');
+    const modalHTML = decline_modal(message);
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = document.getElementById('custom-decline');
+    modal.style.display = 'block';
 
     const declineButton = document.getElementById('decline-close-button');
     function hideModal(event) {
         event.preventDefault();
         console.log(event);
-        $('#custom-decline').modal('hide');
+        modal.style.display = 'none';
         declineButton.removeEventListener('click', hideModal);
+        modal.remove();
     }
-	declineButton.addEventListener('click', hideModal);
+    declineButton.addEventListener('click', hideModal);
 }
+
+
+
 
 async function getCurrentUserr() {
 	try {
@@ -143,6 +151,17 @@ async function initializeChallengeSocket() {
 	}
 }
 
+/**
+ * Displays a custom confirmation modal with the provided message.
+ * Sets the provided message in the modal, and defines actions for accept and decline buttons.
+ * When the accept button is clicked, the onAccept callback is triggered and the modal is hidden.
+ * When the decline button is clicked, the onDecline callback is triggered and the modal is hidden.
+ * 
+ * @param {string} message - The message to display in the confirmation modal.
+ * @param {function} onAccept - The callback function to execute when the accept button is clicked.
+ * @param {function} onDecline - The callback function to execute when the decline button is clicked.
+ * @return {void}
+ */
 function customConfirm(message, onAccept, onDecline) {
 	const modal = document.getElementById('custom-confirm');
 	const messageElement = document.getElementById('challenge-message');
@@ -163,6 +182,15 @@ function customConfirm(message, onAccept, onDecline) {
 
 	modal.style.display = "block";
 }
+
+/**
+ * Displays a custom decline message modal with the provided message.
+ * Sets the provided message in the modal, and defines an action for the close button.
+ * When the close button is clicked, the modal is hidden.
+ * 
+ * @param {string} message - The message to display in the decline message modal.
+ * @return {void}
+ */
 function customDeclineMsg(message) {
     const modal = document.getElementById('custom-decline');
     const messageElement = document.getElementById('decline-msg');
@@ -178,6 +206,16 @@ function customDeclineMsg(message) {
     modal.style.display = "block";
 }
 
+
+/**
+ * Sends a challenge to a specified user.
+ * Displays an alert if the username is invalid or if the user tries to challenge themselves.
+ * Sends a challenge request over a WebSocket connection if it is open.
+ * Displays an alert if the WebSocket connection is not open.
+ * 
+ * @param {string} username - The username of the user to challenge.
+ * @return {void}
+ */
 function challengeUser(username) {
 	if (!username) {
 		showAlert('Invalid way to challenge', 'danger');

@@ -43,6 +43,11 @@
 	max-height: 700px;
 }
 
+.game-canva-online {
+	max-width: 600px;
+	max-height: 400px;
+}
+
 
 canvas {
 	width: 100%;
@@ -363,13 +368,16 @@ canvas {
 
 
   #countdown {
-	position: absolute;
-	left: 50%;
-	top: 30%;
-	display: inline-block;
-	transform: translate(-50%, -50%);
-	transition: 1s;
-	font-size: 0vw;
-	opacity: 50%;
-	color: var(--color-text-primary); 
-  }
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: 1s;
+    font-size: 0vw;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    opacity: 50%;
+    color: var(--color-text-primary);
+    pointer-events: none; /* Ensure it does not interfere with canvas events */
+}

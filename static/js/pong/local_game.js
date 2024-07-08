@@ -104,6 +104,11 @@ function gameLoop1(data3) {
         }
         game_in_progress = false;
         updateScoresDisplay(data3['player1'].score, data3['player2'].score);
+
+        displayWinnerModal(winner, player2);
+        setTimeout(() => {
+            return;
+        }, 6000);
         // document.getElementById('restart_btn').style.display = 'block';
         displayBtn('restart_btn');
         // document.getElementById('quit_game').style.display = 'none';
@@ -127,9 +132,6 @@ function gameLoop1(data3) {
 }
 
 function start_local_game() {
-    // document.getElementById('start_play_computer').style.display = 'none';
-    // document.getElementById('restart_btn').style.display = 'none';
-    // document.getElementById('quit_game').style.display = 'block';
     hideBtn('start_play_computer');
     hideBtn('restart_btn');
     displayBtn('quit_game');

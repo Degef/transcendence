@@ -35,7 +35,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.challenger = ''
 
 		await self.accept()
-		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id}))
+		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "username": self.username}))
 		# Check if there are any waiting users
 		
 	async def disconnect(self, close_code):
@@ -274,12 +274,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 					else:
 						game_state['score1'] += 1
 						
-					if game_state['score1'] == 10 or game_state['score2'] == 10:
+					if game_state['score1'] == 4 or game_state['score2'] == 4:
 						await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
 						if (self.challengee != '' and self.challenger != ''):
 							await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 						await self.send_game_state()
-						winner = game_state['p1_name'] if game_state['score1'] == 10 else game_state['p2_name']
+						winner = game_state['p1_name'] if game_state['score1'] == 4 else game_state['p2_name']
 						await self.channel_layer.group_send(
 							self.room_group_name,
 							{
@@ -288,7 +288,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 								'player1': game_state['p1_name'],
 								'player2': game_state['p2_name'],
 								'score1': game_state['score1'],
-								'score2': game_state['score2']
+								'score2': game_state['score2'],
+								'winner': winner
 							}
 						)
 						game_state['end'] = True
@@ -340,13 +341,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 		p2 = event['player2']
 		s1 = event['score1']
 		s2 = event['score2']
+		winner = event['winner']
 		await self.send(text_data=json.dumps({
 			'type': 'gameEnd',
 			'message': message,
 			'player1': p1,
 			'player2': p2,
 			'score1': s1,
-			'score2': s2
+			'score2': s2,
+			'winner': winner
 		}))
 
 
@@ -541,7 +544,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				for _ in range(4):
 					self.players_waiting.popleft()
 
-				await asyncio.sleep(2)
+				await asyncio.sleep(20)
 				await self.create_match_rooms(tourn_players)
 
 			elif self not in self.players_waiting:
@@ -574,7 +577,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					self.players_waitingBig.popleft()
 					self.list_playersBig.pop(0)
 
-				await asyncio.sleep(2)
+				await asyncio.sleep(5)
 				await self.create_match_rooms(tourn_players)
 			
 
@@ -767,7 +770,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		pass
 	
 	async def share_match_result(self, data):
-
+		
+		await asyncio.sleep(10)
 		await self.channel_layer.group_send(
 			self.room_group_name,
 			{

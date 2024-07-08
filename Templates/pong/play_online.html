@@ -7,15 +7,16 @@
 			{{player2}}
 		</div>
 	</div>
-	<div class="row">
+	<div class="row justify-content-md-center position-relative">
 		<div id="end_game"> </div>
-		<div class="col">
-			<canvas id="gameCanvas" width="600" height="400"></canvas>
+		<div class="col game-canvas-container">
+			<canvas id="gameCanvas" class="game-canva-online" width="600" height="400"></canvas>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row justify-content-md-center">
 		<div class="col button-container">
 			<button id="start_game_btn" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="start_play_online_challenge(challenged_username, challenger_username, username)">Start</button> <br>
+			<button id="play_again" class="btn btn-outline-light mt-3 btn-custom" style="display: none;" type="submit" onclick="start_play_online_challenge(challenged_username, challenger_username, username)">Play Again</button> <br>
 		</div>
 	</div>
 </div>

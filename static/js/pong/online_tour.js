@@ -40,7 +40,7 @@ function onTourGameCompleted(player1, player2, score1, score2) {
         }
     }
     winner = s1 > s2 ? p1 : p2;
-    displayWinnerModal(winner, p2);
+    // displayWinnerModal(winner, p2);
 
 
     if (tournamentSection && tournamentSection.parentNode) {
@@ -401,12 +401,8 @@ function onlineTournament(tourSize) {
             
             // Extract the new content to replace the details-section   
             const newContent = parsedHtml.getElementById('bracket');
-            console.log( "[ " , data.html, " ]");
-            // document.open();
-            // document.write(data.html);
-            // document.close();
             if (newContent) {
-                const detailsSection = document.querySelector('.details-section');
+                const detailsSection = document.querySelector('.main-section');
                 if (detailsSection) {
                     detailsSection.innerHTML = newContent.outerHTML;
                     if (tourSize == 4) {
@@ -426,7 +422,6 @@ function onlineTournament(tourSize) {
             document.getElementById('start_game_btn').style.display = 'block';
         }
         else if (res.type === 'match_invitation') {
-            // console.log('Match Invitation Data:', res);
             username = res.player;
             displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
         }

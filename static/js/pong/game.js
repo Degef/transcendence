@@ -484,6 +484,7 @@ function setPlayer(rec) {
 // }
 
 function start_play_online_challenge(challenged_username, challenger_username, username) {
+	hideBtn('play_again');
 	data.waiting_to_play = true;
 	if (game_in_progress) {
 		return;
@@ -515,6 +516,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		// console.log(rec);
 		if (rec['type'] == 'playerId') {
 			data['playerId'] = rec['playerId'];
+			username = rec.username;
 			hideBtn('start_game_btn');
 			showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
 			const message = {
@@ -534,10 +536,16 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			setPlayer(rec);
 			// draw(rec['gameState']);
 		} else if (rec['type'] == 'gameEnd') {
+			console.log("username: ",  username)
+			if (username === rec.winner) {
+				displayWinM();
+			} else {
+				displayLoserModal();
+			}
 			data['endGame'] = true;
 			data['playerId'] = null;
 			data['player'] = null;
-			document.getElementById('end_game').innerHTML = rec['message'];
+			// document.getElementById('end_game').innerHTML = rec['message'];
 			const message = {
 				'type': 'endGame',
 				'playerId': data['playerId'],
@@ -548,6 +556,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			console.log("mainSection:", mainSection);
 			if (isOnlineTrounament) {
 				onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
+			} else {
+				displayBtn('play_again');
 			}
 		} else if (rec['type'] === 'noPlayerFound') {
 			hideSpinner();
@@ -780,10 +790,15 @@ function startCountdown() {
 		}, 2000); // Wait 2 seconds before starting the fade-out
 	}
   
-	  var container = document.querySelector('.container');
-	  if (container) {
+	//   var container = document.querySelector('.container');
+	//   if (container) {
+	// 	container.appendChild(countdown);
+	//   }
+	var canvas = document.getElementById('gameCanvas');
+	var container = canvas.parentNode; // Get the parent of the canvas
+	if (container) {
 		container.appendChild(countdown);
-	  }
+	}
   
 	  setTimeout(function () {
 		if (counter > -1) {

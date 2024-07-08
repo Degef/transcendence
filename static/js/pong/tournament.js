@@ -46,7 +46,55 @@ function removeBtnContainer(buttonContainer) {
 const startTrounBtn = getBtnContainer('startTour', 'Start Tournament', startFirstMatch, null);
 let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
 
-var winnerModal = function getWinnerModal(winner, looser) {
+
+var loserModal = function getLoserModal() {
+    modalHtml = ` 
+        <center> 
+            <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content justify-content-center">
+                        <div class="modal-header justify-content-center">
+                            <h4 class="modal-title" id="myModalLabel">Sorry</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card-body text-center">
+                                <img src="/media/images/loser.jpg">
+                                <h4>HAHAHAHAHA.....!!!</h4>
+                                <p>YOU LOST THE GAME..🤦‍♂️🤦‍♂️</p> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    </center> 
+    `;
+    return modalHtml;
+} 
+
+var winM = function getWinM() {
+    modalHtml = ` 
+        <center> 
+            <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content justify-content-center">
+                        <div class="modal-header justify-content-center">
+                            <h4 class="modal-title" id="myModalLabel">Winner</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card-body text-center"> 
+                                <img src="/media/images/winner.jpg">
+                                <h4>CONGRATULATIONS!!!</h4>
+                                <p>YOU WON THE GAME </p> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    </center> 
+    `;
+    return modalHtml;
+} 
+var winnerModal = function getWinnerModal(winner, loser) {
     modalHtml = ` 
         <center> 
             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -68,7 +116,6 @@ var winnerModal = function getWinnerModal(winner, looser) {
 	    </center> 
     `;
     return modalHtml;
-
 } 
 
 var matchModal = function getMatchModal(player1, player2) {
@@ -138,7 +185,7 @@ function displayWinnerModal(winner, loser) {
     modal.show();
     setTimeout(() => {
         myModal.hide();
-    }, 5000);
+    }, 50000);
 
     // function hideModalOnClickOutsideTwo(event) {
     //     if (!modalContainer.contains(event.target)) {
@@ -153,8 +200,52 @@ function displayWinnerModal(winner, loser) {
     // });
 }
 
+function displayLoserModal() {
+    let modalContainer = document.getElementById('modal-container');
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'modal-container';
+        document.body.appendChild(modalContainer);
+    }
+
+    // Insert the modal HTML into the container
+    modalContainer.innerHTML = loserModal();
+    const myModal = new bootstrap.Modal('#m-result-modal');
+    const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+    modal.show();
+    setTimeout(() => {
+        myModal.hide();
+    }, 5000);
+}
+
+function displayWinM() {
+    let modalContainer = document.getElementById('modal-container');
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'modal-container';
+        document.body.appendChild(modalContainer);
+    }
+
+    // Insert the modal HTML into the container
+    modalContainer.innerHTML = winM();
+    const myModal = new bootstrap.Modal('#m-result-modal');
+    const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+    modal.show();
+    setTimeout(() => {
+        myModal.hide();
+    }, 5000);
+}
 
 
+/**
+ * Displays a match modal with the provided player names.
+ * Creates a modal container if it doesn't already exist, inserts the modal HTML, and shows the modal.
+ * Adds an event listener to hide the modal when clicking outside of it.
+ *
+ * @param {string} player1 - The name of the first player.
+ * @param {string} player2 - The name of the second player.
+ * @return {void}
+ */
 function displayMatchModal(player1, player2) {
   
     let modalContainer = document.getElementById('modal-container');
