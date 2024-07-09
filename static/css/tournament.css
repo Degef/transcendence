@@ -537,3 +537,8 @@
   .current {-webkit-flex-grow:1;-moz-flex-grow:1;flex-grow:1;}
   .round-details {font-size: 90%;}
 }
+
+
+#match-invitation-modal {
+  z-index: 9999 !important;
+}

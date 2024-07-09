@@ -41,7 +41,7 @@ function onTourGameCompleted(player1, player2, score1, score2) {
     }
     winner = s1 > s2 ? p1 : p2;
     // displayWinnerModal(winner, p2);
-
+    console.log("score: ", player1, player2);
 
     if (tournamentSection && tournamentSection.parentNode) {
         tournamentSection.parentNode.removeChild(tournamentSection);
@@ -57,7 +57,7 @@ function onTourGameCompleted(player1, player2, score1, score2) {
         'matchelement': matchupElement,
         'winner': winner
     };
-    // console.log("sending.....", message);
+    console.log("sending.....", message);
     console.log("username: ", username);
     if (username === winner) {
         onlineTourSocket.send(JSON.stringify(message));
@@ -238,6 +238,12 @@ async function loadTrounametGame(player1,  player2) {
         // Append the tournament section before the footer
         mainContainer.appendChild(tournamentSection);
         displayMatchModal(player1, player2);
+        if (!isOnlineTrounament) {
+            alert("you just left the tournmanet");
+            isOnlineTrounament = false;
+            handleRoute('/', true);
+            return ;
+        }
     } catch (error) {
         console.error('Error fetching local game page:', error);
     }
@@ -248,6 +254,9 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
     console.log("match_room: ", matchRoom);
     match_room = matchRoom;
     // Create modal elements
+    if (!isOnlineTrounament) {
+        return ;
+    }
     const modal = document.createElement('div');
     mainSection = document.querySelector('.main-section');
     modal.id = 'match-invitation-modal';
@@ -286,9 +295,9 @@ function displayMatchInvitation(matchRoom, opponent, socket, players) {
 
     const confirmButton = document.createElement('button');
     confirmButton.textContent = 'Join Game';
+
     confirmButton.onclick = function() {
         console.log('click join Game');
-        isOnlineTrounament = true;
         document.body.removeChild(modal);
         loadTrounametGame(challenger_username, challenged_username);
         
@@ -368,6 +377,27 @@ function update_bracket(res) {
 
 }
 
+function displayBracket(res, tourSize) {
+    const parser = new DOMParser();
+    const parsedHtml = parser.parseFromString(res.html, 'text/html');
+    
+    
+    // Extract the new content to replace the details-section   
+    const newContent = parsedHtml.getElementById('bracket');
+    if (newContent) {
+        const detailsSection = document.querySelector('.main-section');
+        if (detailsSection) {
+            detailsSection.innerHTML = newContent.outerHTML;
+            if (tourSize == 4) {
+                changeRoundStyle();
+            }
+        } else {
+            console.error('details-section not found in the current document');
+        }
+    } else {
+        console.error('details-section not found in the received HTML content');
+    }
+}
 
 
 
@@ -378,6 +408,7 @@ function onlineTournament(tourSize) {
     socket.onopen = function() {
         console.log('WebSocket connection established.');
         sendMessage('join_tournament', tourSize);
+        isOnlineTrounament = true;
     };
     // Log messages from the server
     // socket.onmessage = function(event) {
@@ -391,46 +422,30 @@ function onlineTournament(tourSize) {
 
         if (res['type'] == 'playerId') {
             data['playerId'] = res['playerId'];
-        }
-    
-        else if (res.type === 'html_content') {
-
-            const parser = new DOMParser();
-            const parsedHtml = parser.parseFromString(res.html, 'text/html');
-            
-            
-            // Extract the new content to replace the details-section   
-            const newContent = parsedHtml.getElementById('bracket');
-            if (newContent) {
-                const detailsSection = document.querySelector('.main-section');
-                if (detailsSection) {
-                    detailsSection.innerHTML = newContent.outerHTML;
-                    if (tourSize == 4) {
-                        changeRoundStyle();
-                    }
-                } else {
-                    console.error('details-section not found in the current document');
-                }
-            } else {
-                console.error('details-section not found in the received HTML content');
-            }
-        }
-        else if (res.type === 'game_start') {
+            showSpinner("WAITING FOR OTHER PLAYER TO JOIN ONLINE TOURNAMENT");
+        } else if (res.type === 'html_content') {
+            hideSpinner();
+            displayBracket(res, tourSize);
+        } else if (res.type === 'game_start') {
             matchName = data.match_name;
             player1 = res.player1;
             player2 = res.player2;
             document.getElementById('start_game_btn').style.display = 'block';
-        }
-        else if (res.type === 'match_invitation') {
+        } else if (res.type === 'match_invitation') {
             username = res.player;
-            displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
-        }
-        else if (res.type === 'update_bracket') {
+            setTimeout(() => {
+                displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
+            }, 10000);
+            // displayMatchInvitation(res.match_room, res.opponent, socket,  res.players);
+        } else if (res.type === 'update_bracket') {
             console.log('Update_bracket:', res);
             update_bracket(res);
-        }
+        } else if (res.type === 'opponent_left') {
+            console.log(res);
+            // onTourGameCompleted(res.player, res.opponent, 4, 0);
+        } 
         else if (res.type === 'load_game') {
-            // console.log('Load_Game Data:', data);
+            console.log('Load_Game Data:', data);
             display_game(res);
             const message = {
                 'type': 'startGame',
@@ -473,3 +488,38 @@ function onlineTournament(tourSize) {
     }
 
 }
+
+
+function cleanuptour() {
+	if (onlineTourSocket) {
+		isOnlineTrounament = false;
+		onlineTourSocket.onclose = null; // Prevent onclose from being called again
+		console.log("Websocket tournament Closed because of popstate");
+		mes = {
+			'type': 'leaving',
+			'playerId': data.playerId,
+            'player': username,
+            'match_name': match_room
+		}
+        console.log("msg: ", mes) ;
+		onlineTourSocket.send(JSON.stringify(mes));
+		if (onlineTourSocket.readyState === WebSocket.OPEN) {
+			hideSpinner();
+			setTimeout(function() {
+				onlineTourSocket.close();
+			}, 1000);
+			return;
+		}
+	}
+	game_in_progress = false;
+	data.playerId = null;
+	data.player = null;
+}
+
+// Handle back/forward navigation
+window.addEventListener('popstate', () => {
+    console.log("here-here-here", isOnlineTrounament);
+	if (isOnlineTrounament) {
+		cleanuptour();
+	}
+});

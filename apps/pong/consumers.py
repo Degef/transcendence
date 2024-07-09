@@ -60,7 +60,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 							'player1': game_state['p1_name'],
 							'player2': game_state['p2_name'],
 							'score1': game_state['score1'],
-							'score2': game_state['score2']
+							'score2': game_state['score2'],
+							'winner': game_state['winner']
 						}
 					)
 				# await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -80,7 +81,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'score2': 0,
 			'end': False,
 			'paddle1': None,
-			'paddle2': None
+			'paddle2': None,
+			'winner': None,
 		}
 		return startInfo
 	
@@ -200,6 +202,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 					asyncio.create_task(self.move_ball())
 			elif data['type'] == 'endGame1':
 				self.game_states[room_group_name]['end'] = True
+				self.game_states[room_group_name]['winner'] = data['winner']
+			elif data['type'] == 'endGame3':
+				self.game_states[room_group_name]['end'] = True
 			# elif data['type'] == 'endGame2':
 			# 	await self.close()
 				
@@ -280,6 +285,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 							await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 						await self.send_game_state()
 						winner = game_state['p1_name'] if game_state['score1'] == 4 else game_state['p2_name']
+						game_state['winner'] = winner
 						await self.channel_layer.group_send(
 							self.room_group_name,
 							{
@@ -510,6 +516,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			await self.share_match_result(data)
 		elif data['type'] == 'next_round_match':
 			await self.handle_nextRound_match(data)
+		elif data['type'] == 'leaving':
+			await self.handle_leaving(data);
 	  
 		# await self.fetch_and_add_player_to_tournament()
 
@@ -525,7 +533,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				await self.send_join_message(f"The last player is joining {self.username}")
 
 				tourn_players = []
+				toberemoved = deque()
 				for tuser in list(self.players_waiting)[:4]:
+					toberemoved.append(tuser);
 					tuser.room_group_name = self.room_group_name
 					await self.channel_layer.group_add(self.room_group_name, tuser.channel_name)
 					user = await sync_to_async(User.objects.get)(id=tuser.user_id)
@@ -541,10 +551,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				await self.broadcast_html_content(html_content)
 				# del self.players_waiting[:4]
 				# del self.list_players[:4]
-				for _ in range(4):
+				for tuser in toberemoved:
 					self.players_waiting.popleft()
+				toberemoved.clear()
 
-				await asyncio.sleep(20)
+				# await asyncio.sleep(3)
 				await self.create_match_rooms(tourn_players)
 
 			elif self not in self.players_waiting:
@@ -628,6 +639,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_match_room_invitation(self, match_room_name, players):
 		for player in players:
+			if match_room_name not in self.confirmed_players:
+				self.confirmed_players[match_room_name] = set()
+			self.confirmed_players[match_room_name].add(player['username'])
 			player_channel_name = self.player_channels.get(player['username'])
 			if player_channel_name:
 				logging.info(f"Adding player {player['username']} to match room {match_room_name}")
@@ -635,7 +649,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					match_room_name,
 					player_channel_name  # Use the correct channel name for each player
 				)
+		
 
+		# Add the player to the set of confirmed players for the match room
+		
 		logging.info(f"Sending match invitation to room {match_room_name} for players: {[p['username'] for p in players]}")
 		await self.channel_layer.group_send(
 			match_room_name,
@@ -833,3 +850,38 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		else:
 			await self.send_join_message(f"Adding the player {self.username}")
 			self.nextRound_players[data['player']] = self
+
+	async def handle_leaving(self, data):
+		match_room = data['match_name']
+		player = data['player']
+
+		logger.error(f"player to be removed : {player}")
+		logger.error(f"Updated confirmed_players: {self.confirmed_players}")
+		if match_room in self.confirmed_players:
+			self.confirmed_players[match_room].discard(player)
+		
+		opponent = [p for p in self.confirmed_players[match_room] if p != player]
+		
+		if opponent:
+			opponent_channel_name = self.player_channels.get(opponent[0])
+			if opponent_channel_name:
+				await self.channel_layer.send(
+					opponent_channel_name,
+					{
+						'type': 'opponent_left',
+						'message': f"{player} has left the match.",
+						'opponent': player,
+						'player': opponent
+					}
+				)
+
+	async def opponent_left(self, event):
+		message = event['message']
+		player = event['player']
+		opponent = event['opponent']
+		await self.send(text_data=json.dumps({
+			'type': 'opponent_left',
+			'message': message,
+			'opponent': player,
+			'player': opponent
+		}))

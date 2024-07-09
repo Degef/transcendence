@@ -16,6 +16,7 @@ var terminate_game = false;
 var intervalId = null;
 var type = "defaultGame";
 let username = fetch('/get_current_user/').then(response => response.json());
+let pusername = '';
 
 // let username =  fetch('/get_current_user/').then(response => response.json()).then((data) => { return (data.currentUser)});
 // console.log("currentUser: ", username);
@@ -328,9 +329,11 @@ function main_loop () {
 		// This condition is handling when user presses any button while game is in progress
 		// First we need to stop the game task created in the server, that is what endGame1 will do
 		// Then we wait 1 second to make sure the task is stopped and then we close the socket
+		otherPlayer = pusername === data.p1_name ? data.p2_name: data.p1_name;
 		mes = {
 			'type': 'endGame1',
 			'playerId': data['playerId'],
+			'winner': otherPlayer
 		}
 		data['socket'].send(JSON.stringify(mes));
 
@@ -517,6 +520,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		if (rec['type'] == 'playerId') {
 			data['playerId'] = rec['playerId'];
 			username = rec.username;
+			pusername = rec.username
 			hideBtn('start_game_btn');
 			showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
 			const message = {
@@ -527,6 +531,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			data['socket'].send(JSON.stringify(message));
 		} else if (rec['type'] === 'pnames') {
 			hideSpinner();
+			data['p1_name'] = rec.p1_name;
+			data['p2_name'] = rec.p2_name;
 			changePlayerNames(rec.p1_name, rec.p2_name);
 		} else if (rec['type'] == 'gameState') {
 			if (data.waiting_to_play) {
@@ -607,9 +613,13 @@ function cleanup() {
 		game_in_progress = false;
 		data.socket.onclose = null; // Prevent onclose from being called again
 		console.log("Websocket Closed because of popstate");
+		otherPlayer = pusername === data.p1_name ? data.p2_name: data.p1_name;
+		console.log('username2: ', pusername, data.p1_name, data.p2_name);
+		console.log('otherplayer: ', otherPlayer);
 		mes = {
 			'type': 'endGame1',
 			'playerId': data.playerId,
+			'winner': otherPlayer
 		}
 		data.socket.send(JSON.stringify(mes));
 		if (data.socket.readyState === WebSocket.OPEN) {
