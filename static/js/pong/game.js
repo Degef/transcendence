@@ -542,7 +542,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			setPlayer(rec);
 			// draw(rec['gameState']);
 		} else if (rec['type'] == 'gameEnd') {
-			console.log("username: ",  username)
+			console.log("username: ",  rec);
 			if (username === rec.winner) {
 				displayWinM();
 			} else {
@@ -561,7 +561,9 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			console.log("IsTypeTrounament:", isOnlineTrounament);
 			console.log("mainSection:", mainSection);
 			if (isOnlineTrounament) {
-				onTourGameCompleted(rec['player1'], rec['player2'], rec['score1'], rec['score2']);
+				let s1 = rec['player1'] === rec.winner ? 4: rec['score1'];
+				let s2 = rec['player2'] === rec.winner ? 4: rec['score2'];
+				onTourGameCompleted(rec['player1'], rec['player2'],s1, s2);
 			} else {
 				displayBtn('play_again');
 			}
