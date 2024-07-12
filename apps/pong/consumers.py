@@ -467,7 +467,6 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	players_waiting = deque()
 	players_waitingBig = deque()
-	list_playersBig = []
 	nextRound_players = {}
 	# confirmed_players = defaultdict(set)
 	confirmed_players = {}
@@ -552,7 +551,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				# del self.players_waiting[:4]
 				# del self.list_players[:4]
 				for tuser in toberemoved:
-					self.players_waiting.popleft()
+					# self.players_waiting.pop(tuser)
+					self.players_waiting.remove(tuser)
 				toberemoved.clear()
 
 				# await asyncio.sleep(3)
@@ -562,16 +562,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				await self.send_join_message(f"Adding the player {self.username}")
 				self.players_waiting.append(self)
 		else:
-			if len(self.players_waitingBig) >= 7 and (self.user_id not in self.list_playersBig):
-				self.players_waitingBig.append(self.user_id)
-				self.list_playersBig.append(self.user_id)
+			if len(self.players_waitingBig) >= 7 and (self not in self.players_waitingBig):
+				self.players_waitingBig.append(self)
+				self.room_group_name = 'game_%s' % uuid.uuid4().hex
 				tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
 
 				await self.send_join_message(f"The last player is joining {self.username}")
 
 				tourn_players = []
-				for user_id in list(self.players_waitingBig)[:4]:
-					user = await sync_to_async(User.objects.get)(id=user_id)
+				toberemoved = deque()
+				for tuser in list(self.players_waitingBig)[:8]:
+					toberemoved.append(tuser)
+					tuser.room_group_name = self.room_group_name
+					user = await sync_to_async(User.objects.get)(id=tuser.user_id)
 					profile_img = await sync_to_async(lambda: user.profile.image.url)()
 					tourn_players.append({
 						'username': user.username,
@@ -582,20 +585,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 				html_content = await sync_to_async(render_to_string)('pong/online_tour_bracket.html', {'players_list': tourn_players})
 				await self.broadcast_html_content(html_content)
-				# del self.players_waiting[:4]
-				# del self.list_players[:4]
-				for _ in range(8):
-					self.players_waitingBig.popleft()
-					self.list_playersBig.pop(0)
 
-				await asyncio.sleep(5)
+				for tuser in toberemoved:
+					# self.players_waitingBig.pop(tuser)
+					self.players_waitingBig.remove(tuser)
+				toberemoved.clear()
+
+				# await asyncio.sleep(5)
 				await self.create_match_rooms(tourn_players)
 			
 
-			elif self.user_id not in self.list_playersBig:
+			elif self not in self.players_waitingBig:
 				await self.send_join_message(f"Adding the player {self.username}")
-				self.list_playersBig.append(self.user_id)
-				self.players_waitingBig.append(self.user_id)
+				self.players_waitingBig.append(self)
 
 
 	async def send_join_message(self, playername):
@@ -876,6 +878,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				)
 
 	async def opponent_left(self, event):
+		await asyncio.sleep(10)
 		message = event['message']
 		player = event['player']
 		opponent = event['opponent']

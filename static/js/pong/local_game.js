@@ -106,19 +106,14 @@ function gameLoop1(data3) {
         updateScoresDisplay(data3['player1'].score, data3['player2'].score);
 
         displayWinnerModal(winner, player2);
+
         setTimeout(() => {
-            return;
+            if (isIntournament) {
+                    onGameCompleted();
+            } else {
+                displayBtn('restart_btn');
+            }
         }, 6000);
-        // document.getElementById('restart_btn').style.display = 'block';
-        displayBtn('restart_btn');
-        // document.getElementById('quit_game').style.display = 'none';
-        if (isIntournament) {
-            // displayWinnerModal(winner,  getTextContentById('player1Name'));
-            displayWinnerModal(winner, player2);
-            setTimeout(() => {
-                onGameCompleted();
-            }, 6000);
-        }
         return;
     } else if (terminate_game) {
         clearInterval(intervalId);
