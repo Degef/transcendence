@@ -145,6 +145,17 @@ html, body {
 .cta {
 	animation: transitionIn 0.95s;
 }
+.signup {
+	animation: transitionIn 0.95s;
+}
+
+.login-container {
+	animation: transitionIn 0.95s;
+}
+
+.privacy-container {
+	animation: transitionIn 0.95s;
+}
 
 @keyframes  transitionIn {
 	
@@ -180,26 +191,6 @@ html, body {
 .user-item:hover {
     background-color: var(--color-hover);
     cursor: pointer;
-}
-
-
-.back-to-top {
-	background-color: var(--color-button-primary);
-	position: fixed;
-	width: 3rem;
-	height: 3rem;
-	right: 1.875rem;
-	bottom: 1.875rem;
-	z-index: 9999;
-}
-
-.back-to-top i {
-	color: var(--color-text-primary);
-	font-size: 1rem;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 }
 
 .zoom-controls {

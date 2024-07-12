@@ -28,3 +28,6 @@
 	color: var(--color-text-accent);
 }
 
+.about-text-color {
+	color: var(--color-text-primary);
+}

@@ -1,13 +1,13 @@
 
 .section-title {
-    font-feature-settings: "dlig" on;
-    letter-spacing: -0.33px;
-    margin-top: 56px;
+	font-feature-settings: "dlig" on;
+	letter-spacing: -0.33px;
+	margin-top: 56px;
 }
 
 .section-content {
-    font-feature-settings: "dlig" on;
-    margin-top: 16px;
-    font-size: 16px;
-    line-height: 150%;
+	font-feature-settings: "dlig" on;
+	margin-top: 16px;
+	font-size: 16px;
+	line-height: 150%;
 }

@@ -119,7 +119,7 @@ function gameLoop1(data3) {
         clearInterval(intervalId);
         game_in_progress = false;
         terminate_game = false;
-        start_challenge_checking();
+        // start_challenge_checking();
         return;
     }
     update1(data3);

@@ -22,7 +22,7 @@ function initializeNotifications() {
 	notificationsContainer = document.getElementById('notifications-list');
 
 	if (notificationButton) {
-		notificationButton.addEventListener('click', () => {
+		notificationButton.addEventListener('click', (event) => {
 			notificationsContainer.classList.toggle('d-none');
 			notificationsContainer.innerHTML = '';
 			const listGroup = document.createElement('div');
@@ -38,6 +38,17 @@ function initializeNotifications() {
 			}
 			
 			notificationsContainer.appendChild(listGroup);
+			event.stopPropagation();
 		});
-	}	
+	}
+	document.addEventListener('click', (event) => {
+		if (!notificationsContainer.classList.contains('d-none')) {
+			if (!notificationsContainer.contains(event.target) && event.target !== notificationButton) {
+				notificationsContainer.classList.add('d-none');
+				notificationsList.length = 0;
+				notificationIconBadge.textContent = notificationsList.length;
+			}
+		}
+	});
+
 }

@@ -106,7 +106,7 @@ function handleChatSocketEvents(chatsocket) {
 	chatsocket.onopen = () => console.log('chat WebSocket open');
 	chatsocket.onmessage = event => {
 		const notification = prepareToNotification(event.data);
-		console.log(notification);
+		if (notification === 'from undefined') return;
 		if (notification)
 			addToNotificationsList('New message ' + notification);
 		getMessageById(event.data);
@@ -139,22 +139,6 @@ function prepareToNotification(message) {
 	const sender = notificationMessage.user;
 	if (sender === currentUser) return null;
 	return `from ${sender}`
-}
-
-function setupWebSocket() {
-	if (chatsocket && chatsocket.readyState === WebSocket.OPEN) chatsocket.close();
-
-	chatsocket = new WebSocket(`wss://${window.location.host}/ws/chat/`);
-	chatsocket.onopen = () => console.log('chat WebSocket open');
-	chatsocket.onmessage = event => {
-		console.log(event.data);
-		const notification = prepareToNotification(event.data);
-		if (notification)
-			addToNotificationsList('New message ' + notification);
-		getMessageById(event.data);
-	};
-	chatsocket.onerror = event => console.error('WebSocket error:', event);
-	chatsocket.onclose = () => cleanupWebSocket(chatsocket);
 }
 
 function handleUserSelection() {
@@ -216,6 +200,7 @@ function showDropdownMenu(target, username) {
 function viewUserProfile(username) {
 	api.fetchUserProfilePage(username);
 	document.getElementById('dropdownMenu').classList.remove('show');
+	waitForElement('.chat__container', initializeChat);
 }
 
 function blockUser(username) {

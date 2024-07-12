@@ -1,25 +1,30 @@
-<section class="d-flex align-items-center h-75">
+<section class="d-flex align-items-center h-75" role="region" aria-labelledby="rate-limit-heading">
 	<div class="container">
 		<div class="row align-items-center">
-			<div class="col-md-6 text-center text-md-start ">
+			<div class="col-md-6 text-center text-md-start">
 				<div class="lc-block mb-3">
 					<div editable="rich">
-						<h1 class="fw-bold h4">RATE LIMIT EXCEEDED!<br></h1>
+						<h1 class="fw-bold h4" id="rate-limit-heading">RATE LIMIT EXCEEDED!<br></h1>
 					</div>
 				</div>
 				<div class="lc-block mb-3">
 					<div editable="rich">
 						<h1 class="fs-1 fw-bold text-light">Error 403</h1>
-
 					</div>
 				</div>
 				<div class="lc-block mb-5">
 					<div editable="rich">
-						<p class="rfs-11 fw-light"> You have tried to log in way to many time in one go. Brute forcing eh?</p>
+						<p class="rfs-11 fw-light">You have tried to log in way too many times in one go. Brute forcing, eh?</p>
 					</div>
 				</div>
 				<div class="lc-block" id="home">
-					<a class="btn btn-lg btn-primary" href="#" id="home">Back to homepage</a>
+					<a class="btn btn-lg btn-primary" href="#" id="home" role="link" aria-label="Back to homepage">Back to homepage</a>
+				</div>
+			</div>
+			<div class="col-md-6 order-md-2">
+				<div class="lc-block">
+					<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+					<lottie-player src="https://lottie.host/1b419ed7-eaf3-47c8-97fc-a826c1b96b74/3e69jnkDkm.json" background="##FFFFFF" speed="1" style="width: 300px; height: 300px" loop controls autoplay direction="1" mode="normal" aria-label="Animated illustration of a warning icon"></lottie-player>
 				</div>
 			</div>
 		</div>

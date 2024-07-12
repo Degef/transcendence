@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Profile, user_things
+from django.core.exceptions import ObjectDoesNotExist
 
 class UserUpdateForm(forms.ModelForm):
 	username = forms.CharField(
@@ -40,15 +41,15 @@ class UserUpdateForm(forms.ModelForm):
 			user_profile = user_things.objects.filter(user=user).first()
 			if user_profile.logged_in_with_42:
 				self.fields['username'].widget.attrs['disabled'] = 'disabled'
-		except UserProfile.DoesNotExist:
+		except ObjectDoesNotExist:
 			pass
 
 	def clean_username(self):
 		try:
-			user_profile = user_things.objects.filter(user=user).first()
+			user_profile = user_things.objects.filter(user=self.user).first()
 			if user_profile and user_profile.logged_in_with_42:
 				return self.user.username
-		except UserProfile.DoesNotExist:
+		except ObjectDoesNotExist:
 			pass
 		return self.cleaned_data.get('username', self.user.username)
 
