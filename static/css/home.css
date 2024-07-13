@@ -74,7 +74,6 @@
 	border-radius: 24px;
 	background-color: var(--color-button-primary);
 	padding: 6px 16px;
-	color: var(--color-text-primary);
 	font-weight: 500;
 	cursor: pointer;
 }
@@ -83,7 +82,7 @@ button {
 	background-color: var(--color-button-primary);
 	border: none;
 	border-radius: 12px;
-	color: var(--color-text-primary);
+	color: #fff;
 	font-weight: 700;
 	letter-spacing: 0.21px;
 	line-height: 150%;
@@ -112,4 +111,8 @@ button {
 	border: 1px solid #eaeaea;
 	width: 50%;
 	text-align: center;
+}
+
+#logout, #req_login {
+	color: #fff !important;
 }

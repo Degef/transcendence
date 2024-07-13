@@ -58,8 +58,7 @@ canvas {
 
 canvas {
 	border-radius: 8px;
-	border: 1px solid var(--color-text-accent);
-	background-color: var(--color-background);
+	border: 0.25px solid var(--color-text-accent);
 }
 
 .canvas_container {
@@ -168,7 +167,7 @@ canvas {
 
 
 #playerNames {
-	color: #DDEEF1;
+	color: var(--color-text-primary);
 }
 
 

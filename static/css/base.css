@@ -42,6 +42,9 @@ html, body {
 	display: none;
 }
 
+.text-light {
+	color: var(--color-text-primary) !important;
+}
 
 /* ======================================== */
 /*               Navbar Styles              */
@@ -206,7 +209,6 @@ html, body {
 	width: 40px;
 	height: 40px;
 	background-color: var(--color-button-primary);
-	color: var(--color-text-primary);
 	cursor: pointer;
 	transition: background-color 0.3s ease;
 }

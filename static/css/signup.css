@@ -65,7 +65,6 @@
 .signup__action-button {
 	border-radius: 12px;
 	padding: 10px 16px;
-	color: var(--color-text-primary);
 	font-weight: 700;
 	font-family: Lexend, sans-serif;
 	line-height: 150%;
@@ -76,6 +75,7 @@
 }
 
 .signup__continue-42-btn {
+	color: var(--color-text-primary);
 	background-color: var(--color-input-background);
 }
 

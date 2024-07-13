@@ -14,14 +14,14 @@
 		{% else %}
 			<div class="col-1 leaderboard__cell text-center">{{ forloop.counter }}</div>
 		{% endif %}
-		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.user.username }}'); return false;"><strong>{{ player.user.username }}</strong></div>
+		<div class="col-3 leaderboard__cell text-center" role="button" onclick="loadProfile('{{ player.user.username }}'); return false;"><strong>{{ player.user.username }}</strong></div>
 	{% else %}
 		{% if forloop.counter == 1%}
 			<div class="col-1 leaderboard__cell text-center"><i class="fa-solid fa-crown"></i></div>
 		{% else %}
 			<div class="col-1 leaderboard__cell text-center">{{ forloop.counter }}</div>
 		{% endif %}
-		<div class="col-3 leaderboard__cell text-center" onclick="loadProfile('{{ player.user.username }}'); return false;">{{ player.user.username }}</div>
+		<div class="col-3 leaderboard__cell text-center" role="button" onclick="loadProfile('{{ player.user.username }}'); return false;">{{ player.user.username }}</div>
 	{% endif %}
 	<div class="col-2 leaderboard__cell text-center d-none d-md-block">{{ player.wins }}</div>
 	<div class="col-2 leaderboard__cell text-center d-none d-lg-block">{{ player.win_rate|floatformat:2 }}%</div>

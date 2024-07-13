@@ -1,53 +1,63 @@
 
 <div class="chat__container justify-content-center w-100">
 	<div class="d-flex flex-row gap-3">
-		<aside class="sidebar d-flex flex-column col-lg-3 col-md-12">
-			<div class="search-bar d-flex align-items-center d-none d-lg-flex">
-				<i class="fas fa-search search-icon"></i>
-				<input type="text" class="search-input" placeholder="Search" maxlength="14" name="search-for-friend">
+		<aside class="sidebar d-flex flex-column col-lg-3 col-md-12" aria-labelledby="sidebar-title">
+			<h2 id="sidebar-title" class="sr-only">Sidebar</h2>
+			
+			<div class="search-bar d-flex align-items-center d-none d-lg-flex" role="search">
+				<label for="search-input" class="sr-only">Search for a friend</label>
+				<i class="fas fa-search search-icon" aria-hidden="true"></i>
+				<input type="text" class="search-input" id="search-input" placeholder="Search" maxlength="14" name="search-for-friend">
 			</div>
 			
 			<div class="contacts d-flex flex-column px-sm-0 px-md-3">
-				<ul class="user-list list-group" id="user-listt">
+				<ul class="user-list list-group" id="user-listt" aria-labelledby="user-list-title">
+					<h3 id="user-list-title" class="sr-only">Friends List</h3>
 					{% for friend in friends %}
-						<a id="user-list-link" href="" class="list-group-item d-flex justify-content-between align-items-center mb-1">
+						<a id="user-list-link" href="" class="list-group-item d-flex justify-content-between align-items-center mb-1" aria-labelledby="friend-{{ forloop.counter }}">
 							<div class="contact-details d-flex align-items-center position-relative">
 								<div class="position-relative">
 									<img src="{{ friend.image.url }}" alt="{{ friend.user.username }}'s profile image" class="contact-profile-image me-2">
-									<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}bg-success{% else %}bg-danger{% endif %}"></span>
+									<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}bg-success{% else %}bg-danger{% endif %}" aria-label="{% if friend.user.user_things.status == 'online' %}Online{% else %}Offline{% endif %}"></span>
 								</div>
 								<div class="contact-info d-flex flex-column justify-content-center d-none d-lg-flex">
-									<div class="contact-name">{{ friend.user.username }}</div>
+									<div class="contact-name" id="friend-{{ forloop.counter }}">{{ friend.user.username }}</div>
 								</div>
 							</div>
-							<i class="fa-solid fa-sliders contact-action d-none d-md-flex" data-username="{{ friend.user.username }}"></i>
+							<i class="fa-solid fa-sliders contact-action d-none d-md-flex" data-username="{{ friend.user.username }}" aria-hidden="true"></i>
 						</a>
 					{% endfor %}
 				</ul>
-				<div id="dropdownMenu" class="dropdown-menu">
+				<div id="dropdownMenu" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-button">
+					<button id="dropdownMenu-button" class="sr-only">User Actions</button>
 					<ul class="list-group">
-						<li class="list-group-item" id="view-profile">View Profile</li>
-						<li class="list-group-item" id="block-user">Block User</li>
-						<li class="list-group-item" id="unblock-user">Unblock User</li>
-						<li class="list-group-item" id="invite-to-game">Invite to Game</li>
+						<li class="list-group-item" id="view-profile" role="menuitem">View Profile</li>
+						<li class="list-group-item" id="block-user" role="menuitem">Block User</li>
+						<li class="list-group-item" id="unblock-user" role="menuitem">Unblock User</li>
+						<li class="list-group-item" id="invite-to-game" role="menuitem">Invite to Game</li>
 					</ul>
 				</div>
 			</div>
-				
 		</aside>
-		<section class="chat-window col-lg-9 col-md-12 d-flex flex-column w-75">
-			<div class="chat-header">Select user to chat</div>
+		<section class="chat-window col-lg-9 col-md-12 d-flex flex-column w-75" aria-labelledby="chat-window-title">
+			<h2 id="chat-window-title" class="sr-only">Chat Window</h2>
+			<div class="chat-header" tabindex="0">Select user to chat</div>
 			<div class="chat">
-				<div class="messages" id="messages">
+				<div class="messages" id="messages" role="log" aria-live="polite">
 				</div>
 			</div>
-			<div class="input-container d-flex justify-content-center">
+			<div class="input-container d-flex justify-content-center" role="form" aria-labelledby="chat-input-title">
+				<label id="chat-input-title" for="chat-input" class="sr-only">Type a message</label>
 				<div class="input-wrapper d-flex position-relative">
-					<input style="background-color: #292b38; color: white;" type="text" class="form-control message-input" id="chat-input" placeholder="Type a message..." disabled>
-					<button class="btn send-button position-absolute d-flex align-items-center justify-content-center" id="btn-send"><i class="fas fa-paper-plane"></i></button>
+					<input type="text" class="form-control message-input" id="chat-input" placeholder="Type a message..." aria-label="Chat message input" aria-describedby="send-instructions" disabled>
+					<button class="btn send-button position-absolute d-flex align-items-center justify-content-center" id="btn-send" aria-label="Send message" disabled>
+						<i class="fas fa-paper-plane" aria-hidden="true"></i>
+					</button>
 				</div>
+			</div>
+			<div id="send-instructions" class="sr-only">
+				Type your message in the input field and press the send button to send it.
 			</div>
 		</section>
 	</div>
 </div>
-

@@ -81,9 +81,6 @@ async function getCurrentUserr() {
 }
 
 function handleChallengeSocketEvents(challsocket) {
-	challsocket.onopen = function () {
-		console.log('Connected to challenge socket');
-	}
 	challsocket.onmessage = function (event) {
 		const data = JSON.parse(event.data);
 		if (data.id) {

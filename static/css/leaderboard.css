@@ -23,7 +23,7 @@
 
 .leaderboard__tabs .nav-link.active {
 	color: var(--color-text-primary);
-	border-bottom: 2px solid rgba(229, 232, 235, 1);
+	border-bottom: 2px solid var(--color-text-accent);
 }
 
 .leaderboard__container {
@@ -73,3 +73,4 @@
 		max-width: 50%;
 	}
 }
+

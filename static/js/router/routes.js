@@ -108,10 +108,10 @@ async function handleRoute(path, pushState = true) {
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
-	'/leaderboard/': () => { handleRoute('/leaderboard/', true); setTimeout(init_leaderboard, 1000); },
+	'/leaderboard/': () => { handleRoute('/leaderboard/', true); setTimeout(init_leaderboard, 200); },
 	'/privacy/': () => handleRoute('/privacy/', true),
 	'/aboutus/': () => handleRoute('/aboutus/', true),
-	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 1000); },
+	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 800); },
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
 	'/login/': () => login(),
@@ -176,7 +176,7 @@ function handleButtonClick(event) {
 
 	if (handler) {
 		if (window.game_in_progress) {
-			if (buttonId === 'zoomin' || buttonId === 'zoomout') { handler(); return ; }
+			if (buttonId === 'zoomin' || buttonId === 'zoomout' || buttonId === 'mode_toggle' || buttonId === 'yesButton') { handler(); return ; }
 			window.terminate_game = true;
 			if (window.data.playerId != null && window.data.waiting_to_play == true) {
 				// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
@@ -201,8 +201,10 @@ function handleButtonClick(event) {
 function setuptheme() {
 	let Page = document.documentElement;
 	let savedZoom = localStorage.getItem('zoom');
+	let zoomText = document.getElementById('zoom-text');
 	if (savedZoom) {
 		Page.style.setProperty('--page-zoom', savedZoom);
+		zoomText.innerHTML = savedZoom;
 	}
 	if (localStorage.getItem('theme') === '' || localStorage.getItem('theme') === null || localStorage.getItem('theme') === 'dark') {
 		localStorage.setItem('theme', 'dark');
@@ -337,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function zoomIn() {
 	let Page = document.documentElement;
+	let zoomText = document.getElementById('zoom-text');
 	let zoom = parseFloat(Page.style.getPropertyValue('--page-zoom')) || 100;
 	zoom = zoom + 10;
 	if (zoom > 160) {
@@ -344,11 +347,13 @@ function zoomIn() {
 	}
 	Page.style.setProperty('--page-zoom', zoom + '%');
 	localStorage.setItem('zoom', zoom + '%');
+	zoomText.innerHTML = zoom + '%';
 	return false;
 }
 
 function zoomOut() {
 	let Page = document.documentElement;
+	let zoomText = document.getElementById('zoom-text');
 	let zoom = parseFloat(Page.style.getPropertyValue('--page-zoom')) || 100;
 	zoom = zoom - 10;
 	if (zoom < 70) {
@@ -356,5 +361,6 @@ function zoomOut() {
 	}
 	Page.style.setProperty('--page-zoom', zoom + '%');
 	localStorage.setItem('zoom', zoom + '%');
+	zoomText.innerHTML = zoom + '%';
 	return false;
 }

@@ -4,6 +4,8 @@ let sessionKey = '';
 let currentUser = '';
 let profileimage = '';
 let chatsocket = null;
+let usersForSearch = [];
+let hasRun = false;
 
 const api = {
 	fetchUserProfile: username => fetch(`/api/user/${username}/`).then(response => response.json()),
@@ -103,7 +105,6 @@ async function initializeChatSocket() {
 }
 
 function handleChatSocketEvents(chatsocket) {
-	chatsocket.onopen = () => console.log('chat WebSocket open');
 	chatsocket.onmessage = event => {
 		const notification = prepareToNotification(event.data);
 		if (notification === 'from undefined') return;
@@ -147,6 +148,15 @@ function handleUserSelection() {
 
 	const userItems = userList.querySelectorAll('#user-list-link');
 	userItems.forEach(userItem => {
+		let userNameForSearch = userItem.getElementsByClassName('contact-name')[0].innerText;
+		let userImageForSearch = userItem.getElementsByClassName('contact-profile-image')[0].src;
+		let userImageForSearchAlt = userItem.getElementsByClassName('contact-profile-image')[0].alt;
+		let userStatusForSearch = userItem.getElementsByClassName('chat__status-indicator')[0].classList[1];
+		let userExists = usersForSearch.some(user => user.userNameForSearch === userNameForSearch);
+
+		if (!userExists) {
+			usersForSearch.push({ userNameForSearch, userImageForSearch, userImageForSearchAlt, userStatusForSearch });
+		}
 		userItem.addEventListener('click', event => handleUserItemClick(event, userItem, userItems));
 		const contactAction = userItem.querySelector('.contact-action');
 		contactAction.addEventListener('click', event => handleContactActionClick(event, contactAction));
@@ -302,43 +312,60 @@ function setupSearchFunctionality() {
 
 	if (!userList) return;
 
-	const originalUserNames = Array.from(userList.children).map(user => user.querySelector('.contact-name').textContent.trim());
-
 	searchInput.addEventListener("input", function () {
 		const searchText = searchInput.value.toLowerCase();
 		filterUsers(searchText);
 	});
 
 	function filterUsers(searchText) {
-		const filteredUserNames = originalUserNames.filter(userName => userName.toLowerCase().includes(searchText));
-		displayFilteredUsers(filteredUserNames);
+		const filteredUsers = usersForSearch.filter(user =>
+			user.userNameForSearch.toLowerCase().includes(searchText)
+		);
+		displayFilteredUsers(filteredUsers);
 	}
 
-	function displayFilteredUsers(filteredUserNames) {
+	function displayFilteredUsers(filteredUsers) {
 		userList.innerHTML = "";
-		filteredUserNames.forEach(userName => {
+		filteredUsers.forEach(user => {
 			const listItem = document.createElement("a");
-			listItem.classList.add("list-group-item");
-			listItem.innerHTML = `<div class="contact-details d-flex align-items-center position-relative">
-									<div class="position-relative">
-										<img src="/media/default.png" alt="${userName} profile picture" class="contact-profile-image me-2">
-										<span class="chat__status-indicator {% if friend.user.user_things.status == 'online' %}bg-success{% else %}bg-danger{% endif %}"></span>
+			listItem.id = "user-list-link";
+			listItem.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center", "mb-1");
+			listItem.innerHTML = `	<div class="contact-details d-flex align-items-center position-relative">
+										<div class="position-relative">
+											<img src="${user.userImageForSearch}" alt="${user.userImageForSearchAlt}" class="contact-profile-image me-2">
+											<span class="chat__status-indicator ${user.userStatusForSearch}"></span>
+										</div>
+										<div class="contact-info d-flex flex-column justify-content-center d-none d-lg-flex">
+											<div class="contact-name">${user.userNameForSearch}</div>
+										</div>
 									</div>
-									<div class="contact-info d-flex flex-column justify-content-center d-none d-lg-flex">
-										<div class="contact-name">${userName}</div>
-									</div>
-									<i class="fa-solid fa-sliders contact-action d-none d-md-flex" data-username="${userName}"></i>
-								</div>`;
-			listItem.addEventListener("click", () => fetchUserProfileAndSetRecipient(userName));
+									<i class="fa-solid fa-sliders contact-action d-none d-md-flex" data-username="${user.userNameForSearch}"></i>`;
+			listItem.addEventListener("click", event => handleUserItemClick(event, listItem));
+			const contactAction = listItem.querySelector('.contact-action');
+			contactAction.addEventListener('click', event => handleContactActionClickAfterSearch(event, contactAction));
 			userList.appendChild(listItem);
 		});
 	}
-}
 
-function fetchUserProfileAndSetRecipient(userName) {
-	api.fetchUserProfile(userName)
-		.then(userProfile => setCurrentRecipient(userProfile))
-		.catch(utils.logError);
+	function handleUserItemClick(event, listItem) {
+		event.preventDefault();
+		const userItems = document.querySelectorAll('#user-list-link');
+		userItems.forEach(item => item.classList.remove('active'));
+		listItem.classList.add('active');
+		const username = listItem.querySelector('.contact-name').innerText.trim();
+		document.getElementById('chat-input').disabled = false;
+
+		api.fetchUserProfile(username)
+			.then(userProfile => setCurrentRecipient(userProfile))
+			.catch(error => console.error(error));
+	}
+
+	function handleContactActionClickAfterSearch(event, contactAction) {
+		event.preventDefault();
+		event.stopPropagation();
+		const username = contactAction.getAttribute('data-username');
+		showDropdownMenu(contactAction, username);
+	}
 }
 
 initializeChatSocket();
