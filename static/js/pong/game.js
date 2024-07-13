@@ -511,8 +511,9 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		console.log('WebSocket connection established');
 	}
 	type = (challenged_username === '' || challenger_username === '') ? "defaultGame"  : "challenge";
-	if (isOnlineTrounament)
+	if (isOnlineTrounament) {
 		type = "tournament";
+	}
 
 	socket.onmessage = function (event) {
 		const rec = JSON.parse(event.data);

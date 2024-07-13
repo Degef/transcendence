@@ -790,7 +790,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	
 	async def share_match_result(self, data):
 		
-		await asyncio.sleep(10)
+		await asyncio.sleep(2)
 		await self.channel_layer.group_send(
 			self.room_group_name,
 			{

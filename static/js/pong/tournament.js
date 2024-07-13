@@ -629,7 +629,7 @@ function updateMatchCell(nextCell, winnerName, winnerImg, winnerScore) {
     nextCell.appendChild(winnerImg);
     nextCell.appendChild(winnerName);
     // nextCell.insertAdjacentHTML("beforeend", winnerName);
-    nextCell.insertAdjacentHTML("beforeend", `<input class="score-input" type="number" value="${winnerScore}">`);
+    nextCell.insertAdjacentHTML("beforeend", `<input class="score-input" type="number" value="${winnerScore}" disabled>`);
 }
 
 function updateNextMatchup(winner, loser) {

@@ -5,6 +5,7 @@ let matchupElement = null;
 let updatedMatchup = null;
 let winner = null;
 let invitationTimeoutId = null;
+let	tourGame = false;
 // let username = null;
 
 function getPlayerNamesFromMatchup(updatedMatchup) {
@@ -75,6 +76,7 @@ function onTourGameCompleted(player1, player2, score1, score2) {
 	console.log("sending.....", message);
 	console.log("username: ", username);
 	if (username === winner) {
+		tourGame = true;
 		onlineTourSocket.send(JSON.stringify(message));
 	}
 	
@@ -388,9 +390,12 @@ function update_bracket(res) {
 	if (mainSection.style.display === 'block') {
 		var matchups = document.querySelectorAll('#bracket .matchup');
 		matchupElement = findMatchup(res.player1, res.player2, matchups);
-		updateScores(matchupElement, res.score1, res.score2);
+		updateScores(matchupElement, res.score1, res.score2); 
 		mainSection = document.querySelector('.main-section');
 		getNextRoundMatch(res);
+		// if (res.player1 === username || res.playe2 === username) {
+		// 	tourGame = false;
+		// }
 		// updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
 	} else {
 		// Set an observer to update the bracket when it becomes visible
@@ -403,6 +408,9 @@ function update_bracket(res) {
 					updateScores(matchupElement, res.score1, res.score2);
 					observer.disconnect();
 					getNextRoundMatch(res);
+					// if (res.player1 === username || res.playe2 === username) {
+					// 	tourGame = false;
+					// }
 					break;
 				}
 			}
@@ -477,12 +485,14 @@ function onlineTournament(tourSize) {
 			matchName = data.match_name;
 			player1 = res.player1;
 			player2 = res.player2;
-			document.getElementById('start_game_btn').style.display = 'block';
+			displayBtn('start_game_btn')
 		} else if (res.type === 'match_invitation') {
 			username = res.player;
 			match_room = res.match_room;
+			tourGame = false;
 			challenger_username = res.players[0];
 			challenged_username = res.players[1];
+			console.log(res);
 			scheduleMatchInvitation(res);
 			// setTimeout(() => {
 			//     displayMatchInvitation(res.match_room, res.opponent,  res.players);
@@ -493,6 +503,8 @@ function onlineTournament(tourSize) {
 		} else if (res.type === 'opponent_left') {
 			abortMatchInvitation(res);
 			removeChildById('match-invitation-modal');
+			hideSpinner();
+			closeGameSocket();
 			console.log(res);
 			// onTourGameCompleted(res.player, res.opponent, 4, 0);
 		} 
@@ -541,27 +553,24 @@ function onlineTournament(tourSize) {
 
 }
 
-
+/**
+ * Cleans up the online tournament by closing the WebSocket connection and resetting relevant game data.
+ * If a tour game is active, it waits for 7 seconds before sending the 'leaving' message and closing the connection.
+ *
+ * @return {void}
+ */
 function cleanuptour() {
 	if (onlineTourSocket) {
 		isOnlineTrounament = false;
-		onlineTourSocket.onclose = null; // Prevent onclose from being called again
+		onlineTourSocket.onclose = null;
 		console.log("Websocket tournament Closed because of popstate");
-		
-		mes = {
-			'type': 'leaving',
-			'playerId': data.playerId,
-			'player': username,
-			'match_name': match_room
-		}
-		// console.log("msg: ", mes) ;
-		onlineTourSocket.send(JSON.stringify(mes));
-		if (onlineTourSocket.readyState === WebSocket.OPEN) {
-			hideSpinner();
-			setTimeout(function() {
-				onlineTourSocket.close();
-			}, 1000);
-			return;
+		if (tourGame) {
+			setTimeout ( () => {
+				leaveTournament();
+				tourGame = false;
+			}, 7000);
+		} else {
+			leaveTournament();
 		}
 	}
 	game_in_progress = false;
@@ -590,7 +599,6 @@ function scheduleMatchInvitation(res) {
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
 	}
-
 	invitationTimeoutId = setTimeout(() => {
 		displayMatchInvitation(res.match_room, res.opponent, res.players);
 	}, 10000);
@@ -615,9 +623,12 @@ function abortMatchInvitation(res) {
 	}
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
-		console.log('Scheduled match invitation aborted');
+		console.log('Scheduled match invitation aborted', tourGame);
+		console.log('tourGame_beforeAbort', tourGame);
 		invitationTimeoutId = null;
-		onTourGameCompleted(res.player, res.opponent[0], 0, 4);
+		if (!tourGame) {
+			onTourGameCompleted(res.player, res.opponent[0], 0, 4);
+		}
 	}
 }
 
@@ -677,4 +688,69 @@ function isUsernameInMatch(matchElement, username) {
     }
 
     return false;
+}
+
+
+
+
+/**
+ * Sends a 'leaving' message through the online tournament WebSocket and handles closing the connection.
+ *
+ * @return {void}
+ */
+function leaveTournament() {
+    const message = {
+        'type': 'leaving',
+        'player': username,
+        'match_name': match_room
+    };
+	if (invitationTimeoutId !== null) {
+		clearTimeout(invitationTimeoutId);
+		console.log('Scheduled match invitation aborted', tourGame);
+		console.log('tourGame_beforeAbort', tourGame);
+		invitationTimeoutId = null;
+	}
+	removeChildById('match-invitation-modal');
+    
+    console.log("tourGame: ", tourGame);
+    console.log("msg1: ", message);
+
+    if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
+        try {
+            onlineTourSocket.send(JSON.stringify(message));
+        } catch (error) {
+            console.error('Error sending message through WebSocket:', error);
+        }
+
+        hideSpinner();
+        setTimeout(() => {
+            onlineTourSocket.close();
+        }, 1000);
+    } else {
+        console.warn('WebSocket is not open. Message not sent:', message);
+    }
+}
+
+/**
+ * Closes the game WebSocket connection specified in the data object.
+ * If the WebSocket connection is open, it attempts to close it.
+ * Logs relevant messages based on the state of the WebSocket.
+ *
+ * @return {void}
+ */
+function closeGameSocket() {
+    const gameSocket = data['socket'];
+    if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
+        try {
+            console.log("Closing game WebSocket connection.");
+            gameSocket.close();
+        } catch (error) {
+            console.error('Error closing WebSocket connection:', error);
+        }
+    } else if (gameSocket) {
+        console.warn('WebSocket is not open or already closed. Current state:', socket.readyState);
+    }
+	game_in_progress = false;
+	data.playerId = null;
+	data.player = null;
 }
