@@ -26,7 +26,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 	paddleHeight = 60
 
 	async def connect(self):
-		logger.debug(" \n\n WebSocket connection established\n\n")
+		logger.error(" \n\n  WebSocket connection established \n\n")
 		# logger.debug(f"\n\nUser: {self.waiting_queue}")
 		self.room_name = 'game_room'
 		self.username = self.scope['user'].username
@@ -170,7 +170,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		data = json.loads(text_data)
 		gametype = data['type']
-		logger.debug(f"\n\nReceived data: {data}")
+		# logger.debug(f"\n\nReceived data: {data}")
 		if (gametype == 'challenge' or gametype == 'tournament'):
 			await self.handleChallenge(data)
 			return
@@ -201,12 +201,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 				if paddle1 is not None and paddle2 is not None:
 					asyncio.create_task(self.move_ball())
 			elif data['type'] == 'endGame1':
+				if (self.username == self.game_states[room_group_name]['p1_name']):
+					await self.save_game(self.game_states[room_group_name]['p1_name'], self.game_states[room_group_name]['p2_name'], 0, 4)
+				else:
+					await self.save_game(self.game_states[room_group_name]['p1_name'], self.game_states[room_group_name]['p2_name'], 4, 0)
 				self.game_states[room_group_name]['end'] = True
 				self.game_states[room_group_name]['winner'] = data['winner']
-			elif data['type'] == 'endGame3':
-				self.game_states[room_group_name]['end'] = True
-			# elif data['type'] == 'endGame2':
-			# 	await self.close()
 				
 			elif data['type'] == 'endGame':
 				# self.game_states[room_group_name]['end'] = True

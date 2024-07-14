@@ -74,13 +74,21 @@ function resetBall(data2){
 }
 
 function drawText(ctx, text, x, y){
-	ctx.fillStyle = "#FFF";
+	if (localStorage.getItem('theme') === 'light') {
+		ctx.fillStyle = "#444";
+	} else {
+		ctx.fillStyle = "#FFF";
+	}
 	ctx.font = "75px sans-serif";
 	ctx.fillText(text, x, y);
 }
 
-function drawText2(ctx, text, x, y, color){
-   ctx.fillStyle = "#FFF";
+function drawText2(ctx, text, x, y){
+	if (localStorage.getItem('theme') === 'light') {
+		ctx.fillStyle = "#444";
+	} else {
+		ctx.fillStyle = "#FFF";
+	}
    ctx.font = "25px sans-serif";
    ctx.fillText(text, x, y);
 }
@@ -157,9 +165,9 @@ function gameLoop(data2) {
 	if (data2['user'].score == 5 || data2['com'].score == 5) {
 		clearInterval(intervalId);
 		if (data2['user'].score == 5) {
-			drawText2(data2['ctx'], "You Won",  data2['canvas'].width/6, data2['canvas'].height/2, "#333");
+			drawText2(data2['ctx'], "You Won",  data2['canvas'].width/6, data2['canvas'].height/2);
 		} else {
-			drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2, '#444');
+			drawText2(data2['ctx'], "You Lost", data2['canvas'].width/6, data2['canvas'].height/2);
 		}
 		displayBtn('restart_btn');
 		game_in_progress = false;
@@ -217,6 +225,11 @@ function start_play_computer() {
 	data2['canvas'] = document.getElementById('gameCanvas');
 	data2['ctx'] = data2['canvas'].getContext('2d');
 
+	let game_color = "WHITE";
+	if (localStorage.getItem('theme') === 'light') {
+		game_color = '#444';
+	}
+
 	data2['ball'] = {
 		x : data2['canvas'].width/2,
 		y : data2['canvas'].height/2,
@@ -224,7 +237,7 @@ function start_play_computer() {
 		velocityX : 7,
 		velocityY : 0,
 		speed : 7,
-		color : "WHITE"
+		color : game_color
 	};
 
 	data2['user'] = {
@@ -233,7 +246,7 @@ function start_play_computer() {
 		width : 10,
 		height : 60,
 		score : 0,
-		color : "WHITE"
+		color : game_color
 	}
 	data2['com'] = {
 		x : data2['canvas'].width - 10, // - width of paddle
@@ -241,8 +254,9 @@ function start_play_computer() {
 		width : 10,
 		height : 60,
 		score : 0,
-		color : "WHITE"
+		color : game_color
 	}
+	
 	// canvas.addEventListener("mousemove", getMousePos);
 	data2['canvas'].addEventListener("mousemove", getMousePos(data2['canvas'], data2['user']));
 	intervalId = setInterval(function(){
@@ -266,7 +280,11 @@ function draw() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		// Draw the paddles
-		ctx.fillStyle = 'white';
+		let game_color = 'white';
+		if (localStorage.getItem('theme') === 'light') {
+			game_color = '#444';
+		} 
+		ctx.fillStyle = game_color;
 		ctx.fillRect(paddle1['x'], paddle1['y'], paddleWidth, paddleHeight);
 		ctx.fillRect(paddle2['x'], paddle2['y'], paddleWidth, paddleHeight);
 
@@ -280,12 +298,13 @@ function draw() {
 		ctx.setLineDash([5, 15]);
 		ctx.moveTo(canvas.width / 2, 0);
 		ctx.lineTo(canvas.width / 2, canvas.height);
-		ctx.strokeStyle = 'white';
+		ctx.strokeStyle = game_color;
 		ctx.stroke();
 
 		//update score
-		drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5, 'white');
-		drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5, 'white');
+
+		drawText(ctx, data['gameState']['score1'], canvas.width / 4, canvas.height / 5);
+		drawText(ctx, data['gameState']['score2'], 3 * canvas.width / 4, canvas.height / 5);
 	}
 }
 

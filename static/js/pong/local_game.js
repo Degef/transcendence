@@ -157,6 +157,10 @@ function start_local_game() {
     data3['ctx'] = data3['canvas'].getContext('2d');
     data3['paddle_speed'] = 10;
 
+    let game_color = "#FFF";
+    if (localStorage.getItem('theme') === 'light') {
+		game_color = "#444";
+	}
     data3['ball'] = {
         x : data3['canvas'].width/2,
         y : data3['canvas'].height/2,
@@ -166,7 +170,7 @@ function start_local_game() {
         velocityX : 7,
         velocityY : 0,
         speed : 7,
-        color : "WHITE"
+        color : game_color
     };
 
     data3['player1'] = {
@@ -176,7 +180,7 @@ function start_local_game() {
         width : 10,
         height : 60,
         score : 0,
-        color : "WHITE"
+        color : game_color
     }
     data3['player2'] = {
         x : data3['canvas'].width - 10,
@@ -185,8 +189,9 @@ function start_local_game() {
         width : 10,
         height : 60,
         score : 0,
-        color : "WHITE"
+        color : game_color
     }
+
     // canvas.addEventListener("mousemove", getMousePos);
     // data3['canvas'].addEventListener("mousemove", getMousePos(data3['canvas'], data3['user']));
     window.addEventListener('keydown', (e) => {
