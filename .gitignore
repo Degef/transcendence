@@ -6,3 +6,4 @@ __pycache__/
 migrations/
 .idea/
 __init__.py
+media/profile_pics/
