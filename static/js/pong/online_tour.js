@@ -110,7 +110,6 @@ function display_game(event) {
 	const parser = new DOMParser();
 	const parsedHtml = parser.parseFromString(event.html, 'text/html');
 	tournamentSection = parsedHtml.getElementById('tournament');
-	// console.log(tournamentSection);
 
 	mainSection.style.display = 'none';
 	mainContainer.appendChild(tournamentSection);
@@ -145,7 +144,6 @@ function start_play_onl_tour(event, socket) {
 		document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
 		document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
 	} else if (rec['type'] == 'gameState') {
-		// console.log("Received game state")
 		data['gameState'] = rec['gameState'];
 		setPlayer(rec);
 		// draw(rec['gameState']);
@@ -165,7 +163,6 @@ function start_play_onl_tour(event, socket) {
 	}
 
 	// socket.onclose = function () {
-	//     console.log('WebSocket connection closed');
 	//     data['endGame'] = true;
 	//     data['playerId'] = null;
 	//     game_in_progress = false;
@@ -331,7 +328,6 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 	confirmButton.textContent = 'Join Game';
 
 	confirmButton.onclick = function() {
-		console.log('click join Game');
 		removeChildById("match-invitation-modal");
 		// document.body.removeChild(modal);
 		loadTrounametGame(challenger_username, challenged_username);
@@ -353,7 +349,6 @@ function getNextRoundMatch(res) {
 		return ;
 	}
 	var playernames = getPlayerNamesFromMatchup(updatedMatchup);
-	console.log(playernames);
 	if (playernames.includes(winner) && playernames.length === 2) {
 		const opponent = res['winner'] === playernames[0] ? playernames[1]: playernames[0];
 		const message = {
@@ -468,12 +463,10 @@ function onlineTournament(tourSize) {
 	// Log messages from the server
 	// socket.onmessage = function(event) {
 	//     const message = JSON.parse(event.data);
-	//     console.log('Message from server:', message);
 	// };
 	onlineTourSocket = socket;
 	socket.onmessage = function(e) {
 		let res = JSON.parse(e.data);
-		// console.log('Data:', res);
 
 		if (res['type'] == 'playerId') {
 			data['playerId'] = res['playerId'];
@@ -492,7 +485,6 @@ function onlineTournament(tourSize) {
 			tourGame = false;
 			challenger_username = res.players[0];
 			challenged_username = res.players[1];
-			console.log(res);
 			scheduleMatchInvitation(res);
 			// setTimeout(() => {
 			//     displayMatchInvitation(res.match_room, res.opponent,  res.players);

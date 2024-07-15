@@ -15,6 +15,7 @@ from apps.pong.models import Tournament, TournamentPlayer
 from django.template.loader import render_to_string
 import datetime
 from datetime import timedelta
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -464,6 +465,24 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 
 
 
+
+
+def shuffle_array(array):
+    """
+    Shuffles an array using the Fisher-Yates (Knuth) shuffle algorithm.
+
+    This function modifies the original array by randomly swapping its elements.
+
+    :param list array: The list to be shuffled.
+    :return: The shuffled list.
+    :rtype: list
+    """
+    # Loop through the array backwards
+    for i in range(len(array) - 1, 0, -1):
+        j = random.randint(0, i)
+        array[i], array[j] = array[j], array[i]
+    return array
+
 class TournamentConsumer(AsyncWebsocketConsumer):
 	players_waiting = deque()
 	players_waitingBig = deque()
@@ -545,6 +564,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					})
 					user.tournament = tournament
 					await sync_to_async(user.save)()
+				
+				tourn_players = shuffle_array(tourn_players)
 
 				html_content = await sync_to_async(render_to_string)('pong/online_tour_bracket.html', {'players_list': tourn_players})
 				await self.broadcast_html_content(html_content)

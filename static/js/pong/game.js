@@ -17,6 +17,7 @@ var intervalId = null;
 var type = "defaultGame";
 let username = fetch('/get_current_user/').then(response => response.json());
 let pusername = '';
+let game_color = "WHITE";
 
 // let username =  fetch('/get_current_user/').then(response => response.json()).then((data) => { return (data.currentUser)});
 // console.log("currentUser: ", username);
@@ -162,6 +163,15 @@ function render(data2) {
 }
 
 function gameLoop(data2) {
+	if (localStorage.getItem('theme') === 'light') {
+		game_color = '#1A1F33';
+	} else {
+		game_color = "WHITE";
+	}
+	data2['ball'].color = game_color;
+	data2['user'].color = game_color;
+	data2['com'].color = game_color;
+
 	if (data2['user'].score == 5 || data2['com'].score == 5) {
 		clearInterval(intervalId);
 		if (data2['user'].score == 5) {
@@ -227,7 +237,7 @@ function start_play_computer() {
 
 	let game_color = "WHITE";
 	if (localStorage.getItem('theme') === 'light') {
-		game_color = '#444';
+		game_color = '#1A1F33';
 	}
 
 	data2['ball'] = {

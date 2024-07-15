@@ -3,6 +3,20 @@ let currentPlayerIndex = 0;
 let totalPlayers = 0;
 let tournamentSection, mainSection, player1, player2, matchElement;
 
+
+/**
+ * Creates a button element within a container and attaches an event handler.
+ * Generates a button element with the specified ID, label, and click event handler.
+ * Wraps the button within a styled container for layout purposes.
+ * If additional parameters are provided, they are passed to the click handler.
+ *
+ * @param {string} buttonId - The ID to assign to the button element.
+ * @param {string} label - The text label to display on the button.
+ * @param {Function} clickHandler - The function to execute when the button is clicked.
+ * @param {...*} params - Additional parameters to pass to the click handler.
+ * @return {HTMLElement} - The container element containing the button.
+ */
+
 function getBtnContainer(buttonId, label, clickHandler, ...params) {
     // Create button element
     let buttonContainer = document.createElement('div');
@@ -151,6 +165,16 @@ var matchModal = function getMatchModal(player1, player2) {
     return modalHtml;
 } 
 
+
+/**
+ * Appends an element to a container specified by its class name.
+ * Searches for the container element using the provided class name.
+ * If the container is found, it appends the element to it.
+ *
+ * @param {HTMLElement} toBeAppended - The element to be appended to the container.
+ * @param {string} classname - The class name of the container element.
+ * @return {void}
+ */
 function appendToContainer(toBeAppended, classname) {
     const container = document.querySelector(`.${classname}`);
     if (container) {
@@ -280,7 +304,13 @@ function displayMatchModal(player1, player2) {
     });
 }
 
-
+/**
+ * Shuffles an array using the Fisher-Yates (Knuth) shuffle algorithm.
+ * This function modifies the original array by randomly swapping its elements.
+ *
+ * @param {Array} array - The array to be shuffled.
+ * @return {Array} - The shuffled array.
+ */
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -289,6 +319,16 @@ function shuffleArray(array) {
     return array;
 }
 
+
+/**
+ * Sets up the tournament by initializing player data and creating the player input form.
+ * Initializes the `players` array and sets the `currentPlayerIndex` and `totalPlayers` variables.
+ * Creates and displays the player input form in the specified HTML element.
+ * Adds an event listener to the submit button for handling player name submissions.
+ *
+ * @param {number} playerCount - The total number of players participating in the tournament.
+ * @return {void}
+ */
 function setupTournament(playerCount) {
     players = [];
     currentPlayerIndex = 0;
@@ -332,6 +372,14 @@ function customTrim(input) {
     return input.replace(/^[\s'"]+|[\s'"]+$/g, '');
 }
 
+/**
+ * Validates a player name input string based on several criteria.
+ * Checks if the input is empty, too long, already taken, or does not match the required pattern.
+ * Alerts the user with an appropriate message if any validation fails.
+ *
+ * @param {string} input - The player name to validate.
+ * @return {boolean} - Returns true if the input is valid, otherwise false.
+ */
 function validateInputString(input) {
 
     const regex = /^[a-zA-Z]\S*$/;
@@ -340,7 +388,7 @@ function validateInputString(input) {
         alert('Player name cannot be empty.');
         return false;
     }
-    if (input.length > 14) {
+    if (input.length > 10) {
         alert('Player name too long.');
         return false;
     }
@@ -359,6 +407,16 @@ function validateInputString(input) {
 }
 
 
+
+/**
+ * Handles the submission of player names during tournament setup.
+ * Validates the input player name and updates the player list.
+ * If the current player index is less than the total number of players, it updates the input field for the next player.
+ * Once all player names are submitted, it shuffles and organizes the tournament.
+ *
+ * @param {Event} event - The event object representing the click event.
+ * @return {void}
+ */
 function submitPlayerName(event) {
     if (event.type === 'click') {
         const playerNameInput = document.getElementById('playerName');
@@ -403,6 +461,14 @@ function getCookie(name) {
 }
 
 
+/**
+ * Organizes the tournament by sending the player list to the server and updating the tournament bracket.
+ * Sends a POST request to the server with the player list, retrieves the tournament bracket, 
+ * and updates the corresponding HTML element. Displays a start button and applies styling if there are exactly 4 players.
+ *
+ * @param {Array<string>} players - The list of player names.
+ * @return {Promise<void>} - A promise that resolves when the operation is complete.
+ */
 async function organizeTournament(players) {
     const csrftoken = getCookie('csrftoken');
     try {

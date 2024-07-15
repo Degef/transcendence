@@ -92,6 +92,14 @@ function render1(data3) {
 }
 
 function gameLoop1(data3) {
+    if (localStorage.getItem('theme') === 'light') {
+		game_color = '#1A1F33';
+	} else {
+		game_color = "WHITE";
+	}
+	data3['ball'].color = game_color;
+	data3['player1'].color = game_color;
+	data3['player2'].color = game_color;
     if (data3['player1'].score == 5 || data3['player2'].score == 5) {
         winner = data3['player1'].score == 5 ? getTextContentById('player1Name') : getTextContentById('player2Name');
         clearInterval(intervalId);
