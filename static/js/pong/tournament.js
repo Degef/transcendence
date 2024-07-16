@@ -61,8 +61,37 @@ const startTrounBtn = getBtnContainer('startTour', 'Start Tournament', startFirs
 let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
 
 
-var loserModal = function getLoserModal() {
-    modalHtml = ` 
+// var loserModal = function getLoserModal() {
+//     modalHtml = ` 
+//         <center> 
+//             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+//                 <div class="modal-dialog modal-lg">
+//                     <div class="modal-content justify-content-center">
+//                         <div class="modal-header justify-content-center">
+//                             <h4 class="modal-title" id="myModalLabel">Sorry</h4>
+//                         </div>
+//                         <div class="modal-body">
+//                             <div class="card-body text-center">
+//                                 <img src="/media/images/loser.jpg">
+//                                 <h4>HAHAHAHAHA.....!!!</h4>
+//                                 <p>YOU LOST THE GAME..🤦‍♂️🤦‍♂️</p> 
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+// 	    </center> 
+//     `;
+//     return modalHtml;
+// } 
+
+
+/**
+ * Generates the HTML content for the loser modal for the online game.
+ * @returns {string} The HTML string for the loser modal.
+ */
+const loserModal = () => {
+    const modalHtml = ` 
         <center> 
             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -72,9 +101,9 @@ var loserModal = function getLoserModal() {
                         </div>
                         <div class="modal-body">
                             <div class="card-body text-center">
-                                <img src="/media/images/loser.jpg">
-                                <h4>HAHAHAHAHA.....!!!</h4>
-                                <p>YOU LOST THE GAME..🤦‍♂️🤦‍♂️</p> 
+                                <img src="/media/images/loser.jpg" class="loser-img" >
+                                <h4 class="congrats-message">HAHAHAHAHA.....!!!</h4>
+                                <p class="winner-message">🤦‍♂️🤦‍♂️ YOU LOST THE GAME.. 🤦‍♂️🤦‍♂️</p> 
                             </div>
                         </div>
                     </div>
@@ -83,9 +112,14 @@ var loserModal = function getLoserModal() {
 	    </center> 
     `;
     return modalHtml;
-} 
+}
 
-var winM = function getWinM() {
+
+/**
+ * Generates the HTML for the winner of modal for the online game.
+ * @returns {string} The HTML string for the winner modal.
+ */
+const winM = () => {
     modalHtml = ` 
         <center> 
             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -96,9 +130,9 @@ var winM = function getWinM() {
                         </div>
                         <div class="modal-body">
                             <div class="card-body text-center"> 
-                                <img src="/media/images/winner.jpg">
-                                <h4>CONGRATULATIONS!!!</h4>
-                                <p>YOU WON THE GAME </p> 
+                                <img src="/media/images/winner.jpg" class="winneronline-img">
+                                <h4 class="congrats-message">CONGRATULATIONS!</h4>
+                                <p class="winner-message"> 🎉🎉 YOU WON THE GAME... 🎉🎉</p> 
                             </div>
                         </div>
                     </div>
@@ -108,7 +142,13 @@ var winM = function getWinM() {
     `;
     return modalHtml;
 } 
-var winnerModal = function getWinnerModal(winner, loser) {
+{/* <img src="https://img.icons8.com/?size=100&id=VUt5dWfcfFzt&format=png&color=000000"> */}
+/**
+ * Generates the HTML content for the winner modal that will be used for local games.
+ * @param {string} winner - The name of the winner.
+ * @returns {string} The HTML string for the winner modal.
+ */
+const winnerModal = (winner) => {
     modalHtml = ` 
         <center> 
             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -119,9 +159,10 @@ var winnerModal = function getWinnerModal(winner, loser) {
                         </div>
                         <div class="modal-body">
                             <div class="card-body text-center"> 
-                                <img src="https://img.icons8.com/?size=100&id=VUt5dWfcfFzt&format=png&color=000000">
-                                <h4>CONGRATULATIONS!</h4>
-                                <p>The winner of this game is ${winner}</p> 
+                                
+                                <img src="/media/images/win.png" class="winner-img" id="winner-image">
+                                <h4 class="congrats-message">CONGRATULATIONS!</h4>
+                                <p class="winner-message">🎉 The winner of this game is <span  class="winner-name">${winner}</span> 🎉</p> 
                             </div>
                         </div>
                     </div>
@@ -203,13 +244,15 @@ function displayWinnerModal(winner, loser) {
     }
 
     // Insert the modal HTML into the container
-    modalContainer.innerHTML = winnerModal(winner, loser);
+    modalContainer.innerHTML = winnerModal(winner);
     const myModal = new bootstrap.Modal('#m-result-modal');
     const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
     modal.show();
-    setTimeout(() => {
-        myModal.hide();
-    }, 50000);
+    // animateWinnerImage();
+    hideModalAfterDelay(myModal, 5000);
+    // setTimeout(() => {
+    //     myModal.hide();
+    // }, 5000);
 
     // function hideModalOnClickOutsideTwo(event) {
     //     if (!modalContainer.contains(event.target)) {
@@ -224,6 +267,8 @@ function displayWinnerModal(winner, loser) {
     // });
 }
 
+
+
 function displayLoserModal() {
     let modalContainer = document.getElementById('modal-container');
     if (!modalContainer) {
@@ -237,9 +282,10 @@ function displayLoserModal() {
     const myModal = new bootstrap.Modal('#m-result-modal');
     const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
     modal.show();
-    setTimeout(() => {
-        myModal.hide();
-    }, 5000);
+    hideModalAfterDelay(myModal, 5000);
+    // setTimeout(() => {
+    //     myModal.hide();
+    // }, 5000);
 }
 
 function displayWinM() {
@@ -255,9 +301,10 @@ function displayWinM() {
     const myModal = new bootstrap.Modal('#m-result-modal');
     const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
     modal.show();
-    setTimeout(() => {
-        myModal.hide();
-    }, 5000);
+    hideModalAfterDelay(myModal, 5000);
+    // setTimeout(() => {
+    //     myModal.hide();
+    // }, 5000);
 }
 
 
@@ -497,6 +544,7 @@ async function organizeTournament(players) {
         tournElementtmp.innerHTML = parsedjson.tournament_bracket;
         appendToContainer(startTrounBtn, 'my-5.main-section');
         if (players.length == 4) {
+            changeSplitStyle();
             changeRoundStyle();
         }
     } catch (error) {
@@ -839,6 +887,18 @@ function changeRoundStyle() {
 
 }
 
+function changeSplitStyle() {
+    const splits = document.querySelectorAll('.split');
+    console.log(splits);
+    
+
+    // roundOneMatchup.classList.add('flex-mode');
+    splits.forEach(matchup => {
+        matchup.classList.add('split-four-p');
+    });
+
+}
+
 
 
 /**
@@ -879,3 +939,45 @@ function showSpinner(message) {
     console.log("hidding the Spinner");
     spinnerOverlay.style.display = 'none';
   }
+
+
+
+/**
+ * Animates the winner image inside the modal by cycling through a set of images.
+ */
+function animateWinnerImage() {
+    const images = [
+        "/media/images/win.png",
+        "/media/images/win3.png",
+        "/media/images/w1.png",
+        "/media/images/w2.png",
+        "/media/images/w3.png",
+    ];
+
+    let currentImageIndex = 0;
+    const winnerImage = document.getElementById("winner-image");
+
+    function changeImage() {
+        currentImageIndex = (currentImageIndex + 1) % images.length;
+        winnerImage.style.opacity = 0; // Fade out
+        setTimeout(() => {
+            winnerImage.src = images[currentImageIndex];
+            winnerImage.style.opacity = 1; // Fade in
+        }, 1000); // Match the transition duration
+    }
+
+    setInterval(changeImage, 2000); // Change image every 3 seconds
+}
+
+
+
+/**
+ * Hides the given modal after a specified wait time.
+ * @param {Object} modalInstance - The Bootstrap modal instance to hide.
+ * @param {number} waitTime - The time to wait in milliseconds before hiding the modal.
+ */
+const hideModalAfterDelay = (modalInstance, waitTime) => {
+    setTimeout(() => {
+        modalInstance.hide();
+    }, waitTime);
+};

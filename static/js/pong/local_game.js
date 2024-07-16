@@ -112,8 +112,17 @@ function gameLoop1(data3) {
         }
         game_in_progress = false;
         updateScoresDisplay(data3['player1'].score, data3['player2'].score);
+        data3['player2'].x = data3['canvas'].width - 10;
+        data3['player2'].y = ( data3['canvas'].height - 100)/2;
+        data3['player1'].x = 0;
+        data3['player1'].y = ( data3['canvas'].height - 100)/2;
+        // update1(data3);
+        // render1(data3);
+        
 
         displayWinnerModal(winner, player2);
+        // displayLoserModal();
+        // displayWinM();
 
         setTimeout(() => {
             if (isIntournament) {
@@ -165,10 +174,11 @@ function start_local_game() {
     data3['ctx'] = data3['canvas'].getContext('2d');
     data3['paddle_speed'] = 10;
 
-    let game_color = "#FFF";
     if (localStorage.getItem('theme') === 'light') {
-		game_color = "#444";
-	}
+		game_color = '#1A1F33';
+	} else {
+        game_color = 'WHITE';
+    }
     data3['ball'] = {
         x : data3['canvas'].width/2,
         y : data3['canvas'].height/2,
@@ -222,6 +232,8 @@ function start_local_game() {
             data3['player2'].speedY = 0;
         }
     });
+    console.log(game_color);
+    render1(data3);
     startCountdown() 
     hideBtn('quit_game');
     setTimeout (() => {
@@ -238,9 +250,9 @@ function start_local_game() {
 
 function goBack() {
     // terminate_game = false;
-    clearInterval(intervalId);
 	// terminate_game = true;
 	game_in_progress = false;
-    document.getElementById('tournament').style.display = 'block';
+    // document.getElementById('tournament').style.display = 'block';
     history.back();
+    clearInterval(intervalId);
 }

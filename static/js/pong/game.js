@@ -51,7 +51,7 @@ function drawNet(data2) {
 	data2.ctx.setLineDash([5, 15]);
 	data2.ctx.moveTo(data2.canvas.width / 2, 0);
 	data2.ctx.lineTo(data2.canvas.width / 2, data2.canvas.height);
-	data2.ctx.strokeStyle = 'white';
+	data2.ctx.strokeStyle = game_color;
 	data2.ctx.stroke();
 }
 
