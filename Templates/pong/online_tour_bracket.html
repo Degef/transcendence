@@ -1,10 +1,10 @@
 {% if players_list|length == 4 %}
 <section id="bracket">
-  <div class="custom-container">
+  <div class="custom-container four-p-container">
   <div class="split split-one">
     <div class="round round-one current">
       <div class="round-details">Round 1<br/></div>
-      <ul class="matchup">
+      <ul class="matchup four-p-round-one-sp-one">
         <li class="team team-top">
           <img src="/media/images/pro3.jpeg" alt="Player2's profile picture" class="player-image">
           <span class="player-name"> {{ players_list.0.username }} </span>
@@ -19,11 +19,11 @@
     </div>	<!-- END ROUND ONE -->
   </div> 
 
-<div class="champion">
+<div class="champion  four-p-champion">
     <div class="final">
       <i class="fa fa-trophy"></i>
       <div class="round-details">Final <br/></div>		
-      <ul class ="matchup championship">
+      <ul class ="matchup championship four-p-final">
         <li class="team team-top">
           <img src="/media/images/pro3.jpeg" alt="Player2's profile picture" class="player-image">
           <span class="player-name"> &nbsp; </span>
@@ -42,7 +42,7 @@
   <div class="split split-two">
     <div class="round round-one current">
       <div class="round-details">Round 1<br/></div>
-      <ul class="matchup">
+      <ul class="matchup four-p-round-one-sp-two">
         <li class="team team-top">
           <img src="/media/images/pro3.jpeg" alt="Player2's profile picture" class="player-image">
           <span class="player-name"> {{ players_list.2.username }} </span>

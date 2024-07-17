@@ -191,7 +191,6 @@ function customConfirm(message, onAccept, onDecline) {
 function customDeclineMsg(message) {
     const modal = document.getElementById('custom-decline');
     const messageElement = document.getElementById('decline-msg');
-	console.log(messageElement);
     const closeBtn = document.getElementById('decline-close-button');
   
     messageElement.innerText = message;

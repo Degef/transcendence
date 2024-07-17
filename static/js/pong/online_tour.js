@@ -77,32 +77,14 @@ function onTourGameCompleted(player1, player2, score1, score2) {
 	console.log("username: ", username);
 	if (username === winner) {
 		tourGame = true;
-		onlineTourSocket.send(JSON.stringify(message));
+		// onlineTourSocket.send(JSON.stringify(message));
+		send_message(onlineTourSocket, message)
 	}
 	
 	// updateScores(matchElement, player1_score, player2_score);
 
 }
 
-
-function startGame() {
-	if (socket && matchName) {
-		socket.send(JSON.stringify({
-			action: 'start_game',
-			match_name: matchName
-		}));
-	}
-}
-
-function playerMove(moveData) {
-	if (socket && matchName) {
-		socket.send(JSON.stringify({
-			action: 'player_move',
-			match_name: matchName,
-			move_data: moveData
-		}));
-	}
-}
 
 function display_game(event) {
 	const mainContainer = document.getElementById('main-container');
@@ -138,7 +120,6 @@ function start_play_onl_tour(event, socket) {
 	
 
 	const rec = JSON.parse(event.data);
-	console.log(rec);
 	if (rec['type'] == 'playerId') {
 		data['playerId'] = rec['playerId'];
 		document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
@@ -359,7 +340,8 @@ function getNextRoundMatch(res) {
 			'opponent': opponent,
 			'plcount': 2
 		};
-		onlineTourSocket.send(JSON.stringify(message));
+		// onlineTourSocket.send(JSON.stringify(message));
+		send_message(onlineTourSocket, message);
 	}
 	if (playernames.includes(winner) && playernames.length === 1) {
 		const message = {
@@ -368,7 +350,8 @@ function getNextRoundMatch(res) {
 			'player1': playernames[0],
 			'plcount': 1
 		};
-		onlineTourSocket.send(JSON.stringify(message));
+		// onlineTourSocket.send(JSON.stringify(message));
+		send_message(onlineTourSocket, message);
 	}
 }
 
@@ -460,10 +443,7 @@ function onlineTournament(tourSize) {
 		sendMessage('join_tournament', tourSize);
 		isOnlineTrounament = true;
 	};
-	// Log messages from the server
-	// socket.onmessage = function(event) {
-	//     const message = JSON.parse(event.data);
-	// };
+
 	onlineTourSocket = socket;
 	socket.onmessage = function(e) {
 		let res = JSON.parse(e.data);
@@ -510,21 +490,11 @@ function onlineTournament(tourSize) {
 				'player': data['player'],
 			};
 			console.log("data:", data);
-			socket.send(JSON.stringify(message))
+			// socket.send(JSON.stringify(message));
+			send_message(socket, message);
 		}
 		else if (res.type === 'gameState') {
 			start_play_onl_tour(e, socket)
-		}
-		else if (res.type === 'waiting_for_opponent') {
-			// console.log('Waiting_Message Data:', res);
-		}
-		else if (res.type === 'match_result') {
-			alert(`Match result: ${res.result.winner.username} won against ${res.result.loser.username}`);
-			// Redirect back to the tournament bracket
-			window.location.href = '/tournament_bracket_url';  // Replace with the actual URL
-		}
-		else if (res.type === 'confirmed_players_list') {
-			// console.log('Confirmed_ps:', res);
 		}
 	}
 	
@@ -699,7 +669,6 @@ function leaveTournament() {
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
 		console.log('Scheduled match invitation aborted', tourGame);
-		console.log('tourGame_beforeAbort', tourGame);
 		invitationTimeoutId = null;
 	}
 	removeChildById('match-invitation-modal');
@@ -716,10 +685,10 @@ function leaveTournament() {
 
         hideSpinner();
         setTimeout(() => {
-            onlineTourSocket.close();
+			if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
+            	onlineTourSocket.close();
+			}
         }, 1000);
-    } else {
-        console.warn('WebSocket is not open. Message not sent:', message);
     }
 }
 
@@ -734,13 +703,10 @@ function closeGameSocket() {
     const gameSocket = data['socket'];
     if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
         try {
-            console.log("Closing game WebSocket connection.");
             gameSocket.close();
         } catch (error) {
             console.error('Error closing WebSocket connection:', error);
         }
-    } else if (gameSocket) {
-        console.warn('WebSocket is not open or already closed. Current state:', socket.readyState);
     }
 	game_in_progress = false;
 	data.playerId = null;

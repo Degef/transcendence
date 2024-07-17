@@ -283,7 +283,7 @@
 	position: relative;
 	border: 0px !important;
 	z-index: 1055;
-	width: 55% !important;
+	width: 78% !important;
 	min-width: 250px;
 }
 
@@ -342,17 +342,23 @@
 
 
 .box {
-	background-color: #0D011A;
+	background-color: var(--color-card-background);
 	padding: 10px;
 	max-width: 250px;
 	height: 60px;
 	width: 40%;
-	display: inline-block;
+	color: var(--color-text-primary);
+	font-family: monospace;
+    display: grid !important;
+    justify-content: center;
+    align-content: center;
+	font-weight: 900;
+	font-size: 1.3rem;
 	margin: 5px;
 	border-radius: 10px;
 }
 .text-dark {
-	color: white;
+	color: var(--color-text-primary);
 	font-family: 'Amaranth','Roboto Condensed', sans-serif; 
 	font-size: 22px;
 	text-transform: capitalize;
@@ -379,7 +385,7 @@
 	width: 70px; /* Adjust width as needed */
 	height: 70px; /* Adjust height as needed */
 	overflow: hidden;
-	background-color: #0D011A;
+	background-color: var(--color-card-background);
 	/* clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); */
 	clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)
 }
@@ -397,13 +403,15 @@
 	}
 	.box-1 {
 		align-self: center;
-		clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+		/* clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%); */
+		clip-path: polygon(0 0, 100% 0%, 100% 100%, 0% 100%);
 		width: 100%;
 	}
 
 	.box-2 {
 		align-self: center;
-		clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+		/* clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%); */
+		clip-path: polygon(0 0, 100% 0%, 100% 100%, 0% 100%);
 		width: 100%;
 	}
 	.vsbox {

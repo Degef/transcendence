@@ -19,8 +19,14 @@ let username = fetch('/get_current_user/').then(response => response.json());
 let pusername = '';
 let game_color = "WHITE";
 
-// let username =  fetch('/get_current_user/').then(response => response.json()).then((data) => { return (data.currentUser)});
-// console.log("currentUser: ", username);
+
+
+function send_message(gsocket, message) {
+	if (gsocket && gsocket.readyState === WebSocket.OPEN) {
+            gsocket.send(JSON.stringify(message));
+	}
+}
+
 
 // draw a rectangle, will be used to draw paddles
 
@@ -61,6 +67,7 @@ function getMousePos(canvas, user) {
 	return function(evt) {
 		let rect = canvas.getBoundingClientRect();
 		user.y = evt.clientY - rect.top - user.height/2;
+		// user.y = evt.clientY - (rect.top - 1);
 	}
 }
 
@@ -150,6 +157,7 @@ function updateGame(data2){
 	}
 	 // Keep paddles within the canvas
 	 data2['user'].y = Math.max(0, Math.min(data2['canvas'].height - data2['user'].height, data2['user'].y));
+	//  data2['user'].y = Math.max(0, Math.min(data2['canvas'].height, data2['user'].y));
 }
 
 function render(data2) {
@@ -364,12 +372,14 @@ function main_loop () {
 			'playerId': data['playerId'],
 			'winner': otherPlayer
 		}
-		data['socket'].send(JSON.stringify(mes));
+		// data['socket'].send(JSON.stringify(mes));
+		send_message(data['socket'], mes);
 
 		// wait one second
 		setTimeout(function() {
 			terminate_game = false;
-			data['socket'].close();
+			closeGameSocket();
+			// data['socket'].close();
 			if (type === 'challenge') {
 				challenged_username = '';
 				challenger_username = '';
@@ -381,9 +391,7 @@ function main_loop () {
 		return;
 	}
 	// data['socket'].send(JSON.stringify(message));
-	if (data['socket'].readyState === WebSocket.OPEN) {
-		data['socket'].send(JSON.stringify(message));
-	}
+	send_message(data['socket'], message);
 	requestAnimationFrame(main_loop);
 }
 
@@ -430,9 +438,12 @@ function setPlayer(rec) {
 			'player': data['player'],
 		};
 		setTimeout(() => {
-			data['socket'].send(JSON.stringify(message));
-			console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
-			main_loop();
+			if (game_in_progress) {
+				data['socket'].send(JSON.stringify(message));
+				data.waiting_to_play = false;
+				console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
+				main_loop();
+			}
 		}, 5000);
 	}
 }
@@ -558,9 +569,11 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'challengee': challenged_username,
 				'challenger': challenger_username,
 			};
-			data['socket'].send(JSON.stringify(message));
+			// data['socket'].send(JSON.stringify(message));
+			send_message(data['socket'], message);
 		} else if (rec['type'] === 'pnames') {
 			hideSpinner();
+			data.waiting_to_play = false;
 			data['p1_name'] = rec.p1_name;
 			data['p2_name'] = rec.p2_name;
 			changePlayerNames(rec.p1_name, rec.p2_name);
@@ -586,8 +599,10 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'type': 'endGame',
 				'playerId': data['playerId'],
 			};
-			data['socket'].send(JSON.stringify(message));
-			data.socket.close();
+			// data['socket'].send(JSON.stringify(message));
+			send_message(data['socket'], message);
+			// data.socket.close();
+			closeGameSocket();
 			console.log("IsTypeTrounament:", isOnlineTrounament);
 			console.log("mainSection:", mainSection);
 			if (isOnlineTrounament) {
@@ -653,7 +668,8 @@ function cleanup() {
 			'playerId': data.playerId,
 			'winner': otherPlayer
 		}
-		data.socket.send(JSON.stringify(mes));
+		// data.socket.send(JSON.stringify(mes));
+		send_message(data.socket, mes);
 		if (data.socket.readyState === WebSocket.OPEN) {
 			hideSpinner();
 			setTimeout(function() {
@@ -837,18 +853,20 @@ function startCountdown() {
 	// 	container.appendChild(countdown);
 	//   }
 	var canvas = document.getElementById('gameCanvas');
-	var container = canvas.parentNode; // Get the parent of the canvas
-	if (container) {
-		container.appendChild(countdown);
+	if (canvas) {
+		var container = canvas.parentNode; // Get the parent of the canvas
+		if (container) {
+			container.appendChild(countdown);
+		}
 	}
   
 	  setTimeout(function () {
 		if (counter > -1) {
-		  countdown.style.fontSize = "40vw";
-		  countdown.style.opacity = 0;
+			countdown.style.fontSize = "40vw";
+			countdown.style.opacity = 0;
 		} else {
-		  countdown.style.fontSize = "10vw";
-		  countdown.style.opacity = 0.7;
+			countdown.style.fontSize = "10vw";
+			countdown.style.opacity = 0.7;
 		}
 	  }, 20);
   
@@ -856,3 +874,24 @@ function startCountdown() {
 	  if (counter === -1) clearInterval(timer);
 	}, 1000);
 }
+
+
+
+window.addEventListener('beforeunload', function(event) {
+	// Set a confirmation message
+	var confirmationMessage = "Are you sure you want to leave? Any unsaved changes will be lost.";
+	console.log("game_in_progress :", window.game_in_progress);
+	console.log("waiting_to_play :", window.data.waiting_to_play);
+	if (window.game_in_progress) {
+		window.terminate_game = true;
+		if (window.data.playerId != null && window.data.waiting_to_play == true) {
+			// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
+			if (window.data['socket']) {
+				window.data['socket'].close()
+			}
+			terminate_game = false;
+		}
+	}
+	console.log(confirmationMessage);
+});
+  

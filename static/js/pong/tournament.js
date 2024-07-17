@@ -86,6 +86,31 @@ let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matc
 // } 
 
 
+
+const tourWinnerModal = (winner) => {
+    modalHtml = ` 
+        <center> 
+            <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content justify-content-center">
+                        <div class="modal-header justify-content-center">
+                            <h4 class="modal-title" id="myModalLabel">Winner</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card-body text-center"> 
+                                <img src="/media/images/win.png" class="winner-img winneronline-img">
+                                <h4 class="congrats-message">CONGRATULATIONS!</h4>
+                                <p class="winner-message">🎉🎉🎉 The winner of this Tournament is <span  class="winner-name">${winner}</span> 🎉🎉🎉</p> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    </center> 
+    `;
+    return modalHtml;
+} 
+
 /**
  * Generates the HTML content for the loser modal for the online game.
  * @returns {string} The HTML string for the loser modal.
@@ -187,13 +212,13 @@ var matchModal = function getMatchModal(player1, player2) {
                                 <img src="/media/images/matchm.png">
                                 <div class="d-flex justify-content-center matchbox">
                                     <div class="box box-1">
-                                        <div class="p-2 text-white">${player1}</div>
+                                        <div class="p-2">${player1}</div>
                                     </div>
                                     <div class="vsbox justify-content-center">
                                         <img src="/media/images/vss.png" alt="VS Icon">
                                     </div>
                                     <div class="box box-2">
-                                        <div class="p-2 text-white">${player2} </div>
+                                        <div class="p-2">${player2} </div>
                                     </div>
                                 </div>
                             </div>
@@ -302,6 +327,25 @@ function displayWinM() {
     const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
     modal.show();
     hideModalAfterDelay(myModal, 5000);
+    // setTimeout(() => {
+    //     myModal.hide();
+    // }, 5000);
+}
+
+function displayTourWinM(winner) {
+    let modalContainer = document.getElementById('modal-container');
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'modal-container';
+        document.body.appendChild(modalContainer);
+    }
+
+    // Insert the modal HTML into the container
+    modalContainer.innerHTML = tourWinnerModal(winner);
+    const myModal = new bootstrap.Modal('#m-result-modal');
+    const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+    modal.show();
+    // hideModalAfterDelay(myModal, 5000);
     // setTimeout(() => {
     //     myModal.hide();
     // }, 5000);
@@ -586,9 +630,15 @@ function updateScores(matchElement, player1_score, player2_score) {
         //     startNextMatch(matchElement);
         // }, 10000);
     } else {
+        var player1_name = matchElement.querySelector(".team-top");
+        var player2_name = matchElement.querySelector(".team-bottom");
+        var winner = player1_score > player2_score ? player1_name.querySelector(".player-name") : player2_name.querySelector(".player-name");
+        winner = winner.textContent.trim();
+        console.log(winner);
         if (isOnlineTrounament) {
             isOnlineTrounament = false;
         }
+        displayTourWinM(winner);
         console.log("This is the final game. The tournament is complete.");
         // Additional actions when the tournament is complete can be added here
     }
@@ -877,9 +927,7 @@ async function startMatch(player1, player2, matchElement) {
 
 function changeRoundStyle() {
     const roundOneMatchup = document.querySelectorAll('.round-one .matchup');
-    console.log(roundOneMatchup);
     
-
     // roundOneMatchup.classList.add('flex-mode');
     roundOneMatchup.forEach(matchup => {
         matchup.classList.add('flex-mode');
@@ -936,7 +984,6 @@ function showSpinner(message) {
 
   function hideSpinner() {
     const spinnerOverlay = document.getElementById('spinner-overlay');
-    console.log("hidding the Spinner");
     spinnerOverlay.style.display = 'none';
   }
 

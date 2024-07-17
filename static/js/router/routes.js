@@ -173,6 +173,9 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
+	console.log("buttonId: ", buttonId);
+	console.log("game_in_progress :", window.game_in_progress);
+	console.log("handler :", handler);
 
 	if (handler) {
 		if (window.game_in_progress) {

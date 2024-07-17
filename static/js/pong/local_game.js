@@ -232,7 +232,6 @@ function start_local_game() {
             data3['player2'].speedY = 0;
         }
     });
-    console.log(game_color);
     render1(data3);
     startCountdown() 
     hideBtn('quit_game');
