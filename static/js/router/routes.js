@@ -14,6 +14,18 @@ if (!config.ip) {
 	getIPAddress();
 }
 
+function destroyOpenWebsocket() {
+	window.terminate_game = true;
+	if (window.data.playerId != null && window.data.waiting_to_play == true) {
+		// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
+		if (window.data['socket'] && window.data['socket'].readyState === WebSocket.OPEN) {
+			window.data['socket'].close()
+		}
+		terminate_game = false;
+	}
+	return ;
+}
+
 async function getIPAddress() {
 	try {
 		const response = await fetch('/get_ipaddress/');
@@ -173,21 +185,12 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-	console.log("buttonId: ", buttonId);
 	console.log("game_in_progress :", window.game_in_progress);
-	console.log("handler :", handler);
 
 	if (handler) {
 		if (window.game_in_progress) {
 			if (buttonId === 'zoomin' || buttonId === 'zoomout' || buttonId === 'mode_toggle' || buttonId === 'yesButton') { handler(); return ; }
-			window.terminate_game = true;
-			if (window.data.playerId != null && window.data.waiting_to_play == true) {
-				// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
-				if (window.data['socket']) {
-					window.data['socket'].close()
-				}
-				terminate_game = false;
-			}
+			destroyOpenWebsocket();
 		}
 		handler();
 	}

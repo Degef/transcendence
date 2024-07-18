@@ -178,6 +178,9 @@ async function update(back_or_forward = 1) {
 }
 
 function loadProfile(username) {
+	if (window.game_in_progress) {
+		destroyOpenWebsocket();
+	}
 	if (username) {
 		handleRoute('/profile/' + username, true);
 		setTimeout(init_profile, 1000);

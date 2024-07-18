@@ -891,6 +891,9 @@ window.addEventListener('beforeunload', function(event) {
 			}
 			terminate_game = false;
 		}
+	} else if (isOnlineTrounament) {
+		// leaveTournament();
+		cleanuptour();
 	}
 	console.log(confirmationMessage);
 });

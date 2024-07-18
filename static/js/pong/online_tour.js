@@ -6,6 +6,7 @@ let updatedMatchup = null;
 let winner = null;
 let invitationTimeoutId = null;
 let	tourGame = false;
+let isLoser = false;
 // let username = null;
 
 function getPlayerNamesFromMatchup(updatedMatchup) {
@@ -79,6 +80,8 @@ function onTourGameCompleted(player1, player2, score1, score2) {
 		tourGame = true;
 		// onlineTourSocket.send(JSON.stringify(message));
 		send_message(onlineTourSocket, message)
+	} else {
+		isLoser = true;
 	}
 	
 	// updateScores(matchElement, player1_score, player2_score);
@@ -312,6 +315,9 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 		removeChildById("match-invitation-modal");
 		// document.body.removeChild(modal);
 		loadTrounametGame(challenger_username, challenged_username);
+		// setTimeout(() => {
+		// 	start_play_online_challenge(challenger_username, challenged_username);
+		// }, 4000);
 	};
 
 	modalContent.appendChild(modalMessage);
@@ -582,6 +588,9 @@ function abortMatchInvitation(res) {
 		console.log('Matchup found2:', matchupElement);
 	} else {
 		console.log('No matchup2 found for the given players.');
+	}
+	if (window.game_in_progress) {
+		destroyOpenWebsocket();
 	}
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
