@@ -124,7 +124,8 @@ function handleChallengeSocketEvents(challsocket) {
 
 	challsocket.onclose = function () {
 		cleanupWebSocket(challsocket);
-		showAlert('Connection to challenge socket closed, please refresh the page and try again', 'danger');
+		if (!reloading)
+			showAlert('Connection to challenge socket closed, please refresh the page and try again', 'danger');
 	};
 
 	challsocket.onerror = function (error) {

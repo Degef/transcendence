@@ -206,7 +206,7 @@ function handleButtonClick(event) {
 
 function setuptheme() {
 	let Page = document.documentElement;
-	let savedZoom = localStorage.getItem('zoom');
+	let savedZoom = localStorage.getItem('zoom') || '100%';
 	let zoomText = document.getElementById('zoom-text');
 	if (savedZoom) {
 		Page.style.setProperty('--page-zoom', savedZoom);

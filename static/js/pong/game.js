@@ -18,6 +18,7 @@ var type = "defaultGame";
 let username = fetch('/get_current_user/').then(response => response.json());
 let pusername = '';
 let game_color = "WHITE";
+let reloading = false;
 
 
 
@@ -877,10 +878,12 @@ function startCountdown() {
 
 
 
+
 window.addEventListener('beforeunload', function(event) {
 	// Set a confirmation message
 	var confirmationMessage = "Are you sure you want to leave? Any unsaved changes will be lost.";
 	console.log("game_in_progress :", window.game_in_progress);
+	reloading = true;
 	console.log("waiting_to_play :", window.data.waiting_to_play);
 	if (window.game_in_progress) {
 		window.terminate_game = true;

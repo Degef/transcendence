@@ -101,3 +101,8 @@
 	color: var(--color-text-accent);
 	margin-bottom: 0.75rem;
 }
+
+
+.about-us {
+	background-color: var(--color-text-primary) !important;
+}

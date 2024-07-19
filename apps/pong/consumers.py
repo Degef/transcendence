@@ -796,7 +796,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				)
 
 	async def opponent_left(self, event):
-		await asyncio.sleep(10)
+		# await asyncio.sleep(10)
 		message = event['message']
 		player = event['player']
 		opponent = event['opponent']

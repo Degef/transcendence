@@ -9,6 +9,16 @@ let	tourGame = false;
 let isLoser = false;
 // let username = null;
 
+
+/**
+ * Extracts player names from a given matchup element.
+ * This function takes a DOM element representing a matchup and retrieves the player names from the top and bottom teams. 
+ * If the player names are non-empty, they are added to the result array.
+ *
+ * @param {HTMLElement} updatedMatchup - The DOM element containing the matchup information.
+ * @returns {string[]} An array of player names from the matchup.
+ */
+
 function getPlayerNamesFromMatchup(updatedMatchup) {
 	// Assuming updatedMatchup is a DOM element
 	let result = [];
@@ -174,7 +184,16 @@ function start_play_onl_tour(event, socket) {
 
 
 
-// Function to find the correct matchup
+/**
+ * Finds a specific matchup element based on the given player names. This function iterates through a 
+ * list of matchup elements and checks if either team in the matchup contains the given challenger and challenged player names. 
+ * If a matchup is found, it returns the corresponding DOM element.
+ *
+ * @param {string} challenger - The name of the challenger player or first player.
+ * @param {string} challenged - The name of the challenged player or second player.
+ * @param {HTMLElement[]} matchups - An array of DOM elements representing the matchups.
+ * @returns {HTMLElement|null} The DOM element representing the found matchup, or null if no matchup is found.
+ */
 function findMatchup(challenger, challenged, matchups) {
   for (var i = 0; i < matchups.length; i++) {
 	var teams = matchups[i].querySelectorAll('.team');
@@ -194,12 +213,21 @@ function findMatchup(challenger, challenged, matchups) {
 }
 
 
+
+/**
+ * Asynchronously loads a tournament game between two players and updates the main container with the game content.
+ * This function hides the main section, makes a POST request to the backend to fetch the game page for the given players, and replaces 
+ * the current main container content with the fetched game content. It also removes certain buttons from the fetched content to make the 
+ * game suitable for tournament and handles online tournament state.
+ *
+ * @param {string} player1 - The name of the first player.
+ * @param {string} player2 - The name of the second player.
+ */
 async function loadTrounametGame(player1,  player2) {
 	mainSection = document.querySelector('.main-section');
 	const mainContainer = document.getElementById('main-container');
 	mainSection.style.display = 'none';
 	
-	// await new Promise(resolve => setTimeout(resolve, 1000));
 	const csrftoken = getCookie('csrftoken');
 
 	try {
@@ -215,13 +243,9 @@ async function loadTrounametGame(player1,  player2) {
 		const html = await response.text();
 		isIntournament = true;
 
-		// Replace the entire body content with the fetched content
 		const parser = new DOMParser();
 		const parsedHtml = parser.parseFromString(html, 'text/html');
-
-		// Select the tournament section from the parsed HTML content
 		tournamentSection = parsedHtml.getElementById('tournament');
-		// Select and remove the buttons from the parsed HTML content
 		const restartButton = parsedHtml.getElementById('restart_btn');
 		const quitButton = parsedHtml.getElementById('quit_game');
 
@@ -233,17 +257,15 @@ async function loadTrounametGame(player1,  player2) {
 			quitButton.parentNode.removeChild(quitButton);
 		}
 
-		// Append the tournament section before the footer
 		mainContainer.appendChild(tournamentSection);
 		displayMatchModal(player1, player2);
 		if (!isOnlineTrounament) {
-			alert("you just left the tournmanet");
 			isOnlineTrounament = false;
 			handleRoute('/', true);
 			return ;
 		}
 	} catch (error) {
-		console.error('Error fetching local game page:', error);
+		alert('Error fetching local game page:', error);
 	}
 }
 
@@ -264,26 +286,22 @@ function removeChildById(elementId) {
 }
 
 
-
+/**
+ * Displays a modal inviting the user to join a tournament match/game.
+ *
+ * @param {string} matchRoom - The match room identifier.
+ * @param {string} opponent - The opponent's name.
+ * @param {Array} players - An array containing the names of the challenger and challenged players.
+ */
 function displayMatchInvitation(matchRoom, opponent, players) {
-	console.log("match_room: ", matchRoom);
+
 	match_room = matchRoom;
-	// Create modal elements
 	if (!isOnlineTrounament) {
 		return ;
 	}
 	const modal = document.createElement('div');
 	mainSection = document.querySelector('.main-section');
 	modal.id = 'match-invitation-modal';
-	modal.style.position = 'fixed';
-	modal.style.top = '0';
-	modal.style.left = '0';
-	modal.style.width = '100%';
-	modal.style.height = '100%';
-	modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-	modal.style.display = 'flex';
-	modal.style.justifyContent = 'center';
-	modal.style.alignItems = 'center';
 	modal.style.zIndex = '1000';
 	modal.setAttribute('tabindex', '-1');
 
@@ -301,11 +319,6 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 	// Get all matchups
 	var matchups = document.querySelectorAll('#bracket .matchup');
 	matchupElement = findMatchup(challenger_username, challenged_username, matchups);
-	if (matchupElement) {
-		console.log('Matchup found:', matchupElement);
-	} else {
-		console.log('No matchup found for the given players.');
-	}
 	  
 
 	const confirmButton = document.createElement('button');
@@ -313,7 +326,6 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 
 	confirmButton.onclick = function() {
 		removeChildById("match-invitation-modal");
-		// document.body.removeChild(modal);
 		loadTrounametGame(challenger_username, challenged_username);
 		// setTimeout(() => {
 		// 	start_play_online_challenge(challenger_username, challenged_username);
@@ -477,11 +489,13 @@ function onlineTournament(tourSize) {
 			// }, 10000);
 		} else if (res.type === 'update_bracket') {
 			console.log('Update_bracket:', res);
+			hideSpinner();
 			update_bracket(res);
 		} else if (res.type === 'opponent_left') {
-			abortMatchInvitation(res);
-			removeChildById('match-invitation-modal');
 			hideSpinner();
+			abortMatchInvitation(res);
+			showSpinner("Opps it seems like your opponenet has been left the tournament..");
+			removeChildById('match-invitation-modal');
 			closeGameSocket();
 			console.log(res);
 			// onTourGameCompleted(res.player, res.opponent, 4, 0);
@@ -598,7 +612,9 @@ function abortMatchInvitation(res) {
 		console.log('tourGame_beforeAbort', tourGame);
 		invitationTimeoutId = null;
 		if (!tourGame) {
-			onTourGameCompleted(res.player, res.opponent[0], 0, 4);
+			setTimeout (() => {
+				onTourGameCompleted(res.player, res.opponent[0], 0, 4);
+			}, 10000); 
 		}
 	}
 }

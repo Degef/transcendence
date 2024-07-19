@@ -57,6 +57,7 @@ def game_computer(request):
 	template_name = getTemplateName(request, 'pong/game_computer.html')
 	return render(request, template_name, context)
 
+@login_required
 def local_game(request):
 	player1 = 'Player1'
 	player2 = 'Player2'
@@ -111,6 +112,7 @@ def leaderboard(request):
 	template_name = getTemplateName(request, 'pong/leaderboard.html')
 	return render(request, template_name, context)
 
+@login_required
 def offline_tourn(request):
 	context = {
 		'template_name': 'pong/offline_tourn.html'
@@ -118,6 +120,7 @@ def offline_tourn(request):
 	template_name = getTemplateName(request, 'pong/offline_tourn.html')
 	return render(request, template_name, context)
 
+@login_required
 def online_tourn(request):
 	context = {
 		'template_name': 'pong/online_tourn.html'

@@ -14,6 +14,7 @@
 
 .card {
 	border-radius: 12px;
+	/* background-color: var(--color-aboutus-background); */
 	overflow: hidden;
 	min-height: 480px;
 	padding: 16px;

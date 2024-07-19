@@ -12,6 +12,7 @@
 	--color-button-teritiary: #121217;
 	--color-teambox-primary: #000000;
 	--color-mod-background: #ffffff;
+	--color-aboutus-background: #ffffff;
 	--page-zoom: 100%;
 }
 
@@ -29,6 +30,7 @@
 	--color-button-teritiary: #C0C0C0;
 	--color-teambox-primary: #ffffff;
 	--color-mod-background: #000000;
+	--color-aboutus-background: #2D2F4F;
 }
 
 
@@ -267,4 +269,10 @@ body > *:not(.zoom-controls):not(script) {
 .list-group-item {
 	background-color: var(--color-card-background);
 	color: var(--color-text-primary);
+}
+
+
+.navbar-toggler {
+	/* background-color: var(--color-card-background) !important; */
+	background-color: #24253D;
 }
