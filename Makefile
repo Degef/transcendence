@@ -16,10 +16,15 @@ build:
 down:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down
 
-clean: stop
+clean: stop  clean-dangling
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down -v --remove-orphans
+	-docker rmi -f django nginx redis:alpine postgres:15
 	-docker volume prune -f
 	-docker network prune -f
+
+clean-dangling:
+	@-docker rmi -f $(shell docker images  -f "dangling=true" -q)
+
 
 stop:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env stop

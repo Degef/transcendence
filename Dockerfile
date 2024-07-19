@@ -10,4 +10,4 @@ COPY . .
 
 ENV DJANGO_SETTINGS_MODULE=transcendence.settings
 
-CMD ["sh", "-c", "python3 manage.py makemigrations && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application"]
+CMD ["sh", "-c", "python3 manage.py makemigrations chat users pong && python3 manage.py migrate && daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application"]
