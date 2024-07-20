@@ -23,6 +23,7 @@ let reloading = false;
 
 
 function send_message(gsocket, message) {
+	// console.log("sending...: ", message);
 	if (gsocket && gsocket.readyState === WebSocket.OPEN) {
             gsocket.send(JSON.stringify(message));
 	}
@@ -609,6 +610,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			if (isOnlineTrounament) {
 				let s1 = rec['player1'] === rec.winner ? 4: rec['score1'];
 				let s2 = rec['player2'] === rec.winner ? 4: rec['score2'];
+				console.log("gameEnd: ", rec);
 				onTourGameCompleted(rec['player1'], rec['player2'],s1, s2);
 			} else {
 				displayBtn('play_again');

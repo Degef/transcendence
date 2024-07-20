@@ -621,7 +621,6 @@ function updateScores(matchElement, player1_score, player2_score) {
 		var player2_name = matchElement.querySelector(".team-bottom");
 		var winner = player1_score > player2_score ? player1_name.querySelector(".player-name") : player2_name.querySelector(".player-name");
 		winner = winner.textContent.trim();
-		console.log(winner);
 		if (isOnlineTrounament) {
 			isOnlineTrounament = false;
 		}

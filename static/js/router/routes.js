@@ -189,11 +189,15 @@ function handleButtonClick(event) {
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
 	console.log("game_in_progress :", window.game_in_progress);
+	console.log("isOnlineTournament :", window.isOnlineTrounament);
 
 	if (handler) {
 		if (window.game_in_progress) {
 			if (buttonId === 'zoomin' || buttonId === 'zoomout' || buttonId === 'mode_toggle' || buttonId === 'yesButton') { handler(); return ; }
 			destroyOpenWebsocket();
+		}
+		else if (window.isOnlineTrounament) {
+			leaveTournament();
 		}
 		handler();
 	}
