@@ -470,20 +470,20 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 
 
 def shuffle_array(array):
-    """
-    Shuffles an array using the Fisher-Yates (Knuth) shuffle algorithm.
+	"""
+	Shuffles an array using the Fisher-Yates (Knuth) shuffle algorithm.
 
-    This function modifies the original array by randomly swapping its elements.
+	This function modifies the original array by randomly swapping its elements.
 
-    :param list array: The list to be shuffled.
-    :return: The shuffled list.
-    :rtype: list
-    """
-    # Loop through the array backwards
-    for i in range(len(array) - 1, 0, -1):
-        j = random.randint(0, i)
-        array[i], array[j] = array[j], array[i]
-    return array
+	:param list array: The list to be shuffled.
+	:return: The shuffled list.
+	:rtype: list
+	"""
+	# Loop through the array backwards
+	for i in range(len(array) - 1, 0, -1):
+		j = random.randint(0, i)
+		array[i], array[j] = array[j], array[i]
+	return array
 
 class TournamentConsumer(AsyncWebsocketConsumer):
 	players_waiting = deque()
@@ -520,6 +520,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		# await self.channel_layer.group_discard(self.room_group_name,self.channel_name)
 		if self in self.players_waiting:
 			self.players_waiting.remove(self)
+		if self.username in self.nextRound_players:
+			self.nextRound_players.pop(self.username)
 		logging.info(f"closing SocketConnection to Player {self.username}")
 		await self.close()
 
@@ -576,7 +578,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					self.players_waiting.remove(tuser)
 				toberemoved.clear()
 
-				# await asyncio.sleep(3)
+				await asyncio.sleep(2)
 				await self.create_match_rooms(tourn_players)
 
 			elif self not in self.players_waiting:
@@ -673,10 +675,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					player_channel_name  # Use the correct channel name for each player
 				)
 		
-
-		# Add the player to the set of confirmed players for the match room
-		
-		logging.info(f"Sending match invitation to room {match_room_name} for players: {[p['username'] for p in players]}")
 		await self.channel_layer.group_send(
 			match_room_name,
 			{
@@ -690,13 +688,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def match_invitation(self, event):
 		match_room = event['match_room']
 		players = event['players']
-		
-		logging.info(f"Match invitation received in room {match_room} for players: {players}")
 
 		for player in players:
 			if self.username == player:
 				opponent = [p for p in players if p != self.username][0]
-				logging.info(f"Sending match invitation to {self.username} with opponent {opponent}")
 				await self.send(text_data=json.dumps({
 					'type': 'match_invitation',
 					'match_room': match_room,
@@ -751,22 +746,28 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def handle_nextRound_match(self, data):
 
 		if data['plcount'] == 2:
-			other_player = self.nextRound_players.pop(data['opponent'])
-			nextPlayers = []
-			# nextPlayers.append(self)
-			# nextPlayers.append(other_player)
+			try:
+				other_player = self.nextRound_players.pop(data['opponent'])
+				nextPlayers = []
+				# nextPlayers.append(self)
+				# nextPlayers.append(other_player)
 
-			nextPlayers.append({
-				'username': self.username,
-			})
-			nextPlayers.append({
-				'username': other_player.username,
-			})
+				nextPlayers.append({
+					'username': self.username,
+				})
+				nextPlayers.append({
+					'username': other_player.username,
+				})
 
 
-			await asyncio.sleep(2)
-			await self.create_nextmatch_rooms(nextPlayers)
-
+				await asyncio.sleep(2)
+				await self.create_nextmatch_rooms(nextPlayers)
+			except KeyError:
+				await self.opponent_left({
+					'message': f"{data['opponent']} has left the match.",
+					'player': self.scope['user'].username,
+					'opponent': data['opponent']
+				})
 		else:
 			await self.send_join_message(f"Adding the player {self.username}")
 			self.nextRound_players[data['player']] = self
@@ -791,7 +792,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 						'type': 'opponent_left',
 						'message': f"{player} has left the match.",
 						'opponent': player,
-						'player': opponent
+						'player': opponent[0]
 					}
 				)
 

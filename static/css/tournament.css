@@ -700,6 +700,12 @@
 	gap: 2.5rem !important;
 }
 
-.online-tourn {
+.online-tourn, .offline-tourn {
 	padding: 0px !important;
+}
+
+
+.display-4 {
+	color: #ffffff;
+    font-family: cursive;
 }
