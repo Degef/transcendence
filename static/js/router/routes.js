@@ -105,9 +105,9 @@ async function handleRoute(path, pushState = true) {
 			updateContent(htmlContent);
 		}
 		if (pushState) {
-			if (path.includes('code'))
-				window.location.href = "/";
-			else
+			// if (path.includes('code'))
+			// 	window.location.href = "/";
+			// else
 				updateURL(path);
 		}
 	} catch (error) {

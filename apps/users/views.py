@@ -32,7 +32,7 @@ load_dotenv()
 def getTemplateName(request, defaultpage):
 	request_type = "normal" if request.headers.get('X-Requested-With') == 'XMLHttpRequest' else "reload"
 	template_name = 'loader.html' if request_type == "reload" else defaultpage
-	logger.error(f"\n\n\n I am here please look at the request_type: {request_type}  the htmlpage is: {template_name}\n\n\n")
+	logger.error(f"I am here please look at the request_type: {request_type}  the htmlpage is: {template_name}\n\n\n")
 	return template_name
 
 
@@ -393,20 +393,29 @@ def exchange_code(request):
 
 		# Check if a user with the same username already exists
 		existing_user = User.objects.filter(username=user_name).first()
+		# check if user is logged in with 42
+		
+		user_thing = user_things.objects.get(user=existing_user)
 
 		if existing_user:
-			with transaction.atomic():
-				user_thing = user_things.objects.get(user=existing_user)
-				user_thing.status = 'online'
-				user_thing.logged_in_with_42 = True
-				user_thing.save()
-			auth_login(request, existing_user)
-			return redirect('home')
+			if user_thing.logged_in_with_42: # This is checking if 42 username if already taken by another user
+				with transaction.atomic():
+					user_thing.status = 'online'
+					user_thing.save()
+				auth_login(request, existing_user)
+				return redirect('home')
+			else:
+				context = {
+					'template_name': 'users/login.html'
+				}
+				template_name = getTemplateName(request, 'users/login.html')
+				#user name is already taken by another user signup with another username please.
+				return render(request, template_name, context)
 
 		img_url = user_response['image']['versions']['small']
 		# Create a new user
 		user = User.objects.create(username=user_name, email=user_email)
-		logger.info(f"\n\n\nNew user {user_name} created successfully.\n\n\n")
+		logger.error(f"\n\n\nNew user {user_name} created successfully.\n\n\n")
 		img_temp = NamedTemporaryFile(delete=True)
 		img_temp.write(requests.get(img_url).content)
 		img_temp.flush()
