@@ -11,3 +11,6 @@ feedback.txt
 chat/
 pong/
 users/
+
+static/admin/
+static/rest_framework/

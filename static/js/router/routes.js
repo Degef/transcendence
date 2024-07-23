@@ -54,15 +54,9 @@ async function updateContent(htmlContent) {
 	const tempDiv = document.createElement('div');
 	tempDiv.innerHTML = htmlContent;
 	const newContent = tempDiv.innerHTML;
-	// console.log(newContent);
 
 	if (newContent) {
 		const mainContainer = document.getElementById('main-container');
-		// const range = document.createRange();
-		// range.setStart(mainContainer.childNodes[1], 0);
-		// range.setEnd(mainContainer.lastChild, 0);
-		// range.deleteContents();
-		// mainContainer.insertAdjacentHTML('beforeend', newContent);
 		mainContainer.innerHTML = newContent;
 	}
 }
@@ -115,7 +109,6 @@ async function handleRoute(path, pushState = true) {
 			console.log('Request aborted');
 			return;
 		}
-		console.error('Error handling route:', error);
 	}
 }
 

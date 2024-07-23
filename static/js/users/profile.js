@@ -180,6 +180,8 @@ async function update(back_or_forward = 1) {
 function loadProfile(username) {
 	if (window.game_in_progress) {
 		destroyOpenWebsocket();
+	} else if (window.isOnlineTrounament) {
+		leaveTournament();
 	}
 	if (username) {
 		handleRoute('/profile/' + username, true);

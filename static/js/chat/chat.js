@@ -11,7 +11,7 @@ const api = {
 	fetchUserProfile: username => fetch(`/api/user/${username}/`).then(response => response.json()),
 	fetchMessages: recipient => fetch(`/api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`/api/message/${id}/`).then(response => response.json()),
-	fetchUserProfilePage: username => handleRoute(`/profile/${username}`, true),
+	fetchUserProfilePage: username => loadProfile(username),
 	blockUser: username => fetch('/block_unblock/', {
 		method: "POST",
 		headers: { 'Content-Type': 'application/json' },

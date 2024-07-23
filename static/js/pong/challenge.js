@@ -52,7 +52,6 @@ function showDeclinedModal(message) {
     const declineButton = document.getElementById('decline-close-button');
     function hideModal(event) {
         event.preventDefault();
-        console.log(event);
         modal.style.display = 'none';
         declineButton.removeEventListener('click', hideModal);
         modal.remove();
@@ -94,8 +93,6 @@ function handleChallengeSocketEvents(challsocket) {
 		challenger = message_json.challenger;
 		challenger_username = challenger;
 		challenged_username = message_json.challengee
-		console.log('challengee', challenged_username);
-		console.log('challenger', challenger_username);
 		if (message_json.type === 'challenge_created') {
 			username = currentUserChall;
 			if (message_json.challenger === currentUserChall) {

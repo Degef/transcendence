@@ -11,7 +11,7 @@ import math
 from apps.users.models import user_things
 from django.db import transaction
 from collections import deque
-from apps.pong.models import Tournament, TournamentPlayer
+from apps.pong.models import Tournament
 from django.template.loader import render_to_string
 import datetime
 from datetime import timedelta
@@ -34,6 +34,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.player_id = str(uuid.uuid4())
 		self.challengee = ''
 		self.challenger = ''
+		self.t_id = None
+		self.g_round= None 
+		self.g_side=None
+		self.g_num=None
 
 		await self.accept()
 		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "username": self.username}))
@@ -50,23 +54,24 @@ class PongConsumer(AsyncWebsocketConsumer):
 				if hasattr(self, 'room_group_name') and self.room_group_name in self.game_states:
 					game_state = self.game_states[self.room_group_name]
 
-					del self.game_states[self.room_group_name]
-					name = self.scope['user'].username
-					if (game_state['score1'] == 0 and game_state['score2'] == 0):
-							game_state['winner'] = game_state['p1_name'] if name != game_state['p1_name'] else game_state['p2_name']
+					if game_state:
+						del self.game_states[self.room_group_name]
+						name = self.scope['user'].username
+						if (game_state['score1'] == 0 and game_state['score2'] == 0):
+								game_state['winner'] = game_state['p1_name'] if name != game_state['p1_name'] else game_state['p2_name']
 
-					await self.channel_layer.group_send(
-						self.room_group_name,
-						{
-							'type': 'game_end_message',
-							'message': f'{name} has left the game.',
-							'player1': game_state['p1_name'],
-							'player2': game_state['p2_name'],
-							'score1': game_state['score1'],
-							'score2': game_state['score2'],
-							'winner': game_state['winner']
-						}
-					)
+						await self.channel_layer.group_send(
+							self.room_group_name,
+							{
+								'type': 'game_end_message',
+								'message': f'{name} has left the game.',
+								'player1': game_state['p1_name'],
+								'player2': game_state['p2_name'],
+								'score1': game_state['score1'],
+								'score2': game_state['score2'],
+								'winner': game_state['winner']
+							}
+						)
 				# await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 			except KeyError as e:
 				print(f"\n\nError accessing paddle data: {e}")
@@ -127,6 +132,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 		gametype = data['type']
 		self.challengee = challengee
 		self.challenger = challenger
+		if (gametype == 'tournament'):
+			self.t_id = data['t_id']
+			self.g_round = data['round']
+			self.g_side = data['side']
+			self.g_num = data['g_num']
 		if (self.username == challengee and challenger in self.challenge_queue):
 			other_user = self.challenge_queue.pop(challenger)
 			if (gametype == 'tournament'):
@@ -187,6 +197,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 			return
 		
 		try:
+			game_statetmp = self.game_states.get(room_group_name, None)
+		
+			if not game_statetmp:
+				return
 			if data['type'] == 'updateState':
 				if data['player'] == 1:
 					self.game_states[room_group_name]['paddle1'] = data['paddle']
@@ -218,19 +232,46 @@ class PongConsumer(AsyncWebsocketConsumer):
 				await self.close()
 		except KeyError as e:
 			logger.error(f"Error accessing paddle data: {e}")
+	# async def save_game(self, player1_username, player2_username, player1_score, player2_score):
+	# 	try:
+	# 		player1 = await sync_to_async(User.objects.get)(username=player1_username)
+	# 		player2 = await sync_to_async(User.objects.get)(username=player2_username)
+	# 		game = await sync_to_async(Game.objects.create)(
+	# 			player1=player1,
+	# 			player2=player2,
+	# 			player1_score=player1_score,
+	# 			player2_score=player2_score
+	# 		)
+	# 		return game
+	# 	except User.DoesNotExist:
+	# 		# Handle the case where a user with the provided username does not exist
+	# 		return None
 	async def save_game(self, player1_username, player2_username, player1_score, player2_score):
 		try:
 			player1 = await sync_to_async(User.objects.get)(username=player1_username)
 			player2 = await sync_to_async(User.objects.get)(username=player2_username)
+			# tour = await sync_to_async(Tournament.objects.get)(pk=self.t_id)
+			tour = None
+			if self.t_id is not None:
+				tour = await sync_to_async(Tournament.objects.get)(pk=self.t_id)
+
 			game = await sync_to_async(Game.objects.create)(
 				player1=player1,
 				player2=player2,
 				player1_score=player1_score,
-				player2_score=player2_score
+				player2_score=player2_score,
+				is_tournament_game=bool(self.t_id),
+				tournament_id=tour if self.t_id else None,  # Assign the Tournament instance
+				round=self.g_round if self.g_round in dict(Game.ROUND_CHOICES).keys() else None,
+				game_number=self.g_num if self.g_num is not None else None,
+				side=self.g_side if self.g_side in dict(Game.SIDE_CHOICES).keys() else None
 			)
+			
 			return game
-		except User.DoesNotExist:
-			# Handle the case where a user with the provided username does not exist
+		
+		except Exception as e:
+			# Handle exceptions or errors
+			print(f"Error saving game: {e}")
 			return None
 	async def collision(self, b, p):
 		ptop = p['y']
@@ -505,6 +546,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		self.username = self.scope["user"].username
 		self.player_id = str(uuid.uuid4())
 		self.room_name = 'game_room'
+		self.t_id = None
 
 		self.player_channels[self.username] = self.channel_name  # Store channel name
 
@@ -538,6 +580,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			await self.handle_nextRound_match(data)
 		elif data['type'] == 'leaving':
 			await self.handle_leaving(data);
+		elif data['type'] == 'save_game':
+			await self.save_tour_game(data);
 	  
 		# await self.fetch_and_add_player_to_tournament()
 
@@ -548,7 +592,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				self.players_waiting.append(self)
 				self.room_group_name = 'game_%s' % uuid.uuid4().hex
 				# await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-				tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
+				tournament = await sync_to_async(Tournament.objects.create)(creation_date=datetime.datetime.now())
 
 				await self.send_join_message(f"The last player is joining {self.username}")
 
@@ -564,8 +608,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 						'username': user.username,
 						'profile_img': profile_img
 					})
-					user.tournament = tournament
-					await sync_to_async(user.save)()
+					tuser.t_id = tournament.pk
 				
 				tourn_players = shuffle_array(tourn_players)
 
@@ -588,7 +631,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			if len(self.players_waitingBig) >= 7 and (self not in self.players_waitingBig):
 				self.players_waitingBig.append(self)
 				self.room_group_name = 'game_%s' % uuid.uuid4().hex
-				tournament = await sync_to_async(Tournament.objects.create)(start_date=datetime.datetime.now())
+				tournament = await sync_to_async(Tournament.objects.create)(creation_date=datetime.datetime.now())
 
 				await self.send_join_message(f"The last player is joining {self.username}")
 
@@ -603,8 +646,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 						'username': user.username,
 						'profile_img': profile_img
 					})
-					user.tournament = tournament
-					await sync_to_async(user.save)()
+					tuser.t_id = tournament.pk
+
+				tourn_players = shuffle_array(tourn_players)
 
 				html_content = await sync_to_async(render_to_string)('pong/online_tour_bracket.html', {'players_list': tourn_players})
 				await self.broadcast_html_content(html_content)
@@ -688,6 +732,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def match_invitation(self, event):
 		match_room = event['match_room']
 		players = event['players']
+		tour_id = self.t_id
 
 		for player in players:
 			if self.username == player:
@@ -697,7 +742,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					'match_room': match_room,
 					'player': self.username,
 					'opponent': opponent,
-					'players': players
+					'players': players,
+					'tour_id': tour_id
 				}))
 
 
@@ -807,3 +853,29 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'opponent': player,
 			'player': opponent
 		}))
+
+	async def save_tour_game(self, data):
+		try:
+			player1 = await sync_to_async(User.objects.get)(username=data['player1'])
+			player2 = await sync_to_async(User.objects.get)(username=data['player2'])
+			# tour = await sync_to_async(Tournament.objects.get)(pk=self.t_id)
+			tour = None
+			if data['t_id'] is not None:
+				tour = await sync_to_async(Tournament.objects.get)(pk=data['t_id'])
+
+			game = await sync_to_async(Game.objects.create)(
+				player1=player1,
+				player2=player2,
+				player1_score=data['score1'],
+				player2_score=data['score2'],
+				is_tournament_game=bool(data['t_id']),
+				tournament_id=tour if data['t_id'] else None,  # Assign the Tournament instance
+				round=data['round'] if data['round'] in dict(Game.ROUND_CHOICES).keys() else None,
+				game_number=data['g_num'] if data['g_num'] is not None else None,
+				side=data['side'] if data['side'] in dict(Game.SIDE_CHOICES).keys() else None
+			)
+			return game
+		
+		except Exception as e:
+			print(f"Error saving game: {e}")
+			return None

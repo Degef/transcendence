@@ -707,5 +707,8 @@
 
 .display-4 {
 	color: #ffffff;
-    font-family: cursive;
+    /* font-family: cursive; */
+	font-family: Space Grotesk, sans-serif;
+	font-weight: 900;
+    font-size: 1.5rem;
 }

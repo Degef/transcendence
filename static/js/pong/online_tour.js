@@ -7,6 +7,10 @@ let winner = null;
 let invitationTimeoutId = null;
 let	tourGame = false;
 let isLoser = false;
+let tourId = null;
+let gameNum = null;
+let gameSide = null;
+let gameRound = null;
 // let username = null;
 
 
@@ -64,8 +68,6 @@ function onTourGameCompleted(player1, player2, score1, score2) {
 		}
 	}
 	winner = s1 > s2 ? p1 : p2;
-	// displayWinnerModal(winner, p2);
-	console.log("score: ", player1, player2);
 
 	if (tournamentSection && tournamentSection.parentNode) {
 		tournamentSection.parentNode.removeChild(tournamentSection);
@@ -83,21 +85,50 @@ function onTourGameCompleted(player1, player2, score1, score2) {
 		'matchelement': matchupElement,
 		'winner': winner
 	};
-	console.log("sending.....", message);
-	console.log("username: ", username);
 	if (username === winner) {
 		tourGame = true;
-		// onlineTourSocket.send(JSON.stringify(message));
 		send_message(onlineTourSocket, message)
 	} else {
 		isLoser = true;
 	}
-	
-	// updateScores(matchElement, player1_score, player2_score);
+}
 
+/**
+ * Sends a message to save the game data to the server.
+ *
+ * @param {string} player1 - The username of player 1.
+ * @param {string} player2 - The username of player 2.
+ * @param {number} score1 - The score of player 1.
+ * @param {number} score2 - The score of player 2.
+ */
+function sendSaveGame(player1, player2, score1, score2) {
+	var matchups = document.querySelectorAll('#bracket .matchup');
+	matchupElement = findMatchup(player1, player2, matchups);
+	mInfo = extractGameInfo(matchupElement);
+	gameNum = mInfo.gameNumtmp
+	gameRound = mInfo.gameRoundtmp
+	gameSide = mInfo.gameSideTmp
+	const message = {
+		'type': 'save_game',
+		'player1': player1,
+		'player2': player2,
+		'score1': score1,
+		'score2': score2,
+		't_id': tourId,
+		'round': gameRound,
+		'side': gameSide,
+		'g_num':gameNum	
+	};
+	console.log(message);
+	send_message(onlineTourSocket, message);
 }
 
 
+/**
+ * Displays the game section by replacing the main section content with the tournament section.
+ *
+ * @param {Object} event - The event object containing the HTML data.
+ */
 function display_game(event) {
 	const mainContainer = document.getElementById('main-container');
 	mainSection = document.querySelector('.main-section');
@@ -187,6 +218,7 @@ async function loadTrounametGame(player1,  player2) {
 		displayMatchModal(player1, player2);
 		if (!isOnlineTrounament) {
 			isOnlineTrounament = false;
+			tourId = null; gameNum = null; gameRound = null; gameSide = null;
 			handleRoute('/', true);
 			return ;
 		}
@@ -245,7 +277,10 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 	// Get all matchups
 	var matchups = document.querySelectorAll('#bracket .matchup');
 	matchupElement = findMatchup(challenger_username, challenged_username, matchups);
-	  
+	mInfo = extractGameInfo(matchupElement);
+	gameNum = mInfo.gameNumtmp
+	gameRound = mInfo.gameRoundtmp
+	gameSide = mInfo.gameSideTmp
 
 	const confirmButton = document.createElement('button');
 	confirmButton.textContent = 'Join Game';
@@ -263,6 +298,14 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 	modal.appendChild(modalContent);
 	document.body.appendChild(modal);
 }
+
+
+/**
+ * Handles the logic for progressing to the next round of the tournament.
+ *
+ * @param {Object} res - The response object containing information about the match result.
+ * @param {string} res.winner - The username of the winner.
+ */
 
 function getNextRoundMatch(res) {
 	if (!isOnlineTrounament) {
@@ -410,6 +453,9 @@ function onlineTournament(tourSize) {
 			username = res.player;
 			match_room = res.match_room;
 			tourGame = false;
+			tourId= res.tour_id;
+			console.log(res);
+			console.log("tour_id : ", tourId);
 			challenger_username = res.players[0];
 			challenged_username = res.players[1];
 			scheduleMatchInvitation(res);
@@ -422,12 +468,11 @@ function onlineTournament(tourSize) {
 			update_bracket(res);
 		} else if (res.type === 'opponent_left') {
 			hideSpinner();
-			showSpinner("Opps it seems like your opponenet has been left the tournament..");
+			showSpinner("Opps it seems like your opponenet has been left the tournament");
 			closeGameSocket();
 			abortMatchInvitation(res);
 			removeChildById('match-invitation-modal');
 			console.log(res);
-			// onTourGameCompleted(res.player, res.opponent, 4, 0);
 		} 
 	}
 	
@@ -458,6 +503,7 @@ function onlineTournament(tourSize) {
 function cleanuptour() {
 	if (onlineTourSocket) {
 		isOnlineTrounament = false;
+		tourId = null; gameNum = null; gameRound = null; gameSide = null;
 		onlineTourSocket.onclose = null;
 		console.log("Websocket tournament Closed because of popstate");
 		if (tourGame) {
@@ -496,7 +542,6 @@ function scheduleMatchInvitation(res) {
 		clearTimeout(invitationTimeoutId);
 	}
 	invitationTimeoutId = setTimeout(() => {
-		console.log("minv: ", res);
 		displayMatchInvitation(res.match_room, res.opponent, res.players);
 	}, 5000);
 }
@@ -523,17 +568,26 @@ function abortMatchInvitation(res) {
 	}
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
-		console.log('Scheduled match invitation aborted', tourGame);
-		console.log('tourGame_beforeAbort', tourGame);
 		invitationTimeoutId = null;
-		if (!tourGame) {
-			setTimeout (() => {
-				console.log("res; ", res);
-				var matchups = document.querySelectorAll('#bracket .matchup');
-				matchupElement = findMatchup(res.player, res.opponent, matchups);
-				onTourGameCompleted(res.player, res.opponent, 0, 4);
-			}, 10000); 
-		}
+		// if (!tourGame) {
+		// 	setTimeout (() => {
+		// 		console.log("res; ", res);
+		// 		var matchups = document.querySelectorAll('#bracket .matchup');
+		// 		matchupElement = findMatchup(res.player, res.opponent, matchups);
+		// 		sendSaveGame(res.player, res.opponent, 0, 4);
+		// 		onTourGameCompleted(res.player, res.opponent, 0, 4);
+		// 	}, 10000); 
+		// }
+	}
+	console.log('tourGame_beforeAbort', tourGame);
+	if (!tourGame) {
+		setTimeout (() => {
+			console.log("res; ", res);
+			var matchups = document.querySelectorAll('#bracket .matchup');
+			matchupElement = findMatchup(res.player, res.opponent, matchups);
+			sendSaveGame(res.player, res.opponent, 0, 4);
+			onTourGameCompleted(res.player, res.opponent, 0, 4);
+		}, 10000); 
 	}
 }
 
@@ -545,12 +599,12 @@ function abortMatchInvitation(res) {
  * @return {boolean} - Returns true if the scores are updated, false otherwise.
  */
 function hasUpdatedScores(matchElement) {
-    
-    const score1 = matchElement.querySelector('.score1');
-    const score2 = matchElement.querySelector('.score2');
+	
+	const score1 = matchElement.querySelector('.score1');
+	const score2 = matchElement.querySelector('.score2');
 	if (!score1 || !score2)
 		return false;
-    
+	
 	return !isNaN(score1.innerText.trim()) && !isNaN(score2.innerText.trim());
 }
 
@@ -564,35 +618,35 @@ function hasUpdatedScores(matchElement) {
  * @return {boolean} - Returns true if the username is found in the match element, false otherwise.
  */
 function isUsernameInMatch(matchElement, username) {
-    if (!matchElement || !username) {
-        return false; 
-    }
+	if (!matchElement || !username) {
+		return false; 
+	}
 
-    // Example: Check if username is in player names
-    const player1Name = matchElement.querySelector('.player1-name');
-    const player2Name = matchElement.querySelector('.player2-name');
+	// Example: Check if username is in player names
+	const player1Name = matchElement.querySelector('.player1-name');
+	const player2Name = matchElement.querySelector('.player2-name');
 
-    if (player1Name && player1Name.innerText.trim() === username) {
-        return true;
-    }
+	if (player1Name && player1Name.innerText.trim() === username) {
+		return true;
+	}
 
-    if (player2Name && player2Name.innerText.trim() === username) {
-        return true;
-    }
+	if (player2Name && player2Name.innerText.trim() === username) {
+		return true;
+	}
 
-    // Example: Check if username is in player IDs (assuming data attributes)
-    const player1Id = matchElement.getAttribute('data-player1-id');
-    const player2Id = matchElement.getAttribute('data-player2-id');
+	// Example: Check if username is in player IDs (assuming data attributes)
+	const player1Id = matchElement.getAttribute('data-player1-id');
+	const player2Id = matchElement.getAttribute('data-player2-id');
 
-    if (player1Id === username) {
-        return true;
-    }
+	if (player1Id === username) {
+		return true;
+	}
 
-    if (player2Id === username) {
-        return true;
-    }
+	if (player2Id === username) {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 
@@ -604,22 +658,22 @@ function isUsernameInMatch(matchElement, username) {
  * @return {void}
  */
 function leaveTournament() {
-    const message = {
-        'type': 'leaving',
-        'player': username,
-        'match_name': match_room
-    };
+	const message = {
+		'type': 'leaving',
+		'player': username,
+		'match_name': match_room
+	};
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
 		console.log('Scheduled match invitation aborted', tourGame);
 		invitationTimeoutId = null;
 	}
 	removeChildById('match-invitation-modal');
-    
-    console.log("tourGame: ", tourGame);
-    console.log("msg1: ", message);
+	
+	console.log("tourGame: ", tourGame);
+	console.log("msg1: ", message);
 
-    if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
+	if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
 		if (!isLoser) {
 			try { 
 				onlineTourSocket.send(JSON.stringify(message));
@@ -627,13 +681,15 @@ function leaveTournament() {
 				console.error('Error sending message through WebSocket:', error);
 			}
 		}
-        hideSpinner();
-        setTimeout(() => {
+		hideSpinner();
+		isOnlineTrounament = false;
+		tourId = null; gameNum = null; gameRound = null; gameSide = null;
+		setTimeout(() => {
 			if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
-            	onlineTourSocket.close();
+				onlineTourSocket.close();
 			}
-        }, 1000);
-    }
+		}, 1000);
+	}
 }
 
 /**
@@ -644,16 +700,70 @@ function leaveTournament() {
  * @return {void}
  */
 function closeGameSocket() {
-    const gameSocket = data['socket'];
-	console.log("closing game socket.....", game_in_progress);
-    if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
-        try {
-            gameSocket.close();
-        } catch (error) {
-            console.error('Error closing WebSocket connection:', error);
-        }
-    }
+	const gameSocket = data['socket'];
+	if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
+		try {
+			gameSocket.close();
+		} catch (error) {
+			console.error('Error closing WebSocket connection:', error);
+		}
+	}
 	game_in_progress = false;
 	data.playerId = null;
 	data.player = null;
+}
+
+
+
+
+/**
+ * Extracts game information from the match element.
+ * Determines the round, side, and game number based on the match element and its surrounding structure.
+ *
+ * @param {HTMLElement} matchElement - The HTML element representing the match.
+ * @returns {Object} An object containing gameRound, gameSide, and gameNum.
+ */
+
+function extractGameInfo(matchElement) {
+	let gameRoundtmp = null;
+	let gameSideTmp = null;
+	let gameNumtmp = null;
+
+	const roundElement = matchElement.closest('.round') || matchElement.closest('.final');
+	if (roundElement) {
+		const roundDetails = roundElement.querySelector('.round-details').innerText.trim();
+		if (roundDetails.includes('Final')) {
+			gameRoundtmp = 'final';
+		} 
+		else if (roundDetails.includes('Round')) {
+			const roundNumber = parseInt(roundDetails.replace('Round ', ''), 10);
+			if (roundNumber === 1) {
+				gameRoundtmp = 'one';
+			} else if (roundNumber === 2) {
+				gameRoundtmp = 'two';
+			}
+		}
+	}
+
+	const parentElement = matchElement.closest('.split, .champion');
+	if (parentElement) {
+		if (parentElement.classList.contains('split-one')) {
+			gameSideTmp = '1';
+		} else if (parentElement.classList.contains('split-two')) {
+			gameSideTmp = '2';
+		} else if (parentElement.classList.contains('champion')) {
+			gameSideTmp = 'champion';
+		}
+	}
+
+	const matchups = parentElement.querySelectorAll('.matchup');
+	if (matchups.length > 0) {
+		gameNumtmp = Array.from(matchups).indexOf(matchElement) + 1;
+	}
+
+	return {
+		gameRoundtmp: gameRoundtmp,
+		gameSideTmp: gameSideTmp,
+		gameNumtmp: gameNumtmp
+	};
 }

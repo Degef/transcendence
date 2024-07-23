@@ -21,11 +21,15 @@ let game_color = "WHITE";
 let reloading = false;
 
 
-
+/**
+ * Sends a message to the server through the provided WebSocket connection.
+ *
+ * @param {WebSocket} gsocket - The WebSocket connection to use for sending the message.
+ * @param {Object} message - The message to send, which will be serialized to a JSON string.
+ */
 function send_message(gsocket, message) {
-	// console.log("sending...: ", message);
 	if (gsocket && gsocket.readyState === WebSocket.OPEN) {
-            gsocket.send(JSON.stringify(message));
+			gsocket.send(JSON.stringify(message));
 	}
 }
 
@@ -559,7 +563,6 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 
 	socket.onmessage = function (event) {
 		const rec = JSON.parse(event.data);
-		// console.log(rec);
 		if (rec['type'] == 'playerId') {
 			data['playerId'] = rec['playerId'];
 			username = rec.username;
@@ -570,6 +573,10 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'type': type,
 				'challengee': challenged_username,
 				'challenger': challenger_username,
+				't_id': tourId,
+				'round': gameRound,
+				'side': gameSide,
+				'g_num': gameNum
 			};
 			// data['socket'].send(JSON.stringify(message));
 			send_message(data['socket'], message);
@@ -596,14 +603,12 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			data['endGame'] = true;
 			data['playerId'] = null;
 			data['player'] = null;
-			// document.getElementById('end_game').innerHTML = rec['message'];
 			const message = {
 				'type': 'endGame',
 				'playerId': data['playerId'],
 			};
 			// data['socket'].send(JSON.stringify(message));
 			send_message(data['socket'], message);
-			// data.socket.close();
 			closeGameSocket();
 			console.log("IsTypeTrounament:", isOnlineTrounament);
 			console.log("mainSection:", mainSection);
@@ -658,11 +663,22 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 
 }
 
+
+/**
+ * Cleans up and closes the WebSocket connection for the ongoing game.
+ * This function handles the cleanup process when a game ends or when the WebSocket connection needs to be closed.
+ * It includes setting game progress flags, sending a message to notify about the end of the game, and closing the WebSocket connection.
+ * 
+ * The cleanup process includes:
+ * - Stopping game progress.
+ * - Sending a message to the server with the game result.
+ * - Closing the WebSocket connection if it is open.
+ * - Resetting relevant game and player data.
+ */
 function cleanup() {
 	if (data.socket) {
 		game_in_progress = false;
 		data.socket.onclose = null; // Prevent onclose from being called again
-		console.log("Websocket Closed because of popstate");
 		otherPlayer = pusername === data.p1_name ? data.p2_name: data.p1_name;
 		console.log('username2: ', pusername, data.p1_name, data.p2_name);
 		console.log('otherplayer: ', otherPlayer);
@@ -722,6 +738,14 @@ function isSame(name1, name2) {
 	return name1 === name2;
 }
 
+
+/**
+ * Updates the displayed names of the two players.
+ * This function sets the text content of the HTML elements that display the names of the players to the provided player names.
+ * 
+ * @param {string} player1 - The name to be displayed for player 1.
+ * @param {string} player2 - The name to be displayed for player 2.
+ */
 function changePlayerNames(player1, player2) {
 	const player1NameDiv = document.getElementById('player1Name');
 	const player2NameDiv = document.getElementById('player2Name');
@@ -730,7 +754,22 @@ function changePlayerNames(player1, player2) {
 }
 
 
-
+/**
+ * Initializes the player name customization dialog and handles name updates.
+ * This function sets up and displays the customization dialog. It processes the player's input 
+ * for names, performs validation, and updates the UI based on input validity. 
+ * 
+ * - Displays the customization dialog and form.
+ * - Listens for form submission to save and validate player names.
+ * - Provides real-time validation feedback for name inputs.
+ * 
+ * Internal Functions:
+ * - `validateInput(currentInput, otherInput)`: Validates the input names and provides feedback.
+ * - `updateFeedback(input, isInvalid, message)`: Updates the visual feedback for the input field.
+ * - `showNotification(input, message)`: Displays a notification for invalid inputs.
+ * - `hideNotification(input)`: Hides the notification for valid inputs.
+ * 
+ */
 function cutomizePlayerName() {
 	const customizeDialog = document.getElementById('customizeDialog');
 	const customizeForm = document.getElementById('customizeForm');
@@ -754,13 +793,12 @@ function cutomizePlayerName() {
 
 		customizeForm.style.display = 'none';
 	});
-  
+
 	const player1Input = document.getElementById('player1Input');
 	const player2Input = document.getElementById('player2Input');
-  
 	player1Input.addEventListener('input', () => validateInput(player1Input, player2Input));
 	player2Input.addEventListener('input', () => validateInput(player2Input, player1Input));
-  
+
 	function validateInput(currentInput, otherInput) {
 		const currentName = currentInput.value.trim().toLowerCase();
 		const otherName = otherInput.value.trim().toLowerCase();
@@ -786,7 +824,7 @@ function cutomizePlayerName() {
 			updateFeedback(otherInput, false, "");
 		}
 	}
-  
+
 	function updateFeedback(input, isInvalid, message) {
 		const feedback = input.nextElementSibling;
 		if (isInvalid) {
@@ -801,7 +839,7 @@ function cutomizePlayerName() {
 			hideNotification(input);
 		}
 	}
-	
+
 	function showNotification(input, message) {
 		let notification = input.nextElementSibling.nextElementSibling; // Get the notification box
 		if (notification && notification.classList.contains('notification')) {
@@ -822,71 +860,75 @@ function cutomizePlayerName() {
 	}
 }
 
+/**
+ * Hides the player name customization dialog.
+ */
 function hidePnameForm() {
 	const customizeDialog = document.getElementById('customizeDialog');
 	customizeDialog.style.display = 'none';
 }
 
 
+/**
+ * Starts a countdown sequence that displays a countdown from 3 to "START" on the screen.
+ * After the countdown reaches 0, it fades out and is removed from the DOM.
+ */
 function startCountdown() {
 	var counter = 3;
   
 	var timer = setInterval(function () {
-	  var countdownElement = document.getElementById('countdown');
-	  if (countdownElement) {
-		countdownElement.remove();
-	  }
+		var countdownElement = document.getElementById('countdown');
+		if (countdownElement) {
+			countdownElement.remove();
+		}
   
-	  var countdown = document.createElement('span');
-	  countdown.id = 'countdown';
-	  countdown.textContent = (counter === 0 ? "START" : counter);
+		var countdown = document.createElement('span');
+		countdown.id = 'countdown';
+		countdown.textContent = (counter === 0 ? "START" : counter);
 
-	  if (counter === 0) {
-		setTimeout(function () {
-			countdown.style.transition = "opacity 1s ease-out";
-			countdown.style.opacity = 0;
+		if (counter === 0) {
 			setTimeout(function () {
-				countdown.remove();
-			}, 1000); // Wait for transition to complete before removing
-		}, 2000); // Wait 2 seconds before starting the fade-out
-	}
-  
-	//   var container = document.querySelector('.container');
-	//   if (container) {
-	// 	container.appendChild(countdown);
-	//   }
-	var canvas = document.getElementById('gameCanvas');
-	if (canvas) {
-		var container = canvas.parentNode; // Get the parent of the canvas
-		if (container) {
-			container.appendChild(countdown);
+				countdown.style.transition = "opacity 1s ease-out";
+				countdown.style.opacity = 0;
+				setTimeout(function () {
+					countdown.remove();
+				}, 1000); // Wait for transition to complete before removing
+			}, 2000); // Wait 2 seconds before starting the fade-out
 		}
-	}
   
-	  setTimeout(function () {
-		if (counter > -1) {
-			countdown.style.fontSize = "40vw";
-			countdown.style.opacity = 0;
-		} else {
-			countdown.style.fontSize = "10vw";
-			countdown.style.opacity = 0.7;
+		var canvas = document.getElementById('gameCanvas');
+		if (canvas) {
+			var container = canvas.parentNode; // Get the parent of the canvas
+			if (container) {
+				container.appendChild(countdown);
+			}
 		}
-	  }, 20);
   
-	  counter--;
-	  if (counter === -1) clearInterval(timer);
+		setTimeout(function () {
+			if (counter > -1) {
+				countdown.style.fontSize = "40vw";
+				countdown.style.opacity = 0;
+			} else {
+				countdown.style.fontSize = "10vw";
+				countdown.style.opacity = 0.7;
+			}
+	  	}, 20);
+  
+	  	counter--;
+		if (counter === -1) clearInterval(timer);
 	}, 1000);
 }
 
 
 
-
+/**
+ * Event listener for the 'beforeunload' event, triggered when the user is about to leave the page on reload
+ * This function handles cleanup tasks to ensure proper disconnection from the game or tournament.
+ * 
+ * @param {Event} event - The event object for the 'beforeunload' event.
+ */
 window.addEventListener('beforeunload', function(event) {
-	// Set a confirmation message
-	var confirmationMessage = "Are you sure you want to leave? Any unsaved changes will be lost.";
-	console.log("game_in_progress :", window.game_in_progress);
 	reloading = true;
-	console.log("waiting_to_play :", window.data.waiting_to_play);
 	if (window.game_in_progress) {
 		window.terminate_game = true;
 		if (window.data.playerId != null && window.data.waiting_to_play == true) {
@@ -900,6 +942,5 @@ window.addEventListener('beforeunload', function(event) {
 		// leaveTournament();
 		cleanuptour();
 	}
-	console.log(confirmationMessage);
 });
   

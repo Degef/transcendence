@@ -623,6 +623,7 @@ function updateScores(matchElement, player1_score, player2_score) {
 		winner = winner.textContent.trim();
 		if (isOnlineTrounament) {
 			isOnlineTrounament = false;
+			tourId = null; gameNum = null; gameRound = null; gameSide = null;
 		}
 		displayTourWinM(winner);
 		console.log("This is the final game. The tournament is complete.");
@@ -945,6 +946,10 @@ function changeSplitStyle() {
  */
 
 function showSpinner(message) {
+	const bodySection = document.querySelector('.main-section');
+	if (bodySection) {
+		bodySection.style.opacity = 0.01;
+	}
 	const spinnerMessage = document.getElementById('spinner-message');
 	const spinnerOverlay = document.getElementById('spinner-overlay');
 	if (message) {
@@ -970,6 +975,10 @@ function showSpinner(message) {
 
   function hideSpinner() {
 	const spinnerOverlay = document.getElementById('spinner-overlay');
+	const bodySection = document.querySelector('.main-section');
+	if (bodySection) {
+		bodySection.style.opacity = 1;
+	}
 	spinnerOverlay.style.display = 'none';
   }
 

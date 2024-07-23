@@ -1,6 +1,6 @@
 from django.db.models import (Model, TextField, DateTimeField, ForeignKey,
 							CASCADE, IntegerField, CharField, Q, AutoField,
-							DateField, ManyToManyField)
+							DateField, ManyToManyField, BooleanField)
 from django.contrib.auth.models import User
 
 from asgiref.sync import sync_to_async, async_to_sync
@@ -9,6 +9,16 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+#tournament Model
+class Tournament(Model):
+	creation_date = DateTimeField(auto_now_add=True, blank=True)
+
+	class Meta:
+		app_label = 'pong'
+		verbose_name = 'Tournament'
+		verbose_name_plural = 'Tournaments'
 
 # Leaderboard Model
 class Leaderboard(Model):
@@ -33,12 +43,31 @@ class Leaderboard(Model):
 
 # Create your models here.
 class Game(Model):
+	ROUND_CHOICES = [
+		('one', 'Round One'),
+		('two', 'Round Two'),
+		('final', 'Final'),
+	]
+
+	SIDE_CHOICES = [
+		('1', 'Split One'),
+		('2', 'Split Two'),
+		('champion', 'Champion'),
+	]
 	player1 = ForeignKey(User, on_delete=CASCADE, related_name='player1')
 	player2 = ForeignKey(User, on_delete=CASCADE, related_name='player2')
 	player1_score = IntegerField(default=0)
 	player2_score = IntegerField(default=0)
 	winner = ForeignKey(User, on_delete=CASCADE, related_name='winner', null=True)
 	date = DateTimeField(auto_now_add=True)
+
+	is_tournament_game = BooleanField(default=False)
+	tournament_id = ForeignKey(Tournament, on_delete=CASCADE, null=True, blank=True)
+	round = CharField(max_length=10, choices=ROUND_CHOICES, null=True, blank=True)
+	game_number = IntegerField(null=True, blank=True)
+	side = CharField(max_length=10, choices=SIDE_CHOICES, null=True, blank=True)
+
+
 
 	def __str__(self):
 		return f'{self.player1} vs {self.player2}'
@@ -149,16 +178,3 @@ def decline_challenge(challengee, challenger):
 
 
 
-class Tournament(Model):
-    id = AutoField(primary_key=True)
-    start_date = DateField(null=True)
-    end_date = DateField(null=True)
-    players = ManyToManyField(User, through='TournamentPlayer')
-    games = ManyToManyField('Game', related_name='tournament_games')
-
-class TournamentPlayer(Model):
-    user = ForeignKey(User, on_delete=CASCADE)
-    tournament = ForeignKey(Tournament, on_delete=CASCADE)
-
-    class Meta:
-        unique_together = ('user', 'tournament')

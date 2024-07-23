@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login, update_session_auth_hash, a
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 from .models import Profile, Friendship, user_things
-from apps.pong.models import Game, Leaderboard
+from apps.pong.models import Game, Leaderboard, Tournament
 from dotenv import load_dotenv
 import os
 from django.http import JsonResponse
@@ -25,9 +25,32 @@ from django.db import transaction
 from django.core.paginator import Paginator
 from faker import Faker
 import requests
+from asgiref.sync import sync_to_async
 
 
 load_dotenv()
+
+async def get_all_games_of_tournaments(username):
+    # Step 1: Get all tournaments that the user has participated in
+    tournaments = await sync_to_async(Tournament.objects.filter)(
+        Q(game__player1__username=username) | Q(game__player2__username=username)
+    ).distinct()
+
+    # Step 2: Get all games that are tournament games where the user is involved
+    tournament_games = await sync_to_async(Game.objects.filter)(
+        Q(is_tournament_game=True),
+        Q(tournament__in=tournaments)
+    ).select_related('tournament')
+
+    # Step 3: Extract the tournament IDs
+    tournament_ids = tournament_games.values_list('tournament_id', flat=True).distinct()
+
+    # Step 4: Get all games for those tournaments
+    all_games = await sync_to_async(Game.objects.filter)(
+        Q(tournament__id__in=tournament_ids)
+    ).select_related('tournament').order_by('tournament_id')
+
+    return all_games
 
 def getTemplateName(request, defaultpage):
 	request_type = "normal" if request.headers.get('X-Requested-With') == 'XMLHttpRequest' else "reload"
