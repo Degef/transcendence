@@ -7,13 +7,14 @@ from asgiref.sync import sync_to_async, async_to_sync
 from django.core.exceptions import ObjectDoesNotExist
 import json
 import logging
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
 
 #tournament Model
 class Tournament(Model):
-	creation_date = DateTimeField(auto_now_add=True, blank=True)
+	creation_date = DateTimeField(default=timezone.now, blank=True)
 
 	class Meta:
 		app_label = 'pong'

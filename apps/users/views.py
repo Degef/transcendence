@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, CustomAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
 import requests
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login, update_session_auth_hash, authenticate, logout as auth_logout
@@ -31,26 +32,26 @@ from asgiref.sync import sync_to_async
 load_dotenv()
 
 async def get_all_games_of_tournaments(username):
-    # Step 1: Get all tournaments that the user has participated in
-    tournaments = await sync_to_async(Tournament.objects.filter)(
-        Q(game__player1__username=username) | Q(game__player2__username=username)
-    ).distinct()
+	# Step 1: Get all tournaments that the user has participated in
+	tournaments = await sync_to_async(Tournament.objects.filter)(
+		Q(game__player1__username=username) | Q(game__player2__username=username)
+	).distinct()
 
-    # Step 2: Get all games that are tournament games where the user is involved
-    tournament_games = await sync_to_async(Game.objects.filter)(
-        Q(is_tournament_game=True),
-        Q(tournament__in=tournaments)
-    ).select_related('tournament')
+	# Step 2: Get all games that are tournament games where the user is involved
+	tournament_games = await sync_to_async(Game.objects.filter)(
+		Q(is_tournament_game=True),
+		Q(tournament__in=tournaments)
+	).select_related('tournament')
 
-    # Step 3: Extract the tournament IDs
-    tournament_ids = tournament_games.values_list('tournament_id', flat=True).distinct()
+	# Step 3: Extract the tournament IDs
+	tournament_ids = tournament_games.values_list('tournament_id', flat=True).distinct()
 
-    # Step 4: Get all games for those tournaments
-    all_games = await sync_to_async(Game.objects.filter)(
-        Q(tournament__id__in=tournament_ids)
-    ).select_related('tournament').order_by('tournament_id')
+	# Step 4: Get all games for those tournaments
+	all_games = await sync_to_async(Game.objects.filter)(
+		Q(tournament__id__in=tournament_ids)
+	).select_related('tournament').order_by('tournament_id')
 
-    return all_games
+	return all_games
 
 def getTemplateName(request, defaultpage):
 	request_type = "normal" if request.headers.get('X-Requested-With') == 'XMLHttpRequest' else "reload"

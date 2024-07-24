@@ -39,6 +39,10 @@ async function getIPAddress() {
 	}
 }
 
+const cleanupsess = () => {
+	if (sessionKeyChall) sessionKeyChall = null;
+};
+
 function authorize42Intra() {
     const clientId = config.client_id;
     const redirectUri = config.redirectUri;
@@ -63,7 +67,7 @@ async function updateContent(htmlContent) {
 
 
 function updateURL(url) {
-	const currentPath = window.location.pathname;
+	const currentPath = window.location.pathname + window.location.search;
 	if (currentPath !== url) {
 		window.history.pushState({ path: url }, '', url);
 	}
@@ -76,6 +80,7 @@ function updateBody(htmlContent) {
 } 
 
 async function handleRoute(path, pushState = true) {
+	let allRoutesRequiredAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/play_online/', '/offline_tourn/', '/online_tourn/', '/four_online_players/', '/eight_online_players/'];
 	try {
 		if (controller) {
 			controller.abort();
@@ -92,7 +97,9 @@ async function handleRoute(path, pushState = true) {
 			headers: { 'Content-Type': 'text/html', 'X-Requested-With': htype },
 		});
 		const htmlContent = await response.text();
-		if ((isLoggin && (path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
+		const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next');
+		if ((isLoggin && (allRoutesRequiredAuth.includes(nextUrl) || path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
 			updateBody(htmlContent);
 			isLoggin = false;
 		} else {
@@ -104,6 +111,7 @@ async function handleRoute(path, pushState = true) {
 			// else
 				updateURL(path);
 		}
+		setuptheme();
 	} catch (error) {
 		if (error.name === 'AbortError') {
 			console.log('Request aborted');
@@ -112,32 +120,52 @@ async function handleRoute(path, pushState = true) {
 	}
 }
 
+function handleAuthenticatedRoute(routePath, routeHandler) {
+	if (sessionKeyChall) {
+		routeHandler();
+	} else {
+		const encodedPath = encodeURIComponent(routePath);
+		updateURL(`/login/?next=${encodedPath}`);
+		handleRoute('/login/', false);
+	}
+}
+
 
 const routeHandlers = {
 	'/': () => handleRoute('/', true),
 	'/about/': () => handleRoute('/about/', true),
-	'/leaderboard/': () => { handleRoute('/leaderboard/', true); setTimeout(init_leaderboard, 200); },
+	'/leaderboard/': () => handleAuthenticatedRoute('/leaderboard/', () => {
+		handleRoute('/leaderboard/', true);
+		setTimeout(init_leaderboard, 200);
+	}),
 	'/privacy/': () => handleRoute('/privacy/', true),
 	'/aboutus/': () => handleRoute('/aboutus/', true),
-	'/chat/': () => { handleRoute('/chat/', true); setTimeout(initializeChat, 800); },
+	'/chat/': () => handleAuthenticatedRoute('/chat/', () => {
+		handleRoute('/chat/', true);
+		setTimeout(initializeChat, 800);
+	}),
 	'/register/': () => register(),
 	'/req_register/': () => handleRoute('/register/', true),
-	'/login/': () => login(),
-	'/logout/': () => { handleRoute('/logout/', false); },
+	'/login/': () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const nextUrl = urlParams.get('next') || '/';
+		login(nextUrl);
+	},
+	'/logout/': () => { handleRoute('/logout/', false), updateURL('/'); cleanupsess(); },
 	'/req_login/': () => handleRoute('/login/', true),
-	'/friends/': () => handleRoute('/friends/', true),
-	'/edit_profile/': () => handleRoute('/edit_profile/', true),
-	'/delete_profile/': () => initializeDeleteProfile('/delete_profile/', '/'),
-	'/update': () => update(),
-	'/play_online/': () => handleRoute('/play_online/', true),
+	'/friends/': () => handleAuthenticatedRoute('/friends/', () => handleRoute('/friends/', true)),
+	'/edit_profile/': () => handleAuthenticatedRoute('/edit_profile/', () => handleRoute('/edit_profile/', true)),
+	'/delete_profile/': () => handleAuthenticatedRoute('/delete_profile/', () => initializeDeleteProfile('/delete_profile/', '/')),
+	'/update': () => handleAuthenticatedRoute('/update', update),
+	'/play_online/': () => handleAuthenticatedRoute('/play_online/', () => handleRoute('/play_online/', true)),
 	'/game_computer/': () => handleRoute('/game_computer/', true),
 	'/local_game/': () => handleRoute('/local_game/', true),
-	'/offline_tourn/': name => handleRoute('/offline_tourn/', true),
+	'/offline_tourn/': () => handleRoute('/offline_tourn/', true),
 	'/four_players/': () => setupTournament(4),
-	'/eight_players/':  () => setupTournament(8),
-	'/online_tourn/': () => handleRoute('/online_tourn/', true),
-	'/four_online_players/': () => onlineTournament(4),
-	'/eight_online_players/':  () => onlineTournament(8),
+	'/eight_players/': () => setupTournament(8),
+	'/online_tourn/': () => handleAuthenticatedRoute('/online_tourn/', () => handleRoute('/online_tourn/', true)),
+	'/four_online_players/': () => handleAuthenticatedRoute('/four_online_players/', () => onlineTournament(4)),
+	'/eight_online_players/': () => handleAuthenticatedRoute('/eight_online_players/', () => onlineTournament(8)),
 };
 
 function handleButtonClick(event) {
@@ -254,6 +282,10 @@ function intializeJsOnPathChange(path) {
 
 window.onpopstate = event => {
 	const path = event.state ? event.state.path : '/';
+	// if ((sessionKeyChall !== null && sessionKeyChall !== undefined) && path.includes('/login/') || path.includes('exchange_code') || path.includes('/register/')) {
+	// 	handleRoute('/');
+	// 	return ;
+	// }
 	handleRoute(path, true) || routeHandlers['/'](false);
 	intializeJsOnPathChange(path);
 };

@@ -75,8 +75,8 @@ async function register(back_or_forward = 1) {
 	initializeChatSocket();
 }
 
-async function login(back_or_forward = 1) {
-	await handleFormSubmission('login-form', '/login/', '/', back_or_forward);
+async function login(nextUrl = '/', back_or_forward = 1) {
+	await handleFormSubmission('login-form', '/login/', decodeURIComponent(nextUrl) || '/', back_or_forward);
 	initializeChallengeSocket();
 	initializeChatSocket();
 }
