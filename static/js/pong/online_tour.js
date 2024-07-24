@@ -11,6 +11,7 @@ let tourId = null;
 let gameNum = null;
 let gameSide = null;
 let gameRound = null;
+let updating_bracket = false;
 // let username = null;
 
 
@@ -328,6 +329,7 @@ function getNextRoundMatch(res) {
 			'plcount': 2
 		};
 		// onlineTourSocket.send(JSON.stringify(message));
+		console.log("msg: ", message);
 		send_message(onlineTourSocket, message);
 	}
 	if (playernames.includes(winner) && playernames.length === 1) {
@@ -338,6 +340,7 @@ function getNextRoundMatch(res) {
 			'plcount': 1
 		};
 		// onlineTourSocket.send(JSON.stringify(message));
+		console.log("msg: ", message);
 		send_message(onlineTourSocket, message);
 	}
 }
@@ -352,13 +355,17 @@ function getNextRoundMatch(res) {
  */
 function update_bracket(res) {
 
-	if (mainSection.style.display === 'block') {
+	if (mainSection && mainSection.style.display === 'block') {
+		updating_bracket = true;
 		var matchups = document.querySelectorAll('#bracket .matchup');
 		matchupElement = findMatchup(res.player1, res.player2, matchups);
 		updateScores(matchupElement, res.score1, res.score2);
 		tourGame = false;
 		mainSection = document.querySelector('.main-section');
 		getNextRoundMatch(res);
+		setTimeout (() => {
+			updating_bracket = false;
+		}, 4000);
 		// if (res.player1 === username || res.playe2 === username) {
 		// 	tourGame = false;
 		// }
@@ -369,12 +376,16 @@ function update_bracket(res) {
 			for (const mutation of mutationsList) {
 				if (mutation.attributeName === 'style' && mainSection.style.display === 'block') {
 					// updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
+					updating_bracket = true;
 					var matchups = document.querySelectorAll('#bracket .matchup');
 					matchupElement = findMatchup(res.player1, res.player2, matchups);
 					updateScores(matchupElement, res.score1, res.score2);
 					tourGame = false;
 					observer.disconnect();
 					getNextRoundMatch(res);
+					setTimeout (() => {
+						updating_bracket = false;
+					}, 4000);
 					// if (res.player1 === username || res.playe2 === username) {
 					// 	tourGame = false;
 					// }
@@ -382,8 +393,10 @@ function update_bracket(res) {
 				}
 			}
 		});
-
-		observer.observe(mainSection, { attributes: true });
+		if (mainSection) {
+			observer.observe(mainSection, { attributes: true });
+		}
+		// observer.observe(mainSection, { attributes: true });
 	}
 
 }
@@ -404,7 +417,8 @@ function displayBracket(res, tourSize) {
 	const parsedHtml = parser.parseFromString(res.html, 'text/html');
 	
 	
-	// Extract the new content to replace the details-section   
+	// Extract the new content to replace the details-section
+	
 	const newContent = parsedHtml.getElementById('bracket');
 	if (newContent) {
 		const detailsSection = document.querySelector('.main-section');
@@ -416,13 +430,15 @@ function displayBracket(res, tourSize) {
 		} else {
 			console.error('details-section not found in the current document');
 		}
+		if (!mainSection) {
+			mainSection = document.querySelector('.main-section');
+		}
+
 	} else {
 		console.error('details-section not found in the received HTML content');
 	}
 	isOnlineTrounament = true;
 }
-
-
 
 function onlineTournament(tourSize) {
 
@@ -431,7 +447,6 @@ function onlineTournament(tourSize) {
 	socket.onopen = function() {
 		console.log('WebSocket connection established.');
 		sendMessage('join_tournament', tourSize);
-		isOnlineTrounament = true;
 	};
 
 	onlineTourSocket = socket;
@@ -443,6 +458,7 @@ function onlineTournament(tourSize) {
 			showSpinner("WAITING FOR OTHER PLAYER TO JOIN ONLINE TOURNAMENT");
 		} else if (res.type === 'html_content') {
 			hideSpinner();
+			isOnlineTrounament = true;
 			displayBracket(res, tourSize);
 		} else if (res.type === 'game_start') {
 			matchName = data.match_name;
@@ -494,6 +510,23 @@ function onlineTournament(tourSize) {
 
 }
 
+
+/**
+ * Waits for the `updating_bracket` variable to become false.
+ * @returns {Promise<void>} A promise that resolves when `updating_bracket` is false.
+ */
+function waitForBracketUpdate() {
+    return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+            if (!updating_bracket) {
+                clearInterval(intervalId);
+                resolve();
+            }
+        }, 100); // Check every 100ms
+    });
+}
+
+
 /**
  * Cleans up the online tournament by closing the WebSocket connection and resetting relevant game data.
  * If a tour game is active, it waits for 7 seconds before sending the 'leaving' message and closing the connection.
@@ -507,10 +540,16 @@ function cleanuptour() {
 		onlineTourSocket.onclose = null;
 		console.log("Websocket tournament Closed because of popstate");
 		if (tourGame) {
+			console.log("I am updating here from tourGame is true");
 			setTimeout ( () => {
 				leaveTournament();
 				tourGame = false;
 			}, 7000);
+		} else if (updating_bracket) {
+			console.log("I am updating here from updating_bracket");
+			waitForBracketUpdate().then(() => {
+				leaveTournament();
+			});
 		} else {
 			leaveTournament();
 		}
@@ -587,7 +626,7 @@ function abortMatchInvitation(res) {
 			matchupElement = findMatchup(res.player, res.opponent, matchups);
 			sendSaveGame(res.player, res.opponent, 0, 4);
 			onTourGameCompleted(res.player, res.opponent, 0, 4);
-		}, 10000); 
+		}, 50); 
 	}
 }
 
@@ -688,7 +727,7 @@ function leaveTournament() {
 			if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
 				onlineTourSocket.close();
 			}
-		}, 1000);
+		}, 7000);
 	}
 }
 
@@ -728,6 +767,11 @@ function extractGameInfo(matchElement) {
 	let gameRoundtmp = null;
 	let gameSideTmp = null;
 	let gameNumtmp = null;
+
+	if (!matchElement) {
+		console.error("matchElement is null or undefined");
+		return null;
+	}
 
 	const roundElement = matchElement.closest('.round') || matchElement.closest('.final');
 	if (roundElement) {

@@ -45,7 +45,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 		
 	async def disconnect(self, close_code):
 		# Remove the user from the waiting queue or ongoing game
-		logger.debug(f"\n\n {self.player_id} Disconnected  WebSocket connection closed")
+		logger.error(f"\n\n {self.player_id} Disconnected  WebSocket connection closed")
+		if self.username in self.challenge_queue:
+			self.challenge_queue.pop(self.username)
 		if self in self.waiting_queue:
 			self.waiting_queue.remove(self)
 		else:
@@ -132,6 +134,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		gametype = data['type']
 		self.challengee = challengee
 		self.challenger = challenger
+		logger.error(f"Challenger: {self.challenger}, Challengee: {self.challengee}, Challenge Queue: {self.challenge_queue}")
 		if (gametype == 'tournament'):
 			self.t_id = data['t_id']
 			self.g_round = data['round']
@@ -748,8 +751,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 
 	async def share_match_result(self, data):
-		
-		await asyncio.sleep(2)
+		await asyncio.sleep(1)
 		await self.channel_layer.group_send(
 			self.room_group_name,
 			{

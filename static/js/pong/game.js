@@ -578,9 +578,11 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'side': gameSide,
 				'g_num': gameNum
 			};
+			console.log("message: ", message);
 			// data['socket'].send(JSON.stringify(message));
 			send_message(data['socket'], message);
 		} else if (rec['type'] === 'pnames') {
+			console.log("pnames: ", rec);
 			hideSpinner();
 			data.waiting_to_play = false;
 			data['p1_name'] = rec.p1_name;
@@ -929,15 +931,17 @@ function startCountdown() {
  */
 window.addEventListener('beforeunload', function(event) {
 	reloading = true;
+	console.log("reloading from here: ", window.game_in_progress);
 	if (window.game_in_progress) {
-		window.terminate_game = true;
-		if (window.data.playerId != null && window.data.waiting_to_play == true) {
-			// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
-			if (window.data['socket']) {
-				window.data['socket'].close()
-			}
-			terminate_game = false;
-		}
+		// window.terminate_game = true;
+		// if (window.data.playerId != null && window.data.waiting_to_play == true) {
+		// 	// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
+		// 	if (window.data['socket']) {
+		// 		window.data['socket'].close()
+		// 	}
+		// 	terminate_game = false;
+		// }
+		destroyOpenWebsocket();
 	} else if (isOnlineTrounament) {
 		// leaveTournament();
 		cleanuptour();

@@ -598,6 +598,9 @@ function startFirstMatch() {
 }
 
 function updateScores(matchElement, player1_score, player2_score) {
+	if (!matchElement) {
+        return;
+    }
 	const player1ScoreInput = matchElement.querySelector('.team-top .score-input');
 	const player2ScoreInput = matchElement.querySelector('.team-bottom .score-input');
 	

@@ -22,6 +22,9 @@ function destroyOpenWebsocket() {
 			window.data['socket'].close()
 		}
 		terminate_game = false;
+		if (window.isOnlineTrounament) {
+			leaveTournament();
+		}
 	}
 	return ;
 }
@@ -211,6 +214,8 @@ function handleButtonClick(event) {
 	const handler = buttonFunctions[buttonId];
 	console.log("game_in_progress :", window.game_in_progress);
 	console.log("isOnlineTournament :", window.isOnlineTrounament);
+	console.log("PlayerId :", window.data.playerId);
+	console.log("waiting_to_play :", window.data.waiting_to_play);
 
 	if (handler) {
 		if (window.game_in_progress) {
