@@ -85,8 +85,7 @@ function updateBody(htmlContent) {
 async function handleRoute(path, pushState = true) {
 	let allRoutesRequiredAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/play_online/', '/offline_tourn/', '/online_tourn/', '/four_online_players/', '/eight_online_players/'];
 	const authPathes = path.includes('login') || path.includes('exchange_code') || path.includes('register');
-	const isAuthenticated = sessionKeyChall ?? false;
-	console.log("isAuthenticated :", isAuthenticated);
+	const isAuthenticated = sessionKeyChall || false;
 	if (authPathes && isAuthenticated) {
 		path = '/';
 	}
@@ -105,9 +104,24 @@ async function handleRoute(path, pushState = true) {
 			method: 'GET',
 			headers: { 'Content-Type': 'text/html', 'X-Requested-With': htype },
 		});
+		
+		const contentType = response.headers.get("content-type");
+		if (contentType && contentType.indexOf("application/json") !== -1) {
+			const jsonResponse = await response.json();
+			if (!jsonResponse.success) {
+				showAlert(jsonResponse.message, 'danger');
+				isLoggin = false;
+				await handleRoute('/login/');
+				return;
+			} else if (jsonResponse.redirect) {
+				await handleRoute(jsonResponse.redirect);
+				return;
+			}
+		}
+
 		const htmlContent = await response.text();
 		const urlParams = new URLSearchParams(window.location.search);
-        const nextUrl = urlParams.get('next');
+		const nextUrl = urlParams.get('next');
 		if ((isLoggin && (allRoutesRequiredAuth.includes(nextUrl) || path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
 			updateBody(htmlContent);
 			isLoggin = false;
@@ -115,10 +129,7 @@ async function handleRoute(path, pushState = true) {
 			updateContent(htmlContent);
 		}
 		if (pushState) {
-			// if (path.includes('code'))
-			// 	window.location.href = "/";
-			// else
-				updateURL(path);
+			updateURL(path);
 		}
 		setuptheme();
 	} catch (error) {
@@ -126,6 +137,7 @@ async function handleRoute(path, pushState = true) {
 			console.log('Request aborted');
 			return;
 		}
+		console.log('Error in handleRoute:', error);
 	}
 }
 
@@ -164,7 +176,7 @@ const routeHandlers = {
 	'/req_login/': () => handleRoute('/login/', true),
 	'/friends/': () => handleAuthenticatedRoute('/friends/', () => handleRoute('/friends/', true)),
 	'/edit_profile/': () => handleAuthenticatedRoute('/edit_profile/', () => handleRoute('/edit_profile/', true)),
-	'/delete_profile/': () => handleAuthenticatedRoute('/delete_profile/', () => initializeDeleteProfile('/delete_profile/', '/')),
+	'/delete_profile/': () => { handleAuthenticatedRoute('/delete_profile/', () => initializeDeleteProfile('/delete_profile/', '/')), cleanupsess();},
 	'/update': () => handleAuthenticatedRoute('/update', update),
 	'/play_online/': () => handleAuthenticatedRoute('/play_online/', () => handleRoute('/play_online/', true)),
 	'/game_computer/': () => handleRoute('/game_computer/', true),

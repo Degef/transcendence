@@ -122,6 +122,7 @@ def logout(request):
 	return render(request, template_name, context)
 	# return render(request, 'landing.html')
 
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def register(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
@@ -411,31 +412,22 @@ def exchange_code(request):
 		user_url = 'https://api.intra.42.fr/v2/me'
 		user_response = requests.get(user_url, headers={'Authorization': f'Bearer {access_token}'}).json()
 
-		# Now you have user data, you can use it as needed
 		user_name = user_response['login']
 		user_email = user_response['email']
 
 		# Check if a user with the same username already exists
 		existing_user = User.objects.filter(username=user_name).first()
-		# check if user is logged in with 42
-		
 
 		if existing_user:
 			user_thing = user_things.objects.get(user=existing_user)
-			if user_thing.logged_in_with_42: # This is checking if 42 username if already taken by another user
+			if user_thing.logged_in_with_42:
 				with transaction.atomic():
 					user_thing.status = 'online'
 					user_thing.save()
 				auth_login(request, existing_user)
-				return redirect('home')
+				return JsonResponse({'success': True, 'redirect': '/'})
 			else:
-				# return JsonResponse({'success': False, 'message': 'User name is already taken by another user signup with another username please.'})
-				context = {
-					'template_name': 'users/login.html'
-				}
-				template_name = getTemplateName(request, 'users/login.html')
-				#user name is already taken by another user signup with another username please.
-				return render(request, template_name, context)
+				return JsonResponse({'success': False, 'message': 'User name is already taken by another user. Please sign up with another username.'})
 
 		img_url = user_response['image']['versions']['small']
 		# Create a new user
@@ -450,9 +442,7 @@ def exchange_code(request):
 			user_thing.status = 'online'
 			user_thing.logged_in_with_42 = True
 			user_thing.save()
-		# text = render(request, 'pong/landing.html')
 		existing_profile = Profile.objects.filter(user=user).first()
 		existing_profile.image.save(f"{user_name}_profile_image.jpg",File(img_temp))
-		return redirect('home')
-	return redirect('home')
-	# return render(request, 'pong/home.html', context)
+		return JsonResponse({'success': True, 'redirect': '/'})
+	return JsonResponse({'success': False, 'message': 'Failed to authenticate with 42.'})
