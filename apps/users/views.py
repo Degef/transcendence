@@ -419,9 +419,9 @@ def exchange_code(request):
 		existing_user = User.objects.filter(username=user_name).first()
 		# check if user is logged in with 42
 		
-		user_thing = user_things.objects.get(user=existing_user)
 
 		if existing_user:
+			user_thing = user_things.objects.get(user=existing_user)
 			if user_thing.logged_in_with_42: # This is checking if 42 username if already taken by another user
 				with transaction.atomic():
 					user_thing.status = 'online'
@@ -429,6 +429,7 @@ def exchange_code(request):
 				auth_login(request, existing_user)
 				return redirect('home')
 			else:
+				# return JsonResponse({'success': False, 'message': 'User name is already taken by another user signup with another username please.'})
 				context = {
 					'template_name': 'users/login.html'
 				}
