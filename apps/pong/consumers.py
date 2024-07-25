@@ -533,7 +533,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	players_waiting = deque()
 	players_waitingBig = deque()
 	nextRound_players = {}
-	# confirmed_players = defaultdict(set)
+	allTournaments = {}
 	confirmed_players = {}
 	player_names_dict = {}
 	player_channels = {}
@@ -567,6 +567,22 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			self.players_waiting.remove(self)
 		if self.username in self.nextRound_players:
 			self.nextRound_players.pop(self.username)
+		tournaments_to_remove = []
+	
+		# Iterate through all tournament entries
+		for tournament_id, players in self.allTournaments.items():
+			# Filter out the current player from the players list
+			self.allTournaments[tournament_id] = [player for player in players if player['p_instance'] != self]
+			
+			# Check if the players list is now empty
+			if not self.allTournaments[tournament_id]:
+				tournaments_to_remove.append(tournament_id)
+
+
+		# Remove empty tournaments
+		for tournament_id in tournaments_to_remove:
+			del self.allTournaments[tournament_id]
+		self.t_id = None
 		logging.info(f"closing SocketConnection to Player {self.username}")
 		await self.close()
 
@@ -581,6 +597,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			await self.share_match_result(data)
 		elif data['type'] == 'next_round_match':
 			await self.handle_nextRound_match(data)
+		elif data['type'] == 'waiting_next_match':
+			await self.handle_waiting_next_match(data)
 		elif data['type'] == 'leaving':
 			await self.handle_leaving(data);
 		elif data['type'] == 'save_game':
@@ -612,6 +630,14 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 						'profile_img': profile_img
 					})
 					tuser.t_id = tournament.pk
+					if tournament.pk not in self.allTournaments:
+						self.allTournaments[tournament.pk] = []
+					self.allTournaments[tournament.pk].append({
+						'username': user.username,
+						'p_instance': tuser,  # Store the player instance if needed
+						't_id': tournament.pk
+					})
+
 				
 				tourn_players = shuffle_array(tourn_players)
 
@@ -819,6 +845,34 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		else:
 			await self.send_join_message(f"Adding the player {self.username}")
 			self.nextRound_players[data['player']] = self
+
+	async def handle_waiting_next_match(self, data):
+		opponent_username = data['opponent']
+		player_username = data['player']
+
+		try:
+			# Check if the opponent is still in the tournament
+			opponent_instance = None
+			for player in self.allTournaments[self.t_id]:
+				if player['username'] == opponent_username:
+					opponent_instance = player
+					break
+
+			if opponent_instance:
+				await self.send_text({
+					'message': f"{opponent_username} is still in the match.",
+					'player': player_username,
+					'opponent': opponent_username
+				})
+			else:
+				raise KeyError("Opponent not found in the tournament")
+		except KeyError:
+			await self.opponent_left({
+				'message': f"{opponent_username} has left the match.",
+				'player': player_username,
+				'opponent': opponent_username
+			})
+
 
 	async def handle_leaving(self, data):
 		match_room = data['match_name']

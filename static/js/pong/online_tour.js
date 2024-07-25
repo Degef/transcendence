@@ -314,10 +314,22 @@ function getNextRoundMatch(res) {
 		onlineTourSocket.close();
 		return ;
 	}
+	var playernames = getPlayerNamesFromMatchup(updatedMatchup);
 	if (username !== res['winner']) {
+		if (playernames.includes(username) && playernames.length === 2) {
+			const message = {
+				'type': 'waiting_next_match',
+				'player': username,
+				'opponent': res['winner'],
+				'plcount': 2
+			};
+			setTimeout (() => {
+				console.log("msg: ", message);
+				send_message(onlineTourSocket, message);
+			}, 7000);
+		}
 		return ;
 	}
-	var playernames = getPlayerNamesFromMatchup(updatedMatchup);
 	if (playernames.includes(winner) && playernames.length === 2) {
 		const opponent = res['winner'] === playernames[0] ? playernames[1]: playernames[0];
 		const message = {
@@ -329,7 +341,7 @@ function getNextRoundMatch(res) {
 			'plcount': 2
 		};
 		// onlineTourSocket.send(JSON.stringify(message));
-		console.log("msg: ", message);
+		// console.log("msg: ", message);
 		send_message(onlineTourSocket, message);
 	}
 	if (playernames.includes(winner) && playernames.length === 1) {
@@ -340,7 +352,7 @@ function getNextRoundMatch(res) {
 			'plcount': 1
 		};
 		// onlineTourSocket.send(JSON.stringify(message));
-		console.log("msg: ", message);
+		// console.log("msg: ", message);
 		send_message(onlineTourSocket, message);
 	}
 }
