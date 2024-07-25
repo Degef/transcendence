@@ -364,8 +364,9 @@ function main_loop () {
 		game_in_progress = false;
 		setTimeout(() => {
 			if (type === 'challenge') {
-				challenged_username = '';
+				type = 'defaultGame';
 				challenger_username = '';
+				challenged_username = '';
 				loadProfile(username);
 			} else {
 				// handleRoute('/');
@@ -393,10 +394,12 @@ function main_loop () {
 			closeGameSocket();
 			// data['socket'].close();
 			if (type === 'challenge') {
+				type == 'defaultGame';
 				challenged_username = '';
 				challenger_username = '';
 				loadProfile(username);
 			} else {
+				console.log("calling handleRoute from game0000");
 				handleRoute('/');
 			}
 		}, 1000);
@@ -453,7 +456,7 @@ function setPlayer(rec) {
 			if (game_in_progress) {
 				data['socket'].send(JSON.stringify(message));
 				data.waiting_to_play = false;
-				console.log("Game Startingggggggggggggggggggggggggggggggggggggg")
+				console.log("Game Startingggggggggggggggggggggggggggggggggggggg");
 				main_loop();
 			}
 		}, 5000);
@@ -625,8 +628,14 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				let s2 = rec['player2'] === rec.winner ? 4: rec['score2'];
 				console.log("gameEnd: ", rec);
 				onTourGameCompleted(rec['player1'], rec['player2'],s1, s2);
-			} else {
+			} else if (type != 'challenge') {
 				displayBtn('play_again');
+			}
+			if (type === 'challenge') {
+				// type = 'defaultGame';
+				challenger_username = '';
+				challenged_username = '';
+
 			}
 		} else if (rec['type'] === 'noPlayerFound') {
 			hideSpinner();

@@ -97,6 +97,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 				# await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 			except KeyError as e:
 				print(f"\n\nError accessing paddle data: {e}")
+		if (self.challengee != '' and self.challenger != ''):
+			await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 		await self.close()
 	
 	async def getInitGameInfo(self, other_user):
@@ -252,6 +254,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 				# self.game_states[room_group_name]['end'] = True
 				del self.game_states[room_group_name]
 				await self.channel_layer.group_discard(room_group_name, self.channel_name)
+				if (self.challengee != '' and self.challenger != ''):
+					await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 				await self.close()
 		except KeyError as e:
 			logger.error(f"Error accessing paddle data: {e}")
@@ -368,8 +372,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 						game_state['end'] = True
 						return
 					ball_dir = generate_rand_dir()
-					ball['velocityY'] = ball_dir[0]
-					ball['velocityX'] = ball_dir[1]
+					ball['velocityY'] = ball_dir[1]
+					ball['velocityX'] = ball_dir[0]
 					# ball['velocityY'] = 0
 					# ball['velocityX'] = 4 if ball['x'] < 300 else -4
 					ball['x'] = 300
@@ -427,7 +431,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'score2': s2,
 			'winner': winner
 		}))
-
 
 class ChallengeConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
