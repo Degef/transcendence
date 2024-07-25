@@ -22,17 +22,43 @@ function updateScoresDisplay(player1Score, player2Score) {
     p1score = player1Score;
     p2score = player2Score;
 }
-function generateRandDir() {
-    const randDir = Math.random() < 0.5;
 
-    if (randDir) {
-        // Generate a random number greater than 3
-        return Math.random() * (10 - 3) + 3;
-    } else {
-        // Generate a random number less than -3
-        return Math.random() * (10 - 3) - 10;
-    }
+// function generateRandDir() {
+//     const randDir = Math.random() < 0.5;
+
+//     if (randDir) {
+//         // Generate a random number greater than 3
+//         return Math.random() * (10 - 3) + 3;
+//     } else {
+//         // Generate a random number less than -3
+//         return Math.random() * (10 - 3) - 10;
+//     }
+// }
+
+function generateRandDir() {
+    // Define the angle ranges in degrees
+    const angleRanges = [
+        [0, 60],
+        [120, 180],
+        [180, 240],
+        [300, 360]
+    ];
+
+    // Select a random range
+    const selectedRange = angleRanges[Math.floor(Math.random() * angleRanges.length)];
+
+    // Generate a random angle within the selected range and convert to radians
+    const angle = (Math.random() * (selectedRange[1] - selectedRange[0]) + selectedRange[0]) * (Math.PI / 180);
+
+    
+    // Calculate the x and y components based on the angle
+    const x = 7 * Math.cos(angle);
+    const y = 7 * Math.sin(angle);
+    
+    return { x: x, y: y };
 }
+
+
 
 function update1(data3){
     // update the ball
@@ -179,14 +205,17 @@ function start_local_game() {
 	} else {
         game_color = 'WHITE';
     }
+    bdir = generateRandDir();
     data3['ball'] = {
         x : data3['canvas'].width/2,
         y : data3['canvas'].height/2,
         radius : 10,
         // velocityX : generateRandDir(),
         // velocityY : generateRandDir(),
-        velocityX : 7,
-        velocityY : 0,
+        velocityX : bdir.x,
+        velocityY : bdir.y,
+        // velocityX : 7,
+        // velocityY : 0,
         speed : 7,
         color : game_color
     };

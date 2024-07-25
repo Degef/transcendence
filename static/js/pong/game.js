@@ -78,12 +78,15 @@ function getMousePos(canvas, user) {
 }
 
 function resetBall(data2){
+	randBallDir = generateRandDir();
 	data2['ball'].x = data2['canvas'].width/2;
 	data2['ball'].y = data2['canvas'].height/2;
 	// data2['ball'].velocityX = generateRandDir();
 	// data2['ball'].velocityY = generateRandDir();
-	data2['ball'].velocityX = 7;
-	data2['ball'].velocityY = 0;
+	data2['ball'].velocityX = randBallDir.x;
+	data2['ball'].velocityY = randBallDir.y;
+	// data2['ball'].velocityX = 7;
+	// data2['ball'].velocityY = 0;
 	data2['ball'].speed = 7;
 }
 
@@ -254,12 +257,15 @@ function start_play_computer() {
 		game_color = '#1A1F33';
 	}
 
+	randBallDir = generateRandDir();
 	data2['ball'] = {
 		x : data2['canvas'].width/2,
 		y : data2['canvas'].height/2,
 		radius : 10,
-		velocityX : 7,
-		velocityY : 0,
+		velocityX : randBallDir.x,
+		velocityY : randBallDir.y,
+		// velocityX : 7,
+		// velocityY : 0,
 		speed : 7,
 		color : game_color
 	};

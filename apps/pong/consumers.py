@@ -19,6 +19,26 @@ import random
 
 logger = logging.getLogger(__name__)
 
+def generate_rand_dir():
+	angle_ranges = [
+		(0, 60),
+		(120, 180),
+		(180, 240),
+		(300, 360)
+	]
+	
+	# Select a random range
+	selected_range = random.choice(angle_ranges)
+	
+	# Generate a random angle within the selected range and convert to radians
+	angle = random.uniform(selected_range[0], selected_range[1]) * (math.pi / 180)
+	
+	# Calculate the x and y components based on the angle
+	x = 7 * math.cos(angle)
+	y = 7 * math.sin(angle)
+	
+	return x, y
+
 class PongConsumer(AsyncWebsocketConsumer):
 	waiting_queue = []
 	challenge_queue = {}
@@ -347,8 +367,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 						)
 						game_state['end'] = True
 						return
-					ball['velocityY'] = 0
-					ball['velocityX'] = 4 if ball['x'] < 300 else -4
+					ball_dir = generate_rand_dir()
+					ball['velocityY'] = ball_dir[0]
+					ball['velocityX'] = ball_dir[1]
+					# ball['velocityY'] = 0
+					# ball['velocityX'] = 4 if ball['x'] < 300 else -4
 					ball['x'] = 300
 					ball['y'] = 200
 					# ball['velocityX'] *= -1
