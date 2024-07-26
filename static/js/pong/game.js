@@ -70,11 +70,12 @@ function drawNet(data2) {
 // ###################################### VS Computer Game ####################################
 
 function getMousePos(canvas, user) {
-	return function(evt) {
-		let rect = canvas.getBoundingClientRect();
-		user.y = evt.clientY - rect.top - user.height/2;
-		// user.y = evt.clientY - (rect.top - 1);
-	}
+    return function(evt) {
+        let rect = canvas.getBoundingClientRect();
+        let zoom = parseFloat(document.documentElement.style.getPropertyValue('--page-zoom')) || 100;
+        let zoomFactor = zoom / 100;
+        user.y = (evt.clientY / zoomFactor) - rect.top - user.height / 2;
+    }
 }
 
 function resetBall(data2){
