@@ -305,6 +305,7 @@ function intializeJsOnPathChange(path) {
 }
 
 window.onpopstate = event => {
+	console.log("FROM WINDOW.ONPOPSTATE");
 	const path = event.state ? event.state.path : '/';
 	const requiresAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/update', '/play_online/', '/online_tourn/', '/four_online_players/', '/eight_online_players/'].some(authPath => path.startsWith(authPath));
 

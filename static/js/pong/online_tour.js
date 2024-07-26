@@ -573,7 +573,8 @@ function cleanuptour() {
 
 // Handle back/forward navigation
 window.addEventListener('popstate', () => {
-	console.log("here-here-here", isOnlineTrounament);
+	// console.log("here-here-here", isOnlineTrounament);
+	console.log("FROM ONPOPSTATE online.tour.js 576");
 	if (isOnlineTrounament) {
 		cleanuptour();
 	}
@@ -755,6 +756,7 @@ function closeGameSocket() {
 	if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
 		try {
 			gameSocket.close();
+			console.log("closing Gamesocket from closeGameSocket()");
 		} catch (error) {
 			console.error('Error closing WebSocket connection:', error);
 		}

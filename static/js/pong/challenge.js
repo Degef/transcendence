@@ -103,16 +103,16 @@ function handleChallengeSocketEvents(challsocket) {
 		} else if (message_json.type === 'challenge_accepted') {
 			if (message_json.challenger === currentUserChall) {
 				showAlert(message_json.challengee + ' accepted your challenge', 'success');
+				console.log("calling handleRoute from if type === challenge_accepted");
+				type = 'challenge';
 				handleRoute('/play_online/');
-				hideBtn('start_game_btn');
 				start_play_online_challenge(challenged_username, challenger_username, username);
-				hideBtn('start_game_btn');
 			} else {
 				showAlert('Starting game with ' + message_json.challenger, 'success');
+				console.log("calling handleRoute from else");
+				type = 'challenge';
 				handleRoute('/play_online/');
-				hideBtn('start_game_btn');
 				start_play_online_challenge(challenged_username, challenger_username, username);
-				hideBtn('start_game_btn');
 			}
 		} else if (message_json.type === 'challenge_declined') {
 			if (message_json.challenger === currentUserChall) {

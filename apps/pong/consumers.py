@@ -58,6 +58,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.g_round= None 
 		self.g_side=None
 		self.g_num=None
+		self.game_type = 'default'
 
 		await self.accept()
 		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "username": self.username}))
@@ -81,7 +82,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 						name = self.scope['user'].username
 						if (game_state['score1'] == 0 and game_state['score2'] == 0):
 								game_state['winner'] = game_state['p1_name'] if name != game_state['p1_name'] else game_state['p2_name']
-
+								game_state['score1'], game_state['score2'] = (4, 0) if name != game_state['p1_name'] and name != game_state['p2_name'] else (0, 4)
+								if (self.game_type == 'challenge'): 
+									await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
 						await self.channel_layer.group_send(
 							self.room_group_name,
 							{
@@ -99,15 +102,17 @@ class PongConsumer(AsyncWebsocketConsumer):
 				print(f"\n\nError accessing paddle data: {e}")
 		if (self.challengee != '' and self.challenger != ''):
 			await sync_to_async(delete_challenge)(self.challenger, self.challengee)
+		self.game_type = 'default'
 		await self.close()
 	
 	async def getInitGameInfo(self, other_user):
+		ball_dir = generate_rand_dir();
 		startInfo = {
 			'player1': other_user.player_id,
 			'player2': self.player_id,
 			'p1_name': other_user.scope['user'].username,
 			'p2_name': self.scope['user'].username,
-			'ball': {'x': 300, 'y': 200, 'velocityX': 4, 'velocityY': 0, 'radius': 10, 'speed': 4},
+			'ball': {'x': 300, 'y': 200, 'velocityX': ball_dir[0], 'velocityY': ball_dir[1], 'radius': 10, 'speed': 7},
 			'collision': {'paddle': False, 'goal': False, 'wall': False},
 			'score1': 0,
 			'score2': 0,
@@ -154,6 +159,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		challengee = data['challengee']
 		challenger = data['challenger']
 		gametype = data['type']
+		self.game_type = gametype
 		self.challengee = challengee
 		self.challenger = challenger
 		logger.error(f"Challenger: {self.challenger}, Challengee: {self.challengee}, Challenge Queue: {self.challenge_queue}")
@@ -341,7 +347,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 					dir = 1 if ball['x'] < 300 else -1
 					ball['velocityX'] = dir * ball['speed'] * math.cos(angleRad)
 					ball['velocityY'] = ball['speed'] * math.sin(angleRad)
-					ball['speed'] += 0.1
+					# ball_dir = generate_rand_dir();
+					# ball['velocityX'] = ball_dir[0]
+					# ball['velocityY'] = ball_dir[1]
+					# ball['speed'] = 7
+					# ball['speed'] += 0.1
 				# Check if the ball has hit the left or right wall
 				if ball['x'] + ball['radius'] <= 0 or ball['x'] - ball['radius'] >= 600:
 					game_state['collision']['goal'] = True
@@ -379,7 +389,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 					ball['x'] = 300
 					ball['y'] = 200
 					# ball['velocityX'] *= -1
-					ball['speed'] = 4
+					ball['speed'] = 7
 			
 			await self.send_game_state()
 			game_state['collision']['paddle'] = False
@@ -431,6 +441,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'score2': s2,
 			'winner': winner
 		}))
+
+
 
 class ChallengeConsumer(AsyncWebsocketConsumer):
 	async def connect(self):

@@ -36,8 +36,9 @@ function send_message(gsocket, message) {
 
 // draw a rectangle, will be used to draw paddles
 
-function resetChallengeStatus() {
+function resetChallengeStatus(username) {
 	if (type === 'challenge') {
+		type = 'defaultGame';
 		challenged_username = '';
 		challenger_username = '';
 		loadProfile(username);
@@ -77,6 +78,53 @@ function getMousePos(canvas, user) {
         user.y = (evt.clientY / zoomFactor) - rect.top - user.height / 2;
     }
 }
+
+function destroyAudioObjects(data) {
+    if (data['hit']) {
+        data['hit'].pause();
+        data['hit'].src = "";
+        data['hit'] = null;
+    }
+
+    if (data['wall']) {
+        data['wall'].pause();
+        data['wall'].src = "";
+        data['wall'] = null;
+    }
+
+    if (data['userScore']) {
+        data['userScore'].pause();
+        data['userScore'].src = "";
+        data['userScore'] = null;
+    }
+
+    if (data['comScore']) {
+        data['comScore'].pause();
+        data['comScore'].src = "";
+        data['comScore'] = null;
+    }
+}
+
+
+
+function resetallGamedata() {
+	data['endGame'] = true;
+	data['playerId'] = null;
+	data['player'] = null;
+	data.endGame = false;
+	data.p1_name = null;
+	data.p2_name = null;
+	if (data['canvas']) {
+        data['canvas'] = null;
+    }
+
+    if (data['ctx']) {
+        data['ctx'] = null;
+    }
+	data.gameState = null;
+	destroyAudioObjects(data);
+}
+
 
 function resetBall(data2){
 	randBallDir = generateRandDir();
@@ -153,7 +201,7 @@ function updateGame(data2){
 		let direction = (data2['ball'].x < data2['canvas'].width/2) ? 1 : -1;
 		data2['ball'].velocityX = direction * data2['ball'].speed * Math.cos(angleRad);
 		data2['ball'].velocityY = data2['ball'].speed * Math.sin(angleRad);
-		data2['ball'].speed += 0.2;
+		// data2['ball'].speed += 0.2;
 	}
 
 	if (data2['ball'].x - data2['ball'].radius < 0){
@@ -299,7 +347,7 @@ function start_play_computer() {
 
 function draw() {
 	// console.log(data["gameState"])
-	if (data['gameState']['paddle1'] != null && data['gameState']['paddle2'] != null) {
+	if (data['gameState']?.paddle1 != null && data['gameState']?.paddle2 != null && data.ctx && data.canvas) {
 		const canvas = data['canvas'];
 		const ctx = data['ctx'];
 		const paddleWidth = data['paddleWidth'];
@@ -340,17 +388,24 @@ function draw() {
 }
 
 function main_loop () {
-	if (data['gameState'].collision.paddle)
+	if (data['gameState']?.collision.paddle && data['hit']) {
 		data['hit'].play();
-	if (data['gameState'].collision.goal)
+	}
+	if (data['gameState']?.collision.goal && data['comScore']) {
 		data['comScore'].play();
-	if (data['gameState'].collision.wall)
+	}
+	if (data['gameState']?.collision.wall && data['wall']) {
 		data['wall'].play();
+	}
 
-	data.paddle.y += data.paddle.speedY;
-	// Keep paddles within the canvas
+	// data.paddle.y += data.paddle.speedY;
+	// // Keep paddles within the canvas
+	// data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
 
-	data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
+	if (data.canvas) {
+        data.paddle.y += data.paddle.speedY;
+        data.paddle.y = Math.max(0, Math.min(data.canvas.height - data.paddleHeight, data.paddle.y));
+    }
 	draw();
 
 	const message = {
@@ -363,16 +418,16 @@ function main_loop () {
 		console.log("This is exiting from endgame\n\n")
 		data['endGame'] = false;
 		game_in_progress = false;
-		setTimeout(() => {
-			if (type === 'challenge') {
-				type = 'defaultGame';
-				challenger_username = '';
-				challenged_username = '';
-				loadProfile(username);
-			} else {
-				// handleRoute('/');
-			}
-		}, 5000);
+		// setTimeout(() => {
+		// 	if (type === 'challenge') {
+		// 		type = 'defaultGame';
+		// 		challenger_username = '';
+		// 		challenged_username = '';
+		// 		loadProfile(username);
+		// 	} else {
+		// 		// handleRoute('/');
+		// 	}
+		// }, 5000);
 		return
 	}
 	if (terminate_game) {
@@ -393,16 +448,14 @@ function main_loop () {
 		setTimeout(function() {
 			terminate_game = false;
 			closeGameSocket();
-			// data['socket'].close();
-			if (type === 'challenge') {
-				type == 'defaultGame';
-				challenged_username = '';
-				challenger_username = '';
-				loadProfile(username);
-			} else {
-				console.log("calling handleRoute from game0000");
-				handleRoute('/');
-			}
+			// if (type === 'challenge') {
+			// 	type == 'defaultGame';
+			// 	challenged_username = '';
+			// 	challenger_username = '';
+			// 	loadProfile(username);
+			// } else {
+			// 	handleRoute('/');
+			// }
 		}, 1000);
 		return;
 	}
@@ -427,16 +480,20 @@ function setPlayer(rec) {
 		}
 
 		const canvasContainer = document.querySelector('.canvas_container');
-		const waitLoadDiv = canvasContainer.querySelector('#wait_load'); // Find the wait_load div
+		// const waitLoadDiv = canvasContainer.querySelector('#wait_load');
 
-		if (waitLoadDiv) { // Remove the wait_load div if it exists
-			canvasContainer.removeChild(waitLoadDiv);
-			document.getElementById('end_game').innerHTML = "";
-		}
+		// if (waitLoadDiv) { // Remove the wait_load div if it exists
+		// 	canvasContainer.removeChild(waitLoadDiv);
+		// 	document.getElementById('end_game').innerHTML = "";
+		// }
 		startCountdown();
 
 		data['canvas'] = document.getElementById('gameCanvas');
-		data['ctx'] = data['canvas'].getContext('2d');
+		if (data['canvas']) {
+			data['ctx'] = data['canvas'].getContext('2d');
+		} else {
+			return ;
+		}
 
 		
 		if (data['player'] == 1) {
@@ -464,86 +521,13 @@ function setPlayer(rec) {
 	}
 }
 
-// function start_play_online() {
-//     data.waiting_to_play = true;
-// function start_play_online() {
-//     if (game_in_progress) {
-//         return;
-//     }
-//     game_in_progress = true;
-
-//     const socket = new WebSocket(`wss://${window.location.host}/ws/game/`);
-
-//     data['socket'] = socket;
-//     data['hit'] = new Audio();
-//     data['wall'] = new Audio();
-//     data['userScore'] = new Audio();
-//     data['comScore'] = new Audio();
-
-//     data['hit'].src = "/media/sounds/hit.mp3";
-//     data['wall'].src = "/media/sounds/wall.mp3";
-//     data['userScore'].src = "/media/sounds/userScore.mp3";
-//     data['comScore'].src = "/media/sounds/comScore.mp3";
-
-//     socket.onopen = function () {
-//         console.log('WebSocket connection established');
-//     }
-
-//     socket.onmessage = function (event) {
-//         const rec = JSON.parse(event.data);
-//         // console.log(rec);
-//         if (rec['type'] == 'playerId') {
-//             data['playerId'] = rec['playerId'];
-//             document.getElementById('end_game').innerHTML = " <p> Waiting for other player to join </p>"
-//             document.querySelector('.canvas_container').innerHTML += "<div id='wait_load'></div>"
-//         } else if (rec['type'] == 'gameState') {
-//             // console.log("Received game state")
-//             data['gameState'] = rec['gameState'];
-//             setPlayer(rec);
-//             // draw(rec['gameState']);
-//         } else if (rec['type'] == 'gameEnd') {
-//             console.log(rec)
-//             data['endGame'] = true;
-//             data['playerId'] = null;
-//             data['player'] = null;
-//             document.getElementById('end_game').innerHTML = rec['message'];
-//             const message = {
-//                 'type': 'endGame',
-//                 'playerId': data['playerId'],
-//             };
-//             data['socket'].send(JSON.stringify(message));
-//             data.socket.close();
-//         }
-//     }
-
-//     socket.onclose = function () {
-//         console.log('WebSocket connection closed');
-//         data['playerId'] = null;
-//         data['player'] = null;
-//         game_in_progress = false;
-//     }
-
-//     window.addEventListener('keydown', (e) => {
-//         if (e.key === 'w' || e.key === 'ArrowUp' ) {
-//             data.paddle.speedY = - data.paddle_speed;
-//         } else if (e.key === 's' || e.key === 'ArrowDown') {
-//             data.paddle.speedY = data.paddle_speed;
-//         }
-//     });
-	
-//     window.addEventListener('keyup', (e) => {
-//         if ((e.key === 'w' || e.key === 's') ) {
-//             data.paddle.speedY = 0;
-//         }
-		
-//         if ((e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-//             data.paddle.speedY = 0;
-//         }
-//     });
-// }
 
 function start_play_online_challenge(challenged_username, challenger_username, username) {
 	hideBtn('play_again');
+	if (type == 'challenge') {
+		console.log("hidding the start_game_btn");
+		hideBtn('start_game_btn');
+	}
 	data.waiting_to_play = true;
 	if (game_in_progress) {
 		return;
@@ -599,6 +583,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			data['p2_name'] = rec.p2_name;
 			changePlayerNames(rec.p1_name, rec.p2_name);
 		} else if (rec['type'] == 'gameState') {
+			console.log("data['player']: ", data['player']);
 			if (data.waiting_to_play) {
 				data.waiting_to_play = false;
 			}
@@ -632,12 +617,6 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			} else if (type != 'challenge') {
 				displayBtn('play_again');
 			}
-			if (type === 'challenge') {
-				// type = 'defaultGame';
-				challenger_username = '';
-				challenged_username = '';
-
-			}
 		} else if (rec['type'] === 'noPlayerFound') {
 			hideSpinner();
 		}
@@ -648,17 +627,16 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		data['playerId'] = null;
 		data['player'] = null;
 		game_in_progress = false;
+		data['endGame'] = false;
+		resetallGamedata(data);
 		setTimeout(() => {
 			if (type === 'challenge') {
-				challenged_username = '';
-				challenger_username = '';
-				loadProfile(username);
+				resetChallengeStatus(username);
 			} else {
 				// handleRoute('/');
 			}
 		}, 5000);
 	}
-
 
 	window.addEventListener('keydown', (e) => {
 		if (e.key === 'w' || e.key === 'ArrowUp' ) {
@@ -707,11 +685,20 @@ function cleanup() {
 		}
 		// data.socket.send(JSON.stringify(mes));
 		send_message(data.socket, mes);
+		console.log("id : ", data.playerId, "player : ", data.player);
 		if (data.socket.readyState === WebSocket.OPEN) {
 			hideSpinner();
+			data.playerId = null;
+			data.player = null;
+			challenged_username = '';
+			challenger_username = '';
+			type = 'defaultGame';
+			resetallGamedata(data);
 			setTimeout(function() {
 				terminate_game = false;
 				data.socket.close();
+				console.log("gameSocket closed from cleanup");
+				data.player = null;
 			}, 1000);
 			return;
 		}
@@ -724,6 +711,7 @@ function cleanup() {
 // Handle back/forward navigation
 window.addEventListener('popstate', () => {
 	if (game_in_progress) {
+		console.log("FROM POPSTATE GAME.JS 724");
 		cleanup();
 	}
 });
@@ -767,8 +755,13 @@ function isSame(name1, name2) {
 function changePlayerNames(player1, player2) {
 	const player1NameDiv = document.getElementById('player1Name');
 	const player2NameDiv = document.getElementById('player2Name');
-	player1NameDiv.textContent = player1;
-	player2NameDiv.textContent = player2;
+
+	if (player1NameDiv) {
+		player1NameDiv.textContent = player1;
+	}
+	if (player2NameDiv) {
+		player2NameDiv.textContent = player2;
+	}
 }
 
 
