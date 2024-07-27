@@ -103,13 +103,11 @@ function handleChallengeSocketEvents(challsocket) {
 		} else if (message_json.type === 'challenge_accepted') {
 			if (message_json.challenger === currentUserChall) {
 				showAlert(message_json.challengee + ' accepted your challenge', 'success');
-				console.log("calling handleRoute from if type === challenge_accepted");
 				type = 'challenge';
 				handleRoute('/play_online/');
 				start_play_online_challenge(challenged_username, challenger_username, username);
 			} else {
 				showAlert('Starting game with ' + message_json.challenger, 'success');
-				console.log("calling handleRoute from else");
 				type = 'challenge';
 				handleRoute('/play_online/');
 				start_play_online_challenge(challenged_username, challenger_username, username);
@@ -149,6 +147,21 @@ async function initializeChallengeSocket() {
 	if (sessionKeyChall) {
 		challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/`);
 		handleChallengeSocketEvents(challengeSocket);
+	}
+}
+
+/**
+ * Handles the decline action if the custom confirmation modal is visible
+ * when a popstate or page reload event occurs.
+ *
+ * @param {Function} onDecline - The function to call when declining the challenge.
+ */
+
+function handleDeclineOnUnload(onDecline) {
+	const modal = document.getElementById('custom-confirm');
+	if (modal && modal.style.display === "block") {
+		modal.style.display = "none";
+		onDecline(challenger, 'decline');
 	}
 }
 

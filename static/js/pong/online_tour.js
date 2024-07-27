@@ -1,4 +1,4 @@
-var isOnlineTrounament = false;
+var isOnlineTournament = false;
 let match_room = null;
 let onlineTourSocket = null;
 let matchupElement = null;
@@ -120,7 +120,6 @@ function sendSaveGame(player1, player2, score1, score2) {
 		'side': gameSide,
 		'g_num':gameNum	
 	};
-	console.log(message);
 	send_message(onlineTourSocket, message);
 }
 
@@ -216,9 +215,13 @@ async function loadTrounametGame(player1,  player2) {
 		}
 
 		mainContainer.appendChild(tournamentSection);
+		hideBtn('start_game_btn');
 		displayMatchModal(player1, player2);
-		if (!isOnlineTrounament) {
-			isOnlineTrounament = false;
+		setTimeout(() => {
+			start_play_online_challenge(challenged_username, challenger_username, username);
+		}, 4500);
+		if (!isOnlineTournament) {
+			isOnlineTournament = false;
 			tourId = null; gameNum = null; gameRound = null; gameSide = null;
 			handleRoute('/', true);
 			return ;
@@ -240,7 +243,6 @@ function removeChildById(elementId) {
 	const element = document.getElementById(elementId);
 	if (element) {
 		element.parentNode.removeChild(element);
-		console.log(`Element with ID ${elementId} has been removed.`);
 	}
 }
 
@@ -255,7 +257,7 @@ function removeChildById(elementId) {
 function displayMatchInvitation(matchRoom, opponent, players) {
 
 	match_room = matchRoom;
-	if (!isOnlineTrounament) {
+	if (!isOnlineTournament) {
 		return ;
 	}
 	const modal = document.createElement('div');
@@ -309,7 +311,7 @@ function displayMatchInvitation(matchRoom, opponent, players) {
  */
 
 function getNextRoundMatch(res) {
-	if (!isOnlineTrounament) {
+	if (!isOnlineTournament) {
 		// displayWinnerModal(winner, winner);
 		onlineTourSocket.close();
 		return ;
@@ -324,7 +326,6 @@ function getNextRoundMatch(res) {
 				'plcount': 2
 			};
 			setTimeout (() => {
-				console.log("msg: ", message);
 				send_message(onlineTourSocket, message);
 			}, 7000);
 		}
@@ -340,8 +341,6 @@ function getNextRoundMatch(res) {
 			'opponent': opponent,
 			'plcount': 2
 		};
-		// onlineTourSocket.send(JSON.stringify(message));
-		// console.log("msg: ", message);
 		send_message(onlineTourSocket, message);
 	}
 	if (playernames.includes(winner) && playernames.length === 1) {
@@ -351,8 +350,6 @@ function getNextRoundMatch(res) {
 			'player1': playernames[0],
 			'plcount': 1
 		};
-		// onlineTourSocket.send(JSON.stringify(message));
-		// console.log("msg: ", message);
 		send_message(onlineTourSocket, message);
 	}
 }
@@ -439,17 +436,13 @@ function displayBracket(res, tourSize) {
 			if (tourSize == 4) {
 				changeRoundStyle();
 			}
-		} else {
-			console.error('details-section not found in the current document');
-		}
+		} 
 		if (!mainSection) {
 			mainSection = document.querySelector('.main-section');
 		}
 
-	} else {
-		console.error('details-section not found in the received HTML content');
-	}
-	isOnlineTrounament = true;
+	} 
+	isOnlineTournament = true;
 }
 
 function onlineTournament(tourSize) {
@@ -457,7 +450,6 @@ function onlineTournament(tourSize) {
 	const socket = new WebSocket(`wss://${window.location.host}/ws/tournament/`);
 
 	socket.onopen = function() {
-		console.log('WebSocket connection established.');
 		sendMessage('join_tournament', tourSize);
 	};
 
@@ -470,7 +462,7 @@ function onlineTournament(tourSize) {
 			showSpinner("WAITING FOR OTHER PLAYER TO JOIN ONLINE TOURNAMENT");
 		} else if (res.type === 'html_content') {
 			hideSpinner();
-			isOnlineTrounament = true;
+			isOnlineTournament = true;
 			displayBracket(res, tourSize);
 		} else if (res.type === 'game_start') {
 			matchName = data.match_name;
@@ -482,8 +474,6 @@ function onlineTournament(tourSize) {
 			match_room = res.match_room;
 			tourGame = false;
 			tourId= res.tour_id;
-			console.log(res);
-			console.log("tour_id : ", tourId);
 			challenger_username = res.players[0];
 			challenged_username = res.players[1];
 			scheduleMatchInvitation(res);
@@ -491,7 +481,6 @@ function onlineTournament(tourSize) {
 			//     displayMatchInvitation(res.match_room, res.opponent,  res.players);
 			// }, 10000);
 		} else if (res.type === 'update_bracket') {
-			console.log('Update_bracket:', res);
 			hideSpinner();
 			update_bracket(res);
 		} else if (res.type === 'opponent_left') {
@@ -500,7 +489,6 @@ function onlineTournament(tourSize) {
 			closeGameSocket();
 			abortMatchInvitation(res);
 			removeChildById('match-invitation-modal');
-			console.log(res);
 		} 
 	}
 	
@@ -508,15 +496,12 @@ function onlineTournament(tourSize) {
 
 	socket.onclose = function(event) {
 		hideSpinner();
-		console.log('WebSocket connection closed:', event);
 		// history.back();
 	};
 	
 	// Send messages to the server
 	function sendMessage(type, tourSize) {
 		const message = { type: type, psize: tourSize };
-		console.log("sending messgesage to server");
-		console.log(type);
 		socket.send(JSON.stringify(message));
 	}
 
@@ -547,18 +532,15 @@ function waitForBracketUpdate() {
  */
 function cleanuptour() {
 	if (onlineTourSocket) {
-		isOnlineTrounament = false;
+		isOnlineTournament = false;
 		tourId = null; gameNum = null; gameRound = null; gameSide = null;
 		onlineTourSocket.onclose = null;
-		console.log("Websocket tournament Closed because of popstate");
 		if (tourGame) {
-			console.log("I am updating here from tourGame is true");
 			setTimeout ( () => {
 				leaveTournament();
 				tourGame = false;
 			}, 7000);
 		} else if (updating_bracket) {
-			console.log("I am updating here from updating_bracket");
 			waitForBracketUpdate().then(() => {
 				leaveTournament();
 			});
@@ -573,9 +555,7 @@ function cleanuptour() {
 
 // Handle back/forward navigation
 window.addEventListener('popstate', () => {
-	// console.log("here-here-here", isOnlineTrounament);
-	console.log("FROM ONPOPSTATE online.tour.js 576");
-	if (isOnlineTrounament) {
+	if (isOnlineTournament) {
 		cleanuptour();
 	}
 });
@@ -610,31 +590,15 @@ function abortMatchInvitation(res) {
 	var matchups = document.querySelectorAll('#bracket .matchup');
 	matchupElement = findMatchup(challenger_username, challenged_username, matchups);
 	mainSection = document.querySelector('.main-section');
-	if (matchupElement) {
-		console.log('Matchup found2:', matchupElement);
-	} else {
-		console.log('No matchup2 found for the given players.');
-	}
 	if (window.game_in_progress) {
 		destroyOpenWebsocket();
 	}
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
 		invitationTimeoutId = null;
-		// if (!tourGame) {
-		// 	setTimeout (() => {
-		// 		console.log("res; ", res);
-		// 		var matchups = document.querySelectorAll('#bracket .matchup');
-		// 		matchupElement = findMatchup(res.player, res.opponent, matchups);
-		// 		sendSaveGame(res.player, res.opponent, 0, 4);
-		// 		onTourGameCompleted(res.player, res.opponent, 0, 4);
-		// 	}, 10000); 
-		// }
 	}
-	console.log('tourGame_beforeAbort', tourGame);
 	if (!tourGame) {
 		setTimeout (() => {
-			console.log("res; ", res);
 			var matchups = document.querySelectorAll('#bracket .matchup');
 			matchupElement = findMatchup(res.player, res.opponent, matchups);
 			sendSaveGame(res.player, res.opponent, 0, 4);
@@ -717,24 +681,20 @@ function leaveTournament() {
 	};
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
-		console.log('Scheduled match invitation aborted', tourGame);
 		invitationTimeoutId = null;
 	}
 	removeChildById('match-invitation-modal');
-	
-	console.log("tourGame: ", tourGame);
-	console.log("msg1: ", message);
 
 	if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
 		if (!isLoser) {
 			try { 
 				onlineTourSocket.send(JSON.stringify(message));
 			} catch (error) {
-				console.error('Error sending message through WebSocket:', error);
+				// console.error('Error sending message through WebSocket:', error);
 			}
 		}
 		hideSpinner();
-		isOnlineTrounament = false;
+		isOnlineTournament = false;
 		tourId = null; gameNum = null; gameRound = null; gameSide = null;
 		setTimeout(() => {
 			if (onlineTourSocket && onlineTourSocket.readyState === WebSocket.OPEN) {
@@ -756,9 +716,8 @@ function closeGameSocket() {
 	if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
 		try {
 			gameSocket.close();
-			console.log("closing Gamesocket from closeGameSocket()");
 		} catch (error) {
-			console.error('Error closing WebSocket connection:', error);
+			// Error caught but ignored
 		}
 	}
 	game_in_progress = false;
@@ -783,7 +742,6 @@ function extractGameInfo(matchElement) {
 	let gameNumtmp = null;
 
 	if (!matchElement) {
-		console.error("matchElement is null or undefined");
 		return null;
 	}
 

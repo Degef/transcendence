@@ -19,6 +19,7 @@ let username = fetch('/get_current_user/').then(response => response.json());
 let pusername = '';
 let game_color = "WHITE";
 let reloading = false;
+let animationFrameId;
 
 
 /**
@@ -293,7 +294,6 @@ function start_play_computer() {
 		// data2['wall'].src = "media/sounds/wall.mp3";
 		data2['userScore'].src = "/media/sounds/userScore.mp3";
 		data2['comScore'].src = "/media/sounds/comScore.mp3";
-		// console.log('data2 is not defined')
 	} else {
 		data2['ctx'].clearRect(0, 0, data2['canvas'].width, data2['canvas'].height);
 	}
@@ -337,7 +337,7 @@ function start_play_computer() {
 	
 	// canvas.addEventListener("mousemove", getMousePos);
 	data2['canvas'].addEventListener("mousemove", getMousePos(data2['canvas'], data2['user']));
-	intervalId = setInterval(function(){
+	intervalId = setInterval(function() {
 		gameLoop(data2);
 	}, 1000/50);
 }
@@ -345,7 +345,6 @@ function start_play_computer() {
 // ################### Online Game Logic ###################
 
 function draw() {
-	// console.log(data["gameState"])
 	if (data['gameState']?.paddle1 != null && data['gameState']?.paddle2 != null && data.ctx && data.canvas) {
 		const canvas = data['canvas'];
 		const ctx = data['ctx'];
@@ -414,23 +413,16 @@ function main_loop () {
 		'player': data['player'],
 	};
 	if (data['endGame']) {
-		console.log("This is exiting from endgame\n\n")
 		data['endGame'] = false;
 		game_in_progress = false;
-		// setTimeout(() => {
-		// 	if (type === 'challenge') {
-		// 		type = 'defaultGame';
-		// 		challenger_username = '';
-		// 		challenged_username = '';
-		// 		loadProfile(username);
-		// 	} else {
-		// 		// handleRoute('/');
-		// 	}
-		// }, 5000);
+		type = 'defaultGame';
+		if (animationFrameId !== null) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
 		return
 	}
 	if (terminate_game) {
-		console.log("Exiting from terminate game\n\n")
 		// This condition is handling when user presses any button while game is in progress
 		// First we need to stop the game task created in the server, that is what endGame1 will do
 		// Then we wait 1 second to make sure the task is stopped and then we close the socket
@@ -440,27 +432,22 @@ function main_loop () {
 			'playerId': data['playerId'],
 			'winner': otherPlayer
 		}
-		// data['socket'].send(JSON.stringify(mes));
 		send_message(data['socket'], mes);
 
 		// wait one second
 		setTimeout(function() {
 			terminate_game = false;
+			type = 'defaultGame';
 			closeGameSocket();
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
 			return;
-			// if (type === 'challenge') {
-			// 	type == 'defaultGame';
-			// 	challenged_username = '';
-			// 	challenger_username = '';
-			// 	loadProfile(username);
-			// } else {
-			// 	handleRoute('/');
-			// }
 		}, 1000);
 	}
-	// data['socket'].send(JSON.stringify(message));
 	send_message(data['socket'], message);
-	requestAnimationFrame(main_loop);
+	animationFrameId = requestAnimationFrame(main_loop);
 }
 
 function setPlayer(rec) {
@@ -506,7 +493,6 @@ function setPlayer(rec) {
 			if (game_in_progress) {
 				data['socket'].send(JSON.stringify(message));
 				data.waiting_to_play = false;
-				console.log("Game Startingggggggggggggggggggggggggggggggggggggg");
 				main_loop();
 			}
 		}, 5000);
@@ -516,10 +502,6 @@ function setPlayer(rec) {
 
 function start_play_online_challenge(challenged_username, challenger_username, username) {
 	hideBtn('play_again');
-	if (type == 'challenge') {
-		console.log("hidding the start_game_btn");
-		hideBtn('start_game_btn');
-	}
 	data.waiting_to_play = true;
 	if (game_in_progress) {
 		return;
@@ -540,10 +522,10 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 	data['comScore'].src = "/media/sounds/comScore.mp3";
 
 	socket.onopen = function () {
-		console.log('WebSocket connection established');
+		// console.log('WebSocket connection established');
 	}
 	type = (challenged_username === '' || challenger_username === '') ? "defaultGame"  : "challenge";
-	if (isOnlineTrounament) {
+	if (isOnlineTournament) {
 		type = "tournament";
 	}
 
@@ -564,26 +546,20 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'side': gameSide,
 				'g_num': gameNum
 			};
-			console.log("message: ", message);
-			// data['socket'].send(JSON.stringify(message));
 			send_message(data['socket'], message);
 		} else if (rec['type'] === 'pnames') {
-			console.log("pnames: ", rec);
 			hideSpinner();
 			data.waiting_to_play = false;
 			data['p1_name'] = rec.p1_name;
 			data['p2_name'] = rec.p2_name;
 			changePlayerNames(rec.p1_name, rec.p2_name);
 		} else if (rec['type'] == 'gameState') {
-			console.log("data['player']: ", data['player']);
 			if (data.waiting_to_play) {
 				data.waiting_to_play = false;
 			}
 			data['gameState'] = rec['gameState'];
 			setPlayer(rec);
-			// draw(rec['gameState']);
 		} else if (rec['type'] == 'gameEnd') {
-			console.log("username: ",  rec);
 			if (username === rec.winner) {
 				displayWinM();
 			} else {
@@ -596,15 +572,19 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 				'type': 'endGame',
 				'playerId': data['playerId'],
 			};
-			// data['socket'].send(JSON.stringify(message));
+			if (rec.message.includes("has left the game")) {
+				data['endGame'] = false;
+				if (animationFrameId !== null) {
+					cancelAnimationFrame(animationFrameId);
+					animationFrameId = null;
+				}
+				type = 'defaultGame';
+			}
 			send_message(data['socket'], message);
 			closeGameSocket();
-			console.log("IsTypeTrounament:", isOnlineTrounament);
-			console.log("mainSection:", mainSection);
-			if (isOnlineTrounament) {
+			if (isOnlineTournament) {
 				let s1 = rec['player1'] === rec.winner ? 4: rec['score1'];
 				let s2 = rec['player2'] === rec.winner ? 4: rec['score2'];
-				console.log("gameEnd: ", rec);
 				onTourGameCompleted(rec['player1'], rec['player2'],s1, s2);
 			} else if (type != 'challenge') {
 				displayBtn('play_again');
@@ -615,11 +595,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 	}
 
 	socket.onclose = function () {
-		console.log('WebSocket connection closed');
 		data['playerId'] = null;
 		data['player'] = null;
-		// game_in_progress = false;
-		// data['endGame'] = false;
 		resetallGamedata(data);
 		setTimeout(() => {
 			if (type === 'challenge') {
@@ -668,8 +645,6 @@ function cleanup() {
 		game_in_progress = false;
 		data.socket.onclose = null; // Prevent onclose from being called again
 		otherPlayer = pusername === data.p1_name ? data.p2_name: data.p1_name;
-		console.log('username2: ', pusername, data.p1_name, data.p2_name);
-		console.log('otherplayer: ', otherPlayer);
 		mes = {
 			'type': 'endGame1',
 			'playerId': data.playerId,
@@ -677,7 +652,6 @@ function cleanup() {
 		}
 		// data.socket.send(JSON.stringify(mes));
 		send_message(data.socket, mes);
-		console.log("id : ", data.playerId, "player : ", data.player);
 		if (data.socket.readyState === WebSocket.OPEN) {
 			hideSpinner();
 			data.playerId = null;
@@ -689,7 +663,6 @@ function cleanup() {
 			setTimeout(function() {
 				terminate_game = false;
 				data.socket.close();
-				console.log("gameSocket closed from cleanup");
 				data.player = null;
 			}, 1000);
 			return;
@@ -702,8 +675,8 @@ function cleanup() {
 
 // Handle back/forward navigation
 window.addEventListener('popstate', () => {
+	handleDeclineOnUnload(respondChallenge);
 	if (game_in_progress) {
-		console.log("FROM POPSTATE GAME.JS 724");
 		cleanup();
 	}
 });
@@ -932,18 +905,10 @@ function startCountdown() {
  */
 window.addEventListener('beforeunload', function(event) {
 	reloading = true;
-	console.log("reloading from here: ", window.game_in_progress);
+	handleDeclineOnUnload(respondChallenge);
 	if (window.game_in_progress) {
-		// window.terminate_game = true;
-		// if (window.data.playerId != null && window.data.waiting_to_play == true) {
-		// 	// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
-		// 	if (window.data['socket']) {
-		// 		window.data['socket'].close()
-		// 	}
-		// 	terminate_game = false;
-		// }
 		destroyOpenWebsocket();
-	} else if (isOnlineTrounament) {
+	} else if (isOnlineTournament) {
 		// leaveTournament();
 		cleanuptour();
 	}

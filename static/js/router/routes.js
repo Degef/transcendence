@@ -22,7 +22,7 @@ function destroyOpenWebsocket() {
 			window.data['socket'].close()
 		}
 		terminate_game = false;
-		if (window.isOnlineTrounament) {
+		if (window.isOnlineTournament) {
 			leaveTournament();
 		}
 	}
@@ -86,7 +86,6 @@ async function handleRoute(path, pushState = true) {
 	let allRoutesRequiredAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/play_online/', '/offline_tourn/', '/online_tourn/', '/four_online_players/', '/eight_online_players/'];
 	const authPathes = path.includes('login') || path.includes('exchange_code') || path.includes('register');
 	const isAuthenticated = sessionKeyChall ?? false;
-	console.log("isAuthenticated :", isAuthenticated);
 	if (authPathes && isAuthenticated) {
 		path = '/';
 	}
@@ -128,6 +127,9 @@ async function handleRoute(path, pushState = true) {
 			isLoggin = false;
 		} else {
 			updateContent(htmlContent);
+			if (path.includes('/play_online/') &&type === 'challenge') {
+				hideBtn('start_game_btn');
+			}
 		}
 		if (pushState) {
 			updateURL(path);
@@ -231,17 +233,13 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-	console.log("game_in_progress :", window.game_in_progress);
-	console.log("isOnlineTournament :", window.isOnlineTrounament);
-	console.log("PlayerId :", window.data.playerId);
-	console.log("waiting_to_play :", window.data.waiting_to_play);
 
 	if (handler) {
 		if (window.game_in_progress) {
 			if (buttonId === 'zoomin' || buttonId === 'zoomout' || buttonId === 'mode_toggle' || buttonId === 'yesButton') { handler(); return ; }
 			destroyOpenWebsocket();
 		}
-		else if (window.isOnlineTrounament) {
+		else if (window.isOnlineTournament) {
 			leaveTournament();
 		}
 		handler();
@@ -305,7 +303,6 @@ function intializeJsOnPathChange(path) {
 }
 
 window.onpopstate = event => {
-	console.log("FROM WINDOW.ONPOPSTATE");
 	const path = event.state ? event.state.path : '/';
 	const requiresAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/update', '/play_online/', '/online_tourn/', '/four_online_players/', '/eight_online_players/'].some(authPath => path.startsWith(authPath));
 

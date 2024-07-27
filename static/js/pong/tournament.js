@@ -50,7 +50,6 @@ function getBtnContainer(buttonId, label, clickHandler, ...params) {
 function removeBtnContainer(buttonContainer) {
 	// Ensure buttonContainer is a valid element
 	if (!(buttonContainer instanceof Element)) {
-		console.error('Invalid parameter. Expected an Element.');
 		return;
 	}
 	buttonContainer.remove();
@@ -88,6 +87,9 @@ let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matc
 
 
 const tourWinnerModal = (winner) => {
+	const message = isOnlineTournament 
+        ? "You won this Tournament!" 
+        : `The winner of this Tournament is <span  class="winner-name">${winner}</span>`;
 	modalHtml = ` 
 		<center> 
 			<div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -99,8 +101,34 @@ const tourWinnerModal = (winner) => {
 						<div class="modal-body">
 							<div class="card-body text-center"> 
 								<img src="/media/images/win.png" class="winner-img winneronline-img">
-								<h4 class="congrats-message">CONGRATULATIONS!</h4>
-								<p class="winner-message">🎉🎉🎉 The winner of this Tournament is <span  class="winner-name">${winner}</span> 🎉🎉🎉</p> 
+								<h4 class="congrats-message">CONGRATULATIONS! <span  class="winner-name">${winner}</span></h4>
+								<p class="winner-message">🎉🎉🎉 ${message} 🎉🎉🎉</p> 
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</center> 
+	`;
+	return modalHtml;
+} 
+
+{/* <h4 class="congrats-message"Losers, hands up and applaud the winner <span  class="winner-name">${winner}</span>!</h4> */}
+
+const tourLosersModal = (winner) => {
+	modalHtml = ` 
+		<center> 
+			<div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content justify-content-center">
+						<div class="modal-header justify-content-center">
+							<h4 class="modal-title" id="myModalLabel">Losers</h4>
+						</div>
+						<div class="modal-body">
+							<div class="card-body text-center"> 
+								<img src="/media/images/tourLoser.png" class="winner-img winneronline-img">
+								<h4 class="congrats-message">Hands up Losers! Let's all congratulate <span  class="winner-name">${winner}</span>!</h4>
+								<p class="winner-message">🎉🎉🎉 He Just cooked all of you in this Tournament<span  class="winner-name"></span> 🎉🎉🎉</p> 
 							</div>
 						</div>
 					</div>
@@ -245,8 +273,6 @@ function appendToContainer(toBeAppended, classname) {
 	const container = document.querySelector(`.${classname}`);
 	if (container) {
 		container.appendChild(toBeAppended);
-	} else {
-		console.error(`Element with class "${classname}" not found.`);
 	}
 }
 
@@ -342,6 +368,25 @@ function displayTourWinM(winner) {
 
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = tourWinnerModal(winner);
+	const myModal = new bootstrap.Modal('#m-result-modal');
+	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+	modal.show();
+	// hideModalAfterDelay(myModal, 5000);
+	// setTimeout(() => {
+	//     myModal.hide();
+	// }, 5000);
+}
+
+function displayTourLosersM(winner) {
+	let modalContainer = document.getElementById('modal-container');
+	if (!modalContainer) {
+		modalContainer = document.createElement('div');
+		modalContainer.id = 'modal-container';
+		document.body.appendChild(modalContainer);
+	}
+
+	// Insert the modal HTML into the container
+	modalContainer.innerHTML = tourLosersModal(winner);
 	const myModal = new bootstrap.Modal('#m-result-modal');
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
@@ -579,7 +624,7 @@ async function organizeTournament(players) {
 			changeRoundStyle();
 		}
 	} catch (error) {
-		console.error('Error fetching tournament bracket:', error);
+		// console.error('Error fetching tournament bracket:', error);
 	}
 }
 
@@ -611,7 +656,7 @@ function updateScores(matchElement, player1_score, player2_score) {
 	if (!matchElement.closest('.champion')) {
 		// Proceed with updating the next round and starting the next match
 		updateNextRound(matchElement);
-		if (isOnlineTrounament)
+		if (isOnlineTournament)
 			return;
 		nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
 		appendToContainer(nextGameBtn, 'my-5.main-section');
@@ -624,13 +669,18 @@ function updateScores(matchElement, player1_score, player2_score) {
 		var player2_name = matchElement.querySelector(".team-bottom");
 		var winner = player1_score > player2_score ? player1_name.querySelector(".player-name") : player2_name.querySelector(".player-name");
 		winner = winner.textContent.trim();
-		if (isOnlineTrounament) {
-			isOnlineTrounament = false;
+		if (isOnlineTournament) {
 			tourId = null; gameNum = null; gameRound = null; gameSide = null;
+			if (username === winner) {
+				displayTourWinM(winner);
+			}
+			else {
+				displayTourLosersM(winner);
+			}
+			isOnlineTournament = false;
+		} else {
+			displayTourWinM(winner);
 		}
-		displayTourWinM(winner);
-		console.log("This is the final game. The tournament is complete.");
-		// Additional actions when the tournament is complete can be added here
 	}
 }
 
@@ -810,7 +860,7 @@ function updateNextMatchup(winner, loser) {
 		var nextMatchups = nextRound.querySelectorAll(".matchup");
 		var nextMatchupIndex = Math.floor(currentMatchupIndex / 2);
 		var nextMatchup = nextMatchups[nextMatchupIndex];
-		if (isOnlineTrounament) {
+		if (isOnlineTournament) {
 			updatedMatchup = nextMatchup;    
 		}
 
@@ -832,7 +882,7 @@ function updateNextMatchup(winner, loser) {
 		var championshipMatchup = document.querySelector(".championship.matchup");
 		var championshipTeamTop = championshipMatchup.querySelector(".team-top");
 		var championshipTeamBottom = championshipMatchup.querySelector(".team-bottom");
-		if (isOnlineTrounament) {
+		if (isOnlineTournament) {
 			updatedMatchup = championshipMatchup;
 		}
 
@@ -911,30 +961,58 @@ async function startMatch(player1, player2, matchElement) {
 		customizeDialog.style.display = 'none';
 		displayMatchModal(player1, player2);
 	} catch (error) {
-		console.error('Error fetching local game page:', error);
+		// console.error('Error fetching local game page:', error);
 	}
 }
 
+/**
+ * Applies the 'flex-mode' class to all elements with the class 'matchup' within the 'round-one' container.
+ * It ensures that the elements exist and have the classList property before adding the class.
+ * The function operates on a NodeList returned by querySelectorAll, which is iterated over safely.
+ *
+ * @return {void}
+ */
 function changeRoundStyle() {
 	const roundOneMatchup = document.querySelectorAll('.round-one .matchup');
 	
 	// roundOneMatchup.classList.add('flex-mode');
-	roundOneMatchup.forEach(matchup => {
-		matchup.classList.add('flex-mode');
-	});
+
+	// roundOneMatchup.forEach(matchup => {
+	// 	matchup.classList.add('flex-mode');
+	// });
+
+	if (roundOneMatchup && roundOneMatchup.length > 0) {
+        roundOneMatchup.forEach(matchup => {
+            if (matchup && matchup.classList) {
+                matchup.classList.add('flex-mode');
+            }
+        });
+    }
 
 }
 
+
+/**
+ * Changes the style of elements with the class 'split' by adding the 'split-four-p' class.
+ * It checks if the elements exist and if they have the classList property before attempting to modify them.
+ * The operation is safely performed to avoid errors in case of missing or invalid elements.
+ *
+ * @return {void}
+ */
 function changeSplitStyle() {
 	const splits = document.querySelectorAll('.split');
-	console.log(splits);
-	
 
 	// roundOneMatchup.classList.add('flex-mode');
-	splits.forEach(matchup => {
-		matchup.classList.add('split-four-p');
-	});
-
+	// splits.forEach(matchup => {
+	// 	matchup.classList.add('split-four-p');
+	// });
+	if (splits && Array.isArray(splits) && splits.length > 0) {
+		splits.forEach(matchup => {
+			if (matchup && matchup.classList) {
+				matchup.classList.add('split-four-p');
+			}
+		});
+	}
 }
 
 
