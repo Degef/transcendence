@@ -415,7 +415,6 @@ function main_loop () {
 	if (data['endGame']) {
 		data['endGame'] = false;
 		game_in_progress = false;
-		type = 'defaultGame';
 		if (animationFrameId !== null) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
@@ -437,7 +436,6 @@ function main_loop () {
 		// wait one second
 		setTimeout(function() {
 			terminate_game = false;
-			type = 'defaultGame';
 			closeGameSocket();
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
@@ -578,7 +576,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 					cancelAnimationFrame(animationFrameId);
 					animationFrameId = null;
 				}
-				type = 'defaultGame';
+				// type = 'defaultGame';
 			}
 			send_message(data['socket'], message);
 			closeGameSocket();

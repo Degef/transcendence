@@ -181,6 +181,18 @@ function customConfirm(message, onAccept, onDecline) {
 	const messageElement = document.getElementById('challenge-message');
 	const acceptButton = document.getElementById('accept-button');
 	const declineButton = document.getElementById('decline-button');
+	if (window.game_in_progress) {
+		if (window.data.playerId != null && window.data.waiting_to_play == true && !window.isOnlineTournament) {
+			if (window.data['socket'] && window.data['socket'].readyState === WebSocket.OPEN) {
+				hideSpinner();
+				window.data['socket'].close()
+				window.game_in_progress = false;
+			}
+		} else {
+			onDecline(challenger, 'decline');
+			return ;
+		}
+	}
 
 	messageElement.innerText = message;
 

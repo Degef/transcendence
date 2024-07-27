@@ -137,10 +137,10 @@ async function handleRoute(path, pushState = true) {
 		setuptheme();
 	} catch (error) {
 		if (error.name === 'AbortError') {
-			console.log('Request aborted');
+			// console.log('Request aborted');
 			return;
 		}
-		console.log('Error in handleRoute:', error);
+		// console.log('Error in handleRoute:', error);
 	}
 }
 
