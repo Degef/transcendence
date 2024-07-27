@@ -9,6 +9,8 @@ import json
 
 from django.views.decorators.csrf import csrf_exempt
 from apps.users.views import getTemplateName
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 def get_current_user(request):
 	if not request.user.is_authenticated:
@@ -25,38 +27,43 @@ def get_current_user(request):
 
 	return JsonResponse(data)
 
-@csrf_exempt
+
 def block_unblock(request):
 	self_username = request.user.username
 	self_username_obj = User.objects.get(username=self_username)
 
 	if request.method not in ['POST', 'DELETE']:
-		return JsonResponse({'Error': 'Invalid request method'}, status=405)
+		return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 	try:
 		data = json.loads(request.body)
 		blocked_username = data['username']
 		blocked_username_obj = User.objects.get(username=blocked_username)
-	except (KeyError, json.JSONDecodeError):
-		return JsonResponse({'Error': 'Invalid request data'}, status=400)
+	except (KeyError, json.JSONDecodeError, User.DoesNotExist):
+		return JsonResponse({'success': False, 'message': 'Invalid request data'})
 
 	if self_username == blocked_username:
-		return JsonResponse({'Error': 'Cannot block yourself'}, status=400)
+		return JsonResponse({'success': False, 'message': 'Cannot block yourself'})
 
 	if request.method == 'POST':
-		if is_blocked(self_username_obj, blocked_username_obj):
-			return JsonResponse({'Error': 'User is already blocked'}, status=400)
+		block, created = BlockModel.objects.get_or_create(
+			user_blocker=self_username_obj,
+			user_blocked=blocked_username_obj
+		)
+		if created:
+			return JsonResponse({'success': True, 'message': 'User successfully blocked'})
 		else:
-			BlockModel.objects.create(user_blocker=self_username_obj, user_blocked=blocked_username_obj)
-			return JsonResponse({'Success': 'User successfully blocked'}, status=200)
+			return JsonResponse({'success': False, 'message': 'User is already blocked'})
 
 	elif request.method == 'DELETE':
-		if not is_blocked(self_username_obj, blocked_username_obj):
-			return JsonResponse({'Error': 'User is not blocked'}, status=400)
+		deleted, _ = BlockModel.objects.filter(
+			user_blocker=self_username_obj,
+			user_blocked=blocked_username_obj
+		).delete()
+		if deleted:
+			return JsonResponse({'success': True, 'message': 'User is successfully unblocked'})
 		else:
-			block_instance = BlockModel.objects.get(user_blocker=self_username_obj, user_blocked=blocked_username_obj)
-			block_instance.delete()
-			return JsonResponse({'Success': 'User is successfully unblocked'}, status=200)
+			return JsonResponse({'success': False, 'message': 'User is not blocked'})
 
 
 @login_required

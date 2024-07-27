@@ -122,7 +122,7 @@ async function handleRoute(path, pushState = true) {
 		const htmlContent = await response.text();
 		const urlParams = new URLSearchParams(window.location.search);
 		const nextUrl = urlParams.get('next');
-		if ((isLoggin && (allRoutesRequiredAuth.includes(nextUrl) || path === '/' || path.includes('exchange_code'))) || path === '/logout/') {
+		if ((isLoggin && (allRoutesRequiredAuth.includes(nextUrl) || path === '/' || path.includes('exchange_code'))) || path === '/logout/' || response.status === 404) {
 			updateBody(htmlContent);
 			isLoggin = false;
 		} else {
@@ -272,6 +272,9 @@ function setuptheme() {
 }
 
 function intializeJsOnPathChange(path) {
+	if (!path) {
+		path = window.location.pathname;
+	}
 	if (path === '/chat/') {
 		waitForElement('.chat__container', initializeChat);
 	} else if (path === '/leaderboard/') {
@@ -352,6 +355,7 @@ async function loginWith42() {
 	await handleRoute(`https://${config.ip}/exchange_code?code=${code}`);
 	initializeChallengeSocket();
 	initializeChatSocket();
+	intializeJsOnPathChange();
 }
 
 

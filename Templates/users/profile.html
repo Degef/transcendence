@@ -10,7 +10,9 @@
 				{% if is_own_profile %}
 					{% if is_anonymous == False %}
 						<button class="btn btn-outline-light profile-action-edit" id="edit_profile" role="button" aria-label="Edit">Edit</button>
-						<button class="btn btn-outline-danger rounded-pill" id="anon_profile" onclick="anonymize()" role="button" aria-label="Anonymize">Anonymize</button>
+						{% if is_logged_in_with_42 == False %}
+							<button class="btn btn-outline-danger rounded-pill" id="anon_profile" onclick="anonymize()" role="button" aria-label="Anonymize">Anonymize</button>
+						{% endif %}
 					{% else %}
 						<button class="btn btn-outline-light profile-action-edit" id="edit_profile" role="button" aria-label="Edit">Edit</button>
 					{% endif %}
@@ -213,9 +215,6 @@
 					<div class="d-flex justify-content-between align-items-center py-2 gap-5">
 						<button class="btn btn-success rounded-pill" onclick="acceptRequest('{{ requester.username }}')">Accept</button>
 						<button class="btn btn-warning rounded-pill" onclick="declineRequest('{{ requester.username }}')">Decline</button>
-					</div>
-					<div>
-						<p>{{ requester.date_joined|date:"d/m/y" }}</p>
 					</div>
 				</div>
 			{% endfor %}

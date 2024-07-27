@@ -87,9 +87,9 @@ def login(request):
 			user = authenticate(username=username, password=password)
 			if user is not None:
 				auth_login(request, user)
-				return JsonResponse({'success': True, 'message': 'You are now logged in.'})
+				return JsonResponse({'success': True, 'message': 'You are now logged in'})
 			else:
-				return JsonResponse({'success': False, 'message': 'Invalid username or password.'})
+				return JsonResponse({'success': False, 'message': 'Invalid Invalid credentials'})
 		else:
 			errors = form.errors.as_json()
 			return JsonResponse({'success': False, 'errors': errors})
@@ -109,35 +109,28 @@ def limit(request):
 	template_name = getTemplateName(request, '403.html')
 	return render(request, template_name, context)
 
+@login_required
 def logout(request):
-	with transaction.atomic():
-		user_thing = request.user.user_things
-		user_thing.status = 'offline'
-		user_thing.save()
-	auth_logout(request)
+	try:
+		with transaction.atomic():
+			user_thing = request.user.user_things
+			user_thing.status = 'offline'
+			user_thing.save()
+		auth_logout(request)
+	except:
+		pass
 	context = {
 		'template_name': 'landing.html'
 	}
 	template_name = getTemplateName(request, 'landing.html')
 	return render(request, template_name, context)
-	# return render(request, 'landing.html')
 
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def register(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
 		if form.is_valid():
-			username = form.cleaned_data.get('username')
-			if len(username) > 14:
-				return JsonResponse({'success': False, 'message': 'Username must be 14 characters or less.'})
-			password = form.cleaned_data.get('password1')
 			form.save()
-			user = authenticate(username=username, password=password)
-			auth_login(request, user)
-			with transaction.atomic():
-				user_thing = request.user.user_things
-				user_thing.status = 'online'
-				user_thing.save()
 			return JsonResponse({'success': True, 'message': 'Your account has been created.'})
 		else:
 			errors = form.errors.as_json()
@@ -222,7 +215,8 @@ def profile(request, user=''):
 		status=Friendship.ACCEPTED
 	).exists()
 
-	is_anonymous = user_to_view.user_things.is_anonymous 
+	is_anonymous = user_to_view.user_things.is_anonymous
+	is_logged_in_with_42 = user_to_view.user_things.logged_in_with_42
 	
 	context = {
 		'username': user_to_view.username,
@@ -242,6 +236,7 @@ def profile(request, user=''):
 		'are_friends': are_friends,
 		'received_requests': received_requests,
 		'is_anonymous': is_anonymous,
+		'is_logged_in_with_42': is_logged_in_with_42,
 		'template_name': 'profile.html'
 	}
 	template_name = getTemplateName(request, 'profile.html')
@@ -257,6 +252,7 @@ def anonymize_user(request):
 		user.username = faker.user_name()
 		exists = User.objects.filter(username=user.username).exists()
 	user.email = faker.email()
+	auth_login(request, user)
 	user.save()
 
 	try:
@@ -303,7 +299,6 @@ def send_friend_request(request, username):
 			messages.info(request, f'You are already friends with {username}')
 	else:
 		Friendship.objects.create(from_user=request.user, to_user=to_user, status=Friendship.REQUESTED)
-		messages.success(request, f'Friend request sent to {username}')
 
 	return redirect('profile', user=username)
 
@@ -313,7 +308,6 @@ def accept_friend_request(request, username):
 	friendship = get_object_or_404(Friendship, from_user=from_user, to_user=request.user)
 	friendship.status = Friendship.ACCEPTED
 	friendship.save()
-	messages.success(request, f'Friend request from {username} accepted')
 	return redirect('profile', user=username)
 
 @login_required
@@ -323,21 +317,18 @@ def remove_friend(request, username):
 		Q(from_user=request.user, to_user=to_user) | Q(from_user=to_user, to_user=request.user),
 		status=Friendship.ACCEPTED
 	).delete()
-	messages.success(request, f'Removed {username} from friends')
 	return redirect('profile', user=request.user.username)
 
 @login_required
 def cancel_friend_request(request, username):
 	to_user = get_object_or_404(User, username=username)
 	Friendship.objects.filter(from_user=request.user, to_user=to_user, status=Friendship.REQUESTED).delete()
-	messages.success(request, f'Friend request to {username} cancelled')
 	return redirect('profile', user=username)
 
 @login_required
 def decline_friend_request(request, username):
 	from_user = get_object_or_404(User, username=username)
 	Friendship.objects.filter(from_user=from_user, to_user=request.user, status=Friendship.REQUESTED).delete()
-	messages.success(request, f'Friend request from {username} declined')
 	return redirect('profile', user=request.user)
 
 

@@ -37,7 +37,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		message_body = text_data_json['body']
 		recipient_username = text_data_json['recipient']
 
-		recipient = await sync_to_async(User.objects.get)(username=recipient_username)
+		try:
+			recipient = await sync_to_async(User.objects.get)(username=recipient_username)
+		except:
+			await self.send_error('Recipient does not exist')
+			return
 		if await sync_to_async(is_blocked)(self.scope['user'], recipient):
 			await self.send_error('You are blocked by the recipient')
 			return

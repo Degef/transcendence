@@ -7,28 +7,50 @@ let chatsocket = null;
 let usersForSearch = [];
 let hasRun = false;
 
+const csrfToken = getCookie('csrftoken');
 const api = {
 	fetchUserProfile: username => fetch(`/api/user/${username}/`).then(response => response.json()),
 	fetchMessages: recipient => fetch(`/api/message/?target=${recipient}`).then(response => response.json()),
 	fetchMessageById: id => fetch(`/api/message/${id}/`).then(response => response.json()),
 	fetchUserProfilePage: username => loadProfile(username),
-	blockUser: username => fetch('/block_unblock/', {
-		method: "POST",
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ 'username': username })
-	}).then(response => {
-		if (!response.ok) return response.json().then(data => { throw new Error(data.Error); });
-		return response.json();
-	}),
-	unblockUser: username => fetch('/block_unblock/', {
-		method: "DELETE",
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ 'username': username })
-	}).then(response => {
-		if (!response.ok) return response.json().then(data => { throw new Error(data.Error); });
-		return response.json();
-	})
 };
+
+async function handleUserBlockStatus(username, action) {
+	if (!['block', 'unblock'].includes(action)) {
+		showAlert('Invalid action. Use "block" or "unblock".', 'danger');
+		return ;
+	}
+
+	const method = action === 'block' ? 'POST' : 'DELETE';
+
+	try {
+		const response = await fetch('/block_unblock/', {
+			method: method,
+			headers: {
+				'X-CSRFToken': csrfToken,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ username })
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			showAlert(errorText, 'danger');
+			return ;
+		}
+
+		showAlert(data.message, data.success ? 'success' : 'danger');
+		document.getElementById('dropdownMenu').classList.remove('show');
+		return data;
+	} catch (error) {
+		showAlert(error.message, 'danger');
+	}
+}
+
+const blockUser = (username) => handleUserBlockStatus(username, 'block');
+const unblockUser = (username) => handleUserBlockStatus(username, 'unblock');
 
 const showAlert = (message, type) => {
 	const responseMessageDiv = document.querySelector('.response__message');
@@ -49,7 +71,7 @@ const utils = {
 								.replace(/"/g, "&quot;")
 								.replace(/'/g, "&#x27;")
 								.replace(/\//g, "&#x2F;"),
-	logError: error => console.error('Error:', error),
+	logError: () => showAlert('An error occurred', 'danger')
 };
 
 
@@ -112,7 +134,7 @@ function handleChatSocketEvents(chatsocket) {
 			addToNotificationsList('New message ' + notification);
 		getMessageById(event.data);
 	};
-	chatsocket.onerror = event => console.error('WebSocket error:', event);
+	chatsocket.onerror = () => showAlert('An error occurred with the chat', 'danger');
 	chatsocket.onclose = () => cleanupWebSocket(chatsocket);
 }
 
@@ -136,9 +158,13 @@ function handleChatInputKeydown(event, chatForm) {
 
 function prepareToNotification(message) {
 	const notification = JSON.parse(message);
+	if (notification.error) {
+		showAlert("Couldn't deliver the message", 'danger');
+		return;
+	}
 	const notificationMessage = notification.message;
 	const sender = notificationMessage.user;
-	if (sender === currentUser) return null;
+	if (sender === currentUser || !sender) return null;
 	return `from ${sender}`
 }
 
@@ -165,7 +191,8 @@ function handleUserSelection() {
 	document.addEventListener('click', event => handleDocumentClick(event));
 }
 
-function handleUserItemClick(event, userItem, userItems) {
+async function handleUserItemClick(event, userItem, userItems) {
+	await getCurrentUser()
 	event.preventDefault();
 	userItems.forEach(child => child.classList.remove('active'));
 	userItem.classList.add('active');
@@ -213,32 +240,6 @@ function viewUserProfile(username) {
 	waitForElement('.chat__container', initializeChat);
 }
 
-function blockUser(username) {
-	api.blockUser(username)
-		.then(data => showAlert(data.Success, 'success'))
-		.catch(error => showAlert(error.message, 'danger'));
-	document.getElementById('dropdownMenu').classList.remove('show');
-}
-
-function unblockUser(username) {
-	api.unblockUser(username)
-		.then(data => showAlert(data.Success, 'success'))
-		.catch(error => showAlert(error.message, 'danger'));
-	document.getElementById('dropdownMenu').classList.remove('show');
-}
-
-function handleBlockUserError(error) {
-	const errorMessage = error.message;
-	console.error(errorMessage);
-	const messages = {
-		'Cannot block yourself': 'You cannot block yourself',
-		'User is already blocked': 'User is already blocked',
-		'Invalid request data': 'Invalid request data',
-		'Invalid request method': 'Invalid request method',
-	};
-	// console.error(messages[errorMessage] || 'An unknown error occurred');
-}
-
 function drawMessage(message) {
 	const isSent = message.user === currentUser;
 	const position = isSent ? 'sent-message' : 'received-message';
@@ -276,7 +277,7 @@ function getConversation(recipient) {
 
 function getMessageById(message) {
 	if (JSON.parse(message).error) {
-		showAlert(JSON.parse(message).error, 'danger');
+		// showAlert(JSON.parse(message).error, 'danger');
 		return;
 	}
 	const id = JSON.parse(message).message.id;
@@ -295,6 +296,10 @@ function getMessageById(message) {
 }
 
 function setCurrentRecipient(userData) {
+	if (userData.detail === 'Not found.') {
+		showAlert('User not found', 'danger');
+		return;
+	}
 	const chatHeader = document.querySelector('.chat-header');
 	const messageList = document.querySelector('.chat');
 	miniImage = userData.profile.image;
@@ -357,7 +362,7 @@ function setupSearchFunctionality() {
 
 		api.fetchUserProfile(username)
 			.then(userProfile => setCurrentRecipient(userProfile))
-			.catch(error => console.error(error));
+			.catch(error => showAlert("Couldn't fetch user profile", 'danger'));
 	}
 
 	function handleContactActionClickAfterSearch(event, contactAction) {

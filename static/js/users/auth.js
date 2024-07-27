@@ -15,19 +15,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 		return ;
 	}
 	const formData = new FormData(form);
-	const responseMessageDiv = document.querySelector('.response__message');
-	const responseAlert = document.getElementById('responseAlert');
 	const newUsername = formData.get('username');
-
-	const showAlert = (message, type) => {
-		responseMessageDiv.innerHTML = message;
-		responseAlert.classList.remove('d-none', 'alert-success', 'alert-danger', 'show');
-		responseAlert.classList.add(`alert-${type}`, 'show');
-		setTimeout(() => {
-			responseAlert.classList.remove('show');
-			setTimeout(() => responseAlert.classList.add('d-none'), 500);
-		}, 5000);
-	};
 
 	try {
 		const response = await fetch(url, {
@@ -45,17 +33,21 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 			const jsonResponse = await response.json();
 			if (!jsonResponse.success) {
 				const errors = JSON.parse(jsonResponse.errors);
-				let firstError = Object.entries(errors)[0][1][0].message;
+				let firstError = Object.entries(errors)[0][1][0].message || 'An error occurred while processing your request. Please try again.';
 				if (firstError === 'This field is required.') firstError = 'All fields are required.';
 				showAlert(firstError, 'danger');
 			} else {
-				showAlert(jsonResponse.message, 'success');
+				if (!(url.includes('/login/')))
+					showAlert(jsonResponse.message, 'success');
 				isLoggin = true;
 				if (url === '/edit_profile/') {
 					updateUserName(newUsername)
 					isLoggin = false;
 					handleRoute(successRoute + formData.get('username'), true);
 				} else {
+					if (successRoute === '/login/') {
+						isLoggin = false;
+					}
 					handleRoute(successRoute, true); 
 				}
 			}
@@ -70,7 +62,7 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 }
 
 async function register(back_or_forward = 1) {
-	await handleFormSubmission('registration-form', '/register/', '/', back_or_forward);
+	await handleFormSubmission('registration-form', '/register/', '/login/', back_or_forward);
 	initializeChallengeSocket();
 	initializeChatSocket();
 }

@@ -175,6 +175,7 @@ function setupProfileSearchFunctionality() {
 
 async function update(back_or_forward = 1) {
 	await handleFormSubmission('profile_form', '/edit_profile/', '/profile/', back_or_forward);
+	intializeJsOnPathChange('/profile/');
 }
 
 function loadProfile(username) {
