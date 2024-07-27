@@ -108,10 +108,9 @@ function destroyAudioObjects(data) {
 
 
 function resetallGamedata() {
-	data['endGame'] = true;
 	data['playerId'] = null;
 	data['player'] = null;
-	data.endGame = false;
+	// data.endGame = false;
 	data.p1_name = null;
 	data.p2_name = null;
 	if (data['canvas']) {
@@ -448,6 +447,7 @@ function main_loop () {
 		setTimeout(function() {
 			terminate_game = false;
 			closeGameSocket();
+			return;
 			// if (type === 'challenge') {
 			// 	type == 'defaultGame';
 			// 	challenged_username = '';
@@ -457,18 +457,10 @@ function main_loop () {
 			// 	handleRoute('/');
 			// }
 		}, 1000);
-		return;
 	}
 	// data['socket'].send(JSON.stringify(message));
 	send_message(data['socket'], message);
 	requestAnimationFrame(main_loop);
-}
-
-function getMousePos2(canvas) {
-	return function(evt) {
-		let rect = canvas.getBoundingClientRect();
-		data['paddle'].y = evt.clientY - rect.top - data['paddleHeight'] / 2;
-	}
 }
 
 function setPlayer(rec) {
@@ -497,12 +489,12 @@ function setPlayer(rec) {
 
 		
 		if (data['player'] == 1) {
-			data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
+			data['paddle'] = { x: 0, y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0, height: data['paddleHeight'] };
 		} else if (data['player'] == 2) {
-			data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0 };
+			data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0, height: data['paddleHeight'] };
 		}
 
-		data['canvas'].addEventListener('mousemove', getMousePos2(data['canvas']));
+		data['canvas'].addEventListener('mousemove', getMousePos(data['canvas'], data['paddle']));
 		
 		const message = {
 			'type': 'startGame',
@@ -626,8 +618,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		console.log('WebSocket connection closed');
 		data['playerId'] = null;
 		data['player'] = null;
-		game_in_progress = false;
-		data['endGame'] = false;
+		// game_in_progress = false;
+		// data['endGame'] = false;
 		resetallGamedata(data);
 		setTimeout(() => {
 			if (type === 'challenge') {

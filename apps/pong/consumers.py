@@ -34,8 +34,8 @@ def generate_rand_dir():
 	angle = random.uniform(selected_range[0], selected_range[1]) * (math.pi / 180)
 	
 	# Calculate the x and y components based on the angle
-	x = 7 * math.cos(angle)
-	y = 7 * math.sin(angle)
+	x = 4 * math.cos(angle)
+	y = 4 * math.sin(angle)
 	
 	return x, y
 
@@ -112,7 +112,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'player2': self.player_id,
 			'p1_name': other_user.scope['user'].username,
 			'p2_name': self.scope['user'].username,
-			'ball': {'x': 300, 'y': 200, 'velocityX': ball_dir[0], 'velocityY': ball_dir[1], 'radius': 10, 'speed': 7},
+			'ball': {'x': 300, 'y': 200, 'velocityX': ball_dir[0], 'velocityY': ball_dir[1], 'radius': 10, 'speed': 4},
 			'collision': {'paddle': False, 'goal': False, 'wall': False},
 			'score1': 0,
 			'score2': 0,
@@ -389,7 +389,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 					ball['x'] = 300
 					ball['y'] = 200
 					# ball['velocityX'] *= -1
-					ball['speed'] = 7
+					ball['speed'] = 4
 			
 			await self.send_game_state()
 			game_state['collision']['paddle'] = False
