@@ -92,7 +92,11 @@ function updateBody(htmlContent) {
 } 
 
 async function handleRoute(path, pushState = true) {
-	let allRoutesRequiredAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/play_online/', '/offline_tourn/', '/online_tourn/', '/four_online_players/', '/eight_online_players/'];
+	let newPath = "somethingnothere";
+	if (path.includes("/profile")) {
+		newPath = path;
+	}
+	let allRoutesRequiredAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/play_online/', '/offline_tourn/', '/online_tourn/', '/four_online_players/', '/eight_online_players/', newPath];
 	const authPathes = path.includes('login') || path.includes('exchange_code') || path.includes('register');
 	const isAuthenticated = sessionKeyChall ?? false;
 	if (authPathes && isAuthenticated) {
@@ -131,7 +135,7 @@ async function handleRoute(path, pushState = true) {
 		const htmlContent = await response.text();
 		const urlParams = new URLSearchParams(window.location.search);
 		const nextUrl = urlParams.get('next');
-		if ((isLoggin && (allRoutesRequiredAuth.includes(nextUrl) || path === '/' || path.includes('exchange_code'))) || path === '/logout/' || response.status === 404) {
+		if ((isLoggin && (allRoutesRequiredAuth.includes(nextUrl) || path === '/' || path.includes('exchange_code')) || (path === '/logout/' || response.status === 404))) {
 			updateBody(htmlContent);
 			isLoggin = false;
 		} else {

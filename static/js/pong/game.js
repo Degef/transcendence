@@ -577,8 +577,8 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			send_message(data['socket'], message);
 			closeGameSocket();
 			if (isOnlineTournament) {
-				let s1 = rec['player1'] === rec.winner ? 4: rec['score1'];
-				let s2 = rec['player2'] === rec.winner ? 4: rec['score2'];
+				let s1 = rec['player1'] === rec.winner ? 5: rec['score1'];
+				let s2 = rec['player2'] === rec.winner ? 5: rec['score2'];
 				onTourGameCompleted(rec['player1'], rec['player2'],s1, s2);
 			} else if (type != 'challenge') {
 				displayBtn('play_again');

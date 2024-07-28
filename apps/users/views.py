@@ -195,7 +195,7 @@ def profile(request, user=''):
 	friends = User.objects.filter(
 		Q(friendship_requests_sent__to_user=user_to_view, friendship_requests_sent__status=Friendship.ACCEPTED) |
 		Q(friendship_requests_received__from_user=user_to_view, friendship_requests_received__status=Friendship.ACCEPTED)
-	)
+	).distinct()
 	pending_requests = User.objects.filter(
 		friendship_requests_sent__to_user=user_to_view, 
 		friendship_requests_sent__status=Friendship.REQUESTED

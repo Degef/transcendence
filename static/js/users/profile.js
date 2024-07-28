@@ -188,7 +188,8 @@ function loadProfile(username) {
 		handleRoute('/profile/' + username, true);
 		setTimeout(init_profile, 1000);
 	}
-	get_all_users();
+	if (sessionKeyChall)
+		get_all_users();
 }
 
 function addFriend(name) {

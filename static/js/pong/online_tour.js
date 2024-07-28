@@ -608,8 +608,8 @@ function abortMatchInvitation(res) {
 		setTimeout (() => {
 			var matchups = document.querySelectorAll('#bracket .matchup');
 			matchupElement = findMatchup(res.player, res.opponent, matchups);
-			sendSaveGame(res.player, res.opponent, 0, 4);
-			onTourGameCompleted(res.player, res.opponent, 0, 4);
+			sendSaveGame(res.player, res.opponent, 0, 5);
+			onTourGameCompleted(res.player, res.opponent, 0, 5);
 		}, 50); 
 	}
 }
