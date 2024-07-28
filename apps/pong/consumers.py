@@ -444,6 +444,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
 class ChallengeConsumer(AsyncWebsocketConsumer):
+	challenger_tabId = None
 	async def connect(self):
 		user_id = await sync_to_async(self.get_user_id)()
 		self.user = self.scope['user']
@@ -478,7 +479,7 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 		if action == 'send_challenge':
 			await self.send_challenge(username)
 		elif action == 'respond_challenge':
-			await self.respond_challenge(username, data.get('response'))
+			await self.respond_challenge(username, data.get('response'), data.get('challenger_tabId'))
 
 	async def send_challenge(self, username):
 		try:
@@ -493,38 +494,43 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 			if await sync_to_async(user_has_pending_challenge)(challengee.username):
 				await self.send_error(f'{challengee} is in another challenge')
 				return
+			if await sync_to_async(user_has_pending_challenge)(self.user):
+				await self.send_error(f'You have a pending challenge')
+				return
 
 			challenge = await sync_to_async(create_challenge)(self.user, challengee)
-			await self.notify_users(challenge, 'challenge_created')
+			self.challenger_tabId = self.tab_id
+			await self.notify_users(challenge, 'challenge_created', self.challenger_tabId)
 
 		except User.DoesNotExist:
 			await self.send_error('User does not exist')
 
-	async def respond_challenge(self, username, response):
+	async def respond_challenge(self, username, response, challlengerTabId):
 		try:
 			challenger = await sync_to_async(User.objects.get)(username=username)
 			challenge = await sync_to_async(Challenge.objects.get)(challenger=challenger, challengee=self.user)
 
 			if response == 'accept':
 				await sync_to_async(accept_challenge)(self.user, challenger)
-				await self.notify_users(challenge, 'challenge_accepted')
+				await self.notify_users(challenge, 'challenge_accepted', challlengerTabId)
 			elif response == 'decline':
 				await sync_to_async(decline_challenge)(self.user, challenger)
-				await self.notify_users(challenge, 'challenge_declined')
+				await self.notify_users(challenge, 'challenge_declined', challlengerTabId)
 
 		except User.DoesNotExist:
 			await self.send_error('User does not exist')
 		except Challenge.DoesNotExist:
 			await self.send_error('Challenge does not exist')
 
-	async def notify_users(self, challenge, event_type):
+	async def notify_users(self, challenge, event_type, challenger_tabId):
 		message = {
 			'type': 'receive_group_message',
 			'message': {
 				'type': event_type,
 				'challenger': await sync_to_async(lambda: challenge.challenger.username)(),
 				'challengee': await sync_to_async(lambda: challenge.challengee.username)(),
-				'tab_id': self.tab_id if event_type == 'challenge_accepted' else None
+				'tab_id': self.tab_id if event_type == 'challenge_accepted' else None,
+				'challenger_tabId': challenger_tabId
 			}
 		}
 		await self.channel_layer.group_send(str(challenge.challenger.id), message)

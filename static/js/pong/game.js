@@ -670,7 +670,7 @@ function cleanup() {
 
 // Handle back/forward navigation
 window.addEventListener('popstate', () => {
-	handleDeclineOnUnload(respondChallenge);
+	handleDeclineOnUnload(respondChallenge, challTabIdTmp);
 	if (game_in_progress) {
 		cleanup();
 	}
@@ -900,7 +900,7 @@ function startCountdown() {
  */
 window.addEventListener('beforeunload', function(event) {
 	reloading = true;
-	handleDeclineOnUnload(respondChallenge);
+	handleDeclineOnUnload(respondChallenge, challTabIdTmp);
 	if (window.game_in_progress) {
 		destroyOpenWebsocket();
 	} else if (isOnlineTournament) {

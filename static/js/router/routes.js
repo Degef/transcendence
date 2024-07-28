@@ -224,6 +224,7 @@ function handleButtonClick(event) {
 		noButton: hidePnameForm,
 		zoomin: zoomIn,
 		zoomout: zoomOut,
+		notificationBell: showNotifications,
 	};
 
 	const isFileInput = event.target.tagName === 'INPUT' && event.target.type === 'file';
@@ -299,10 +300,9 @@ function intializeJsOnPathChange(path) {
 			return ;
 		})
 		.catch((error) => {
-			console.error("Profile initialization failed:", error);
+			showAlert('An error occurred while loading the profile', 'danger');
 		});
 	}
-	waitForElement('.theme-badge', initializeNotifications);
 }
 
 window.onpopstate = event => {

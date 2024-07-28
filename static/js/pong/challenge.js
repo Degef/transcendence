@@ -5,6 +5,7 @@ let profileimageChall = '';
 let challenger = '';
 let challenged_username = '';
 let challenger_username = '';
+let challTabIdTmp = null;
 const tabId = Math.random().toString(36).substr(2, 9);
 
 /**
@@ -94,21 +95,28 @@ function handleChallengeSocketEvents(challsocket) {
 		challenger_username = challenger;
 		challenged_username = message_json.challengee
 		if (message_json.type === 'challenge_created') {
+			challenger_tabId = message_json.challenger_tabId;
+			challTabIdTmp = challenger_tabId;
 			username = currentUserChall;
 			if (message_json.challenger === currentUserChall) {
 				showAlert('Challenge sent successfully', 'success');
 			} else {
-				customConfirm(message_json.challenger + " is challenging you to pong game right now. Do you accept?", respondChallenge, respondChallenge);
+				customConfirm(message_json.challenger + " is challenging you to pong game right now. Do you accept?", respondChallenge, respondChallenge, challenger_tabId);
 			}
 		} else if (message_json.type === 'challenge_accepted') {
+			challTabIdTmp = null;
 			if (message_json.challenger === currentUserChall) {
-				showAlert(message_json.challengee + ' accepted your challenge', 'success');
-				type = 'challenge';
-				handleRoute('/play_online/');
-				start_play_online_challenge(challenged_username, challenger_username, username);
+				if (message_json.challenger_tabId === tabId) { 
+					showAlert(message_json.challengee + ' accepted your challenge', 'success');
+					type = 'challenge';
+					handleRoute('/play_online/');
+					start_play_online_challenge(challenged_username, challenger_username, username);
+				} else {
+					hideChallengeModal();
+				}
 			} else {
-				showAlert('Starting game with ' + message_json.challenger, 'success');
 				if (data.tab_id === tabId) {
+					showAlert('Starting game with ' + message_json.challenger, 'success');
 					type = 'challenge';
 					handleRoute('/play_online/');
 					start_play_online_challenge(challenged_username, challenger_username, username);
@@ -117,12 +125,15 @@ function handleChallengeSocketEvents(challsocket) {
 				}
 			}
 		} else if (message_json.type === 'challenge_declined') {
+			challTabIdTmp = null;
 			if (message_json.challenger === currentUserChall) {
-				showAlert(message_json.challengee + ' declined your challenge', 'danger');
-				// customDeclineMsg(message_json.challengee + " declined your challenge!!!");
-				showDeclinedModal(message_json.challengee + " declined your challenge!!!");
-				// showDeclinedModal();
+				if (message_json.challenger_tabId === tabId) {
+					showAlert(message_json.challengee + ' declined your challenge', 'danger');
+					showDeclinedModal(message_json.challengee + " declined your challenge!!!");
+				}
 				return;
+			} else { 
+				hideChallengeModal();
 			}
 		}
 	};
@@ -162,11 +173,11 @@ async function initializeChallengeSocket() {
  * @param {Function} onDecline - The function to call when declining the challenge.
  */
 
-function handleDeclineOnUnload(onDecline) {
+function handleDeclineOnUnload(onDecline, challTabIdTmp) {
 	const modal = document.getElementById('custom-confirm');
 	if (modal && modal.style.display === "block") {
 		modal.style.display = "none";
-		onDecline(challenger, 'decline');
+		onDecline(challenger, 'decline', challTabIdTmp);
 	}
 }
 
@@ -188,7 +199,7 @@ function hideChallengeModal() {
  * @param {function} onDecline - The callback function to execute when the decline button is clicked.
  * @return {void}
  */
-function customConfirm(message, onAccept, onDecline) {
+function customConfirm(message, onAccept, onDecline, challenger_tabId) {
 	const modal = document.getElementById('custom-confirm');
 	const messageElement = document.getElementById('challenge-message');
 	const acceptButton = document.getElementById('accept-button');
@@ -201,7 +212,7 @@ function customConfirm(message, onAccept, onDecline) {
 				window.game_in_progress = false;
 			}
 		} else {
-			onDecline(challenger, 'decline');
+			onDecline(challenger, 'decline', challenger_tabId);
 			return ;
 		}
 	}
@@ -210,12 +221,12 @@ function customConfirm(message, onAccept, onDecline) {
 
 	acceptButton.onclick = function() {
 		modal.style.display = "none";
-		onAccept(challenger, 'accept');
+		onAccept(challenger, 'accept', challenger_tabId);
 	};
 
 	declineButton.onclick = function() {
 		modal.style.display = "none";
-		onDecline(challenger, 'decline');
+		onDecline(challenger, 'decline', challenger_tabId);
 	};
 
 	modal.style.display = "block";
@@ -269,9 +280,9 @@ function challengeUser(username) {
 	}
 }
 
-function respondChallenge(username, response) {
+function respondChallenge(username, response, challenger_tabId) {
 	if (challengeSocket && challengeSocket.readyState === WebSocket.OPEN) {
-		challengeSocket.send(JSON.stringify({ action: 'respond_challenge', username: username, response: response }));
+		challengeSocket.send(JSON.stringify({ action: 'respond_challenge', username: username, response: response, challenger_tabId: challenger_tabId }));
 	} else {
 		showAlert('Failed to respond to challenge, please refresh the page and try again', 'danger');
 	}
