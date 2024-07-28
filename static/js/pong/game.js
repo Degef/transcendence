@@ -308,7 +308,7 @@ function start_play_computer() {
 		velocityY : randBallDir.y,
 		// velocityX : 7,
 		// velocityY : 0,
-		speed : 7,
+		speed : 9,
 		color : game_color
 	};
 
