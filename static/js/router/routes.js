@@ -44,6 +44,15 @@ async function getIPAddress() {
 
 const cleanupsess = () => {
 	if (sessionKeyChall) sessionKeyChall = null;
+	if (sessionKey) sessionKey = null;
+	if (chatsocket) {
+		chatsocket.close();
+		chatsocket = null;
+	}
+	if (challengeSocket) {
+		challengeSocket.close();
+		challengeSocket = null;
+	}
 };
 
 function authorize42Intra() {

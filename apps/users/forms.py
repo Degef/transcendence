@@ -40,7 +40,7 @@ class UserUpdateForm(forms.ModelForm):
 		try:
 			user_profile = user_things.objects.filter(user=user).first()
 			if user_profile.logged_in_with_42:
-				self.fields['username'].widget.attrs['disabled'] = 'disabled'
+				self.fields['username'].widget.attrs['readonly'] = 'readonly'
 		except ObjectDoesNotExist:
 			pass
 

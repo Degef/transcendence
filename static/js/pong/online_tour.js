@@ -256,6 +256,7 @@ function removeChildById(elementId) {
  */
 function displayMatchInvitation(matchRoom, opponent, players) {
 
+	addToNotificationsList('You are invited to join the tournament game with ' + opponent);
 	match_room = matchRoom;
 	if (!isOnlineTournament) {
 		return ;
@@ -507,7 +508,8 @@ function onlineTournament(tourSize) {
 			socket.send(JSON.stringify(message));
 		}
 	} catch (error) {
-		console.error('WebSocket initialization error:', error);
+		showAlert('Error connecting to the server', 'danger');
+		// console.error('WebSocket initialization error:', error);
 	}
 
 }
@@ -695,6 +697,7 @@ function leaveTournament() {
 			try { 
 				onlineTourSocket.send(JSON.stringify(message));
 			} catch (error) {
+				showAlert('Unknown error occured', 'danger');
 				// console.error('Error sending message through WebSocket:', error);
 			}
 		}

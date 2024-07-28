@@ -15,6 +15,7 @@ RUN chmod 644 /etc/nginx/http.d/nginx.conf
 
 RUN chown -R nginx:nginx /etc/nginx/http.d
 
+RUN sed -i 's/client_max_body_size 1m;/client_max_body_size 100m;/g' /etc/nginx/nginx.conf
 
 EXPOSE 443
 

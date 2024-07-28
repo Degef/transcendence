@@ -270,7 +270,7 @@ function initializeDeleteProfile(deleteUrl, redirectUrl) {
 }
 
 function anonymize() {
-	if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+	if (confirm('Are you sure you want to anonymize your account? This action cannot be undone.')) {
 		isLoggin = true;
 		handleRoute('/anonymize_user/', false);
 		setTimeout(() => handleRoute('/', true), 500);
