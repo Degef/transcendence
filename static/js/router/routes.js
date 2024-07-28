@@ -98,7 +98,7 @@ async function handleRoute(path, pushState = true) {
 	}
 	let allRoutesRequiredAuth = ['/leaderboard/', '/chat/', '/friends/', '/edit_profile/', '/delete_profile/', '/play_online/', '/offline_tourn/', '/online_tourn/', '/four_online_players/', '/eight_online_players/', newPath];
 	const authPathes = path.includes('login') || path.includes('exchange_code') || path.includes('register');
-	const isAuthenticated = sessionKeyChall ?? false;
+	const isAuthenticated = sessionKeyChall || false;
 	if (authPathes && isAuthenticated) {
 		path = '/';
 	}
