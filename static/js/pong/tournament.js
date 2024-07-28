@@ -384,7 +384,7 @@ function displayTourLosersM(winner) {
 	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
-	// hideModalAfterDelay(myModal, 5000);
+	hideModalAfterDelay(myModal, 5000);
 	// setTimeout(() => {
 	//     myModal.hide();
 	// }, 5000);

@@ -32,7 +32,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		)
 
 	async def receive(self, text_data=None, bytes_data=None):
-		logger.debug(" \n\n Received message from chat consumer \n\n")
 		text_data_json = json.loads(text_data)
 		message_body = text_data_json['body']
 		recipient_username = text_data_json['recipient']

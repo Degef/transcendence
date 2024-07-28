@@ -64,7 +64,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 		
 	async def disconnect(self, close_code):
 		# Remove the user from the waiting queue or ongoing game
-		logger.error(f"\n\n {self.username} Disconnected game WebSocket connection closed")
 		if self.username in self.challenge_queue:
 			self.challenge_queue.pop(self.username)
 		if self in self.waiting_queue:
@@ -199,8 +198,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 		elif self not in self.waiting_queue:
 			# self.waiting_queue.append(self)
 			self.waiting_queue.append(self)
-		queue_info = '\n'.join([f'{user.username}, {user}' for user in self.waiting_queue])
-		logger.error(f'Current waiting_queue:\n\n{queue_info}\n\n')
+		# queue_info = '\n'.join([f'{user.username}, {user}' for user in self.waiting_queue])
+		# logger.error(f'Current waiting_queue:\n\n{queue_info}\n\n')
 			# await asyncio.sleep(15)
 			# if self in self.waiting_queue:
 			# 	self.waiting_queue.remove(self)
@@ -449,7 +448,6 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 		user_id = await sync_to_async(self.get_user_id)()
 		self.user = self.scope['user']
 		self.tab_id = self.scope['url_route']['kwargs'].get('tab_id')
-		logger.error(f"Tab ID: {self.tab_id}")
 		await self.update_status('online')
 		self.group_name = str(user_id)
 		
@@ -641,7 +639,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		for tournament_id in tournaments_to_remove:
 			del self.allTournaments[tournament_id]
 		self.t_id = None
-		logging.info(f"closing SocketConnection to Player {self.username}")
 		if self.username in self.all_players_usernames:
 			self.all_players_usernames.remove(self.username)
 		await self.close()
@@ -812,7 +809,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			self.confirmed_players[match_room_name].add(player['username'])
 			player_channel_name = self.player_channels.get(player['username'])
 			if player_channel_name:
-				logging.info(f"Adding player {player['username']} to match room {match_room_name}")
 				await self.channel_layer.group_add(
 					match_room_name,
 					player_channel_name  # Use the correct channel name for each player
@@ -882,7 +878,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def create_nextmatch_rooms(self, nextPlayers):
 		num_players = len(nextPlayers)
-		logging.info(f"Sending match invitation to room newroom for players: {[p['username'] for p in nextPlayers]}")
 		for i in range(0, num_players, 2):
 			match = f"match_{nextPlayers[i]['username']}_vs_{nextPlayers[i + 1]['username']}"
 			await self.send_match_room_invitation(match, [nextPlayers[i], nextPlayers[i + 1]])

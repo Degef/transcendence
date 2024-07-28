@@ -56,7 +56,7 @@ async def get_all_games_of_tournaments(username):
 def getTemplateName(request, defaultpage):
 	request_type = "normal" if request.headers.get('X-Requested-With') == 'XMLHttpRequest' else "reload"
 	template_name = 'loader.html' if request_type == "reload" else defaultpage
-	logger.error(f"I am here please look at the request_type: {request_type}  the htmlpage is: {template_name}\n\n\n")
+	# logger.error(f"I am here please look at the request_type: {request_type}  the htmlpage is: {template_name}\n\n\n")
 	return template_name
 
 
@@ -344,14 +344,11 @@ def edit_profile(request):
 			try:
 				user_form.save()
 				profile_form.save()
-				logger.info(f"Profile for user {user.username} updated successfully.")
 				return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
 			except Exception as e:
-				logger.error(f"Error updating profile for user {user.username}: {e}")
 				return JsonResponse({'success': False, 'message': 'An error occurred while updating the profile. Please try again.'})
 		else:
 			user_form_errors = json.dumps(user_form.errors)
-			logger.warning(f"User form errors for user {user.username}: {user_form_errors}")
 			return JsonResponse({'success': False, 'errors': user_form_errors})
 	else:
 		user_form = UserUpdateForm(request.user, instance=request.user)
@@ -423,7 +420,6 @@ def exchange_code(request):
 		img_url = user_response['image']['versions']['small']
 		# Create a new user
 		user = User.objects.create(username=user_name, email=user_email)
-		logger.error(f"\n\n\nNew user {user_name} created successfully.\n\n\n")
 		img_temp = NamedTemporaryFile(delete=True)
 		img_temp.write(requests.get(img_url).content)
 		img_temp.flush()

@@ -481,12 +481,16 @@ function onlineTournament(tourSize) {
 				challenged_username = res.players[1];
 				scheduleMatchInvitation(res);
 			} else if (res.type === 'update_bracket') {
-				hideSpinner();
+				if (res.player1 == username || res.player2 === username) {
+					setTimeout (() => {
+						hideSpinner();
+					}, 3000);
+				}
 				update_bracket(res);
 			} else if (res.type === 'opponent_left') {
 				hideSpinner();
-				showSpinner("Opps it seems like your opponenet has been left the tournament");
 				closeGameSocket();
+				showSpinner("Opps it seems like your opponenet has been left the tournament");
 				abortMatchInvitation(res);
 				removeChildById('match-invitation-modal');
 			} 
@@ -694,7 +698,7 @@ function leaveTournament() {
 				// console.error('Error sending message through WebSocket:', error);
 			}
 		}
-		hideSpinner();
+		// hideSpinner();
 		isOnlineTournament = false;
 		tourId = null; gameNum = null; gameRound = null; gameSide = null;
 		setTimeout(() => {
@@ -715,7 +719,6 @@ function leaveTournament() {
 function closeGameSocket() {
 	const gameSocket = data['socket'];
 	if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
-		hideSpinner();
 		try {
 			gameSocket.close();
 		} catch (error) {

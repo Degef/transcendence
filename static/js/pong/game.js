@@ -591,7 +591,9 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 	socket.onclose = function () {
 		data['playerId'] = null;
 		data['player'] = null;
-		hideSpinner();
+		if (!isOnlineTournament) {
+			hideSpinner();
+		}
 		resetallGamedata(data);
 		setTimeout(() => {
 			if (type === 'challenge') {
