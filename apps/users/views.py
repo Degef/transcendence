@@ -306,8 +306,9 @@ def send_friend_request(request, username):
 def accept_friend_request(request, username):
 	from_user = get_object_or_404(User, username=username)
 	friendship = get_object_or_404(Friendship, from_user=from_user, to_user=request.user)
-	friendship.status = Friendship.ACCEPTED
-	friendship.save()
+	with transaction.atomic():
+		friendship.status = Friendship.ACCEPTED
+		friendship.save()
 	return redirect('profile', user=username)
 
 @login_required

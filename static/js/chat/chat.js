@@ -99,6 +99,7 @@ function initializeChat() {
 		const chatInput = document.querySelector('.message-input');
 		chatForm.addEventListener('submit', event => handleChatFormSubmit(event, chatInput, chatForm));
 		chatInput.addEventListener('keydown', event => handleChatInputKeydown(event, chatForm));
+		document.getElementById('btn-send').addEventListener('click', event => chatForm.dispatchEvent(new Event('submit')));
 	}
 
 	handleUserSelection();
@@ -120,6 +121,7 @@ async function initializeChatSocket() {
 		const chatInput = document.querySelector('.message-input');
 		chatForm.addEventListener('submit', event => handleChatFormSubmit(event, chatInput, chatForm));
 		chatInput.addEventListener('keydown', event => handleChatInputKeydown(event, chatForm));
+		document.getElementById('btn-send').addEventListener('click', event => chatForm.dispatchEvent(new Event('submit')));
 	}
 
 	handleUserSelection();
@@ -198,6 +200,7 @@ async function handleUserItemClick(event, userItem, userItems) {
 	userItem.classList.add('active');
 	const username = userItem.querySelector('.contact-name').innerText.trim();
 	document.getElementById('chat-input').disabled = false;
+	document.getElementById('btn-send').disabled = false;
 
 	api.fetchUserProfile(username)
 		.then(userProfile => setCurrentRecipient(userProfile))

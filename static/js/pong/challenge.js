@@ -101,6 +101,7 @@ function handleChallengeSocketEvents(challsocket) {
 			if (message_json.challenger === currentUserChall) {
 				showAlert('Challenge sent successfully', 'success');
 			} else {
+				addToNotificationsList(`${message_json.challenger} is challenging you to a pong game right now.`);
 				customConfirm(message_json.challenger + " is challenging you to pong game right now. Do you accept?", respondChallenge, respondChallenge, challenger_tabId);
 			}
 		} else if (message_json.type === 'challenge_accepted') {
