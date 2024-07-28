@@ -52,8 +52,8 @@ function generateRandDir() {
 
     
     // Calculate the x and y components based on the angle
-    const x = 7 * Math.cos(angle);
-    const y = 7 * Math.sin(angle);
+    const x = 9 * Math.cos(angle);
+    const y = 9 * Math.sin(angle);
     
     return { x: x, y: y };
 }
@@ -216,7 +216,7 @@ function start_local_game() {
         velocityY : bdir.y,
         // velocityX : 7,
         // velocityY : 0,
-        speed : 7,
+        speed : 9,
         color : game_color
     };
 

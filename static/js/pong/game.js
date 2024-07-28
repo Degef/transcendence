@@ -137,27 +137,26 @@ function resetBall(data2){
 	data2['ball'].velocityY = randBallDir.y;
 	// data2['ball'].velocityX = 7;
 	// data2['ball'].velocityY = 0;
-	data2['ball'].speed = 7;
+	data2['ball'].speed = 9;
 }
 
 function drawText(ctx, text, x, y){
-	if (localStorage.getItem('theme') === 'light') {
-		ctx.fillStyle = "#444";
-	} else {
-		ctx.fillStyle = "#FFF";
-	}
+	// if (localStorage.getItem('theme') === 'light') {
+	// 	ctx.fillStyle = "#444";
+	// } else {
+	// 	ctx.fillStyle = "#FFF";
+	// }
+	game_color = (localStorage.getItem('theme') === 'light') ? '#444' : "WHITE";
+	ctx.fillStyle = game_color;
 	ctx.font = "75px sans-serif";
 	ctx.fillText(text, x, y);
 }
 
 function drawText2(ctx, text, x, y){
-	if (localStorage.getItem('theme') === 'light') {
-		ctx.fillStyle = "#444";
-	} else {
-		ctx.fillStyle = "#FFF";
-	}
-   ctx.font = "25px sans-serif";
-   ctx.fillText(text, x, y);
+	game_color = (localStorage.getItem('theme') === 'light') ? '#444' : "WHITE";
+	ctx.fillStyle = game_color;
+   	ctx.font = "25px sans-serif";
+   	ctx.fillText(text, x, y);
 }
 
 function collision(b, p){
@@ -202,7 +201,7 @@ function updateGame(data2){
 		let direction = (data2['ball'].x < data2['canvas'].width/2) ? 1 : -1;
 		data2['ball'].velocityX = direction * data2['ball'].speed * Math.cos(angleRad);
 		data2['ball'].velocityY = data2['ball'].speed * Math.sin(angleRad);
-		// data2['ball'].speed += 0.2;
+		data2['ball'].speed += 0.2;
 	}
 
 	if (data2['ball'].x - data2['ball'].radius < 0){
@@ -230,11 +229,8 @@ function render(data2) {
 }
 
 function gameLoop(data2) {
-	if (localStorage.getItem('theme') === 'light') {
-		game_color = '#1A1F33';
-	} else {
-		game_color = "WHITE";
-	}
+	game_color = (localStorage.getItem('theme') === 'light') ? '#444' : "WHITE";
+
 	data2['ball'].color = game_color;
 	data2['user'].color = game_color;
 	data2['com'].color = game_color;
@@ -301,10 +297,7 @@ function start_play_computer() {
 	data2['canvas'] = document.getElementById('gameCanvas');
 	data2['ctx'] = data2['canvas'].getContext('2d');
 
-	let game_color = "WHITE";
-	if (localStorage.getItem('theme') === 'light') {
-		game_color = '#1A1F33';
-	}
+	game_color = (localStorage.getItem('theme') === 'light') ? '#444' : "WHITE";
 
 	randBallDir = generateRandDir();
 	data2['ball'] = {
@@ -356,12 +349,8 @@ function draw() {
 		const ball = data['gameState']['ball'];
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		game_color = (localStorage.getItem('theme') === 'light') ? '#444' : "WHITE";
 
-		// Draw the paddles
-		let game_color = 'white';
-		if (localStorage.getItem('theme') === 'light') {
-			game_color = '#444';
-		} 
 		ctx.fillStyle = game_color;
 		ctx.fillRect(paddle1['x'], paddle1['y'], paddleWidth, paddleHeight);
 		ctx.fillRect(paddle2['x'], paddle2['y'], paddleWidth, paddleHeight);
@@ -464,14 +453,14 @@ function setPlayer(rec) {
 		// 	canvasContainer.removeChild(waitLoadDiv);
 		// 	document.getElementById('end_game').innerHTML = "";
 		// }
-		startCountdown();
-
 		data['canvas'] = document.getElementById('gameCanvas');
 		if (data['canvas']) {
 			data['ctx'] = data['canvas'].getContext('2d');
 		} else {
 			return ;
 		}
+
+		data.ctx.clearRect(0, 0, data.canvas.width, data.canvas.height);
 
 		
 		if (data['player'] == 1) {
@@ -480,7 +469,14 @@ function setPlayer(rec) {
 			data['paddle'] = { x: data['canvas'].width - data['paddleWidth'], y: data['canvas'].height / 2 - data['paddleHeight'] / 2, speedY: 0, height: data['paddleHeight'] };
 		}
 
+		game_color = (localStorage.getItem('theme') === 'light') ? '#444' : "WHITE";
+
+		drawRect(data['ctx'], data['paddle'].x, data['paddle'].y, data['paddleWidth'], data['paddleHeight'], game_color);
+		drawArc(data, data.canvas.width / 2, data.canvas.height / 2, 10, game_color);
+		drawNet(data);
+
 		data['canvas'].addEventListener('mousemove', getMousePos(data['canvas'], data['paddle']));
+		startCountdown();
 		
 		const message = {
 			'type': 'startGame',
@@ -532,7 +528,6 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 		const rec = JSON.parse(event.data);
 		if (rec['type'] == 'playerId') {
 			data['playerId'] = rec['playerId'];
-			username = rec.username;
 			pusername = rec.username
 			hideBtn('start_game_btn');
 			showSpinner("WAITING FOR OTHER PLAYER TO JOIN");
@@ -559,7 +554,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 			data['gameState'] = rec['gameState'];
 			setPlayer(rec);
 		} else if (rec['type'] == 'gameEnd') {
-			if (username === rec.winner) {
+			if (pusername === rec.winner) {
 				displayWinM();
 			} else {
 				displayLoserModal();

@@ -34,8 +34,8 @@ def generate_rand_dir():
 	angle = random.uniform(selected_range[0], selected_range[1]) * (math.pi / 180)
 	
 	# Calculate the x and y components based on the angle
-	x = 4 * math.cos(angle)
-	y = 4 * math.sin(angle)
+	x = 7 * math.cos(angle)
+	y = 7 * math.sin(angle)
 	
 	return x, y
 
@@ -80,7 +80,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 						name = self.scope['user'].username
 						if (game_state['score1'] == 0 and game_state['score2'] == 0):
 								game_state['winner'] = game_state['p1_name'] if name != game_state['p1_name'] else game_state['p2_name']
-								game_state['score1'], game_state['score2'] = (4, 0) if name != game_state['p1_name'] else (0, 4)
+								game_state['score1'], game_state['score2'] = (5, 0) if name != game_state['p1_name'] else (0, 5)
 								# if (self.game_type == 'challenge'): 
 								await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
 						await self.channel_layer.group_send(
@@ -110,7 +110,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			'player2': self.player_id,
 			'p1_name': other_user.scope['user'].username,
 			'p2_name': self.scope['user'].username,
-			'ball': {'x': 300, 'y': 200, 'velocityX': ball_dir[0], 'velocityY': ball_dir[1], 'radius': 10, 'speed': 4},
+			'ball': {'x': 300, 'y': 200, 'velocityX': ball_dir[0], 'velocityY': ball_dir[1], 'radius': 10, 'speed': 7},
 			'collision': {'paddle': False, 'goal': False, 'wall': False},
 			'score1': 0,
 			'score2': 0,
@@ -360,12 +360,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 					else:
 						game_state['score1'] += 1
 						
-					if game_state['score1'] == 4 or game_state['score2'] == 4:
+					if game_state['score1'] == 5 or game_state['score2'] == 5:
 						await self.save_game(game_state['p1_name'], game_state['p2_name'], game_state['score1'], game_state['score2'])
 						if (self.challengee != '' and self.challenger != ''):
 							await sync_to_async(delete_challenge)(self.challenger, self.challengee)
 						await self.send_game_state()
-						winner = game_state['p1_name'] if game_state['score1'] == 4 else game_state['p2_name']
+						winner = game_state['p1_name'] if game_state['score1'] == 5 else game_state['p2_name']
 						game_state['winner'] = winner
 						await self.channel_layer.group_send(
 							self.room_group_name,
@@ -389,7 +389,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 					ball['x'] = 300
 					ball['y'] = 200
 					# ball['velocityX'] *= -1
-					ball['speed'] = 4
+					ball['speed'] = 7
 			
 			await self.send_game_state()
 			game_state['collision']['paddle'] = False
