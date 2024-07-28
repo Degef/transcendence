@@ -714,6 +714,7 @@ function leaveTournament() {
 function closeGameSocket() {
 	const gameSocket = data['socket'];
 	if (gameSocket && gameSocket.readyState === WebSocket.OPEN && game_in_progress) {
+		hideSpinner();
 		try {
 			gameSocket.close();
 		} catch (error) {

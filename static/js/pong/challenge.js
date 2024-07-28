@@ -5,7 +5,7 @@ let profileimageChall = '';
 let challenger = '';
 let challenged_username = '';
 let challenger_username = '';
-
+const tabId = Math.random().toString(36).substr(2, 9);
 
 /**
  * Generates the HTML for a decline modal with the provided message.
@@ -93,6 +93,7 @@ function handleChallengeSocketEvents(challsocket) {
 		challenger = message_json.challenger;
 		challenger_username = challenger;
 		challenged_username = message_json.challengee
+		console.log("recieved: ", data);
 		if (message_json.type === 'challenge_created') {
 			username = currentUserChall;
 			if (message_json.challenger === currentUserChall) {
@@ -108,9 +109,13 @@ function handleChallengeSocketEvents(challsocket) {
 				start_play_online_challenge(challenged_username, challenger_username, username);
 			} else {
 				showAlert('Starting game with ' + message_json.challenger, 'success');
-				type = 'challenge';
-				handleRoute('/play_online/');
-				start_play_online_challenge(challenged_username, challenger_username, username);
+				if (data.tab_id === tabId) {
+					type = 'challenge';
+					handleRoute('/play_online/');
+					start_play_online_challenge(challenged_username, challenger_username, username);
+				} else {
+					hideChallengeModal();
+				}
 			}
 		} else if (message_json.type === 'challenge_declined') {
 			if (message_json.challenger === currentUserChall) {
@@ -143,9 +148,10 @@ function cleanupWebSocket(challsocket) {
 
 async function initializeChallengeSocket() {
 	await getCurrentUserr();
-
+	// const gameSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/?tab_id=${tabId}`);
 	if (sessionKeyChall) {
-		challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/`);
+		// challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/`);
+		challengeSocket = new WebSocket(`wss://${window.location.host}/ws/challenge/${tabId}/`);
 		handleChallengeSocketEvents(challengeSocket);
 	}
 }
@@ -162,6 +168,13 @@ function handleDeclineOnUnload(onDecline) {
 	if (modal && modal.style.display === "block") {
 		modal.style.display = "none";
 		onDecline(challenger, 'decline');
+	}
+}
+
+function hideChallengeModal() {
+	const modal = document.getElementById('custom-confirm');
+	if (modal && modal.style.display === "block") {
+		modal.style.display = "none";
 	}
 }
 

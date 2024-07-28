@@ -182,14 +182,25 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self.challenge_queue[challengee] = self
 
 	async def handleDefaultGame(self, data):
-		is_self_not_in_waiting_queue = self not in self.waiting_queue
 		if len(self.waiting_queue) > 0  and (self not in self.waiting_queue):
-			other_user = self.waiting_queue.pop(0)
-			await self.startGameNow(other_user)
+			for i, other_user in enumerate(self.waiting_queue):
+				if other_user.username != self.username:
+					self.waiting_queue.pop(i)
+					break
+			else:
+				other_user = None
+				if self not in self.waiting_queue:
+					self.waiting_queue.append(self)
+			# other_user = self.waiting_queue.pop(0)
+			if (other_user):
+				await self.startGameNow(other_user)
+			
 
 		elif self not in self.waiting_queue:
 			# self.waiting_queue.append(self)
 			self.waiting_queue.append(self)
+		queue_info = '\n'.join([f'{user.username}, {user}' for user in self.waiting_queue])
+		logger.error(f'Current waiting_queue:\n\n{queue_info}\n\n')
 			# await asyncio.sleep(15)
 			# if self in self.waiting_queue:
 			# 	self.waiting_queue.remove(self)
@@ -433,9 +444,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
 class ChallengeConsumer(AsyncWebsocketConsumer):
+	
 	async def connect(self):
 		user_id = await sync_to_async(self.get_user_id)()
 		self.user = self.scope['user']
+		self.tab_id = self.scope['url_route']['kwargs'].get('tab_id')
+		logger.error(f"Tab ID: {self.tab_id}")
 		await self.update_status('online')
 		self.group_name = str(user_id)
 		
@@ -511,6 +525,7 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 				'type': event_type,
 				'challenger': await sync_to_async(lambda: challenge.challenger.username)(),
 				'challengee': await sync_to_async(lambda: challenge.challengee.username)(),
+				'tab_id': self.tab_id if event_type == 'challenge_accepted' else None
 			}
 		}
 		await self.channel_layer.group_send(str(challenge.challenger.id), message)
@@ -521,6 +536,8 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 
 	async def receive_group_message(self, event):
 		await self.send(text_data=json.dumps(event['message']))
+		# if event['message'].get('tab_id') == self.tab_id:
+		# 	await self.send(text_data=json.dumps(event['message']))
 
 	@database_sync_to_async
 	def update_status(self, status):

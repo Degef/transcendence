@@ -22,6 +22,7 @@ let reloading = false;
 let animationFrameId;
 
 
+
 /**
  * Sends a message to the server through the provided WebSocket connection.
  *
@@ -595,6 +596,7 @@ function start_play_online_challenge(challenged_username, challenger_username, u
 	socket.onclose = function () {
 		data['playerId'] = null;
 		data['player'] = null;
+		hideSpinner();
 		resetallGamedata(data);
 		setTimeout(() => {
 			if (type === 'challenge') {
