@@ -30,17 +30,21 @@ function getBtnContainer(buttonId, label, clickHandler, ...params) {
 	btn.className = 'btn btn-outline-light mt-3 btn-custom';
 	btn.type = 'submit';
 	btn.textContent = label;
-
-	if (typeof clickHandler === 'function') {
-		if (params.length > 0) {
-			// Call clickHandler with params if provided
-			btn.addEventListener('click', function(event) {
-				clickHandler.apply(null, params);
-			});
-		} else {
-			// Call clickHandler without params
-			btn.addEventListener('click', clickHandler);
+	if (buttonId != 'online_tourn' && buttonId != 'offline_tourn') {
+		if (typeof clickHandler === 'function') {
+			if (params != null && params.length > 0) {
+				// Call clickHandler with params if provided
+				btn.addEventListener('click', function(event) {
+					clickHandler.apply(null, params);
+				});
+			} else {
+				// Call clickHandler without params
+				btn.addEventListener('click', clickHandler);
+			}
 		}
+	}
+	else {
+		btn.addEventListener('click', clickHandler);
 	}
 	colContainer.appendChild(btn);
 	buttonContainer.appendChild(colContainer);
@@ -57,33 +61,9 @@ function removeBtnContainer(buttonContainer) {
 
 
 const startTrounBtn = getBtnContainer('startTour', 'Start Tournament', startFirstMatch, null);
+const backOnlineBtn = getBtnContainer('online_tourn', 'Back-to-Home', handleButtonClick, null);
+const backOfflineBtn = getBtnContainer('offline_tourn', 'Back-to-home', handleButtonClick, null);
 let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
-
-
-// var loserModal = function getLoserModal() {
-//     modalHtml = ` 
-//         <center> 
-//             <div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-//                 <div class="modal-dialog modal-lg">
-//                     <div class="modal-content justify-content-center">
-//                         <div class="modal-header justify-content-center">
-//                             <h4 class="modal-title" id="myModalLabel">Sorry</h4>
-//                         </div>
-//                         <div class="modal-body">
-//                             <div class="card-body text-center">
-//                                 <img src="/media/images/loser.jpg">
-//                                 <h4>HAHAHAHAHA.....!!!</h4>
-//                                 <p>YOU LOST THE GAME..🤦‍♂️🤦‍♂️</p> 
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-// 	    </center> 
-//     `;
-//     return modalHtml;
-// } 
-
 
 
 const tourWinnerModal = (winner) => {
@@ -150,7 +130,7 @@ const loserModal = () => {
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content justify-content-center">
 						<div class="modal-header justify-content-center">
-							<h4 class="modal-title" id="myModalLabel">Sorry</h4>
+							<h4 class="modal-title" id="myModalLabel">Sorry Loser</h4>
 						</div>
 						<div class="modal-body">
 							<div class="card-body text-center">
@@ -293,10 +273,12 @@ function displayWinnerModal(winner, loser) {
 		modalContainer.id = 'modal-container';
 		document.body.appendChild(modalContainer);
 	}
-
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = winnerModal(winner);
-	const myModal = new bootstrap.Modal('#m-result-modal');
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
 	// animateWinnerImage();
@@ -330,7 +312,10 @@ function displayLoserModal() {
 
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = loserModal();
-	const myModal = new bootstrap.Modal('#m-result-modal');
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
 	hideModalAfterDelay(myModal, 5000);
@@ -349,7 +334,10 @@ function displayWinM() {
 
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = winM();
-	const myModal = new bootstrap.Modal('#m-result-modal');
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
 	hideModalAfterDelay(myModal, 5000);
@@ -368,10 +356,13 @@ function displayTourWinM(winner) {
 
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = tourWinnerModal(winner);
-	const myModal = new bootstrap.Modal('#m-result-modal');
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
-	// hideModalAfterDelay(myModal, 5000);
+	hideModalAfterDelay(myModal, 5000);
 	// setTimeout(() => {
 	//     myModal.hide();
 	// }, 5000);
@@ -387,7 +378,10 @@ function displayTourLosersM(winner) {
 
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = tourLosersModal(winner);
-	const myModal = new bootstrap.Modal('#m-result-modal');
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
 	// hideModalAfterDelay(myModal, 5000);
@@ -417,7 +411,10 @@ function displayMatchModal(player1, player2) {
 
 	// Insert the modal HTML into the container
 	modalContainer.innerHTML = matchModal(player1, player2);
-	const myModal = new bootstrap.Modal('#m-result-modal');
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
 	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
 	modal.show();
 	hideModalAfterDelay(modal, 4000);
@@ -565,9 +562,6 @@ function submitPlayerName(event) {
 }
 
 
-
-
-
 function getCookie(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
@@ -680,6 +674,7 @@ function updateScores(matchElement, player1_score, player2_score) {
 			isOnlineTournament = false;
 		} else {
 			displayTourWinM(winner);
+			appendToContainer(backOfflineBtn, 'my-5.main-section');
 		}
 	}
 }

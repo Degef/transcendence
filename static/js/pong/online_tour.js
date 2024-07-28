@@ -446,63 +446,64 @@ function displayBracket(res, tourSize) {
 }
 
 function onlineTournament(tourSize) {
+	const tourSocketUrl = `wss://${window.location.host}/ws/tournament/`;
 
-	const socket = new WebSocket(`wss://${window.location.host}/ws/tournament/`);
+	try {
+		const socket = new WebSocket(tourSocketUrl);
 
-	socket.onopen = function() {
-		sendMessage('join_tournament', tourSize);
-	};
+		socket.onopen = function() {
+			sendMessage('join_tournament', tourSize);
+		};
+		onlineTourSocket = socket;
+		socket.onmessage = function(e) {
+			let res = JSON.parse(e.data);
+			if (res['type'] === 'error') {
+				showAlert(res.error, 'danger');
+			}
+			else if (res['type'] == 'playerId') {
+				data['playerId'] = res['playerId'];
+				showSpinner("WAITING FOR OTHER PLAYER TO JOIN ONLINE TOURNAMENT");
+			} else if (res.type === 'html_content') {
+				hideSpinner();
+				isOnlineTournament = true;
+				displayBracket(res, tourSize);
+			} else if (res.type === 'game_start') {
+				matchName = data.match_name;
+				player1 = res.player1;
+				player2 = res.player2;
+				displayBtn('start_game_btn')
+			} else if (res.type === 'match_invitation') {
+				username = res.player;
+				match_room = res.match_room;
+				tourGame = false;
+				tourId= res.tour_id;
+				challenger_username = res.players[0];
+				challenged_username = res.players[1];
+				scheduleMatchInvitation(res);
+			} else if (res.type === 'update_bracket') {
+				hideSpinner();
+				update_bracket(res);
+			} else if (res.type === 'opponent_left') {
+				hideSpinner();
+				showSpinner("Opps it seems like your opponenet has been left the tournament");
+				closeGameSocket();
+				abortMatchInvitation(res);
+				removeChildById('match-invitation-modal');
+			} 
+		}
 
-	onlineTourSocket = socket;
-	socket.onmessage = function(e) {
-		let res = JSON.parse(e.data);
-
-		if (res['type'] == 'playerId') {
-			data['playerId'] = res['playerId'];
-			showSpinner("WAITING FOR OTHER PLAYER TO JOIN ONLINE TOURNAMENT");
-		} else if (res.type === 'html_content') {
+		socket.onclose = function(event) {
 			hideSpinner();
-			isOnlineTournament = true;
-			displayBracket(res, tourSize);
-		} else if (res.type === 'game_start') {
-			matchName = data.match_name;
-			player1 = res.player1;
-			player2 = res.player2;
-			displayBtn('start_game_btn')
-		} else if (res.type === 'match_invitation') {
-			username = res.player;
-			match_room = res.match_room;
-			tourGame = false;
-			tourId= res.tour_id;
-			challenger_username = res.players[0];
-			challenged_username = res.players[1];
-			scheduleMatchInvitation(res);
-			// setTimeout(() => {
-			//     displayMatchInvitation(res.match_room, res.opponent,  res.players);
-			// }, 10000);
-		} else if (res.type === 'update_bracket') {
-			hideSpinner();
-			update_bracket(res);
-		} else if (res.type === 'opponent_left') {
-			hideSpinner();
-			showSpinner("Opps it seems like your opponenet has been left the tournament");
-			closeGameSocket();
-			abortMatchInvitation(res);
-			removeChildById('match-invitation-modal');
-		} 
-	}
-	
-
-
-	socket.onclose = function(event) {
-		hideSpinner();
-		// history.back();
-	};
-	
-	// Send messages to the server
-	function sendMessage(type, tourSize) {
-		const message = { type: type, psize: tourSize };
-		socket.send(JSON.stringify(message));
+			appendToContainer(backOnlineBtn, 'my-5.main-section');
+		};
+		
+		// Send messages to the server
+		function sendMessage(type, tourSize) {
+			const message = { type: type, psize: tourSize };
+			socket.send(JSON.stringify(message));
+		}
+	} catch (error) {
+		console.error('WebSocket initialization error:', error);
 	}
 
 }

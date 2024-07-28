@@ -93,7 +93,6 @@ function handleChallengeSocketEvents(challsocket) {
 		challenger = message_json.challenger;
 		challenger_username = challenger;
 		challenged_username = message_json.challengee
-		console.log("recieved: ", data);
 		if (message_json.type === 'challenge_created') {
 			username = currentUserChall;
 			if (message_json.challenger === currentUserChall) {

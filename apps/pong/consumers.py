@@ -444,7 +444,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
 class ChallengeConsumer(AsyncWebsocketConsumer):
-	
 	async def connect(self):
 		user_id = await sync_to_async(self.get_user_id)()
 		self.user = self.scope['user']
@@ -551,10 +550,6 @@ class ChallengeConsumer(AsyncWebsocketConsumer):
 
 
 
-
-
-
-
 def shuffle_array(array):
 	"""
 	Shuffles an array using the Fisher-Yates (Knuth) shuffle algorithm.
@@ -574,6 +569,7 @@ def shuffle_array(array):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	players_waiting = deque()
 	players_waitingBig = deque()
+	all_players_usernames = []
 	nextRound_players = {}
 	allTournaments = {}
 	confirmed_players = {}
@@ -589,13 +585,26 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.user_id = await sync_to_async(self.get_user_id)()
 		self.username = self.scope["user"].username
+
+		# Check if the user is already in a tournament
+		if self.username in self.all_players_usernames:
+			await self.accept()
+			self.scope['state'] = {'connected': False}
+			await asyncio.sleep(1)
+			await self.send(text_data=json.dumps({"type": "error", "error": "You are already in a tournament"}))
+			await self.close()
+			return
+
+		# Add the user to the list of all players in tournaments
+		self.all_players_usernames.append(self.username)
+
 		self.player_id = str(uuid.uuid4())
 		self.room_name = 'game_room'
 		self.t_id = None
 
 		self.player_channels[self.username] = self.channel_name  # Store channel name
 
-
+		self.scope['state'] = {'connected': True}
 		await self.accept()
 		await self.send(text_data=json.dumps({"type": "playerId", "playerId": self.player_id}))
 
@@ -605,6 +614,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		# await self.channel_layer.group_discard(self.room_group_name,self.channel_name)
+		self.scope['state'] = {'connected': False}
 		if self in self.players_waiting:
 			self.players_waiting.remove(self)
 		if self.username in self.nextRound_players:
@@ -626,13 +636,16 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			del self.allTournaments[tournament_id]
 		self.t_id = None
 		logging.info(f"closing SocketConnection to Player {self.username}")
+		if self.username in self.all_players_usernames:
+			self.all_players_usernames.remove(self.username)
 		await self.close()
 
 	async def receive(self, text_data):
 		data = json.loads(text_data)
 		room_group_name = getattr(self, 'room_group_name', None)
 		if data['type'] == 'join_tournament':
-			await self.fetch_and_add_player_to_tournament(data)
+			if self.scope['state']['connected'] and self.username in self.all_players_usernames:
+				await self.fetch_and_add_player_to_tournament(data)
 		elif data['type'] == 'update_tournament':
 			await self.update_tournament(data)
 		elif data['type'] == 'match_result':
