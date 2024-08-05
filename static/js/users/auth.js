@@ -14,20 +14,17 @@ async function handleFormSubmission(formId, url, successRoute, back_or_forward =
 		handleRoute(url, true);
 		return ;
 	}
-	// console.log(form)
 
 	const imageInput = form.querySelector('input[type="file"]');
-	const file = imageInput.files[0];
+	if (imageInput) {
+		const file = imageInput.files[0];
+		if (file && file.size > 1024 * 1024) { // 1 MB in bytes
+			showAlert('The image file size must be less than 1 MB.', 'danger');
+			return;
+		}
+	}
 	const formData = new FormData(form);
 	const newUsername = formData.get('username');
-	
-	// console.log(file)
-	if (file && file.size > 1024 * 1024) { // 1 MB in bytes
-		showAlert('The image file size must be less than 1 MB.', 'danger');
-		return; // Prevent form submission
-	}
-
-	// console.log("after file check")
 
 	try {
 		const response = await fetch(url, {
