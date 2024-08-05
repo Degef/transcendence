@@ -1,0 +1,230 @@
+<section class="profile-container container d-flex flex-column align-items-center" role="main">
+	<header class="profile-header text-center">
+		<article class="d-flex flex-column align-items-center">
+			<div class="profile-image-container position-relative">
+				<img loading="lazy" src="{{ profile_image.url }}" alt="Profile Picture" class="profile-image img-fluid rounded-circle" />
+				<span class="status-indicator position-absolute {% if is_online %} bg-success {% else %} bg-danger {% endif %}"></span>
+			</div>
+			<h2 class="profile-name" id="profile_name">{{ username }}</h2>
+			<div class="profile-actions d-flex justify-content-center mt-3 gap-2">
+				{% if is_own_profile %}
+					{% if is_anonymous == False %}
+						<button class="btn btn-outline-light profile-action-edit" id="edit_profile" role="button" aria-label="Edit">Edit</button>
+						{% if is_logged_in_with_42 == False %}
+							<button class="btn btn-outline-danger rounded-pill" id="anon_profile" onclick="anonymize()" role="button" aria-label="Anonymize">Anonymize</button>
+						{% endif %}
+					{% else %}
+						<button class="btn btn-outline-light profile-action-edit" id="edit_profile" role="button" aria-label="Edit">Edit</button>
+					{% endif %}
+				{% else %}
+					{% if are_friends %}
+						<button class="btn btn-danger rounded-pill profile-action-remove-friend" onclick="removeFriend('{{username}}')" role="button" aria-label="Remove Friend">Remove Friend</button>
+					{% elif sent_request %}
+						<button class="btn btn-secondary rounded-pill profile-action-cancel-request" onclick="cancelRequest('{{username}}')" role="button" aria-label="Cancel Request">Cancel Request</button>
+					{% elif received_request %}
+						<button class="btn btn-success rounded-pill profile-action-accept-friend" onclick="acceptRequest('{{username}}')" role="button" aria-label="Accept Request">Accept Request</button>
+						<button class="btn btn-warning rounded-pill profile-action-decline-friend" onclick="declineRequest('{{username}}')" role="button" aria-label="Decline Request">Decline Request</button>
+					{% else %}
+						<button class="btn btn-success rounded-pill profile-action-add-friend" onclick="addFriend('{{username}}')" role="button" aria-label="Add Friend">Add Friend</button>
+					{% endif %}
+					<button class="btn btn-primary profile-action-play" onclick="challengeUser('{{username}}')" role="button" aria-label="Play">Play</button>
+				{% endif %}
+			</div>
+		</article>
+	</header>
+
+	<section class="stats-section my-4">
+		<div class="row stats-container">
+			<div class="col-md-3 stats-column">
+				<div class="stats-item text-center py-3 d-flex align-items-center justify-content-center">
+					<div class="stats-content">
+						<span class="stats-number">{{ total_games }}</span>
+						<p class="stats-label">Games</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">{{ total_wins }}</span>
+						<p class="stats-label">Wins</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">{{ total_losses }}</span>
+						<p class="stats-label">Losses</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 stats-column">
+				<div class="stats-item text-center py-3">
+					<div class="stats-content">
+						<span class="stats-number">{{ friends|length }}</span>
+						<p class="stats-label">Friends</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<nav class="highlighted-tab d-flex justify-content-between border-bottom py-2 mb-3">
+		<div class="highlighted-label" id="stats-tab">Stats</div>
+		<div class="highlighted-stats active" id="history-tab">History</div>
+		<div class="highlighted-friends" id="friends-tab">Friends</div>
+		{% if is_own_profile %}
+			<div class="highlighted-requests" id="requests-tab">Requests</div>
+		{% endif %}
+	</nav>
+
+	<section id="history-section" class="history-section">
+		{% if games|length == 0 %}
+			<div class="history-item d-flex justify-content-between align-items-center py-2">
+				<div class="d-flex align-items-center gap-3">
+					<div class="history-details">
+						<span class="history-title">No games played yet</span>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		{% for match in games %}
+			<div class="history-item d-flex justify-content-between align-items-center py-2">
+				<div class="d-flex align-items-center gap-3">
+					<div class="rounded-circle {% if match.winner.username == username %} alert alert-primary {% else %} alert alert-danger {% endif %}" style="width: 56px; height: 56px;"></div>
+					<div class="history-details">
+						{% if match.winner.username == username %}
+							{% if match.player1.username == username %}
+								<span class="history-title">Won against {{ match.player2.username }}</span>
+							{% else %}
+								<span class="history-title">Won against {{ match.player1.username }}</span>
+							{% endif %}
+						{% else %}
+							{% if match.player1.username == username %}
+								<span class="history-title">Lost to {{ match.player2.username }}</span>
+							{% else %}
+								<span class="history-title">Lost to {{ match.player1.username }}</span>
+							{% endif %}
+						{% endif %}
+						<time class="history-time">{{ match.date }}</time>
+					</div>
+				</div>
+				<span class="history-score">{{ match.player1_score }} - {{ match.player2_score }}</span>
+			</div>
+		{% endfor %}
+
+		{% if games.paginator.num_pages > 1 %}
+			<nav aria-label="Page navigation example">
+				<ul class="pagination justify-content-center">
+					{% if games.has_previous %}
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page=1'); return false;" aria-label="First">
+								<span aria-hidden="true">&laquo;</span>
+							</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page={{ games.previous_page_number }}'); return false;" aria-label="Previous">
+								<span aria-hidden="true">Previous</span>
+							</a>
+						</li>
+					{% endif %}
+
+					<li class="page-item disabled">
+						<a class="page-link" href="#" tabindex="-1">Page {{ games.number }} of {{ games.paginator.num_pages }}</a>
+					</li>
+
+					{% if games.has_next %}
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page={{ games.next_page_number }}'); return false;" aria-label="Next">
+								<span aria-hidden="true">Next</span>
+							</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="#" onclick="loadProfile('{{ username }}?page={{ games.paginator.num_pages }}'); return false;" aria-label="Last">
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					{% endif %}
+				</ul>
+			</nav>
+		{% endif %}
+	</section>
+
+	<section id="friends-section" class="friends-section d-none">
+		<div id="friends-list" class="list-container">
+			{% if friends|length == 0 %}
+				<div class="friend-item d-flex justify-content-between align-items-center py-2">
+					<div class="d-flex align-items-center gap-3">
+						<div class="friend-details">
+							<span class="friend-name">No friends found</span>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% for friend in friends %}
+				<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
+					<div class="d-flex align-items-center gap-3 col-6">
+						<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;">
+							<img loading="lazy" src="{{ friend.profile.image.url }}" alt="{{ friend.username }}'s Profile Image" class="friend-image rounded-circle" />
+						</a>
+						<div class="friend-details">
+							<a href="#" onclick="loadProfile('{{ friend.username }}'); return false;" class="friend-name" role="link">{{ friend.username }}</a>
+						</div>
+					</div>
+					<div>
+						<p>{{ friend.date_joined|date:"d/m/y" }}</p>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		{% if is_own_profile %}
+			<div id="non-friends-list" class="list-container mt-4">
+				<div class="search-bar d-flex align-items-center mb-3">
+					<i class="fas fa-search search-icon"></i>
+					<input id="searchForPlayer" type="text" class="search-input" placeholder="Search Players" name="search-for-player">
+				</div>
+			</div>
+			<div id="searchResults" class="list-container mt-4 d-none"></div>
+		{% endif %}
+	</section>
+
+	{% if is_own_profile %}
+	<section id="requests-section" class="requests-section d-none">
+		<div id="requests-list" class="list-container">
+			{% if pending_requests|length == 0 %}
+				<div class="request-item d-flex justify-content-between align-items-center py-2">
+					<div class="d-flex align-items-center gap-3">
+						<div class="request-details">
+							<span class="request-name">No friend requests</span>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% for requester in pending_requests %}
+				<div class="friend-item d-flex justify-content-between align-items-center py-2 mb-2">
+					<div class="d-flex align-items-center gap-3 col-9">
+						<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;">
+							<img loading="lazy" src="{{ requester.profile.image.url }}" alt="{{ requester.username }}'s Profile Image" class="request-image rounded-circle" />
+						</a>
+						<div class="request-details">
+							<a href="#" onclick="loadProfile('{{ requester.username }}'); return false;" class="request-name">{{ requester.username }}</a>
+						</div>
+					</div>
+					<div class="d-flex justify-content-between align-items-center py-2 gap-5">
+						<button class="btn btn-success rounded-pill" onclick="acceptRequest('{{ requester.username }}')">Accept</button>
+						<button class="btn btn-warning rounded-pill" onclick="declineRequest('{{ requester.username }}')">Decline</button>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</section>
+	{% endif %}
+
+	<section id="stats-section" class="stats-section d-none">
+		<canvas id="gamesChart" width="400" height="200"></canvas>
+	</section>
+	<script id="gamesData" type="application/json">{{ games2|safe }}</script>
+	<script id="userID" type="application/json">{{ user.id|safe }}</script>
+</section>

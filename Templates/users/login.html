@@ -1,0 +1,38 @@
+<div class="login-container d-flex flex-column justify-content-center w-100 align-items-center" role="main" aria-labelledby="login-title">
+	<section class="login-form-wrapper d-flex flex-column w-100" role="form">
+		<h1 class="login-title d-flex justify-content-center text-center" id="login-title">
+			<span class="login-welcome-text text-center">Welcome to PongBuddies</span>
+		</h1>
+		<form id="login-form" class="form d-flex flex-column" method="post" action="{% url 'login' %}" aria-describedby="form-instructions">
+			{% csrf_token %}
+			<div id="form-instructions" class="sr-only">Please enter your username and password to log in.</div>
+			<div class="form-group d-flex flex-column justify-content-center">
+				<div class="d-flex flex-column justify-content-center">
+					<div class="d-flex flex-column text-center align-items-start">
+						<label for="emailInput" class="visually-hidden">Username</label>
+						<input type="email" id="emailInput" name="username" placeholder="Username" class="form-group__input" aria-label="Username" maxlength="14" autocomplete="on">
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="d-flex flex-column justify-content-center">
+					<div class="form-group__box d-flex flex-column text-center align-items-start">
+						<label for="passwordInput" class="visually-hidden">Password</label>
+						<input type="password" id="passwordInput" name="password" placeholder="Password" class="form-group__input" aria-label="Password" autocomplete="on">
+					</div>
+				</div>
+			</div>
+			<div class="form-group__button-wrapper d-flex flex-column justify-content-center align-items-center">
+				<button id="login" type="submit" class="form-group__button" aria-label="Log in">Log in</button>
+			</div>
+		</form>
+		<div class="login-or-text d-flex text-center" role="separator">or</div>
+		<div class="login-continue-button-wrapper">
+			<button type="button" class="login-other-button" id="loginWith42" aria-label="Continue with 42">Continue with 42</button>
+		</div>
+		<div class="login-new-user-text d-flex text-center">New to PongBuddies?</div>
+		<div class="login-create-account-wrapper d-flex flex-column justify-content-center align-items-center">
+			<button id="req_register" type="button" class="login-create-account-button" aria-label="Create an account">Create an account</button>
+		</div>
+	</section>
+</div>

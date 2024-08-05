@@ -1,0 +1,22 @@
+<section class="leaderboard d-flex flex-column justify-content-center w-100 py-5 mt-3">
+    <div class="container">
+        <header class="leaderboard__header ms-2 mb-4">
+            <h1 class="leaderboard__title text-center">Leaderboard</h1>
+        </header>
+        <nav class="leaderboard__tabs nav mb-4">
+            <div id="all_time_leaderboard_tab" class="nav-link active" href="#">All Time</div>
+            <div id="weekly_leaderboard_tab" class="nav-link" href="#">This Week</div>
+            <div id="monthly_leaderboard_tab" class="nav-link" href="#">This Month</a>
+        </nav>
+
+        <section class="leaderboard__container" id="all_time_leaderboard">
+            {% include 'leaderboard_rows.html' with leaderboard_data=leaderboard_data %}
+        </section>
+        <section class="leaderboard__container d-none" id="weekly_leaderboard">
+            {% include 'leaderboard_rows.html' with leaderboard_data=leaderboard_weekly %}
+        </section>
+        <section class="leaderboard__container d-none" id="monthly_leaderboard">
+            {% include 'leaderboard_rows.html' with leaderboard_data=leaderboard_monthly %}
+        </section>
+    </div>
+</section>

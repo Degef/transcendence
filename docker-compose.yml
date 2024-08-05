@@ -1,34 +1,93 @@
 version: '3.8'
 
+# name: pong
+
 services:
 
   web:
     build: .
     container_name: django
-    ports:
-      - '8000:8000'
+    image: django
+    env_file:
+      - .env
     volumes:
-      - .:/app
+      - ./:/app
+      - ./static/:/app/static
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
+      - CACHE_HOST=${CACHE_HOST}
+      - CACHE_PORT=${CACHE_PORT}
     depends_on:
-      - my-postgres
+      - postgres
+      - redis
 
-  my-postgres:
+    networks:
+      - frontend
+      - backend
+
+    restart: always
+
+  postgres:
     image: postgres:15
     container_name: db
+    env_file:
+      - .env
     environment:
      - POSTGRES_DB=${DATABASE_NAME}
      - POSTGRES_USER=${DATABASE_USER}
      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     ports:
-    - '5432:5432'
+      - '5432:5432'
+    networks:
+      - backend
     volumes:
-    - pg_data:/var/lib/postgresql/data
-    
+      - pg_data:/var/lib/postgresql/data
+
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - backend
+
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  nginx:
+    build: ./nginx/
+    container_name: nginx
+    image: nginx
+    ports:
+      - '443:443'
+    depends_on:
+      - web
+    volumes:
+      - ./static/:/app/static
+      - ./media/:/app/media
+
+    networks:
+      - frontend
+
+    restart: always
+
 volumes:
   pg_data:
+
+networks:
+  frontend:
+  backend:

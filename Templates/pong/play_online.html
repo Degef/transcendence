@@ -1,0 +1,22 @@
+<div id="tournament" class="canvas_container" class="container">
+	<div id="playerNames" class="row player-names-container d-flex align-items-center">
+		<div id="player1Name" class="col player-name d-flex justify-content-start">
+			{{player1}}
+		</div>
+		<div id="player2Name" class="col player-name d-flex justify-content-end">
+			{{player2}}
+		</div>
+	</div>
+	<div class="row justify-content-md-center position-relative">
+		<div id="end_game"> </div>
+		<div class="col game-canvas-container">
+			<canvas id="gameCanvas" class="game-canva-online" width="600" height="400"></canvas>
+		</div>
+	</div>
+	<div class="row justify-content-md-center">
+		<div class="col button-container">
+			<button id="start_game_btn" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="start_play_online_challenge(challenged_username, challenger_username, username); return false;">Start</button> <br>
+			<button id="play_again" class="btn btn-outline-light mt-3 btn-custom" style="display: none;" type="submit" onclick="start_play_online_challenge(challenged_username, challenger_username, username); return false;">Play Again</button> <br>
+		</div>
+	</div>
+</div>

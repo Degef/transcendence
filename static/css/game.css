@@ -1,0 +1,374 @@
+#tournament {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--color-card-background);
+	padding: 10px 30px;
+	margin: 0 auto;
+	margin-top: 40px;
+	border-radius: 35px;
+	width: 100%;
+	/* height: calc(100vh - 100px); */
+	min-height: 650px;
+	max-height: 800px;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.header {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.header h1 {
+	color: var(--color-text-primary);
+	font-size: 2.5rem;
+	margin: 0;
+}
+
+#mygame {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+/* #gameCanvas {
+	width: 600px;
+	height: 400px;
+} */
+
+.game-canva-local {
+	width: 100%;
+	height: 100%;
+	max-width: 800px;
+	max-height: 700px;
+}
+
+.game-canva-online {
+	max-width: 600px;
+	max-height: 400px;
+}
+
+
+canvas {
+	width: 100%;
+	height: 100%;
+}
+
+
+canvas {
+	border-radius: 8px;
+	border: 0.25px solid var(--color-text-accent);
+}
+
+.canvas_container {
+	display: flex;
+	justify-content: center;
+}
+
+/* #start_play_computer {
+	margin-top: 20px;
+	padding: 15px 30px;
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+	box-shadow: 0 4px 6px var(--button-shadow-color);
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	align-self: center;
+} */
+
+#restart_btn {
+	display: none;
+}
+
+.btn-custom {
+	margin-top: 20px;
+	/* padding: 15px 30px; */
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+	box-shadow: 0 4px 6px var(--button-shadow-color);
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	align-self: center; /* Center the button horizontally within #mygame */
+}
+
+/* #start_play_computer:hover {
+	background-color: var(--button-hover-color);
+	transform: translateY(-3px);
+	box-shadow: 0 6px 12px var(--button-shadow-color);
+} */
+
+.btn-custom:hover {
+	background-color: var(--button-hover-color);
+	transform: translateY(-3px);
+	box-shadow: 0 6px 12px var(--button-shadow-color);
+}
+
+.button-container {
+	display: flex;
+	gap: 10px; /* Adjust the gap between buttons as needed */
+}
+
+#scoreboard {
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+}
+
+.player {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.player_name {
+	font-size: 1.5rem;
+	color: var(--color-text-accent);
+	margin-bottom: 10px;
+}
+
+.score {
+	font-size: 2rem;
+	background-color: var(--score-background);
+	padding: 10px 20px;
+	border-radius: 10px;
+	color: var(--score-color);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#wait_load {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border: 16px solid rgba(164, 164, 164, 0.2);
+	border-top: 16px solid rgb(27, 116, 20);
+	border-radius: 50%;
+	width: 140px;
+	height: 140px;
+	animation: spin 1s linear infinite;
+	z-index: 9999;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+
+
+
+#playerNames {
+	color: var(--color-text-primary);
+}
+
+
+.player-names-container {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	max-width: 500px;
+	/* margin-bottom: 10px; */
+	margin-bottom: 0.5rem;
+	font-family: monospace, Monaco;
+	font-weight: 900;
+}
+.player-name {
+	background-color: rgb(0 0 0 / 0%);
+	color: var(--color-text-primary);
+	padding: 10px 0px;
+	border-radius: 5px;
+}
+
+
+
+
+.modal-header {
+	background-color: #ffffff;
+	color: #000000;
+}
+.modal-body {
+	text-align: center;
+}
+.modal-footer {
+	justify-content: center;
+}
+
+
+
+
+
+.spinner-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.5); /* semi-transparent background */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999; /* ensure it's on top */
+  }
+  
+  .spinner {
+	height: 100px;
+	width: 100px;
+	border-radius: 50%;
+	border: 10px solid var(--color-text-primary);
+	border-top-color: #007bff;
+	animation: spin 1s linear infinite;
+	margin-bottom: 20px; /* space between spinner and message */
+  }
+  
+  @keyframes spin {
+	0% {
+	  transform: rotate(0deg);
+	}
+	100% {
+	  transform: rotate(360deg);
+	}
+  }
+  
+  .blur {
+	filter: blur(5px); /* adjust the blur level as needed */
+  }
+  
+  .spinner-message {
+	font-size: 18px;
+	color: var(--color-text-primary);
+	font-family: 'Courier New', Courier, monospace;
+	font-weight: 900;
+	font-size: 20px;
+	display: flex;
+	align-items: center;
+  }
+  
+  .dots {
+	display: inline-block;
+	margin-left: 5px;
+  }
+  
+  .dots span {
+	display: inline-block;
+	animation: blink 1.4s infinite both;
+  }
+  
+  .dots span:nth-child(2) {
+	animation-delay: 0.2s;
+  }
+  
+  .dots span:nth-child(3) {
+	animation-delay: 0.4s;
+  }
+  
+  @keyframes blink {
+	0% {
+	  opacity: 0;
+	}
+	50% {
+	  opacity: 1;
+	}
+	100% {
+	  opacity: 0;
+	}
+  }
+
+
+
+.customize-dialog,
+.customize-form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* ensure it's on top */
+}
+
+.dialog-content {
+  background: var(--color-card-background);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#custom-form {
+	background-color: var(--color-card-background);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+
+.input-container {
+	position: relative;
+  }
+  
+  .input-container .form-control {
+	padding-right: 30px; /* space for the feedback icon */
+  }
+  
+  .feedback {
+	position: absolute;
+	right: 30px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.2em;
+	pointer-events: none; /* make sure it doesn't interfere with input */
+  }
+
+  .feedback.invalid {
+	color: red;
+  }
+  
+  .feedback.valid {
+	color: green;
+  }
+
+  .notification {
+	position: absolute;
+	top: 16px;
+    right: 24px;
+    background-color: rgba(255, 0, 0, 0.5);
+	color: white;
+	padding: 5px;
+	font-size: 12px;
+	border-radius: 3px;
+	display: block;
+	z-index: 1000;
+  }
+  
+  
+  
+  .invalid {
+	color: red; /* Example: Additional style for invalid feedback */
+  }
+  
+
+
+  #countdown {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: 1s;
+    font-size: 0vw;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    opacity: 50%;
+    color: var(--color-text-primary);
+    pointer-events: none; /* Ensure it does not interfere with canvas events */
+}

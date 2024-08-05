@@ -2,12 +2,12 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ./requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8000
+ENV DJANGO_SETTINGS_MODULE=transcendence.settings
 
-CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python3 manage.py makemigrations chat users pong && python3 manage.py migrate && daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application"]

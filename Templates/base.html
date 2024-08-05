@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="description" content="A single page pong application">
+		<meta name="application-name" content="transcendence">
+		<meta name="keywords" content="pong,transcendence,spa,online game,online pong,42pong">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/landing.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/about.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/profile-update.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/leaderboard.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/tournament.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/privacy.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/aboutus.css' %}">
+		<script src="https://kit.fontawesome.com/6a2ea06471.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<title>PongBuddies</title>
+	</head>
+	<body class="d-flex flex-column min-vh-100">
+		<header id="nav-header" class="sticky-top mb-2 mt-3">
+			<nav class="navbar navbar-expand-lg navbar-dark" aria-label="Main navigation bar">
+				<div class="container-xxl">
+					<a class="navbar-brand" href="#" id="home">
+						<i class="logo d-inline-block align-top me-1 fa-solid fa-table-tennis-paddle-ball" id="home"></i>
+						PongBuddies
+					</a>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarNav">
+						<ul class="navbar-nav ms-auto">
+							{% if user.is_authenticated %}
+								<li class="nav-item me-4 d-none d-lg-block" id="notifications">
+									<button type="button" class="btn btn-primary position-relative theme-button-primary" role="button" aria-describedby="notificationBadge" id="notificationBell">
+										<i class="fa-solid fa-bell theme-icon" id="notificationBell"></i>
+										<span class="position-absolute top-0 translate-middle badge rounded-pill theme-badge" id="notificationBadge">
+											0
+										</span>
+									</button>
+									<div id="notifications-list" class="position-absolute mt-2 w-100 bg-light border rounded shadow-sm d-none"></div>
+								</li>
+								<li class="nav-item"><a class="nav-link" href="#" id="home" role="link" aria-label="home link">Home</a></li>
+								<li class="nav-item"><a title="profile" id="profile" role="link" class="nav-link" href="#" aria-label="profile link" onclick="loadProfile('{{ request.user.username }}'); return false;">Profile</a></li>
+								<li class="nav-item"><a title="leaderboard" id="leaderboard" role="link" class="nav-link" href="#" aria-label="leaderboard link">Leaderboard</a></li>
+								<li class="nav-item"><a title="Chat" id="chatLink" role="link" class="nav-link" href="#" aria-label="chat link">Chat</a></li>
+								<li class="nav-item"><a title="about" id="about" role="link" class="nav-link" href="#" aria-label="about link">About</a></li>
+								<li class="nav-item" id="mode_toggle"><i class="nav-link fa-solid fa-lightbulb mt-1" role="togglebutton" id="mode_toggle" aria-label="theme toggler"></i></li>
+								<li class="nav-item"><a title="logout" id="logout" class="nav-link btn btn-primary text-white ms-2" role="button" aria-label="logout">Log out</a></li>
+							{% else %}
+								<li class="nav-item"><a class="nav-link" href="#" id="home" role="link" aria-label="home link">Home</a></li>
+								<li class="nav-item"><a title="about" class="nav-link" href="#" id="about" role="link" aria-label="about link">About</a></li>
+								<li class="nav-item" id="mode_toggle"><i class="nav-link fa-solid fa-lightbulb mt-1" id="mode_toggle" role="togglebutton" aria-label="theme toggler"></i></li>
+								<li class="nav-item"><a id="req_login" class="nav-link btn btn-primary text-white ms-2" href="{% url 'login' %}" role="button" aria-label="login">Log In</a></li>
+							{% endif %}
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
+
+		<div class="alert alert-dismissible fade d-none fixed-alert" role="alert" id="responseAlert">
+			<span class="response__message"></span>
+		</div>
+		<div id="custom-confirm" class="modal" role="dialog" aria-labelledby="challenge-message" aria-hidden="true">
+			<div class="modal-content">
+				<p id="challenge-message" class="text-large">you have been challenged by Degef</p>
+				<div>
+					<button id="decline-button" class="btn btn-outline-light btn-lg mb-3">Decline</button>
+					<button id="accept-button" class="btn btn-outline-light btn-lg mb-3">Accept</button>
+				</div>
+			</div>
+		</div>
+		<main id="main-container" class="container flex-grow-1 d-flex flex-column align-items-center p-0 p-md-2 smooth-transition">
+			{% block content %} {% endblock %}
+		</main>
+		<div class="spinner-overlay" id="spinner-overlay" style="display: none;">
+			<div class="spinner"></div>
+			<div class="spinner-message" id="spinner-message">
+				Waiting for other players to join
+				<div class="dots">
+					<span>.</span>
+					<span>.</span>
+					<span>.</span>
+				</div>
+			</div>
+		</div>
+		
+		
+		<footer class="footer py-4">
+			<nav class="d-flex justify-content-center">
+				<ul class="nav flex-wrap justify-content-center">
+					<li class="nav-item"><a href="#" class="nav-link__footer" role="link" id="home">Home</a></li>
+					<li class="nav-item"><a href="#" class="nav-link__footer" role="link" id="leaderboard">Leaderboard</a></li>
+					<li class="nav-item"><a href="#" class="nav-link__footer" role="link" id="privacy">Privacy & Terms</a></li>
+					<li class="nav-item"><a href="#" class="nav-link__footer" role="link" id="aboutus">About Us</a></li>
+				</ul>
+			</nav>
+		</footer>
+		
+		<div class="zoom-controls d-flex flex-row align-items-center p-3 border rounded-pill position-fixed d-none d-lg-flex">
+			<button class="zoom-button border rounded-circle d-flex justify-content-center align-items-center" id="zoomout" role="button" aria-label="zoom out">
+				<p role="button" id="zoomout">-</p>
+			</button>
+			<div class="zoom-text mx-2 text-center">
+				<p class="m-0" id="zoom-text"></p>
+			</div>
+			<button class="zoom-button border rounded-circle d-flex justify-content-center align-items-center" id="zoomin" role="button" aria-label="zoom in">
+				<p role="button" id="zoomin">+</p>
+			</button>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+		<script defer src="{% static 'js/router/routes.js' %}"></script>
+		<script defer src="{% static 'js/users/auth.js' %}"></script>
+		<script defer src="{% static 'js/users/profile.js' %}"></script>
+		<script defer src="{% static 'js/pong/game.js' %}"></script>
+		<script defer src="{% static 'js/pong/challenge.js'%}"></script>
+		<script defer src="{% static 'js/pong/local_game.js'%}"></script>
+		<script defer src="{% static 'js/chat/chat.js' %}"></script>
+		<script defer src="{% static 'js/pong/leaderboard.js' %}"></script>
+		<script defer src="{% static 'js/pong/tournament.js' %}"></script>
+		<script defer src="{% static 'js/pong/online_tour.js' %}"></script>
+		<script defer src="{% static 'js/pong/notifications.js' %}"></script>
+	</body>
+</html>

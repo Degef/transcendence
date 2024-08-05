@@ -1,0 +1,373 @@
+.profile-container__ {
+	background-color: var(--color-background);
+	padding-bottom: 40px;
+}
+
+.profile-header {
+	margin-top: 36px;
+	color: var(--color-text-primary);
+	font-weight: 700;
+	max-width: 928px;
+}
+
+.profile-image {
+	width: 128px;
+	aspect-ratio: 1;
+	object-fit: cover;
+	border: 5px solid var(--color-text-primary);
+}
+
+.profile-name {
+	margin-top: 16px;
+	font-size: 22px;
+	font-family: Space Grotesk, sans-serif;
+	text-align: center;
+	letter-spacing: -0.33px;
+}
+
+.profile-actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 16px;
+	font-size: 14px;
+	letter-spacing: 0.21px;
+	line-height: 150%;
+}
+
+.profile-action-edit {
+	padding: 10px 16px;
+	border-radius: 24px;
+	background-color: var(--color-message-received);
+	color: var(--color-text-primary);
+	border: none;
+}
+
+.profile-action-play {
+	padding: 10px 16px;
+	border-radius: 24px;
+	background-color: var(--color-button-primary);
+	color: var(--color-text-primary);
+	border: none;
+}
+
+.stats-section {
+	width: 100%;
+	max-width: 1200px;
+	padding: 12px 16px;
+}
+
+.stats-container {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.stats-column {
+	flex: 1;
+	min-width: calc(25% - 20px);
+	margin-bottom: 20px;
+}
+
+@media (max-width: 991px) {
+	.stats-column {
+		min-width: 100%;
+	}
+}
+
+.stats-item {
+	padding: 12px;
+	border-radius: 8px;
+	border: 1px solid rgba(61, 64, 84, 1);
+	flex-grow: 1;
+}
+
+.stats-content {
+	display: flex;
+	flex-direction: column;
+}
+
+.stats-number {
+	color: var(--color-text-primary);
+	font-size: 24px;
+	font-weight: 700;
+	font-family: Space Grotesk, sans-serif;
+	letter-spacing: -0.6px;
+}
+
+.stats-label {
+	color: var(--color-text-accent);
+	margin-top: 8px;
+	font-size: 14px;
+	font-family: Space Grotesk, sans-serif;
+}
+
+.highlighted-tab {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+	padding: 1px 20px;
+	border-bottom: 1px solid var(--color-card-background);
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--color-text-accent);
+	white-space: nowrap;
+	text-align: center;
+	letter-spacing: 0.21px;
+	line-height: 150%;
+}
+
+.highlighted-label,
+.highlighted-stats,
+.highlighted-friends {
+	font-family: Space Grotesk, sans-serif;
+	font-feature-settings: "dlig" on;
+}
+
+.highlighted-stats.active {
+	color: var(--color-text-primary);
+	border-bottom: 3px solid #007bff;
+}
+
+.history-section,
+.requests-section,
+.friends-section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background-color: var(--color-background);
+	width: 100%;
+	max-width: 1200px;
+	gap: 20px;
+	padding: 8px 16px;
+	line-height: 150%;
+	overflow-y: scroll;
+	scrollbar-width: none;
+	border: 1px solid var(--color-text-accent);
+	border-radius: 12px;
+}
+
+.history-section::-webkit-scrollbar,
+.friends-section::-webkit-scrollbar {
+	display: none;
+}
+
+.history-item,
+.friend-item {
+	background-color: var(--color-card-background);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px;
+	padding-bottom: 0;
+	gap: 16px;
+	border-radius: 12px;
+}
+
+.history-image,
+.friend-image {
+	width: 56px;
+	aspect-ratio: 1;
+	object-fit: cover;
+	object-position: center;
+}
+
+.history-details,
+.friend-details {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin: auto 0;
+}
+
+.history-title,
+.friend-name {
+	color: var(--color-text-primary);
+	font-size: 16px;
+	font-weight: 500;
+	font-family: Space Grotesk, sans-serif;
+}
+
+.history-time {
+	color: var(--color-text-accent);
+	font-size: 14px;
+	font-family: Space Grotesk, sans-serif;
+}
+
+.history-score {
+	color: var(--color-text-primary);
+	font-size: 16px;
+	font-weight: 400;
+	font-family: Space Grotesk, sans-serif;
+	margin: auto 0;
+}
+
+@media (max-width: 991px) {
+	.profile-header,
+	.stats-section,
+	.history-section,
+	.friends-section {
+		max-width: 100%;
+	}
+
+	.profile-actions {
+		white-space: initial;
+	}
+
+	.stats-container {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+	}
+
+	.stats-column {
+		width: 100%;
+	}
+
+	.stats-item {
+		margin-top: 24px;
+		padding: 0 20px;
+		white-space: initial;
+	}
+
+	.highlighted-tab {
+		flex-wrap: wrap;
+		white-space: initial;
+	}
+
+	.highlighted-stats {
+		white-space: initial;
+	}
+
+	.history-section,
+	.friends-section {
+		flex-wrap: wrap;
+	}
+
+	.history-item,
+	.friend-item {
+		flex-wrap: wrap;
+	}
+}
+
+.controls {
+	margin-bottom: 20px;
+}
+
+.controls button,
+.controls select {
+	background-color: var(--color-button-primary);
+	border: none;
+	color: var(--color-text-primary);
+	padding: 10px 20px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+	border-radius: 8px;
+}
+
+.controls button:hover,
+.controls select:hover {
+	background-color: var(--color-hover);
+}
+
+.controls select {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+canvas {
+	width: 100%;
+	height: 400px;
+	background: var(--color-card-background);
+	border: 1px solid var(--color-hover);
+	border-radius: 8px;
+}
+
+/* .profile-image {
+	border: 5px solid var(--color-text-primary);
+} */
+
+.profile-actions .btn {
+	min-width: 100px;
+}
+
+.highlighted-tab {
+	cursor: pointer;
+}
+
+.highlighted-tab > div {
+	padding: 10px;
+	cursor: pointer;
+}
+
+.highlighted-tab > .active {
+	color: var(--color-text-primary);
+	font-weight: bold;
+	border-bottom: 3px solid #007bff;
+}
+
+.list-container {
+	max-height: 300px;
+	overflow-y: auto;
+	border-radius: 5px;
+}
+
+.friend-item img,
+.history-item img {
+	width: 50px;
+	height: 50px;
+}
+
+.friend-item .friend-details,
+.history-item .history-details {
+	flex-grow: 1;
+}
+
+.friend-item .btn,
+.history-item .btn {
+	min-width: 75px;
+}
+
+.profile-image-container {
+    position: relative;
+}
+
+.status-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid #fff;
+    bottom: 5px;
+    right: 5px;
+}
+
+
+.list-container {
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.pagination {
+	margin: 20px 0;
+}
+
+.pagination .page-item.disabled .page-link {
+	color: #6c757d;
+}
+
+.pagination .page-item .page-link {
+	color: #007bff;
+}
+
+.pagination .page-item .page-link:hover {
+	color: #0056b3;
+}
+
+.pagination .page-item .page-link:focus {
+	box-shadow: none;
+}

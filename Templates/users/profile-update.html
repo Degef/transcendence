@@ -1,0 +1,33 @@
+<div class="d-flex flex-column align-items-center" role="main">
+	<section class="profile-section d-flex flex-column align-items-center w-100 mt-5">
+		<h1 class="edit-title mb-3" id="edit-profile-title">Edit Profile</h1>
+
+		<form id="profile_form" method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data" aria-labelledby="edit-profile-title" aria-describedby="profile-instructions">
+			{% csrf_token %}
+			
+			<div id="profile-instructions" class="sr-only">Use the form below to update your profile information and profile picture. Ensure all fields are filled out correctly before saving changes.</div>
+			
+			{{ user_form.as_p }}
+			
+			<div class="form-group">
+				{% if request.user.profile.image %}
+					<img src="{{ request.user.profile.image.url }}" alt="Current Profile Picture" class="current-profile-picture" />
+				{% endif %}
+				{{ profile_form.image }}
+			</div>
+			
+			<button id="update" type="submit" class="submit-button" role="button" aria-label="Save changes">Save Changes</button>
+		</form>
+		
+		<aside class="delete-account-section w-100 mt-5 text-center" aria-labelledby="delete-account-title">
+			<h2 class="delete-account-title text-danger" id="delete-account-title">Delete Account</h2>
+			<p class="delete-account-description mt-2" id="delete-account-description">
+				If you delete your account, it will be permanently deleted. You will lose all data, including your profile, friends, chat history, and any game progress. Once deleted, your account cannot be restored.
+			</p>
+			<div class="d-flex justify-content-center gap-3 mt-3">
+				<button class="cancel" role="button" onclick="history.back()" aria-label="Cancel">Cancel</button>
+				<button id="delete_profile" class="delete btn btn-outline-danger rounded-pill" role="button" aria-label="Delete Account">Delete Account</button>
+			</div>
+		</aside>
+	</section>
+</div>

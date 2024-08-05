@@ -1,26 +1,32 @@
+
+COMPOSE_FILE = docker-compose.yml
+
+PROJECT_NAME = transcendence
+
+DOCKER_COMPOSE = docker compose -p $(PROJECT_NAME)
+
 all: build up
 
-build:
-	docker compose build
-
 up:
-	docker compose up
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env up
+
+build:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env build
 
 down:
-	docker compose down
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down
+
+clean: stop  clean-dangling
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env down -v --remove-orphans
+	-docker rmi -f django nginx redis:alpine postgres:15
+	-docker volume prune -f
+	-docker network prune -f
+
+clean-dangling:
+	@-docker rmi -f $(shell docker images  -f "dangling=true" -q)
+
 
 stop:
-	docker compose stop
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file .env stop
 
-clean:
-	-$(MAKE) down
-	docker container prune -f
-# @docker rm -f $$(docker ps -qa)
-# -docker volume rm $$(docker volume ls -q --filter=dangling=true)
-# -docker network rm $$(docker network ls -q --filter=dangling=true)
-
-rm-volume: clean
-	docker-compose down --volumes
-# docker volume rm $$(docker volume ls -q)
-
-.PHONY: all build up down clean rm-volume
+.PHONY: all up build clean stop

@@ -1,8 +1,9 @@
 asgiref==3.7.2
 channels==4.0.0
+channels_redis
 crispy-bootstrap4==2023.1
 daphne==4.0.0
-Django==4.2.8
+Django==5.0.6
 django-crispy-forms==2.1
 djangorestframework==3.14.0
 pillow==10.2.0
@@ -14,3 +15,9 @@ requests==2.31.0
 python-dotenv==1.0.0
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
+python-environ
+django-ratelimit
+django_redis
+django-mobile-detect
+django-admin-interface
+Faker

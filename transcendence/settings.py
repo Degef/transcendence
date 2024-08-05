@@ -14,22 +14,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d!1zg!gabeifdp5b*s=x!eg9c@$5pg5759nhfnx=fh_^i9#i+h'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', os.environ.get('IP_ADDRESS'), "*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('IP_ADDRESS'), "*"]
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + os.environ.get('IP_ADDRESS')]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost",
+    "https://127.0.0.1",
+    "https://" + os.environ.get('IP_ADDRESS'),
+]
 
 # Application definition
 
 INSTALLED_APPS = [
-	'chat',
-    "daphne",
+    'daphne',
 	'channels',
+    'django_ratelimit',
+	'mobiledetect',
 	'rest_framework',
-    'pong.apps.PongConfig',
-    'users.apps.UsersConfig',
+    'apps.pong.apps.PongConfig',
+    'apps.users.apps.UsersConfig',
+	'apps.chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +53,7 @@ INSTALLED_APPS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
+	'mobiledetect.middleware.DetectMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,7 +68,7 @@ ROOT_URLCONF = 'transcendence.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['Templates', 'Templates/pong', 'Templates/users', 'Templates/chat'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,7 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+
+TIME_ZONE = 'Asia/Dubai'
 
 USE_I18N = True
 
@@ -129,12 +142,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = [BASE_DIR / 'chat/static']
+# STATICFILES_DIRS = [BASE_DIR / 'static']
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -143,13 +157,42 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL  = 'login'
-# LOGIN_URL = 'two_factor:login'
 
-CHANNEL_LAYERS = { 
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }   
+
+CACHE_HOST = os.environ.get('CACHE_HOST')
+CACHE_PORT = os.environ.get('CACHE_PORT', '6379')
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(CACHE_HOST, int(CACHE_PORT))],
+        },
+    },
 }
+
 
 # Configure the root logger to capture prints
 logging.basicConfig(level=logging.DEBUG)
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{os.getenv("CACHE_HOST", "127.0.0.1")}:{os.getenv("CACHE_PORT", "6379")}/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+RATELIMIT_CACHE = 'default'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_SSL_REDIRECT = True
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 * 2

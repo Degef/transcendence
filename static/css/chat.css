@@ -1,0 +1,251 @@
+
+.chat__container {
+	padding: 20px 24px;
+	background-color: var(--color-button-teritiary);
+	border-radius: 12px;
+}
+
+.chat {
+	height: 60vh;
+	overflow-y: scroll;
+	scrollbar-width: none;
+}
+
+.sidebar {
+	width: 25%;
+	height: 71vh;
+	overflow-y: scroll;
+}
+
+.contacts {
+	flex-grow: 1;
+	padding: 12px 0;
+	overflow-y: scroll;
+}
+
+.search-bar {
+	border-radius: 24px;
+	background-color: var(--color-input-background);
+	gap: 12px;
+	padding: 12px 16px;
+	margin: 0 16px;
+}
+
+.search-icon {
+	color: #9ea3b8;
+}
+
+.search-input {
+	background: transparent;
+	border: none;
+	color: #9ea3b8;
+	outline: none;
+	width: 100%;
+}
+
+.contact-details {
+	gap: 16px;
+}
+
+.contact-avatar {
+	width: 56px;
+	border-radius: 50%;
+}
+
+.chat-window {
+	background-color: var(--color-card-background);
+	border-radius: 12px;
+	padding: 16px;
+	margin: 0 auto;
+}
+
+.chat-header {
+	color: var(--color-text-primary);
+	font-size: 24px;
+	font-weight: 700;
+	padding-bottom: 16px;
+	border-bottom: 1px solid var(--color-text-accent);
+	margin-bottom: 16px;
+	text-align: center;
+}
+
+.message-container {
+	gap: 12px;
+	padding: 12px;
+}
+
+.message-container.received-message {
+	justify-content: flex-start;
+}
+
+.message-container.sent-message {
+	justify-content: flex-end;
+}
+
+.message-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+
+.message-content {
+	max-width: 70%;
+	padding: 8px;
+	border-radius: 12px;
+}
+
+.message-author {
+	color: #9ea3b8;
+	font-size: 14px;
+	margin-bottom: 4px;
+}
+
+.message-text {
+	background-color: var(--color-message-received);
+	border-radius: 12px;
+	color: var(--color-text-primary);
+	padding: 12px 16px;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+.sent-message .message-content {
+	align-items: flex-end;
+}
+
+.sent-message .message-text {
+	background-color: var(--color-message-sent);
+}
+
+.input-container {
+	padding: 16px;
+	border-top: 1px solid var(--color-hover);
+}
+
+.input-wrapper {
+	width: 100%;
+	background-color: var(--color-input-background);
+	border-radius: 24px;
+	overflow: hidden;
+}
+
+.message-input {
+	flex-grow: 1;
+	padding: 12px 16px;
+	background-color: var(--color-input-background);
+	border: none;
+	outline: none;
+	border-radius: 24px;
+	padding-right: 40px;
+}
+
+.message-input:focus {
+	border-color: var(--color-button-primary);
+}
+
+.message-input::placeholder {
+	color: var(--color-text-accent);
+}
+
+.send-button {
+	background-color: var(--color-button-primary) !important;
+	border: none;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+}
+
+
+
+.dropdown-menu {
+	display: none;
+	position: absolute;
+	background-color: var(--color-input-background);
+	border: 1px solid var(--color-text-accent);
+	border-radius: 8px;
+	z-index: 1000;
+	width: 150px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu.show {
+	display: block;
+}
+
+.dropdown-menu .list-group-item {
+	color: var(--color-text-primary);
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 10px 20px;
+}
+
+.dropdown-menu .list-group-item:hover {
+	background-color: var(--color-hover);
+}
+
+
+
+
+
+
+
+.user-list .list-group-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 15px;
+	border: none;
+	background-color: transparent;
+	transition: background-color 0.3s;
+	color: var(--color-text-primary);
+}
+
+.user-list .list-group-item:hover,
+.user-list .list-group-item.active {
+	background-color: var(--color-hover);
+}
+
+.contact-profile-image {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	margin-right: 12px;
+}
+
+
+.contact-name {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--color-text-primary);
+}
+
+.contact-action {
+	color: var(--color-text-accent);
+	cursor: pointer;
+	margin-left: auto;
+}
+
+.contact-details {
+    position: relative;
+}
+
+.contact-profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.chat__status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid var(--color-text-primary);
+}

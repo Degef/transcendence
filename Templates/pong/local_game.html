@@ -1,0 +1,47 @@
+<div id="tournament" class="canvas_container" class="container">
+	<div id="playerNames" class="row player-names-container d-flex align-items-center">
+		<div id="player1Name" class="col player-name d-flex justify-content-start">
+			{{player1}}
+		</div>
+		<div id="player2Name" class="col player-name d-flex justify-content-end">
+			{{player2}}
+		</div>
+	</div>
+	<div class="row justify-content-md-center position-relative">
+		<div class="col game-canvas-container">
+			<canvas id="gameCanvas" class="game-canva-local" width="750" height="440"></canvas>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col button-container">
+			<button id="start_play_computer" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="start_local_game()">Start</button> <br>
+			<button id="restart_btn" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="start_local_game()">Restart</button> <br>
+			<button id="quit_game" class="btn btn-outline-light mt-3 btn-custom" type="submit" onclick="goBack()">Quit</button> <br>
+		</div>
+	</div>
+	<div id="customizeDialog" class="customize-dialog">
+		<div class="dialog-content">
+		  <p>Do you want to customize the player names?</p>
+		  <button id="yesButton" class="custom-button">Yes</button>
+		  <button id="noButton" class="btn btn-secondary rounded-pill">No</button>
+		</div>
+	</div>
+	<div id="customizeForm" class="customize-form" style="display: none;">
+		<div id="custom-form" class="mb-3 square-box">
+			<span class="pheader" > 
+				<h2">Customize Player's Name <br></h2>
+			</span>
+		  <form id="playerNamesForm">
+			<div class="p-form input-container">
+				<input type="text" id="player1Input" class="playerName" name="player1Input" maxlength="14" placeholder="Player1" required>
+				<span id="player1Feedback" class="feedback"></span>
+			</div>
+			<div class="p-form input-container">
+				<input type="text" id="player2Input" class="playerName" name="player2Input" maxlength="14" placeholder="Player2" required>
+				<span id="player2Feedback" class="feedback"></span>
+			</div>
+			<div id="saveButton" class="btn btn-primary">Save</div>
+		  </form>
+		</div>
+	  </div>
+</div>
