@@ -9,32 +9,48 @@ const player2Element = document.getElementById('player2Name');
 const player1_name  = player1Element ? player1Element.textContent.trim() : 'Player1';
 const player2_name = player2Element ? player2Element.textContent.trim() : 'Player2';
 
+
+/**
+ * Retrieves the trimmed text content of an HTML element by its ID.
+ *
+ * @param {string} id - The ID of the HTML element.
+ * @returns {string} - The trimmed text content of the element. Returns an empty string if the element is not found.
+ */
+
 function getTextContentById(id) {
     const element = document.getElementById(id);
     return element ? element.textContent.trim() : '';
 }
 
+/**
+ * Gets the score display for a given player ID.
+ *
+ * @param {string} playerid - The player ID ('p1' for player 1, 'p2' for player 2).
+ * @returns {number} - The score of the player. Returns the score of player 1 if the player ID is 'p1', otherwise returns the score of player 2.
+ */
 function getScoresDisplay(playerid) {
     return (playerid === 'p1' ? p1score : p2score);
 }
 
+
+/**
+ * Updates the scores display for player 1 and player 2.
+ *
+ * @param {number} player1Score - The new score for player 1.
+ * @param {number} player2Score - The new score for player 2.
+ */
 function updateScoresDisplay(player1Score, player2Score) {
     p1score = player1Score;
     p2score = player2Score;
 }
 
-// function generateRandDir() {
-//     const randDir = Math.random() < 0.5;
-
-//     if (randDir) {
-//         // Generate a random number greater than 3
-//         return Math.random() * (10 - 3) + 3;
-//     } else {
-//         // Generate a random number less than -3
-//         return Math.random() * (10 - 3) - 10;
-//     }
-// }
-
+/**
+ * Generates a random direction vector with a magnitude of 9.
+ * The angle is randomly chosen from specified ranges to ensure the vector
+ * direction falls within specific angular sectors.
+ *
+ * @returns {{x: number, y: number}} - An object containing the x and y components of the direction vector.
+ */
 function generateRandDir() {
     // Define the angle ranges in degrees
     const angleRanges = [
@@ -49,7 +65,6 @@ function generateRandDir() {
 
     // Generate a random angle within the selected range and convert to radians
     const angle = (Math.random() * (selectedRange[1] - selectedRange[0]) + selectedRange[0]) * (Math.PI / 180);
-
     
     // Calculate the x and y components based on the angle
     const x = 9 * Math.cos(angle);
@@ -118,11 +133,8 @@ function render1(data3) {
 }
 
 function gameLoop1(data3) {
-    if (localStorage.getItem('theme') === 'light') {
-		game_color = '#1A1F33';
-	} else {
-		game_color = "WHITE";
-	}
+    game_color = (localStorage.getItem('theme') === 'light') ? '#1A1F33' : "WHITE";
+
 	data3['ball'].color = game_color;
 	data3['player1'].color = game_color;
 	data3['player2'].color = game_color;
@@ -133,8 +145,8 @@ function gameLoop1(data3) {
             drawText2(data3['ctx'], getTextContentById('player1Name') + " Won",  data3['canvas'].width/6, data3['canvas'].height/2, "#333");
             drawText2(data3['ctx'], getTextContentById('player2Name') + " Lost",  data3['canvas'].width/1.5, data3['canvas'].height/2, "#333");
         } else {
-            drawText2(data3['ctx'], getTextContentById('player1Name') + " Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#444');
-            drawText2(data3['ctx'], getTextContentById('player2Name') + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#444');
+            drawText2(data3['ctx'], getTextContentById('player1Name') + " Lost", data3['canvas'].width/6, data3['canvas'].height/2, '#1A1F33');
+            drawText2(data3['ctx'], getTextContentById('player2Name') + " Won", data3['canvas'].width/1.5, data3['canvas'].height/2, '#1A1F33');
         }
         game_in_progress = false;
         updateScoresDisplay(data3['player1'].score, data3['player2'].score);
@@ -144,11 +156,8 @@ function gameLoop1(data3) {
         data3['player1'].y = ( data3['canvas'].height - 100)/2;
         // update1(data3);
         // render1(data3);
-        
 
         displayWinnerModal(winner, player2);
-        // displayLoserModal();
-        // displayWinM();
 
         setTimeout(() => {
             if (isIntournament) {
@@ -162,7 +171,6 @@ function gameLoop1(data3) {
         clearInterval(intervalId);
         game_in_progress = false;
         terminate_game = false;
-        // start_challenge_checking();
         return;
     }
     update1(data3);
@@ -173,13 +181,8 @@ function start_local_game() {
     hideBtn('start_play_computer');
     hideBtn('restart_btn');
     displayBtn('quit_game');
-    if (game_in_progress) {
-        return;
-    }
-    // if (challengeInterval != null) {
-    //     clearInterval(challengeInterval);
-    //     challengeInterval = null;
-    // }
+    if (game_in_progress) return;
+
     game_in_progress = true;
     
     if (data3 == null) {
@@ -200,22 +203,14 @@ function start_local_game() {
     data3['ctx'] = data3['canvas'].getContext('2d');
     data3['paddle_speed'] = 10;
 
-    if (localStorage.getItem('theme') === 'light') {
-		game_color = '#1A1F33';
-	} else {
-        game_color = 'WHITE';
-    }
+    game_color = (localStorage.getItem('theme') === 'light') ? '#1A1F33' : "WHITE";
     bdir = generateRandDir();
     data3['ball'] = {
         x : data3['canvas'].width/2,
         y : data3['canvas'].height/2,
         radius : 10,
-        // velocityX : generateRandDir(),
-        // velocityY : generateRandDir(),
         velocityX : bdir.x,
         velocityY : bdir.y,
-        // velocityX : 7,
-        // velocityY : 0,
         speed : 9,
         color : game_color
     };
@@ -239,8 +234,6 @@ function start_local_game() {
         color : game_color
     }
 
-    // canvas.addEventListener("mousemove", getMousePos);
-    // data3['canvas'].addEventListener("mousemove", getMousePos(data3['canvas'], data3['user']));
     window.addEventListener('keydown', (e) => {
         if (e.key === 'w') {
             data3['player1'].speedY = -data3['paddle_speed'];            
@@ -270,9 +263,6 @@ function start_local_game() {
         }, 1000/50);
         displayBtn('quit_game');
     }, 5000);
-    // intervalId = setInterval(function(){
-    //     gameLoop1(data3);
-    // }, 1000/50);
 }
 
 

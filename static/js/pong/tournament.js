@@ -38,7 +38,6 @@ function getBtnContainer(buttonId, label, clickHandler, ...params) {
 					clickHandler.apply(null, params);
 				});
 			} else {
-				// Call clickHandler without params
 				btn.addEventListener('click', clickHandler);
 			}
 		}
@@ -51,14 +50,16 @@ function getBtnContainer(buttonId, label, clickHandler, ...params) {
 	return buttonContainer;
 }
 
+/**
+ * Removes the specified button container element from the DOM if it is a valid `Element`.
+ * 
+ * @param {Element} buttonContainer - The button container element to be removed.
+ * @returns {void}
+ */
 function removeBtnContainer(buttonContainer) {
-	// Ensure buttonContainer is a valid element
-	if (!(buttonContainer instanceof Element)) {
-		return;
-	}
+	if (!(buttonContainer instanceof Element)) return;
 	buttonContainer.remove();
 }
-
 
 const startTrounBtn = getBtnContainer('startTour', 'Start Tournament', startFirstMatch, null);
 const backOnlineBtn = getBtnContainer('online_tourn', 'Back-to-Home', handleButtonClick, null);
@@ -68,8 +69,8 @@ let nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matc
 
 const tourWinnerModal = (winner) => {
 	const message = isOnlineTournament 
-        ? "You won this Tournament!" 
-        : `The winner of this Tournament is <span  class="winner-name">${winner}</span>`;
+		? "You won this Tournament!" 
+		: `The winner of this Tournament is <span  class="winner-name">${winner}</span>`;
 	modalHtml = ` 
 		<center> 
 			<div class="modal fade" id="m-result-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -147,7 +148,6 @@ const loserModal = () => {
 	return modalHtml;
 }
 
-
 /**
  * Generates the HTML for the winner of modal for the online game.
  * @returns {string} The HTML string for the winner modal.
@@ -174,7 +174,8 @@ const winM = () => {
 		</center> 
 	`;
 	return modalHtml;
-} 
+}
+
 {/* <img src="https://img.icons8.com/?size=100&id=VUt5dWfcfFzt&format=png&color=000000"> */}
 /**
  * Generates the HTML content for the winner modal that will be used for local games.
@@ -239,6 +240,32 @@ var matchModal = function getMatchModal(player1, player2) {
 	return modalHtml;
 } 
 
+/**
+ * Displays a modal with the provided content.
+ * Creates a modal container if it doesn't exist, sets its HTML content,
+ * initializes the Bootstrap modal, and shows it. The modal is hidden after a delay.
+ *
+ * @param {string} modalContent - HTML content for the modal.
+ * @param {number} [delay=5000] - Time in milliseconds to hide the modal after showing. Defaults to 5000ms.
+ */
+function displayAnyModal(modalContent, delay = 5000) {
+	let modalContainer = document.getElementById('modal-container');
+	if (!modalContainer) {
+		modalContainer = document.createElement('div');
+		modalContainer.id = 'modal-container';
+		document.body.appendChild(modalContainer);
+	}
+	// Insert the modal HTML into the container
+	modalContainer.innerHTML = modalContent;
+	const myModal = new bootstrap.Modal('#m-result-modal', { 
+		backdrop: 'static',
+		keyboard: false
+	});
+	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
+	modal.show();
+	// animateWinnerImage();
+	hideModalAfterDelay(myModal, delay);
+}
 
 /**
  * Appends an element to a container specified by its class name.
@@ -257,172 +284,41 @@ function appendToContainer(toBeAppended, classname) {
 }
 
 /**
- * Displays a winner modal with given winner and loser information.
- * Creates a modal container if not already present in the DOM,
- * inserts the modal HTML into it, and shows the modal using Bootstrap.
- * Adds event listeners to hide the modal when clicked outside and prevent hiding when clicked inside.
- * 
- * @param {string} winner - The winner's name or information.
- * @param {string} loser - The loser's name or information.
- * @return {void}
+ * Displays the winner modal with the specified winner.
+ * @param {string} winner - The winner's name or identifier.
+ * @param {string} loser - The loser's name or identifier (not used in this function).
  */
-function displayWinnerModal(winner, loser) {
-	let modalContainer = document.getElementById('modal-container');
-	if (!modalContainer) {
-		modalContainer = document.createElement('div');
-		modalContainer.id = 'modal-container';
-		document.body.appendChild(modalContainer);
-	}
-	// Insert the modal HTML into the container
-	modalContainer.innerHTML = winnerModal(winner);
-	const myModal = new bootstrap.Modal('#m-result-modal', { 
-		backdrop: 'static',
-		keyboard: false
-	});
-	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
-	modal.show();
-	// animateWinnerImage();
-	hideModalAfterDelay(myModal, 5000);
-	// setTimeout(() => {
-	//     myModal.hide();
-	// }, 5000);
-
-	// function hideModalOnClickOutsideTwo(event) {
-	//     if (!modalContainer.contains(event.target)) {
-	//         myModal.hide();
-	//         document.removeEventListener('click', hideModalOnClickOutsideTwo);
-	//     }
-	// }
-
-	// document.addEventListener('click', hideModalOnClickOutsideTwo);
-	// modalContainer.addEventListener('click', function(event) {
-	//     event.stopPropagation();
-	// });
-}
-
-
-
-function displayLoserModal() {
-	let modalContainer = document.getElementById('modal-container');
-	if (!modalContainer) {
-		modalContainer = document.createElement('div');
-		modalContainer.id = 'modal-container';
-		document.body.appendChild(modalContainer);
-	}
-
-	// Insert the modal HTML into the container
-	modalContainer.innerHTML = loserModal();
-	const myModal = new bootstrap.Modal('#m-result-modal', { 
-		backdrop: 'static',
-		keyboard: false
-	});
-	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
-	modal.show();
-	hideModalAfterDelay(myModal, 5000);
-	// setTimeout(() => {
-	//     myModal.hide();
-	// }, 5000);
-}
-
-function displayWinM() {
-	let modalContainer = document.getElementById('modal-container');
-	if (!modalContainer) {
-		modalContainer = document.createElement('div');
-		modalContainer.id = 'modal-container';
-		document.body.appendChild(modalContainer);
-	}
-
-	// Insert the modal HTML into the container
-	modalContainer.innerHTML = winM();
-	const myModal = new bootstrap.Modal('#m-result-modal', { 
-		backdrop: 'static',
-		keyboard: false
-	});
-	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
-	modal.show();
-	hideModalAfterDelay(myModal, 5000);
-	// setTimeout(() => {
-	//     myModal.hide();
-	// }, 5000);
-}
-
-function displayTourWinM(winner) {
-	let modalContainer = document.getElementById('modal-container');
-	if (!modalContainer) {
-		modalContainer = document.createElement('div');
-		modalContainer.id = 'modal-container';
-		document.body.appendChild(modalContainer);
-	}
-
-	// Insert the modal HTML into the container
-	modalContainer.innerHTML = tourWinnerModal(winner);
-	const myModal = new bootstrap.Modal('#m-result-modal', { 
-		backdrop: 'static',
-		keyboard: false
-	});
-	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
-	modal.show();
-	hideModalAfterDelay(myModal, 5000);
-	// setTimeout(() => {
-	//     myModal.hide();
-	// }, 5000);
-}
-
-function displayTourLosersM(winner) {
-	let modalContainer = document.getElementById('modal-container');
-	if (!modalContainer) {
-		modalContainer = document.createElement('div');
-		modalContainer.id = 'modal-container';
-		document.body.appendChild(modalContainer);
-	}
-
-	// Insert the modal HTML into the container
-	modalContainer.innerHTML = tourLosersModal(winner);
-	const myModal = new bootstrap.Modal('#m-result-modal', { 
-		backdrop: 'static',
-		keyboard: false
-	});
-	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
-	modal.show();
-	hideModalAfterDelay(myModal, 5000);
-	// setTimeout(() => {
-	//     myModal.hide();
-	// }, 5000);
-}
-
+const displayWinnerModal = (winner, loser) => displayAnyModal(winnerModal(winner));
 
 /**
- * Displays a match modal with the provided player names.
- * Creates a modal container if it doesn't already exist, inserts the modal HTML, and shows the modal.
- * Adds an event listener to hide the modal when clicking outside of it.
- *
- * @param {string} player1 - The name of the first player.
- * @param {string} player2 - The name of the second player.
- * @return {void}
+ * Displays the loser modal, given that the current player is the loser.
  */
-function displayMatchModal(player1, player2) {
-  
-	let modalContainer = document.getElementById('modal-container');
-	if (!modalContainer) {
-		modalContainer = document.createElement('div');
-		modalContainer.id = 'modal-container';
-		document.body.appendChild(modalContainer);
-	}
+const displayLoserModal = () => displayAnyModal(loserModal());
 
-	// Insert the modal HTML into the container
-	modalContainer.innerHTML = matchModal(player1, player2);
-	const myModal = new bootstrap.Modal('#m-result-modal', { 
-		backdrop: 'static',
-		keyboard: false
-	});
-	const modal = bootstrap.Modal.getOrCreateInstance('#m-result-modal'); 
-	modal.show();
-	hideModalAfterDelay(modal, 4000);
-	// Function to hide modal
-	// setTimeout(() => {
-	//     myModal.hide();
-	// }, 4000);
-}
+/**
+ * Displays the win modal, given that the current player is the winner.
+ */
+const displayWinM = () => displayAnyModal(winM());
+
+/**
+ * Displays the tournament winner modal with the specified winner.
+ * @param {string} winner - The winner's name or identifier.
+ */
+const displayTourWinM = winner => displayAnyModal(tourWinnerModal(winner));
+
+/**
+ * Displays the tournament losers modal with the specified winner.
+ * @param {string} winner - The winner's name or identifier.
+ */
+const displayTourLosersM = winner => displayAnyModal(tourLosersModal(winner));
+
+/**
+ * Displays the match modal for the specified players, informing the player about play the game.
+ * @param {string} player1 - The name or identifier of player 1.
+ * @param {string} player2 - The name or identifier of player 2.
+ */
+const displayMatchModal = (player1, player2) => displayAnyModal(matchModal(player1, player2), 4000);
+
 
 /**
  * Shuffles an array using the Fisher-Yates (Knuth) shuffle algorithm.
@@ -478,6 +374,11 @@ function setupTournament(playerCount) {
 	attachEventListner();
 }
 
+/**
+ * Attaches an event listener to the 'playerName' input field to detect the 'Enter' key press.
+ * On 'Enter', it triggers a click event on the 'submitPlayer' button and prevents the default form submission.
+ * Additionally, sets focus to the 'playerName' input field on page load.
+ */
 function attachEventListner() {
 	document.getElementById('playerName').addEventListener('keypress', function(event) {
 		if (event.key === 'Enter') {
@@ -488,14 +389,17 @@ function attachEventListner() {
 	document.getElementById('playerName').focus();
 }
 
-function customTrim(input) {
-	return input.replace(/^[\s'"]+|[\s'"]+$/g, '');
-}
+/**
+ * Removes leading and trailing whitespace, single quotes, and double quotes from the input string.
+ *
+ * @param {string} input - The string to be trimmed.
+ * @returns {string} - The trimmed string.
+ */
+const customTrim = input => input.replace(/^[\s'"]+|[\s'"]+$/g, '');
 
 /**
- * Validates a player name input string based on several criteria.
- * Checks if the input is empty, too long, already taken, or does not match the required pattern.
- * Alerts the user with an appropriate message if any validation fails.
+ * Validates a player name. Checks if the input is empty, too long, already taken, or does not 
+ * match the required pattern.Alerts the user with an appropriate message if any validation fails.
  *
  * @param {string} input - The player name to validate.
  * @return {boolean} - Returns true if the input is valid, otherwise false.
@@ -503,30 +407,11 @@ function customTrim(input) {
 function validateInputString(input) {
 
 	const regex = /^[a-zA-Z]\S*$/;
-	
-	if (!input || input == "") {
-		alert('Player name cannot be empty.');
-		return false;
-	}
-	if (input.length > 10) {
-		alert('Player name too long.');
-		return false;
-	}
-	if (players.includes(input)) {
-		alert(`The name "${input}" is already taken. Please choose another.`);
-
-		// showAlert("The name " + input + " is already taken. Please choose another." , 'danger');
-		return false;
-	}
-	if (regex.test(input)) {
-		return true;
-	} else {
-		alert('Invalid Player Name');
-		return false;
-	}
+	if (!input || input === "") return alert('Player name cannot be empty.') || false;
+	if (input.length > 10) return alert('Player name too long.') || false;
+	if (players.includes(input)) return alert(`The name "${input}" is already taken. Please choose another.`) || false;
+	return regex.test(input) ? true : (alert('Invalid Player Name') || false);
 }
-
-
 
 /**
  * Handles the submission of player names during tournament setup.
@@ -540,9 +425,7 @@ function validateInputString(input) {
 function submitPlayerName(event) {
 	if (event.type === 'click') {
 		const playerNameInput = document.getElementById('playerName');
-		// const playerName = playerNameInput.value.trim();
 		const playerName = customTrim(playerNameInput.value).toLowerCase();
-		
 
 		if (validateInputString(playerName)) {
 			players.push(playerName);
@@ -561,7 +444,6 @@ function submitPlayerName(event) {
 	}
 }
 
-
 function getCookie(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
@@ -576,7 +458,6 @@ function getCookie(name) {
 	}
 	return cookieValue;
 }
-
 
 /**
  * Organizes the tournament by sending the player list to the server and updating the tournament bracket.
@@ -597,15 +478,11 @@ async function organizeTournament(players) {
 			},
 			body: JSON.stringify({ players: players })
 		});
-		// Check if the response is OK (status code 200-299)
 		if (!response.ok) {
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
-		// Try to parse the JSON response
 		const parsedjson = await response.json();
-
-		// Ensure there's a details-section element
 		const tournElementtmp =  document.getElementById("inputPlayers");
 		if (tournElementtmp.length === 0) {
 			throw new Error('No element with class "details-section" found');
@@ -622,24 +499,30 @@ async function organizeTournament(players) {
 	}
 }
 
-
-
+/**
+ * Starts the first match in the tournament by finding the first match element,
+ * removing the start tournament button, and calling `startMatch` on the matchelement players.
+ */
 function startFirstMatch() {
-	const firstMatchElement = document.querySelector('.round-one .matches .matchup');
 	matchElement = document.querySelector('.round-one .matchup');
 	if (matchElement) {
 		player1 = matchElement.querySelector('.team-top').innerText;
 		player2 = matchElement.querySelector('.team-bottom').innerText;
-		const matchId = matchElement.getAttribute('.matchup');
 		removeBtnContainer(startTrounBtn);
-		startMatch(player1, player2, matchElement);
+		startMatch(player1, player2);
 	}
 }
 
+/**
+ * Updates the scores for the players in the given match element, handles updating
+ * the next round and starting the next match, or displays the winner in a tournament.
+ * 
+ * @param {Element} matchElement - The DOM element representing the match.
+ * @param {number} player1_score - The score for player 1.
+ * @param {number} player2_score - The score for player 2.
+ */
 function updateScores(matchElement, player1_score, player2_score) {
-	if (!matchElement) {
-        return;
-    }
+	if (!matchElement) return;
 	const player1ScoreInput = matchElement.querySelector('.team-top .score-input');
 	const player2ScoreInput = matchElement.querySelector('.team-bottom .score-input');
 	
@@ -650,14 +533,9 @@ function updateScores(matchElement, player1_score, player2_score) {
 	if (!matchElement.closest('.champion')) {
 		// Proceed with updating the next round and starting the next match
 		updateNextRound(matchElement);
-		if (isOnlineTournament)
-			return;
+		if (isOnlineTournament) return;
 		nextGameBtn = getBtnContainer('nextGame', 'Next Match', startNextMatch, matchElement);
 		appendToContainer(nextGameBtn, 'my-5.main-section');
-		
-		// setTimeout(() => {
-		//     startNextMatch(matchElement);
-		// }, 10000);
 	} else {
 		var player1_name = matchElement.querySelector(".team-top");
 		var player2_name = matchElement.querySelector(".team-bottom");
@@ -665,12 +543,7 @@ function updateScores(matchElement, player1_score, player2_score) {
 		winner = winner.textContent.trim();
 		if (isOnlineTournament) {
 			tourId = null; gameNum = null; gameRound = null; gameSide = null;
-			if (username === winner) {
-				displayTourWinM(winner);
-			}
-			else {
-				displayTourLosersM(winner);
-			}
+			(username === winner) ? displayTourWinM(winner) : displayTourLosersM(winner);
 			isOnlineTournament = false;
 		} else {
 			displayTourWinM(winner);
@@ -679,8 +552,14 @@ function updateScores(matchElement, player1_score, player2_score) {
 	}
 }
 
-
+/**
+ * Updates the bracket for the next match with the winner from the current match.
+ * 
+ * @param {Element} matchElement - The DOM element representing the current match.
+ * @param {string} winner - The name of the winning player.
+ */
 function updateBracket(matchElement, winner) {
+	console.log("I am updating from here")
 	const nextMatchElement = getNextMatchElement(matchElement);
 	if (nextMatchElement) {
 		const playerSpots = nextMatchElement.querySelectorAll('.team');
@@ -693,17 +572,30 @@ function updateBracket(matchElement, winner) {
 	}
 }
 
+/**
+ * Starts the next match in the same round, if available, by finding the next match element,
+ * removing the 'Next Match' button, and initializing the match with the players.
+ * 
+ * @param {Element} currentMatchElement - The DOM element representing the current match.
+ */
 function startNextMatch(currentMatchElement) {
-	// Find the next match in the same round
 	matchElement = getNextMatchInSameRound(currentMatchElement);
 	if (matchElement) {
 		player1 = matchElement.querySelector('.team-top').innerText.trim();
 		player2 = matchElement.querySelector('.team-bottom').innerText.trim();
 		removeBtnContainer(nextGameBtn);
-		startMatch(player1, player2, matchElement);
+		startMatch(player1, player2);
 	}
 }
 
+/**
+ * Finds and returns the next match element in the tournament bracket.
+ * The function first check the matches in the sameRound (on both sides of the bracket) as currentMatchElement. 
+ * if unable to find any next match in the same round it will jump to the next round(including the final championship) and get the first marchup
+ * 
+ * @param {Element} currentMatchElement - The DOM element representing the current match.
+ * @returns {Element|null} The DOM element representing the next match, or null if not found.
+ */
 function getNextMatchInSameRound(currentMatchElement) {
 	// Find the current round and current split
 	const currentSplit = currentMatchElement.closest('.split');
@@ -716,32 +608,20 @@ function getNextMatchInSameRound(currentMatchElement) {
 		return match.closest('.round') === currentRound;
 	});
 
-	// Locate the index of the current match within the current split
 	const currentIndex = allMatchesInCurrentSplit.indexOf(currentMatchElement);
-	if (currentIndex === -1) {
-		return null;
-	}
+	if (currentIndex === -1) return null;
+	if (currentIndex + 1 < allMatchesInCurrentSplit.length) return allMatchesInCurrentSplit[currentIndex + 1];
 
-	// Check for the next match in the same split
-	if (currentIndex + 1 < allMatchesInCurrentSplit.length) {
-		return allMatchesInCurrentSplit[currentIndex + 1];
-	}
-
-	// If no more matches in the current split, check the other split within the same round
 	let otherSplit = null;
-
 	if (currentSplit.classList.contains('split-one')) {
 		otherSplit = currentRound.closest('.custom-container').querySelector('.split-two');
 	}
-
 	if (otherSplit) {
 		const otherSplitMatches = Array.from(otherSplit.querySelectorAll('.round .matchup'));
 		const otherRoundMatches = otherSplitMatches.filter(match => {
 			return match.closest('.round').classList.toString() === currentRound.classList.toString();
 		});
-		if (otherRoundMatches.length > 0) {
-			return otherRoundMatches[0];
-		}
+		if (otherRoundMatches.length > 0) return otherRoundMatches[0];
 	}
 
 	// If no more matches in the current round, find the next round
@@ -764,9 +644,7 @@ function getNextMatchInSameRound(currentMatchElement) {
 	// If next round is found, get the first match of that round
 	if (nextRound) {
 		const nextRoundMatches = Array.from(nextRound.querySelectorAll('.matchup'));
-		if (nextRoundMatches.length > 0) {
-			return nextRoundMatches[0];
-		}
+		if (nextRoundMatches.length > 0) return nextRoundMatches[0];
 	}
 
 	// If next round is not found, check for the final championship round
@@ -774,92 +652,91 @@ function getNextMatchInSameRound(currentMatchElement) {
 	const finalRound = container.querySelector('.champion .final');
 	if (finalRound) {
 		const finalRoundMatches = Array.from(finalRound.querySelectorAll('.matchup'));
-		if (finalRoundMatches.length > 0) {
-			return finalRoundMatches[0];
-		}
+		if (finalRoundMatches.length > 0) return finalRoundMatches[0];
 	}
 
 	// No next match found
 	return null;
 }
 
-
-
-
-
+/**
+ * Retrieves the next match element in the tournament bracket.
+ * 
+ * @param {Element} currentMatchElement - The current match element.
+ * @returns {Element|null} - The next match element or null if not found.
+ */
 function getNextMatchElement(currentMatchElement) {
-	// Check if we are in the championship round
-	const currentSplit = currentMatchElement.closest('.split');
 	let nextMatchElement = null;
+	const currentSplit = currentMatchElement.closest('.split');
 
 	if (currentSplit.nextElementSibling) {
-		// Check for the next match in the same split (next round)
 		nextMatchElement = currentSplit.nextElementSibling.querySelector('.matches .matchup');
 	} else {
-		// Move to the championship if there is no next split
 		const championshipMatchElement = document.querySelector('.champion .matches .matchup');
-		if (championshipMatchElement) {
-			nextMatchElement = championshipMatchElement;
-		}
+		nextMatchElement = championshipMatchElement || nextMatchElement;
 	}
-	
 	return nextMatchElement;
 }
 
+/**
+ * Updates the next round in the tournament based on the current matchup results.
+ * It determines the winner and loser from the current matchup results and updates the next round accordingly.
+ * 
+ * @param {Element} currentMatchup - The current matchup element.
+ */
 function updateNextRound(currentMatchup) {
-
-  // Get the teams and scores for the current matchup
   var teamTop = currentMatchup.querySelector(".team-top");
   var teamBottom = currentMatchup.querySelector(".team-bottom");
   var scoreTop = parseFloat(teamTop.querySelector(".score-input").value);
   var scoreBottom = parseFloat(teamBottom.querySelector(".score-input").value);
 
-  // Determine the winner and update the next round
   if (!isNaN(scoreTop) && !isNaN(scoreBottom)) {
 	var winner = scoreTop > scoreBottom ? teamTop : teamBottom;
 	var loser = scoreTop > scoreBottom ? teamBottom : teamTop;
-
 	updateNextMatchup(winner, loser);
   }
 }
 
+
+/**
+ * Updates the match cell with the winner's information.
+ * Clears the existing cell content and adds the winner's image, name, and score input.
+ * 
+ * @param {Element} nextCell - The cell element to be updated.
+ * @param {Element} winnerName - The winner's name element.
+ * @param {Element} winnerImg - The winner's image element.
+ * @param {number} winnerScore - The winner's score.
+ */
 function updateMatchCell(nextCell, winnerName, winnerImg, winnerScore) {
 	nextCell.innerHTML = "";
 	nextCell.appendChild(winnerImg);
 	nextCell.appendChild(winnerName);
-	// nextCell.insertAdjacentHTML("beforeend", winnerName);
 	nextCell.insertAdjacentHTML("beforeend", `<input class="score-input" type="number" value="${winnerScore}" disabled>`);
 }
 
+/**
+ * Updates the next matchup with the winner's information.
+ * Finds the appropriate round and matchup, and updates the corresponding cell with the winner's details.
+ * 
+ * @param {Element} winner - The element representing the winning team/player.
+ * @param {Element} loser - The element representing the losing team/player.
+ */
 function updateNextMatchup(winner, loser) {
-	// Find the current round
 	var currentRound = winner.closest(".round");
-	
-	// Find the index of the current matchup within its round
 	var currentMatchupIndex = Array.from(currentRound.querySelectorAll(".matchup")).indexOf(winner.closest(".matchup"));
-
-	// Determine whether it's the left or right side
 	var isLeftSide = winner.closest(".split").classList.contains("split-one");
-
-	// Find the next round
 	var nextRound = isLeftSide ? currentRound.nextElementSibling : currentRound.previousElementSibling;
 	var winnerImg = winner.querySelector("img").cloneNode(true);
 	var winnerName = winner.querySelector(".player-name").cloneNode(true);
-	// var winnerName = winner.textContent.trim();
-		
 	var winnerScore = "";
 
-	// Check if the next round and matchup exist
 	if (nextRound) {
-		// Find the correct matchup in the next round based on the index
 		var nextMatchups = nextRound.querySelectorAll(".matchup");
 		var nextMatchupIndex = Math.floor(currentMatchupIndex / 2);
 		var nextMatchup = nextMatchups[nextMatchupIndex];
-		if (isOnlineTournament) {
-			updatedMatchup = nextMatchup;    
-		}
 
-		// Update the matchup with the winner and clear the loser
+		updateNextMatchup = isOnlineTournament ? nextMatchup: updateNextMatchup;
+	
 		if (nextMatchup) {
 			var nextTeamTop = nextMatchup.querySelector(".team-top");
 			var nextTeamBottom = nextMatchup.querySelector(".team-bottom");
@@ -877,11 +754,9 @@ function updateNextMatchup(winner, loser) {
 		var championshipMatchup = document.querySelector(".championship.matchup");
 		var championshipTeamTop = championshipMatchup.querySelector(".team-top");
 		var championshipTeamBottom = championshipMatchup.querySelector(".team-bottom");
-		if (isOnlineTournament) {
-			updatedMatchup = championshipMatchup;
-		}
 
-		// Set the championship teams' content and score inputs
+		updatedMatchup = isOnlineTournament ? championshipMatchup: updatedMatchup;
+
 		if (isLeftSide) {
 			updateMatchCell(championshipTeamTop, winnerName, winnerImg, winnerScore);
 		}
@@ -891,6 +766,9 @@ function updateNextMatchup(winner, loser) {
 	}
 }
 
+/**
+ * Handles actions when a game is completed.Updates the scores, removes the tournament section, and restores the main section content (bracket page).
+ */
 function onGameCompleted() {
 	const player1_score = getScoresDisplay('p1');
 	const player2_score = getScoresDisplay('p2');
@@ -902,25 +780,25 @@ function onGameCompleted() {
 	// Restore the original body content
 	mainSection.style.display = 'block';
 
-	// const player1_score = p1score; // Example score
-	// const player2_score = p2score; // Example score
-
 	isIntournament = false;
 	updateScores(matchElement, player1_score, player2_score);
 }
 
-
-async function startMatch(player1, player2, matchElement) {
-	// displayMatchModal(player1, player2);
+/**
+ * Starts a match by fetching the local game page from the server and updating the UI.
+ * 
+ * @param {string} player1 - The name of the first player.
+ * @param {string} player2 - The name of the second player.
+ */
+async function startMatch(player1, player2) {
 	mainSection = document.querySelector('.main-section');
 	const mainContainer = document.getElementById('main-container');
+
 	mainSection.style.display = 'none';
-	
 	// await new Promise(resolve => setTimeout(resolve, 1000));
 	const csrftoken = getCookie('csrftoken');
 
 	try {
-		// Make a request to the backend to get the local game page
 		const response = await fetch('/local_game/', {
 			method: 'POST',
 			headers: {
@@ -935,22 +813,13 @@ async function startMatch(player1, player2, matchElement) {
 		// Replace the entire body content with the fetched content
 		const parser = new DOMParser();
 		const parsedHtml = parser.parseFromString(html, 'text/html');
-
-		// Select the tournament section from the parsed HTML content
 		tournamentSection = parsedHtml.getElementById('tournament');
-		// Select and remove the buttons from the parsed HTML content
 		const restartButton = parsedHtml.getElementById('restart_btn');
 		const quitButton = parsedHtml.getElementById('quit_game');
 
-		if (restartButton && restartButton.parentNode) {
-			restartButton.parentNode.removeChild(restartButton);
-		}
-
-		if (quitButton && quitButton.parentNode) {
-			quitButton.parentNode.removeChild(quitButton);
-		}
-
-		// Append the tournament section before the footer
+		restartButton?.parentNode?.removeChild(restartButton); 
+		quitButton?.parentNode?.removeChild(quitButton);
+		
 		mainContainer.appendChild(tournamentSection);
 		const customizeDialog = document.getElementById('customizeDialog');
 		customizeDialog.style.display = 'none';
@@ -962,45 +831,30 @@ async function startMatch(player1, player2, matchElement) {
 
 /**
  * Applies the 'flex-mode' class to all elements with the class 'matchup' within the 'round-one' container.
- * It ensures that the elements exist and have the classList property before adding the class.
- * The function operates on a NodeList returned by querySelectorAll, which is iterated over safely.
  *
  * @return {void}
  */
 function changeRoundStyle() {
 	const roundOneMatchup = document.querySelectorAll('.round-one .matchup');
 	
-	// roundOneMatchup.classList.add('flex-mode');
-
-	// roundOneMatchup.forEach(matchup => {
-	// 	matchup.classList.add('flex-mode');
-	// });
-
 	if (roundOneMatchup && roundOneMatchup.length > 0) {
-        roundOneMatchup.forEach(matchup => {
-            if (matchup && matchup.classList) {
-                matchup.classList.add('flex-mode');
-            }
-        });
-    }
+		roundOneMatchup.forEach(matchup => {
+			if (matchup && matchup.classList) {
+				matchup.classList.add('flex-mode');
+			}
+		});
+	}
 
 }
 
-
 /**
  * Changes the style of elements with the class 'split' by adding the 'split-four-p' class.
- * It checks if the elements exist and if they have the classList property before attempting to modify them.
- * The operation is safely performed to avoid errors in case of missing or invalid elements.
  *
  * @return {void}
  */
 function changeSplitStyle() {
 	const splits = document.querySelectorAll('.split');
 
-	// roundOneMatchup.classList.add('flex-mode');
-	// splits.forEach(matchup => {
-	// 	matchup.classList.add('split-four-p');
-	// });
 	if (splits && Array.isArray(splits) && splits.length > 0) {
 		splits.forEach(matchup => {
 			if (matchup && matchup.classList) {
@@ -1010,8 +864,6 @@ function changeSplitStyle() {
 	}
 }
 
-
-
 /**
  * Displays the spinner overlay with a customizable message.
  * If a message is provided, it sets the message content and appends animated dots.
@@ -1020,7 +872,6 @@ function changeSplitStyle() {
  * @param {string} message - The message to display alongside the spinner.
  * @return {void}
  */
-
 function showSpinner(message) {
 	const bodySection = document.querySelector('.main-section');
 	if (bodySection) {
@@ -1039,16 +890,13 @@ function showSpinner(message) {
 	  `;
 	}
 	spinnerOverlay.style.display = 'flex';
-  }
+}
 
-
-  /**
+/**
  * Hides the spinner overlay by setting its display style to 'none'.
- * Logs a message to the console indicating the spinner is being hidden.
  *
  * @return {void}
  */
-
   function hideSpinner() {
 	const spinnerOverlay = document.getElementById('spinner-overlay');
 	const bodySection = document.querySelector('.main-section');
@@ -1057,8 +905,6 @@ function showSpinner(message) {
 	}
 	spinnerOverlay.style.display = 'none';
   }
-
-
 
 /**
  * Animates the winner image inside the modal by cycling through a set of images.
@@ -1083,11 +929,8 @@ function animateWinnerImage() {
 			winnerImage.style.opacity = 1; // Fade in
 		}, 1000); // Match the transition duration
 	}
-
 	setInterval(changeImage, 2000); // Change image every 3 seconds
 }
-
-
 
 /**
  * Hides the given modal after a specified wait time.

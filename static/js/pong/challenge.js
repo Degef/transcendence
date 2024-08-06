@@ -33,7 +33,6 @@ var decline_modal =  function getDeclineModal(message) {
 	return declineModal;
 }
 
-
 /**
  * Displays a declined modal with the provided message.
  * Appends the modal to the body only if the modal with id 'custom-decline' is not already present,
@@ -59,9 +58,6 @@ function showDeclinedModal(message) {
     }
     declineButton.addEventListener('click', hideModal);
 }
-
-
-
 
 async function getCurrentUserr() {
 	try {
@@ -173,7 +169,6 @@ async function initializeChallengeSocket() {
  *
  * @param {Function} onDecline - The function to call when declining the challenge.
  */
-
 function handleDeclineOnUnload(onDecline, challTabIdTmp) {
 	const modal = document.getElementById('custom-confirm');
 	if (modal && modal.style.display === "block") {
@@ -182,6 +177,9 @@ function handleDeclineOnUnload(onDecline, challTabIdTmp) {
 	}
 }
 
+/**
+ * hides the custom confirmation modal if the custom confirmation modal is visible.
+ */
 function hideChallengeModal() {
 	const modal = document.getElementById('custom-confirm');
 	if (modal && modal.style.display === "block") {
@@ -254,7 +252,6 @@ function customDeclineMsg(message) {
 
     modal.style.display = "block";
 }
-
 
 /**
  * Sends a challenge to a specified user.
