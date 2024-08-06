@@ -258,9 +258,8 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 
 	addToNotificationsList('You are invited to join the tournament game with ' + opponent);
 	match_room = matchRoom;
-	if (!isOnlineTournament) {
-		return ;
-	}
+	if (!isOnlineTournament) return ;
+
 	const modal = document.createElement('div');
 	mainSection = document.querySelector('.main-section');
 	modal.id = 'match-invitation-modal';
@@ -292,9 +291,6 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 	confirmButton.onclick = function() {
 		removeChildById("match-invitation-modal");
 		loadTrounametGame(challenger_username, challenged_username);
-		// setTimeout(() => {
-		// 	start_play_online_challenge(challenger_username, challenged_username);
-		// }, 4000);
 	};
 
 	modalContent.appendChild(modalMessage);
@@ -302,7 +298,6 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 	modal.appendChild(modalContent);
 	document.body.appendChild(modal);
 }
-
 
 /**
  * Handles the logic for progressing to the next round of the tournament.
@@ -313,8 +308,8 @@ function displayMatchInvitation(matchRoom, opponent, players) {
 
 function getNextRoundMatch(res) {
 	if (!isOnlineTournament) {
-		// displayWinnerModal(winner, winner);
-		onlineTourSocket.close();
+		onlineTourSocket?.readyState === WebSocket.OPEN && onlineTourSocket.close();
+		// onlineTourSocket.close();
 		return ;
 	}
 	var playernames = getPlayerNamesFromMatchup(updatedMatchup);
@@ -379,13 +374,11 @@ function update_bracket(res) {
 		// if (res.player1 === username || res.playe2 === username) {
 		// 	tourGame = false;
 		// }
-		// updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
 	} else {
 		// Set an observer to update the bracket when it becomes visible
 		const observer = new MutationObserver((mutationsList, observer) => {
 			for (const mutation of mutationsList) {
 				if (mutation.attributeName === 'style' && mainSection.style.display === 'block') {
-					// updateBracket(res.melement, res.player1, res.player2, res.score1, res.score2);
 					updating_bracket = true;
 					var matchups = document.querySelectorAll('#bracket .matchup');
 					matchupElement = findMatchup(res.player1, res.player2, matchups);
@@ -406,7 +399,6 @@ function update_bracket(res) {
 		if (mainSection) {
 			observer.observe(mainSection, { attributes: true });
 		}
-		// observer.observe(mainSection, { attributes: true });
 	}
 
 }
@@ -425,18 +417,13 @@ function update_bracket(res) {
 function displayBracket(res, tourSize) {
 	const parser = new DOMParser();
 	const parsedHtml = parser.parseFromString(res.html, 'text/html');
-	
-	
-	// Extract the new content to replace the details-section
-	
 	const newContent = parsedHtml.getElementById('bracket');
+
 	if (newContent) {
 		const detailsSection = document.querySelector('.main-section');
 		if (detailsSection) {
 			detailsSection.innerHTML = newContent.outerHTML;
-			if (tourSize == 4) {
-				changeRoundStyle();
-			}
+			if (tourSize == 4) changeRoundStyle();
 		} 
 		if (!mainSection) {
 			mainSection = document.querySelector('.main-section');
@@ -502,18 +489,14 @@ function onlineTournament(tourSize) {
 			appendToContainer(backOnlineBtn, 'my-5.main-section');
 		};
 		
-		// Send messages to the server
 		function sendMessage(type, tourSize) {
 			const message = { type: type, psize: tourSize };
 			socket.send(JSON.stringify(message));
 		}
 	} catch (error) {
 		showAlert('Error connecting to the server', 'danger');
-		// console.error('WebSocket initialization error:', error);
 	}
-
 }
-
 
 /**
  * Waits for the `updating_bracket` variable to become false.
@@ -529,7 +512,6 @@ function waitForBracketUpdate() {
         }, 100); // Check every 100ms
     });
 }
-
 
 /**
  * Cleans up the online tournament by closing the WebSocket connection and resetting relevant game data.
@@ -568,7 +550,6 @@ window.addEventListener('popstate', () => {
 });
 
 
-
 /**
  * Schedules the display of the match invitation after a specified delay.
  * If there is a previously scheduled invitation, it will be canceled.
@@ -597,9 +578,9 @@ function abortMatchInvitation(res) {
 	var matchups = document.querySelectorAll('#bracket .matchup');
 	matchupElement = findMatchup(challenger_username, challenged_username, matchups);
 	mainSection = document.querySelector('.main-section');
-	if (window.game_in_progress) {
-		destroyOpenWebsocket();
-	}
+
+	if (window.game_in_progress) destroyOpenWebsocket();
+
 	if (invitationTimeoutId !== null) {
 		clearTimeout(invitationTimeoutId);
 		invitationTimeoutId = null;
@@ -614,7 +595,6 @@ function abortMatchInvitation(res) {
 	}
 }
 
-
 /**
  * Checks if the current match element has updated scores.
  *
@@ -622,16 +602,12 @@ function abortMatchInvitation(res) {
  * @return {boolean} - Returns true if the scores are updated, false otherwise.
  */
 function hasUpdatedScores(matchElement) {
-	
 	const score1 = matchElement.querySelector('.score1');
 	const score2 = matchElement.querySelector('.score2');
-	if (!score1 || !score2)
-		return false;
-	
+
+	if (!score1 || !score2) return false;
 	return !isNaN(score1.innerText.trim()) && !isNaN(score2.innerText.trim());
 }
-
-
 
 /**
  * Checks if the current username is present in the match element.
@@ -641,39 +617,24 @@ function hasUpdatedScores(matchElement) {
  * @return {boolean} - Returns true if the username is found in the match element, false otherwise.
  */
 function isUsernameInMatch(matchElement, username) {
-	if (!matchElement || !username) {
-		return false; 
-	}
+	if (!matchElement || !username) return false; 
 
 	// Example: Check if username is in player names
 	const player1Name = matchElement.querySelector('.player1-name');
 	const player2Name = matchElement.querySelector('.player2-name');
 
-	if (player1Name && player1Name.innerText.trim() === username) {
-		return true;
-	}
-
-	if (player2Name && player2Name.innerText.trim() === username) {
-		return true;
-	}
+	if (player1Name && player1Name.innerText.trim() === username) return true;
+	if (player2Name && player2Name.innerText.trim() === username) return true;
 
 	// Example: Check if username is in player IDs (assuming data attributes)
 	const player1Id = matchElement.getAttribute('data-player1-id');
 	const player2Id = matchElement.getAttribute('data-player2-id');
 
-	if (player1Id === username) {
-		return true;
-	}
-
-	if (player2Id === username) {
-		return true;
-	}
+	if (player1Id === username) return true;
+	if (player2Id === username) return true;
 
 	return false;
 }
-
-
-
 
 /**
  * Sends a 'leaving' message through the online tournament WebSocket and handles closing the connection.
@@ -733,9 +694,6 @@ function closeGameSocket() {
 	data.player = null;
 }
 
-
-
-
 /**
  * Extracts game information from the match element.
  * Determines the round, side, and game number based on the match element and its surrounding structure.
@@ -749,9 +707,7 @@ function extractGameInfo(matchElement) {
 	let gameSideTmp = null;
 	let gameNumtmp = null;
 
-	if (!matchElement) {
-		return null;
-	}
+	if (!matchElement) return null;
 
 	const roundElement = matchElement.closest('.round') || matchElement.closest('.final');
 	if (roundElement) {

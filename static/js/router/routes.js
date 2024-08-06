@@ -14,10 +14,14 @@ if (!config.ip) {
 	getIPAddress();
 }
 
+/**
+ * Closes the open WebSocket connection if the player was waiting to play online and clicked a button.
+ * Sets the global `terminate_game` flag to true to indicate that the game should be terminated.
+ * If the player is in an online tournament, it also calls `leaveTournament`.
+ */
 function destroyOpenWebsocket() {
 	window.terminate_game = true;
 	if (window.data.playerId != null && window.data.waiting_to_play == true) {
-		// if this condition is true, it mean the player was waiting to play online game and clicked a button so this will make him leave the web socket
 		if (window.data['socket'] && window.data['socket'].readyState === WebSocket.OPEN) {
 			window.data['socket'].close()
 		}
@@ -247,7 +251,7 @@ function handleButtonClick(event) {
 	}
 	const buttonId = event.target.id;
 	const handler = buttonFunctions[buttonId];
-
+	if (buttonId == 'submitPlayer') return ;
 	if (handler) {
 		if (window.game_in_progress) {
 			if (buttonId === 'zoomin' || buttonId === 'zoomout' || buttonId === 'mode_toggle' || buttonId === 'yesButton') { handler(); return ; }
