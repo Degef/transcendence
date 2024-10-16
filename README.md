@@ -36,6 +36,6 @@ docker compose run web python manage.py migrate
 At this point, the app should be up and running. Open your browser and access it using:
 
 ```
-http://localhost:8000
+https://localhost
 
 ```
